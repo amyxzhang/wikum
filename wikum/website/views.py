@@ -19,20 +19,50 @@ def comments(request):
     
     posts = get_posts(article)
     
-    threads = {}
+    threads = []
     
     for post in posts:
-        c = Comment.objects.filter(reply_to_disqus=post.disqus_id)
-        threads[post] = []
+        replies = []
+        c = Comment.objects.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
         for i in c:
-            s_thread = {}
-            t = Comment.objects.filter(reply_to_disqus=i.disqus_id)
-            s_thread[i] = []
+            replies2 = []
+            t = Comment.objects.filter(reply_to_disqus=i.disqus_id).order_by('-likes')
             for u in t:
-                s_thread[i].append(u)
-            threads[post].append(s_thread)
+                replies3 = []
+                v = Comment.objects.filter(reply_to_disqus=u.disqus_id).order_by('-likes')
+                for x in v:
+                    replies4 = []
+                    a = Comment.objects.filter(reply_to_disqus=x.disqus_id).order_by('-likes')
+                    for b in a:
+                        replies5 = []
+                        d = Comment.objects.filter(reply_to_disqus=b.disqus_id).order_by('-likes')
+                        for e in d:
+                            replies6 = []
+                            f = Comment.objects.filter(reply_to_disqus=e.disqus_id).order_by('-likes')
+                            for g in f:
+                                
+                                print Comment.objects.filter(reply_to_disqus=g.disqus_id).count()
+                                
+                                replies6.append(g)
+                            
+                            post_info6 = (e, replies6)
+                            replies5.append(post_info6)
+                            
+                        post_info5 = (b, replies5)
+                        replies4.append(post_info5)
+                        
+                    post_info4 = (x, replies4)
+                    replies3.append(post_info4)
+                    
+                post_info3 = (u, replies3)
+                replies2.append(post_info3)
+                
+            post_info2 = (i, replies2)
+            replies.append(post_info2)
+        
+        post_info = (post, replies)
+        threads.append(post_info)
             
-    print threads
     
     return {'article': article,
             'source': source,

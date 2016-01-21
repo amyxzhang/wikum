@@ -1,16 +1,14 @@
 
-.content-section {
-	padding-top: 150px;
-}
 
 .comment {
 	border: 1px #000000 solid;
 	display: block;
-	width: 300px;
+	width: 400px;
 	padding-left: 5px;
 	padding-right: 5px;
 	margin-bottom: 5px;
 	font-size: 10px;
+	text-align: left;
 }
 
 .comment-rep1 {
@@ -19,6 +17,22 @@
 
 .comment-rep2 {
 	margin-left: 200px;
+}
+
+.comment-rep3 {
+	margin-left: 300px;
+}
+
+.comment-rep4 {
+	margin-left: 400px;
+}
+
+.comment-rep5 {
+	margin-left: 500px;
+}
+
+.comment-rep6 {
+	margin-left: 600px;
 }
 
 p, blockquote {
