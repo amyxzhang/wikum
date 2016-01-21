@@ -1,0 +1,92 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Intro Header -->
+    <header class="intro">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 col-md-offset-2">
+                        <h1 class="brand-heading">Wikum</h1>
+                        
+                        
+                        <p class="intro-text">Organize long comment threads.
+                        	<br>
+							   <form>
+							  <div class="form-group">
+							    <input type="url" class="form-control" id="articleUrl" placeholder="Paste an article url">
+							  </div>
+                        </P>
+                        <!--
+                        <a href="#about" class="btn btn-circle page-scroll">
+                            <i class="fa fa-angle-double-down animated"></i>
+                        </a>
+                        -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>About Wikum</h2>
+                <p>Wikum is a tool for organizing long comment threads.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <h2>Contact Us</h2>
+                <p><a href="mailto:axz@mit.edu">axz@mit.edu</a>
+                </p>
+                
+                <p><a href="mailto:karger@mit.edu">karger@mit.edu</a>
+                </p>
+                
+                <ul class="list-inline banner-social-buttons">
+                    <!--<li>
+                        <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
+                    </li>
+                                       <li>
+                        <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
+                    </li>
+                   -->
+                    <li>
+                        <a href="https://github.com/amyxzhang/wikum" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+		$('#articleUrl').keydown(function(event){ 
+		    var keyCode = (event.keyCode ? event.keyCode : event.which);   
+		    if (keyCode == 13) {
+		    	var article = $('#articleUrl').val();
+		        window.location.href = '/comments?article=' + article;
+		    }
+		    return false;
+		});
+    </script>
+
+{% endblock %}

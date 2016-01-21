@@ -15,6 +15,51 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+try:
+    execfile(BASE_DIR + '/private.py')
+except IOError:
+    print "Unable to open configuration file!"
+
+
+_ENV_FILE_PATH = '/opt/wikum/env'
+_DEBUG_FILE_PATH = '/opt/wikum/debug'
+
+def _get_env():
+    f = open(_ENV_FILE_PATH)
+    env = f.read()
+
+    if env[-1] == '\n':
+        env = env[:-1]
+    
+    f.close()
+    return env
+ENV = _get_env() 
+
+def _get_debug():
+    f = open(_DEBUG_FILE_PATH)
+    debug = f.read()
+
+    if debug[-1] == '\n':
+        debug = debug[:-1]
+    
+    f.close()
+    if debug == 'true':
+        return True
+    else:
+        return False
+    
+DEBUG = _get_debug()
+
+
+if ENV == 'prod':
+    BASE_URL = 'murmur.csail.mit.edu'
+    MYSQL = MYSQL_PROD
+elif ENV == 'staging':
+    BASE_URL = 'murmur-dev.csail.mit.edu'
+    MYSQL = MYSQL_DEV
+else:
+    BASE_URL = 'localhost:8000'
+    MYSQL = MYSQL_LOCAL
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -37,6 +82,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'website',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -76,8 +122,13 @@ WSGI_APPLICATION = 'wikum.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': MYSQL["NAME"],# Or path to database file if using sqlite3.
+        'USER': MYSQL["USER"], # Not used with sqlite3.
+        'PASSWORD': MYSQL["PASSWORD"],# Not used with sqlite3.
+        'HOST': MYSQL["HOST"], # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '', # Set to empty string for default. Not used with sqlite3.
+        'STORAGE_ENGINE': 'MyISAM'
     }
 }
 

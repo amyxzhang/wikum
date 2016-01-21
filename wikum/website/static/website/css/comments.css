@@ -1,0 +1,31 @@
+
+.content-section {
+	padding-top: 150px;
+}
+
+.comment {
+	border: 1px #000000 solid;
+	display: block;
+	width: 300px;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-bottom: 5px;
+	font-size: 10px;
+}
+
+.comment-rep1 {
+	margin-left: 100px;
+}
+
+.comment-rep2 {
+	margin-left: 200px;
+}
+
+p, blockquote {
+	text-align: left;
+	font-size: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin: 0px;
+}
+

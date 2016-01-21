@@ -1,0 +1,46 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+	<link rel="stylesheet" href={% static "website/css/comments.css" %}>
+{% endblock %}
+	
+	
+{% block content %}
+
+        	
+     <section id="contact" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+            	
+       
+						<h2>{{ article.title }}</h2>
+						<a href="{{ article.url }}">Read the article in {{ source.source_name }}</a>
+						<BR> <BR><BR>
+						{% for key, values in posts.items %}
+							<div class="comment">
+								{% autoescape off %}{{ key.text }}{% endautoescape %}
+								<BR>
+								Likes: {{ key.likes }}
+							</div>
+							
+							{% for key2, values2 in values %}
+								<div class="comment comment-rep1">
+									{% autoescape off %}{{ key2.text }}{% endautoescape %}
+								</div>
+								
+								{% for rep in values2 %}
+									<div class="comment comment-rep2">
+										{% autoescape off %}{{ rep.text }}{% endautoescape %}
+									</div>
+								{% endfor %}
+								
+							{% endfor %}
+							
+						{% endfor %}
+                    </div>
+                </div>
+            </section>
+
+
+{% endblock %}
