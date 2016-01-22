@@ -104,7 +104,7 @@ def get_posts(article):
             
             import_posts(result, article)
             
-        posts = article.comment_set.all(reply_to_disqus=None).order_by('-likes')
+        posts = article.comment_set.filter(reply_to_disqus=None).order_by('-likes')
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-likes')
     
