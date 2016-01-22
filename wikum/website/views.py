@@ -40,10 +40,13 @@ def comments(request):
                             replies6 = []
                             f = Comment.objects.filter(reply_to_disqus=e.disqus_id).order_by('-likes')
                             for g in f:
+                                replies7 = []
+                                h = Comment.objects.filter(reply_to_disqus=g.disqus_id).order_by('-likes')
+                                for i in h:
+                                    replies7.append(i)
                                 
-                                print Comment.objects.filter(reply_to_disqus=g.disqus_id).count()
-                                
-                                replies6.append(g)
+                                post_info7 = (g, replies7)
+                                replies6.append(post_info7)
                             
                             post_info6 = (e, replies6)
                             replies5.append(post_info6)

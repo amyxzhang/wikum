@@ -108,5 +108,5 @@ def get_posts(article):
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-likes')
     
-    return posts[0:100]
+    return posts[0:50]
 

@@ -68,13 +68,22 @@
 												<BR>
 													Likes: {{ key6.likes }}
 											</div>
+											
+												{% for key7, values7 in values6 %}
+												<div class="comment comment-rep6">
+													{% autoescape off %}{{ key7.text }}{% endautoescape %}
+													<BR>
+														Likes: {{ key7.likes }}
+												</div>
 									
-												{% for rep in values6 %}
-													<div class="comment comment-rep6">
-														{% autoescape off %}{{ rep.text }}{% endautoescape %}
-														<BR>
-														Likes: {{ rep.likes }}
-													</div>
+													{% for rep in values7 %}
+														<div class="comment comment-rep7">
+															{% autoescape off %}{{ rep.text }}{% endautoescape %}
+															<BR>
+															Likes: {{ rep.likes }}
+														</div>
+													{% endfor %}
+												
 												{% endfor %}
 												
 											{% endfor %}
