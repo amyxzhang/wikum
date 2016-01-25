@@ -61,6 +61,8 @@
 		  nodes_all = tree.nodes(flare);
 		  
 		  update(root = flare);
+		  
+		  show_text(nodes_all[0]);
 		});
 		
 		function update(source) {
@@ -105,41 +107,15 @@
 		      .style("stroke-width", stroke_width)  
 		      .style("stroke", stroke)
 		      .style("fill", color)
-		      .on("click", show_text)
+		      .on("click", function(d) {
+		      	show_text(d);
+		      	d3.selectAll(".clicked").classed("clicked", false);
+				d3.select(this).classed('clicked', true);
+				
+		      })
 		      .on("mouseover", showdiv)
 		      .on("mouseout", hidediv);
-/**
-		  nodeEnter.append("text")
-		      .attr("dy", function(d) {
-		      	if (d.article) {
-		      		return -10;
-		      	} else {
-		      		return 3.5;
-		      	}
-		      })
-		      .attr("dx", function(d) { 
-		      	if (d.article) {
-		      		return -5;
-		      	} else {
-		      		return (d.size + 100)/60 + 5; 
-		      	}
-		      	})
-		      .style("font-size","15px")
-		      .text(function(d) { 
-		      	 if (d.article) {
-		      	 	return d.name;
-		      	 } else {
-		      	 	if (d.children)
-			     		return "-";
-			     	else if (d._children) {
-			     		return '+';
-			     	} else {
-			     		return '';
-			     	}
-			     }
-		      	})
-		      .on("click", click);
-		**/
+
 		  // Transition nodes to their new position.
 		  nodeEnter.transition()
 		      .duration(duration)
@@ -304,28 +280,24 @@
 		function stroke_width(d) {
 			if (d.article) {
 				return 3;
-			} else {
-				return 0;
 			}
 		}
 		
 		function stroke(d) {
-			if (d.parent && d.parent.article) {
-				return "#000000";
-			} else if (d.article) {
+			if (d.article) {
 				return "#000000";
 			}
-		  return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 		 }
 		
 		function color(d) {
 			if (d.parent && d.parent.article) {
-				return "#000000";
+				return "#19668c";
 			} else if (d.article) {
 				return "#ffffff";
 			}
-		  return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+		  return d._children ? "#c6dbef" : d.children ? "#c6dbef" : "#fd8d3c";
 		}
+		
 	</script>
 
 {% endblock %}

@@ -287,4 +287,8 @@ a {
 	cursor: pointer;
 }
 
+.clicked {
+	stroke: #000000;
+	stroke-width: 3px;
+}
 
