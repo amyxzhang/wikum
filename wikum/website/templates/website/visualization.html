@@ -99,6 +99,8 @@
 		      	}
 		      	})
 		      .attr("height", barHeight)
+		      .style("stroke-width", stroke_width)  
+		      .style("stroke", stroke)
 		      .style("fill", color)
 		      .on("click", show_text)
 		      .on("mouseover", showdiv);
@@ -214,6 +216,54 @@
 		  return null;
 		}
 		
+		function collapse_recurs(d) {
+			if (d.children) {
+			    d._children = d.children;
+			    d.children = null;
+			  }
+			if (d._children) {
+				for (var i=0; i<d._children.length; i++) {
+					collapse_recurs(d._children[i]);
+				}
+			}
+		}
+		
+		function expand_recurs(d) {
+			if (d._children) {
+			    d.children = d._children;
+			    d._children = null;
+			  }
+			if (d.children) {
+				for (var i=0; i<d.children.length; i++) {
+					expand_recurs(d.children[i]);
+				}
+			}
+		}
+		
+		// Toggle children on click.
+		function collapse_node(id) {
+		  d = nodes_all[id-1];
+			if (d._children) {
+			    d.children = d._children;
+			    d._children = null;
+			  }
+			if (d.children) {
+				for (var i=0; i<d.children.length; i++) {
+					collapse_recurs(d.children[i]);
+				}
+			}
+		  update(d);
+		  return null;
+		}
+		
+		// Toggle children on click.
+		function expand_node(id) {
+		  d = nodes_all[id-1];
+		  expand_recurs(d);
+		  update(d);
+		  return null;
+		}
+		
 		function show_text(d) {
 			if (!d.article) {
 				$('#box').html(d.name + '<P>Likes: ' + d.size + '</P>');
@@ -223,18 +273,36 @@
 		}
 		
 		function showdiv(d, i) {
-			var offset = $('svg').offset();
-			$('#expand').css({top: offset.top + d.x + 22, 
-				left: offset.left + d.y + ((d.size + 100)/60) + 28});
-			$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a>');
-
+			if (d.children || d._children) {
+				var offset = $('svg').offset();
+				$('#expand').css({top: offset.top + d.x + 22, 
+					left: offset.left + d.y + ((d.size + 100)/60) + 28});
+				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a> | <a onclick="collapse_node(' + d.id + ');">Collapse replies</a> | <a onclick="expand_node(' + d.id + ');">Expand replies</a>');
+			}
 		}
+		
+		function stroke_width(d) {
+			if (d.article) {
+				return 3;
+			} else {
+				return 0;
+			}
+		}
+		
+		function stroke(d) {
+			if (d.parent && d.parent.article) {
+				return "#000000";
+			} else if (d.article) {
+				return "#000000";
+			}
+		  return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+		 }
 		
 		function color(d) {
 			if (d.parent && d.parent.article) {
 				return "#000000";
 			} else if (d.article) {
-				return "#ffff00";
+				return "#ffffff";
 			}
 		  return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 		}
