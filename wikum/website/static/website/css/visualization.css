@@ -263,9 +263,9 @@ div.selected {
 
 #box {
 	position: fixed; 
-	width: 450px; 
+	width: 550px; 
 	height: 600px; 
-	left: 800px; 
+	left: 700px; 
 	top: 100px; 
 	display: block;
 	overflow-y: scroll;

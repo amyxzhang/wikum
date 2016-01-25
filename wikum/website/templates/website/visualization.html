@@ -28,6 +28,9 @@
 	<script src={% static "website/js/d3.min.js" %}></script>
 	
 	<script>
+	
+		var timer;
+		
 		var margin = {top: 30, right: 20, bottom: 30, left: 20},
 		    width = 960 - margin.left - margin.right,
 		    barHeight = 22;
@@ -103,7 +106,8 @@
 		      .style("stroke", stroke)
 		      .style("fill", color)
 		      .on("click", show_text)
-		      .on("mouseover", showdiv);
+		      .on("mouseover", showdiv)
+		      .on("mouseout", hidediv);
 /**
 		  nodeEnter.append("text")
 		      .attr("dy", function(d) {
@@ -272,14 +276,30 @@
 			}
 		}
 		
-		function showdiv(d, i) {
+		function showdiv(d) {
 			if (d.children || d._children) {
+				clearTimeout(timer);
 				var offset = $('svg').offset();
 				$('#expand').css({top: offset.top + d.x + 22, 
 					left: offset.left + d.y + ((d.size + 100)/60) + 28});
 				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a> | <a onclick="collapse_node(' + d.id + ');">Collapse replies</a> | <a onclick="expand_node(' + d.id + ');">Expand replies</a>');
+				$('#expand').show();
 			}
 		}
+		
+		function hidediv(d) {
+			timer = setTimeout(remove_dic, 100);
+		}
+		
+		function remove_dic() {
+			$('#expand').hide();
+		}
+
+		$("#expand").mouseleave(function() {
+		    timer = setTimeout(remove_dic, 100);
+		}).mouseenter(function() {
+		    clearTimeout(timer);
+		});
 		
 		function stroke_width(d) {
 			if (d.article) {
