@@ -19,5 +19,7 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$','website.views.index'),
     url(r'^comments$','website.views.comments'),
+    url(r'^visualization','website.views.visualization'),
+    url(r'^viz_data','website.views.viz_data'),
     url(r'^admin/', admin.site.urls),
 ]

@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.http import HttpResponse
+import json
+from django.http import JsonResponse
 
 from engine import *
 
@@ -71,5 +74,47 @@ def comments(request):
             'source': source,
             'posts': threads,
             'page': 'comments'}
+    
+
+@render_to('website/visualization.html')
+def visualization(request):
+    url = request.GET['article']
+    article = Article.objects.get(url=url)
+    return {'article': article,
+            'source': article.source}
+
+
+def recurse_viz(posts):
+    children = []
+    for post in posts:
+        v1 = {'name': post.text, 'size': post.likes}
+        c1 = Comment.objects.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
+        if c1.count() == 0:
+            vals = []
+        else:
+            vals = recurse_viz(c1)
+        v1['children'] = vals
+        children.append(v1)
+    return children
+        
+    
+
+def viz_data(request):
+    article_id = request.GET['article_id']
+    
+    a = Article.objects.get(id=article_id)
+    
+    val = {'name': '<P><h2>%s</h2></p><P><a href="%s">Read the article in the %s</a></p>' % (a.title, a.url, a.source.source_name),
+           'size': 400,
+           'article': True,
+           'children': []}
+
+    posts = a.comment_set.filter(reply_to_disqus=None).order_by('-likes')[0:10]
+    val['children'] = recurse_viz(posts)
+    return JsonResponse(val)
+    
+    
+    
+    
     
     
