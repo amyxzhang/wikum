@@ -30,17 +30,19 @@
 	<script>
 	
 		var timer;
+		var isClick = true;
+		var isMouseDown = false;
 		
 		var margin = {top: 30, right: 20, bottom: 30, left: 20},
 		    width = 960 - margin.left - margin.right,
-		    barHeight = 22;
+		    barHeight = 23;
 		
 		var i = 0,
 		    duration = 400,
 		    root;
 		
 		var tree = d3.layout.tree()
-		    .nodeSize([0, 20]);
+		    .nodeSize([0, 23]);
 		
 		var diagonal = d3.svg.diagonal()
 		    .projection(function(d) { return [d.y, d.x]; });
@@ -49,6 +51,104 @@
 		    .attr("width", width + margin.left + margin.right)
 		  .append("g")
 		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		
+		
+		svg.append('svg:rect')
+		  .attr('width',  width + margin.left + margin.right) // the whole width of g/svg
+		  .attr('fill', 'none')
+		  .attr('pointer-events', 'all')
+		  .on('click', function() {
+		  	clearTimeout(cancelClick);
+		  	if (isClick) {
+		  		d3.selectAll( '.clicked').classed( "clicked", false);
+		  		show_text(null);
+		  	} else {
+		  		show_text('clicked');
+		  	}
+		  	
+		  	isClick = true;
+		  })
+		  .on('mousedown', function() {
+		  		isMouseDown = true;
+		  		
+		  		cancelClick = setTimeout(is_click, 500);
+		   		var p = d3.mouse( this);
+
+			    svg.append( "rect")
+			    .attr({
+			        rx      : 6,
+			        ry      : 6,
+			        class   : "selection",
+			        x       : p[0],
+			        y       : p[1],
+			        width   : 0,
+			        height  : 0
+			    });
+		  })
+		  .on( "mousemove", function() {
+		    var s = svg.select( "rect.selection");
+		    
+		    if( !s.empty()) {
+		        var p = d3.mouse(this),
+		            d = {
+		                x       : parseInt( s.attr( "x"), 10),
+		                y       : parseInt( s.attr( "y"), 10),
+		                width   : parseInt( s.attr( "width"), 10),
+		                height  : parseInt( s.attr( "height"), 10)
+		            },
+		            move = {
+		                x : p[0] - d.x,
+		                y : p[1] - d.y
+		            }
+		        ;
+		
+		        if( move.x < 1 || (move.x*2<d.width)) {
+		            d.x = p[0];
+		            d.width -= move.x;
+		        } else {
+		            d.width = move.x;       
+		        }
+		
+		        if( move.y < 1 || (move.y*2<d.height)) {
+		            d.y = p[1];
+		            d.height -= move.y;
+		        } else {
+		            d.height = move.y;       
+		        }
+		       
+		        s.attr( d);
+		        
+				// deselect all temporary selected state objects
+		        d3.selectAll( '.clicked').classed( "clicked", false);
+		
+		        d3.selectAll( 'circle').each( function(state_data, i) {
+		            if( 
+		                !d3.select( this).classed( "selected") && 
+		                    // inner circle inside selection frame
+		                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+		                state_data.y>=d.x && state_data.y<=d.x+d.width
+		            ) {
+		
+		                d3.select( this)
+		                .classed( "clicked", true);
+		            }
+		        });
+		        
+		        }
+		        })
+		.on( "mouseup", function() {
+			isMouseDown = false;
+
+		       // remove selection frame
+		    svg.selectAll( "rect.selection").remove();
+		    
+		})
+		.on( "mouseout", function() {
+			if( d3.event.relatedTarget.tagName=='HTML') {
+		            // remove selection frame
+		        svg.selectAll( "rect.selection").remove();
+		    }
+		});
 		
 		var nodes_all = null;
 		
@@ -73,6 +173,10 @@
 		  var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
 		
 		  d3.select("svg").transition()
+		      .duration(duration)
+		      .attr("height", height);
+		      
+		  d3.select("rect").transition()
 		      .duration(duration)
 		      .attr("height", height);
 		
@@ -145,9 +249,7 @@
 		      		return d.target.id;
 		      	}
 		      	});
-		      
-		  
-		
+
 		  // Enter any new links at the parent's previous position.
 		  link.enter().insert("path", "g")
 		      .attr("class", "link")
@@ -178,6 +280,10 @@
 		    d.x0 = d.x;
 		    d.y0 = d.y;
 		  });
+		}
+		
+		function is_click() {
+			isClick = false;
 		}
 		
 		// Toggle children on click.
@@ -245,15 +351,22 @@
 		}
 		
 		function show_text(d) {
-			if (!d.article) {
-				$('#box').html(d.name + '<P>Likes: ' + d.size + '</P>');
-			} else {
+			if (d && d != 'clicked' && !d.article) {
+				$('#box').html('<div class="comment_box">' + d.name + '<P>Likes: ' + d.size + '</P></div>');
+			} else if (d && d != 'clicked') {
 				$('#box').html(d.name);
+			} else if (d == null){
+				$('#box').html('');
+			} else {
+				$('#box').html('');
+				d3.selectAll( '.clicked').each( function(data, i) {
+					$('#box').append('<div class="comment_box">' + data.name + '<P>Likes: ' + data.size + '</P></div>');
+				});
 			}
 		}
 		
 		function showdiv(d) {
-			if (d.children || d._children) {
+			if (!isMouseDown && (d.children || d._children)) {
 				clearTimeout(timer);
 				var offset = $('svg').offset();
 				$('#expand').css({top: offset.top + d.x + 22, 

@@ -292,3 +292,18 @@ a {
 	stroke-width: 3px;
 }
 
+rect.selection {
+    stroke          : gray;
+    stroke-dasharray: 4px;
+    stroke-opacity  : 0.5;
+    fill            : transparent;
+}
+
+.comment_box {
+	background-color: #eef7fa;
+	margin-bottom: 5px;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
