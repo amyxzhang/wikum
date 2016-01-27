@@ -26,6 +26,7 @@
 {% block scripts %}
 
 	<script src={% static "website/js/d3.min.js" %}></script>
+	<script src={% static "website/js/jquery.scrollTo.min.js" %}></script>
 	
 	<script>
 	
@@ -364,7 +365,7 @@
 				$('#box').html('');
 				d3.selectAll( '.clicked').each( function(data, i) {
 					if (!data.article) {
-						$('#box').append('<div class="comment_box">' + data.name + '<P>Likes: ' + data.size + '</P></div>');
+						$('#box').append('<div class="comment_box" id="comment_' + data.id + '">' + data.name + '<P>Likes: ' + data.size + '</P></div>');
 					}
 				});
 			}
@@ -379,10 +380,17 @@
 				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a> | <a onclick="collapse_node(' + d.id + ');">Collapse replies</a> | <a onclick="expand_node(' + d.id + ');">Expand replies</a>');
 				$('#expand').show();
 			}
+			if (!isMouseDown && d3.select(this).classed("clicked")) {
+				
+				$('.highlighted').removeClass('highlighted');
+				$('#comment_' + d.id).addClass('highlighted');
+				$("#box").scrollTo("#comment_" + d.id, 800);
+			}
 		}
 		
 		function hidediv(d) {
 			timer = setTimeout(remove_dic, 100);
+			
 		}
 		
 		function remove_dic() {

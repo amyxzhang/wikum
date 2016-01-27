@@ -305,5 +305,9 @@ rect.selection {
 	padding-top: 5px;
 	padding-left: 5px;
 	padding-right: 5px;
+	border: 1px #ffffff solid;
 }
 
+.highlighted {
+	border: 1px #000000 solid;
+}
