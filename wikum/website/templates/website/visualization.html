@@ -8,7 +8,7 @@
 
 {% block content %}
 
-	<section id="contact" class="container content-section text-center" style="padding-top: 150px;">
+	<section id="contact" class="container content-section text-center" style="padding-top: 50px; margin: 0px;">
 	        <div class="row">
 	            <div id="viz" class="col-lg-8 col-lg">
 
@@ -155,8 +155,8 @@
 		d3.json('/viz_data?article_id={{ article.id }}', function(error, flare) {
 		  if (error) throw error;
 		
-		  flare.x0 = 0;
-		  flare.y0 = 0;
+		  flare.x0 = 100;
+		  flare.y0 = 100;
 		  
 		  nodes_all = tree.nodes(flare);
 		  
@@ -170,7 +170,7 @@
 		  // Compute the flattened node list. TODO use d3.layout.hierarchy.
 		  var nodes = tree.nodes(root);
 		
-		  var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
+		  var height = Math.max(500, 100 + nodes.length * barHeight + margin.top + margin.bottom);
 		
 		  d3.select("svg").transition()
 		      .duration(duration)
@@ -186,8 +186,11 @@
 		
 		  // Compute the "layout".
 		  nodes.forEach(function(n, i) {
-		    n.x = i * barHeight;
+		    n.x = (i * barHeight) + 100;
+		    n.y = n.y + 100;
 		  });
+		  
+		  console.log(nodes);
 		
 		  // Update the nodes…
 		  var node = svg.selectAll("g.node")
@@ -360,7 +363,9 @@
 			} else {
 				$('#box').html('');
 				d3.selectAll( '.clicked').each( function(data, i) {
-					$('#box').append('<div class="comment_box">' + data.name + '<P>Likes: ' + data.size + '</P></div>');
+					if (!data.article) {
+						$('#box').append('<div class="comment_box">' + data.name + '<P>Likes: ' + data.size + '</P></div>');
+					}
 				});
 			}
 		}
