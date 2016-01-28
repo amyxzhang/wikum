@@ -311,3 +311,16 @@ rect.selection {
 .highlighted {
 	border: 1px #000000 solid;
 }
+
+.level1 {
+	margin-left: 50px;
+}
+
+.level2 {
+	margin-left: 100px;
+}
+
+.level3 {
+	margin-left: 150px;
+}
+
