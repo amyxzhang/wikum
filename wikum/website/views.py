@@ -87,9 +87,12 @@ def visualization(request):
 def recurse_viz(posts):
     children = []
     pids = [post.disqus_id for post in posts]
-    reps = Comment.objects.filter(reply_to_disqus__in=pids)
+    reps = Comment.objects.filter(reply_to_disqus__in=pids).select_related()
     for post in posts:
-        v1 = {'name': post.text, 'size': post.likes}
+        v1 = {'name': post.text, 
+              'size': post.likes,
+              'author': post.author.username if not post.author.anonymous else 'Anonymous'
+              }
         c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
         if c1.count() == 0:
             vals = []

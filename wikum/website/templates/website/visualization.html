@@ -356,9 +356,20 @@
 		  return null;
 		}
 		
+		function construct_comment(d) {
+			var text = '';
+			text += d.name;
+			text += '<P>' + d.author + '</P>';
+			text += '<P>Likes: ' + d.size + '</P>';
+			return text;
+		}
+		
 		function show_text(d) {
 			if (d && d != 'clicked' && !d.article) {
-				$('#box').html('<div class="comment_box">' + d.name + '<P>Likes: ' + d.size + '</P></div>');
+				var text = '<div class="comment_box">';
+				text += construct_comment(d);
+				text += '</div>';
+				$('#box').html(text);
 			} else if (d && d != 'clicked') {
 				$('#box').html(d.name);
 			} else if (d == null){
@@ -378,15 +389,19 @@
 				
 				objs.sort(compare_nodes);
 				for (var i in objs) {
+					var text = '';
 					if (objs[i].depth - min_level == 0) {
-						$('#box').append('<div class="comment_box" id="comment_' + objs[i].id + '">' + objs[i].name + '<P>Likes: ' + objs[i].size + '</P></div>');
+						text += '<div class="comment_box" id="comment_' + objs[i].id + '">'; 
 					} else if (objs[i].depth - min_level == 1) {
-						$('#box').append('<div class="comment_box level1" id="comment_' + objs[i].id + '">' + objs[i].name + '<P>Likes: ' + objs[i].size + '</P></div>');
+						text += '<div class="comment_box level1" id="comment_' + objs[i].id + '">'; 
 					} else if (objs[i].depth - min_level == 2) {
-						$('#box').append('<div class="comment_box level2" id="comment_' + objs[i].id + '">' + objs[i].name + '<P>Likes: ' + objs[i].size + '</P></div>');
+						text += '<div class="comment_box level2" id="comment_' + objs[i].id + '">'; 
 					} else {
-						$('#box').append('<div class="comment_box level3" id="comment_' + objs[i].id + '">' + objs[i].name + '<P>Likes: ' + objs[i].size + '</P></div>');
+						text += '<div class="comment_box level3" id="comment_' + objs[i].id + '">'; 
 					}
+					text += construct_comment(objs[i]);
+					text += '</div>';
+					$('#box').append(text);
 				};
 				
 				
