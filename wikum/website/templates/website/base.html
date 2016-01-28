@@ -84,9 +84,14 @@
                         	<a class="page-scroll" href="/#contact">Contact</a>
                         {% endif %}
                     </li>
-                    <li>
+                    <li class="dropdown">
                     	{% if user.is_authenticated %}
-                    		<a href="">{{ user.username }}</a>
+                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
+                    		<ul class="dropdown-menu">
+                    			<li><a href="/account/password/reset/">Change Password</a></li>
+                    			<li><a href="/account/logout">Logout</a></li>
+                    			<li><a href="/account/delete">Delete Account</a></li>
+                    		</ul>
                     	{% else %}
                     		<a href="/account/login">Login</a>
                     	{% endif %}
