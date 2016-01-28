@@ -1,4 +1,4 @@
-A user on {{ site_name }} has created an account using this email address.
+A user on Wikum has created an account using this email address.
 
 To confirm this email address, go to {{ activate_url }}
 
