@@ -171,7 +171,7 @@
 		  // Compute the flattened node list. TODO use d3.layout.hierarchy.
 		  var nodes = tree.nodes(root);
 		
-		  var height = Math.max(500, 100 + nodes.length * barHeight + margin.top + margin.bottom);
+		  var height = Math.max($(window).height() - 150, 100 + nodes.length * barHeight + margin.top + margin.bottom);
 		
 		  d3.select("svg").transition()
 		      .duration(duration)
