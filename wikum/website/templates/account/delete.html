@@ -1,0 +1,34 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+	<link rel="stylesheet" href={% static "website/css/accounts.css" %}>
+{% endblock %}
+
+{% block content %}
+
+     <section id="contact" class="container content-section text-center" style="padding-top: 150px;">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+            	
+				 <h1>Delete Account</h1>
+				    
+				    <p>If you go ahead and delete your account, your information will be <b>expunged within {{ ACCOUNT_DELETION_EXPUNGE_HOURS }} hours</b>.</p>
+				    
+				    <form method="post" action="{% url "account_delete" %}" autocapitalize="off">
+				        {% csrf_token %}
+				        <button type="submit" class="btn btn-danger">Delete My Account</button>
+				    </form>
+
+
+	           </div>
+	         </div>
+	      </section>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{% endblock %}

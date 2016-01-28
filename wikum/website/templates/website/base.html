@@ -19,6 +19,8 @@
     <!-- Custom CSS -->
 	<link rel="stylesheet" href={% static "website/css/grayscale.css" %}>
     
+    <link rel="stylesheet" href={% static "website/css/base.css" %}>
+    
 	{% block styles %}
 	{% endblock %}
 	
@@ -81,6 +83,13 @@
                         {% else %}
                         	<a class="page-scroll" href="/#contact">Contact</a>
                         {% endif %}
+                    </li>
+                    <li>
+                    	{% if user.is_authenticated %}
+                    		<a href="">{{ user.username }}</a>
+                    	{% else %}
+                    		<a href="/account/login">Login</a>
+                    	{% endif %}
                     </li>
                 </ul>
             </div>

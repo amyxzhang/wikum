@@ -1,0 +1,32 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+	<link rel="stylesheet" href={% static "website/css/accounts.css" %}>
+{% endblock %}
+
+{% block content %}
+
+     <section id="contact" class="container content-section text-center" style="padding-top: 150px;">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+            	
+				<form method="POST" action="{% url "account_password_reset" %}">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {{ field.as_hidden }}
+                    {% endfor %}
+                    <button type="submit" name="resend" class="btn btn-primary">Resend</button>
+                </form>
+
+	           </div>
+	         </div>
+	      </section>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{% endblock %}
