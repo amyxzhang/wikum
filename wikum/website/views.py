@@ -114,7 +114,7 @@ def viz_data(request):
            'article': True,
            'children': []}
 
-    posts = a.comment_set.filter(reply_to_disqus=None).order_by('-likes')[0:5]
+    posts = a.comment_set.filter(reply_to_disqus=None).order_by('-likes')[0:20]
     val['children'] = recurse_viz(posts)
     return JsonResponse(val)
     

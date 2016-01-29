@@ -328,3 +328,13 @@ blockquote {
 	font-size: 10px;
 }
 
+hr {
+	border-top: 1px solid #000000;
+	margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+textarea {
+	width: 100%;
+}
+
