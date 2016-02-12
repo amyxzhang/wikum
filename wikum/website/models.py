@@ -42,6 +42,7 @@ class Comment(models.Model):
     flagged = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     approved = models.BooleanField(default=True)
+    json_flatten = models.TextField()
     
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)

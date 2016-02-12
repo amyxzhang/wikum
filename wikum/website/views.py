@@ -89,25 +89,30 @@ def recurse_viz(posts):
     pids = [post.disqus_id for post in posts]
     reps = Comment.objects.filter(reply_to_disqus__in=pids).select_related()
     for post in posts:
-        v1 = {'name': post.text, 
-              'size': post.likes,
-              'author': post.author.username if not post.author.anonymous else 'Anonymous'
-              }
-        c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
-        if c1.count() == 0:
-            vals = []
+        if post.json_flatten == '':
+            v1 = {'name': post.text, 
+                  'size': post.likes,
+                  'author': post.author.username if not post.author.anonymous else 'Anonymous'
+                  }
+            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
+            if c1.count() == 0:
+                vals = []
+            else:
+                vals = recurse_viz(c1)
+            v1['children'] = vals
+            post.json_flatten = json.dumps(v1)
+            post.save()
         else:
-            vals = recurse_viz(c1)
-        v1['children'] = vals
+            v1 = json.loads(post.json_flatten)
         children.append(v1)
     return children
         
     
 
 def viz_data(request):
-    article_id = request.GET['article_id']
+    article_url = request.GET['article']
     
-    a = Article.objects.get(id=article_id)
+    a = Article.objects.get(url=article_url)
     
     val = {'name': '<P><h2>%s</h2></p><P><a href="%s">Read the article in the %s</a></p>' % (a.title, a.url, a.source.source_name),
            'size': 400,
