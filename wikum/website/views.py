@@ -143,8 +143,11 @@ def hide_comment(request):
 @render_to('website/history.html')
 def history(request):
     article = request.GET['article']
-    a = History.objects.filter(article_id=article).order_by('-datetime')
-    return {'history': a}
+    hist = History.objects.filter(article_id=article).order_by('-datetime').select_related()
+    a = hist[0].article
+    
+    return {'history': hist,
+            'article': a}
     
 
 def viz_data(request):
