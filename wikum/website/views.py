@@ -84,12 +84,25 @@ def visualization(request):
             'source': article.source}
 
 
+def recurse_up_post(post):
+    post.json_flatten = ""
+    post.save()
+    
+    print post.disqus_id
+    
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    if parent.count() > 0:
+        recurse_up_post(parent[0])
+    
+
 def recurse_viz(posts):
     children = []
+    hid_children = []
     pids = [post.disqus_id for post in posts]
     reps = Comment.objects.filter(reply_to_disqus__in=pids).select_related()
     for post in posts:
         if post.json_flatten == '':
+        # if True:
             v1 = {'name': post.text, 
                   'size': post.likes,
                   'd_id': post.id,
@@ -98,15 +111,20 @@ def recurse_viz(posts):
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
             if c1.count() == 0:
                 vals = []
+                hid = []
             else:
-                vals = recurse_viz(c1)
+                vals, hid = recurse_viz(c1)
             v1['children'] = vals
+            v1['hid'] = hid
             post.json_flatten = json.dumps(v1)
             post.save()
         else:
             v1 = json.loads(post.json_flatten)
-        children.append(v1)
-    return children
+        if not post.hidden:
+            children.append(v1)
+        else:
+            hid_children.append(v1)
+    return children, hid_children
         
 def hide_comment(request):
     try:
@@ -131,7 +149,11 @@ def hide_comment(request):
                                        action='hide_comment',
                                        explanation=explain)
         
-        h.comments.add(c);
+        h.comments.add(c)
+        
+        parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+        if parent.count() > 0:
+            recurse_up_post(parent[0])
         
         return JsonResponse({})
     except Exception, e:
@@ -157,11 +179,10 @@ def viz_data(request):
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
-           'article': True,
-           'children': []}
+           'article': True}
 
     posts = a.comment_set.filter(reply_to_disqus=None).order_by('-likes')[0:20]
-    val['children'] = recurse_viz(posts)
+    val['children'], val['hid'] = recurse_viz(posts)
     return JsonResponse(val)
     
     

@@ -3,6 +3,7 @@ td {
 	padding: 5px;
 	border: #ffffff solid 10px;
 	background-color: #eef7fa;
+	text-align: left;
 }
 
 .comment {
@@ -14,4 +15,5 @@ table {
 
 p {
 	font-size: 10px;
+	margin-bottom: 10px;
 }

@@ -165,19 +165,19 @@ svg.append('svg:rect')
         
         }
         })
-.on( "mouseup", function() {
-	isMouseDown = false;
-
-       // remove selection frame
-    svg.selectAll( "rect.selection").remove();
-    
-})
-.on( "mouseout", function() {
-	if( d3.event.relatedTarget.tagName=='HTML') {
-            // remove selection frame
-        svg.selectAll( "rect.selection").remove();
-    }
-});
+	.on( "mouseup", function() {
+		isMouseDown = false;
+	
+	       // remove selection frame
+	    svg.selectAll( "rect.selection").remove();
+	    
+	})
+	.on( "mouseout", function() {
+		if( d3.event.relatedTarget.tagName=='HTML') {
+	            // remove selection frame
+	        svg.selectAll( "rect.selection").remove();
+	    }
+	});
 
 var nodes_all = null;
 
