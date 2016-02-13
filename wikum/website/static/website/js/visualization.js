@@ -2,6 +2,34 @@ var timer;
 var isClick = true;
 var isMouseDown = false;
 
+$("#hide_modal_box").draggable({
+    handle: ".modal-content"
+}); 
+
+
+$('#hide_modal_box').on('show.bs.modal', function(e) {
+	var id = $(e.relatedTarget).data('id');
+	
+	highlight_box(id);
+	var text = $(".highlighted").children().first().text();
+	$('#hide_comment_box').html('<P>' + escapeHtml(text) + '</p>');
+	
+	var did = $(e.relatedTarget).data('did');
+	$('#hide_comment_submit').click({data_id: did}, function(evt) {
+		
+		var comment = $('#hide_comment_textarea').val();
+		var article_id = $('#article_id').text();
+		
+		var csrf = $('#csrf').text();
+		
+		$.post('/hide_comment', 
+		{csrfmiddlewaretoken: csrf, id: evt.data.data_id, comment: comment, article: article_id}, 
+		function(data) {
+			$('#hide_modal_box').modal('toggle');
+		});
+	});
+});
+
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     width = 600 - margin.left - margin.right,
     barHeight = 23;
@@ -370,31 +398,44 @@ function expand_node(id) {
 
 function construct_comment(d) {
 	var text = '';
-	text += d.name;
+	text += '<div>' + d.name + '</div>';
 	text += '<P>-- ' + d.author + '</P>';
 	text += '<P>Likes: ' + d.size + '</P>';
 	if (d.name.length > 300) {
 		text += '<hr><P>';
-		console.log(d);
 		if (!d.children) {
-			text += '<a>Hide Comment</a> | ';
+			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-id="' + d.id + '">Hide Comment</a> | ';
 		} else {
 			text += '<a>Summarize Comment and all Replies</a> | ';
 			text += '<a>Hide all Replies</a> | ';
 		}
 		text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
 		text += '<div id="summarize_' + d.id + '" style="display: none;"><textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea></div>​';
+	} else {
+		if (!d.children) {
+			text += '<hr><P>';
+			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-id="' + d.id + '">Hide Comment</a>';
+			text += '</p>';
+		}
 	}
 	return text;
 }
+
 
 function show_summarize(id) {
 	$('#summarize_' + id).toggle();
 }
 
+function escapeHtml(text) {
+    'use strict';
+    return text.replace(/[\"&<>]/g, function (a) {
+        return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+    });
+}
+
 function show_text(d) {
 	if (d && d != 'clicked' && !d.article) {
-		var text = '<div class="comment_box">';
+		var text = '<div class="comment_box" id="comment_' + d.id + '">';
 		text += construct_comment(d);
 		text += '</div>';
 		$('#box').html(text);
@@ -445,6 +486,10 @@ function compare_nodes(a,b) {
     return 0;
 }
 
+function highlight_box(id) {
+	$('.highlighted').removeClass('highlighted');
+	$('#comment_' + id).addClass('highlighted');
+}
 
 function showdiv(d) {
 	if (!isMouseDown && (d.children || d._children)) {
@@ -456,8 +501,7 @@ function showdiv(d) {
 		$('#expand').show();
 	}
 	if (!isMouseDown && d3.select(this).classed("clicked")) {
-		$('.highlighted').removeClass('highlighted');
-		$('#comment_' + d.id).addClass('highlighted');
+		highlight_box(d.id);
 		$("#box").scrollTo("#comment_" + d.id, 800);
 	}
 }

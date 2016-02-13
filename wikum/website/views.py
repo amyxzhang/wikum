@@ -92,6 +92,7 @@ def recurse_viz(posts):
         if post.json_flatten == '':
             v1 = {'name': post.text, 
                   'size': post.likes,
+                  'd_id': post.id,
                   'author': post.author.username if not post.author.anonymous else 'Anonymous'
                   }
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
@@ -107,6 +108,37 @@ def recurse_viz(posts):
         children.append(v1)
     return children
         
+def hide_comment(request):
+    try:
+        user = request.user
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        explain = request.POST['comment']
+        
+        c = Comment.objects.get(id=id)
+        c.hidden = True
+        c.save()
+        
+        if request.user.is_authenticated():
+            h,_ = History.objects.get_or_create(user=request.user, 
+                                       article=a,
+                                       action='hide_comment',
+                                       explanation=explain)
+        else:
+            h,_ = History.objects.get_or_create(user=None, 
+                                       article=a,
+                                       action='hide_comment',
+                                       explanation=explain)
+        
+        h.comments.add(c);
+        
+        return JsonResponse({})
+    except Exception, e:
+        print e
+        return JsonResponse({})
+    
+    
    
 @render_to('website/history.html')
 def history(request):

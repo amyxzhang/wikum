@@ -341,3 +341,14 @@ textarea {
 	width: 100%;
 }
 
+#hide_comment_box {
+	display: block;
+	width: 560px;
+	height: 90px;
+	padding-left: 8px;
+	padding-right: 8px;
+    padding-top: 5px;
+	background-color: #eef7fa;
+	overflow-y: scroll;
+}
+

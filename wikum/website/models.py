@@ -28,7 +28,7 @@ class History(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
     action = models.CharField(max_length=15)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     datetime = models.DateTimeField(auto_now=True)
     comments = models.ManyToManyField('Comment')
     from_str = models.TextField()
@@ -57,7 +57,9 @@ class Comment(models.Model):
     flagged = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     approved = models.BooleanField(default=True)
+    
     json_flatten = models.TextField()
+    hidden = models.BooleanField(default=False)
     
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)
