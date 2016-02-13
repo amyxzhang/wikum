@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -22,6 +23,17 @@ class Article(models.Model):
 
     def __unicode__(self):
         return self.title
+    
+class History(models.Model):
+    id = models.AutoField(primary_key=True)
+    article = models.ForeignKey('Article')
+    action = models.CharField(max_length=15)
+    user = models.ForeignKey(User)
+    datetime = models.DateTimeField(auto_now=True)
+    comments = models.ManyToManyField('Comment')
+    
+    def __unicode__(self):
+        return self.action
     
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)

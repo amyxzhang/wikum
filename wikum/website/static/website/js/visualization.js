@@ -374,7 +374,15 @@ function construct_comment(d) {
 	text += '<P>-- ' + d.author + '</P>';
 	text += '<P>Likes: ' + d.size + '</P>';
 	if (d.name.length > 300) {
-		text += '<hr><P><a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
+		text += '<hr><P>';
+		console.log(d);
+		if (!d.children) {
+			text += '<a>Hide Comment</a> | ';
+		} else {
+			text += '<a>Summarize Comment and all Replies</a> | ';
+			text += '<a>Hide all Replies</a> | ';
+		}
+		text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
 		text += '<div id="summarize_' + d.id + '" style="display: none;"><textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea></div>​';
 	}
 	return text;
