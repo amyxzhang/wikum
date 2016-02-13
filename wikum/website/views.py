@@ -166,7 +166,11 @@ def hide_comment(request):
 def history(request):
     article = request.GET['article']
     hist = History.objects.filter(article_id=article).order_by('-datetime').select_related()
-    a = hist[0].article
+    
+    if hist.count() > 0:
+        a = hist[0].article
+    else :
+        a = Article.objects.get(id=article)
     
     return {'history': hist,
             'article': a}
