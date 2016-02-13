@@ -1,0 +1,22 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+{% endblock %}
+
+
+{% block content %}
+
+	<section id="contact" class="container content-section text-center" style="padding-top: 50px; margin: 0px;">
+	        <div class="row">
+	            {% for h in history %}
+	            	{{ h.action }}
+	            {% endfor %}
+	        </div>
+	</section>
+
+{% endblock %}
+
+
+{% block scripts %}
+{% endblock %}

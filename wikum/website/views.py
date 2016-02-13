@@ -107,6 +107,12 @@ def recurse_viz(posts):
         children.append(v1)
     return children
         
+   
+@render_to('website/history.html')
+def history(request):
+    article = request.GET['article']
+    a = History.objects.filter(article_id=article).order_by('-datetime')
+    return {'history': a}
     
 
 def viz_data(request):
@@ -114,7 +120,7 @@ def viz_data(request):
     
     a = Article.objects.get(url=article_url)
     
-    val = {'name': '<P><h2>%s</h2></p><P><a href="%s">Read the article in the %s</a></p>' % (a.title, a.url, a.source.source_name),
+    val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
            'article': True,
            'children': []}

@@ -1,6 +1,6 @@
 import json
 import urllib2
-from website.models import Article, Source, CommentAuthor, Comment
+from website.models import Article, Source, CommentAuthor, Comment, History
 from wikum.settings import DISQUS_API_KEY
 import datetime
 from django.core.paginator import Paginator

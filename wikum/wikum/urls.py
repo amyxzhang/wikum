@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^comments$','website.views.comments'),
     url(r'^visualization','website.views.visualization'),
     url(r'^viz_data','website.views.viz_data'),
+    url(r'^history','website.views.history'),
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
 ]

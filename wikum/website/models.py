@@ -31,6 +31,9 @@ class History(models.Model):
     user = models.ForeignKey(User)
     datetime = models.DateTimeField(auto_now=True)
     comments = models.ManyToManyField('Comment')
+    from_str = models.TextField()
+    to_str = models.TextField()
+    explanation = models.TextField()
     
     def __unicode__(self):
         return self.action

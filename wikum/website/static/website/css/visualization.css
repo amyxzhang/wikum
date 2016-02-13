@@ -78,11 +78,6 @@ line {
     color: #1181B8;
 }
 
-a:link, a:visited {
-    color: #000;
-    text-decoration: none;
-}
-
 a:hover {
     color: #666;
 }
@@ -260,13 +255,21 @@ div.selected {
     padding-bottom:10px;
 }
 
+#title_info {
+	position: fixed; 
+	width: 550px; 
+	left: 700px; 
+	top: 100px; 
+	display: block;
+}
+
 
 #box {
 	position: fixed; 
 	width: 550px; 
 	height: 600px; 
 	left: 700px; 
-	top: 100px; 
+	top: 150px; 
 	display: block;
 	overflow-y: scroll;
 }
