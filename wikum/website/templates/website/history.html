@@ -21,7 +21,8 @@
 	        			<td>Action</td>
 	        			<td>User</td>
 	        			<td>Time</td>
-	        			<td>Comments</td>
+	        			<td>From</td>
+	        			<td>To</td>
 	        			<td>Explanation</td>
 	        		</tr>
 	            {% for h in history %}
@@ -48,6 +49,10 @@
 						    </div>
 						{% endfor %}
 	            	</td>
+	            	
+	            	<td> {% if h.action == "hide_comment" %}
+	            			Comment Hidden
+	            		{% endif %} </td>
 	            	
 	            	<td>
 	            		{{ h.explanation }}
