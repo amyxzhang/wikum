@@ -61,6 +61,8 @@ class Comment(models.Model):
     json_flatten = models.TextField()
     hidden = models.BooleanField(default=False)
     
+    summary = models.TextField()
+    
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)
     

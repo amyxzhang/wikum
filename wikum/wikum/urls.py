@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^history','website.views.history'),
     
     url(r'^hide_comment','website.views.hide_comment'),
+    url(r'^summarize_comment','website.views.summarize_comment'),
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),

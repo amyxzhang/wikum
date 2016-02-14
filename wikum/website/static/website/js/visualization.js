@@ -19,18 +19,61 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		
 		var comment = $('#hide_comment_textarea').val();
 		var article_id = $('#article_id').text();
-		
 		var csrf = $('#csrf').text();
+		var data = {csrfmiddlewaretoken: csrf, id: evt.data.data_id, comment: comment, article: article_id};
 		
-		$.post('/hide_comment', 
-		{csrfmiddlewaretoken: csrf, id: evt.data.data_id, comment: comment, article: article_id}, 
-		function(data) {
-			$('#hide_modal_box').modal('toggle');
-			$('#comment_' + id).remove();
-			hide_node(id);
+		$.ajax({
+			type: 'POST',
+			url: '/hide_comment',
+			data: data,
+			success: function() {
+				$('#hide_modal_box').modal('toggle');
+				success_noty();
+				$('#comment_' + id).remove();
+				hide_node(id);
+			},
+			error: function() {
+				error_noty();
+			}
 		});
+		
+		
 	});
 });
+
+function success_noty() {
+	noty({
+	    text: 'Your change is saved!',
+	    layout: 'topCenter',
+	    type: 'success',
+	    timeout: 1500,
+	    closeOnSelfClick: true,
+        closeOnSelfOver: false,
+	    animation: {
+	        open: {height: 'toggle'},
+	        close: {height: 'toggle'},
+	        easing: 'swing',
+	        speed: 500
+	    }
+	});
+}
+
+function error_noty() {
+	noty({
+	    text: 'Sorry, an error occurred.',
+	    layout: 'topCenter',
+	    type: 'error',
+	    timeout: 1500,
+	    closeOnSelfClick: true,
+        closeOnSelfOver: false,
+	    animation: {
+	        open: {height: 'toggle'},
+	        close: {height: 'toggle'},
+	        easing: 'swing',
+	        speed: 500
+	    }
+	});
+}
 
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     width = 600 - margin.left - margin.right,
@@ -70,7 +113,7 @@ svg.append('svg:rect')
   .on('mousedown', function() {
   		isMouseDown = true;
   		
-  		cancelClick = setTimeout(is_click, 500);
+  		cancelClick = setTimeout(is_click, 250);
    		var p = d3.mouse( this);
 
 	    svg.append( "rect")
@@ -435,12 +478,47 @@ function expand_node(id) {
   return null;
 }
 
+function submit_summary(id, d_id) {
+	var summary = $('#summarize_textbox_' + id).val();
+	var article_id = $('#article_id').text();
+	var csrf = $('#csrf').text();
+		
+	data = {csrfmiddlewaretoken: csrf, id: d_id, summary: summary, article: article_id};
+	
+	$.ajax({
+		type: 'POST',
+		url: '/summarize_comment',
+		data: data,
+		success: function() {
+			success_noty();
+			$('#comment_text_' + id).html('<P><strong>Summary:</strong> ' + summary + '</P>');
+			show_summarize(id);
+		},
+		error: function() {
+			error_noty();
+		}
+	});
+}
+
 function construct_comment(d) {
 	var text = '';
-	text += '<div>' + d.name + '</div>';
-	text += '<P>-- ' + d.author + '</P>';
-	text += '<P>Likes: ' + d.size + '</P>';
-	if (d.name.length > 300) {
+	var summary = false;
+	if (d.name.lastIndexOf('<P><strong>Summary:</strong>', 0) === 0) {
+		summary = true;
+	}
+	
+	text += '<div id="comment_text_' + d.id + '">' + d.name;
+	if (!summary) {
+		text += '<P>-- ' + d.author + '</P>';
+		text += '<P>Likes: ' + d.size + '</P>';
+	}
+	text += '</div>';
+	
+	if (summary) {
+		text += '<P><a>Edit Comment Summary</a> | <a>View Original Comment</a></p>';
+	}
+	
+	if (!summary && d.name.length > 300) {
 		text += '<hr><P>';
 		if (!d.children) {
 			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-id="' + d.id + '">Hide Comment</a> | ';
@@ -449,12 +527,20 @@ function construct_comment(d) {
 			text += '<a>Hide all Replies</a> | ';
 		}
 		text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
-		text += '<div id="summarize_' + d.id + '" style="display: none;"><textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea></div>​';
+		text += '<div id="summarize_' + d.id + '" style="display: none;">';
+		text += '<textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea>';
+		text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
+		text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
+		text += '</div>​';
 	} else {
 		if (!d.children) {
 			text += '<hr><P>';
 			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-id="' + d.id + '">Hide Comment</a>';
 			text += '</p>';
+		} else {
+			text += '<hr><P>';
+			text += '<a>Summarize Comment and all Replies</a> | ';
+			text += '<a>Hide all Replies</a></p>';
 		}
 	}
 	return text;
@@ -472,18 +558,27 @@ function escapeHtml(text) {
     });
 }
 
+function clear_box_top() {
+	$('#box_top').html('');
+	$('#box_top').css('border-bottom', '0px');
+}
+
 function show_text(d) {
 	if (d && d != 'clicked' && !d.article) {
+		clear_box_top();
 		var text = '<div class="comment_box" id="comment_' + d.id + '">';
 		text += construct_comment(d);
 		text += '</div>';
 		$('#box').html(text);
 	} else if (d && d != 'clicked') {
 		$('#box').html(d.name);
+		clear_box_top();
 	} else if (d == null){
 		$('#box').html('');
+		clear_box_top();
 	} else {
 		$('#box').html('');
+		clear_box_top();
 		var objs = [];
 		var min_level = 50;
 		d3.selectAll('.clicked').each( function(data) {
@@ -494,6 +589,10 @@ function show_text(d) {
 				}
 			}
 		});
+		
+		if (objs.length > 1) {
+			construct_box_top();
+		}
 		
 		objs.sort(compare_nodes);
 		for (var i in objs) {
@@ -514,6 +613,13 @@ function show_text(d) {
 		
 		
 	}
+}
+
+function construct_box_top() {
+	var text = '<a>Hide all Selected Comments</a>';
+	text += ' | <a>Summarize all Selected Comments</a>';
+	$('#box_top').css('border-bottom', '#000000 1px solid');
+	$('#box_top').html(text);
 }
 
 function compare_nodes(a,b) {

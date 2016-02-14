@@ -263,13 +263,31 @@ div.selected {
 	display: block;
 }
 
+.btn-xs {
+    padding: 1px 3px;
+    font-size: 10px;
+}
+
+textarea {
+	font-size: 10px;
+}
+
+#box_top {
+	position: fixed;
+	display: block;
+	width: 550px;
+	top: 150px;
+	left: 700px;
+	height: 20px;
+	text-align: center;
+}
 
 #box {
 	position: fixed; 
 	width: 550px; 
-	height: 600px; 
+	height: 580px; 
 	left: 700px; 
-	top: 150px; 
+	top: 170px; 
 	display: block;
 	overflow-y: scroll;
 }

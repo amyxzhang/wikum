@@ -29,7 +29,10 @@
 	            	<tr>
 	            	{% if h.action == "hide_comment" %}
 	            		<td>Hide Comment</td>
+	            	{% elif h.action == "sum_comment" %}
+	            		<td>Summarize Comment</td>
 	            	{% endif %}
+	            	
 	            	{% if h.user %}
 	            		<td>{{ h.user.username }}</td>
 	            	{% else %}
@@ -50,8 +53,10 @@
 						{% endfor %}
 	            	</td>
 	            	
-	            	<td> {% if h.action == "hide_comment" %}
+	            	<td>{% if h.action == "hide_comment" %}
 	            			Comment Hidden
+	            		{% elif h.action == "sum_comment" %}
+	            			{{ h.to_str }}
 	            		{% endif %} </td>
 	            	
 	            	<td>

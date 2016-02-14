@@ -7,6 +7,7 @@ from engine import *
 
 from django.http import HttpResponse
 from annoying.decorators import render_to
+from django.http.response import HttpResponseBadRequest
 
 
 @render_to('website/index.html')
@@ -88,8 +89,6 @@ def recurse_up_post(post):
     post.json_flatten = ""
     post.save()
     
-    print post.disqus_id
-    
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
     if parent.count() > 0:
         recurse_up_post(parent[0])
@@ -103,11 +102,14 @@ def recurse_viz(posts):
     for post in posts:
         if post.json_flatten == '':
         # if True:
-            v1 = {'name': post.text, 
-                  'size': post.likes,
+            v1 = {'size': post.likes,
                   'd_id': post.id,
                   'author': post.author.username if not post.author.anonymous else 'Anonymous'
                   }
+            if post.summary != '':
+                v1['name'] = '<P><strong>Summary:</strong> ' + post.summary + '</p>'
+            else:
+                v1['name'] = post.text
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
             if c1.count() == 0:
                 vals = []
@@ -126,6 +128,46 @@ def recurse_viz(posts):
             hid_children.append(v1)
     return children, hid_children
         
+
+def summarize_comment(request):
+    try:
+        user = request.user
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        summary = request.POST['summary']
+        
+        c = Comment.objects.get(id=id)
+        from_summary = c.summary
+        c.summary = summary
+        c.save()
+            
+        if request.user.is_authenticated():
+            h = History.objects.create(user=request.user, 
+                                       article=a,
+                                       action='sum_comment',
+                                       from_str=from_summary,
+                                       to_str=summary,
+                                       explanation='initial summary')
+        else:
+            h = History.objects.create(user=None, 
+                                       article=a,
+                                       action='sum_comment',
+                                       from_str=from_summary,
+                                       to_str=summary,
+                                       explanation='initial summary')
+        
+        h.comments.add(c)
+
+        recurse_up_post(c)
+            
+        return JsonResponse({})
+        
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+                
+
 def hide_comment(request):
     try:
         user = request.user
@@ -160,7 +202,7 @@ def hide_comment(request):
             return JsonResponse({})
     except Exception, e:
         print e
-        return JsonResponse({})
+        return HttpResponseBadRequest()
     
     
    
