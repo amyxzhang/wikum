@@ -11,8 +11,8 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	
 	highlight_box(id);
-	var text = $(".highlighted").children().first().text();
-	$('#hide_comment_box').html('<P>' + escapeHtml(text) + '</p>');
+	var text = $(".highlighted").children().first().html();
+	$('#hide_comment_box').html('<P>' + text + '</p>');
 	
 	var did = $(e.relatedTarget).data('did');
 	$('#hide_comment_submit').click({data_id: did}, function(evt) {
@@ -26,6 +26,8 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		{csrfmiddlewaretoken: csrf, id: evt.data.data_id, comment: comment, article: article_id}, 
 		function(data) {
 			$('#hide_modal_box').modal('toggle');
+			$('#comment_' + id).remove();
+			hide_node(id);
 		});
 	});
 });
@@ -253,6 +255,7 @@ function update(source) {
       .style("stroke-width", stroke_width)  
       .style("stroke", stroke)
       .style("fill", color)
+      .attr("id", function(d) { return 'node_' + d.id; })
       .on("click", function(d) {
       	show_text(d);
       	d3.selectAll(".clicked").classed("clicked", false);
@@ -328,10 +331,46 @@ function is_click() {
 	isClick = false;
 }
 
+function hide_node(id) {
+	d = nodes_all[id-1];
+	parent = d.parent;
+	
+	// add to hidden list
+	parent.hid.push(d);
+	
+	// remove from children list
+	if (parent.children) {
+		index = parent.children.indexOf(d);
+		if (index > -1) {
+			parent.children.splice(index, 1);
+		}
+		if (parent.children.length == 0) {
+			delete parent.children;
+		}
+	}
+	
+	// remove from _children list
+	if (parent._children) {
+		index = parent._children.indexOf(d);
+		if (index > -1) {
+			parent._children.splice(index, 1);
+		}
+		if (parent._children.length == 0) {
+			delete parent._children;
+		}
+	}
+	
+	update(parent);
+	
+	d3.select('#node_' + parent.id).style('fill', color);
+	return null;
+}
+
 // Toggle children on click.
 function click_node(id) {
-  
   d = nodes_all[id-1];
+  
+  console.log(d);
   
   if (d.children) {
     d._children = d.children;
@@ -539,5 +578,9 @@ function color(d) {
 	} else if (d.article) {
 		return "#ffffff";
 	}
-  return d._children ? "#c6dbef" : d.children ? "#c6dbef" : "#fd8d3c";
+	if (d._children || d.children) {
+		return "#c6dbef";
+	} else {
+		return "#fd8d3c";
+	}
 }
