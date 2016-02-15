@@ -6,37 +6,169 @@ $("#hide_modal_box").draggable({
     handle: ".modal-content"
 }); 
 
+function get_subtree(text, d, level) {
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			if (level == 0) {
+				text += '<div class="hide_comment_comment">' + d.children[i].name + '</div>';
+			} else if (level == 1) {
+				text += '<div class="hide_comment_comment level1">' + d.children[i].name + '</div>';
+			} else if (level == 2) {
+				text += '<div class="hide_comment_comment level2">' + d.children[i].name + '</div>';
+			} else if (level > 2) {
+				text += '<div class="hide_comment_comment level3">' + d.children[i].name + '</div>';
+			}
+			text = get_subtree(text, d.children[i], level+1);
+		}
+	} else if (d._children) {
+		for (var i=0; i<d._children.length; i++) {
+			if (level == 0) {
+				text += '<div class="hide_comment_comment">' + d._children[i].name + '</div>';
+			} else if (level == 1) {
+				text += '<div class="hide_comment_comment level1">' + d._children[i].name + '</div>';
+			} else if (level == 2) {
+				text += '<div class="hide_comment_comment level2">' + d._children[i].name + '</div>';
+			} else if (level > 2) {
+				text += '<div class="hide_comment_comment level3">' + d._children[i].name + '</div>';
+			}
+			text = get_subtree(text, d._children[i], level+1);
+		}
+	}
+		
+	return text;
+}
+
+$('#hide_modal_box').on('hidden.bs.modal', function () {
+    var cnt = $(".ui-resizable").contents();
+	$(".ui-resizable").replaceWith(cnt);
+	$(".ui-resizable-handle").remove();
+	$('#hide_comment_box').attr('style', '');
+});
+
 
 $('#hide_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
+	var type = $(e.relatedTarget).data('type');
+	
+	d = nodes_all[id-1];
+	var ids = [];
+	var dids = [];
 	
 	highlight_box(id);
-	var text = $(".highlighted").children().first().html();
-	$('#hide_comment_box').html('<P>' + text + '</p>');
+	if (type == "hide_comment") {
+		var text = '<div class="hide_comment_comment">' + $(".highlighted").children().first().html() + '</div>';
+		$('#hide_comment_text').text('Hide this comment from view.');
+	} else if (type == "hide_replies") {
+		var text = '';
+		text = get_subtree(text, d, 0);
+		$('#hide_comment_text').text('Hide these replies from view.');
+	} else if (type == "hide_all_selected") {
+		var text = '';
+		var datas = [];
+		var min_level = 50;
+		$('.clicked').each(function(index) {
+			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
+			ids.push(id_clicked);
+			var data = nodes_all[id_clicked-1];
+			datas.push(data);
+			dids.push(data.d_id);
+			if (data.depth < min_level) {
+				min_level = data.depth;
+			}
+		});
+		
+		datas.sort(compare_nodes);
+		for (var i in datas) {
+			if (datas[i].depth - min_level == 0) {
+				text += '<div class="hide_comment_comment">' + datas[i].name + '</div>';
+			} else if (datas[i].depth - min_level == 1) {
+				text += '<div class="hide_comment_comment level1">' + datas[i].name + '</div>'; 
+			} else if (datas[i].depth - min_level == 2) {
+				text += '<div class="hide_comment_comment level2">' + datas[i].name + '</div>'; 
+			} else {
+				text += '<div class="hide_comment_comment level3">' + datas[i].name + '</div>'; 
+			}
+		}
+		
+		$('#hide_comment_text').text('Hide all these comments from view.');
+	}
+	
+	$('#hide_comment_box').html(text);
+	$('#hide_comment_box').wrap('<div/>')
+        .css({'overflow':'hidden'})
+          .parent()
+            .css({'display':'inline-block',
+                  'overflow':'hidden',
+                  'height':function(){return $('.resizable',this).height();},
+                  'width':  function(){return $('.resizable',this).width();},
+                  'paddingBottom':'12px',
+                  'paddingRight':'12px',
+                  'border': '1px solid #000000',
+                 }).resizable()
+                    .find('.resizable')
+                      .css({overflow:'auto',
+                            width:'100%',
+                            height:'100%'});
 	
 	var did = $(e.relatedTarget).data('did');
-	$('#hide_comment_submit').click({data_id: did}, function(evt) {
+	$('#hide_comment_submit').click({data_id: did, type: type, ids: ids, dids: dids}, function(evt) {
 		
 		var comment = $('#hide_comment_textarea').val();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
-		var data = {csrfmiddlewaretoken: csrf, id: evt.data.data_id, comment: comment, article: article_id};
+		var data = {csrfmiddlewaretoken: csrf,
+			comment: comment, 
+			article: article_id};
 		
-		$.ajax({
-			type: 'POST',
-			url: '/hide_comment',
-			data: data,
-			success: function() {
-				$('#hide_modal_box').modal('toggle');
-				success_noty();
-				$('#comment_' + id).remove();
-				hide_node(id);
-			},
-			error: function() {
-				error_noty();
-			}
-		});
-		
+		if (evt.data.type == "hide_comment") {
+			data.id = evt.data.data_id; 
+			$.ajax({
+				type: 'POST',
+				url: '/hide_comment',
+				data: data,
+				success: function() {
+					$('#hide_modal_box').modal('toggle');
+					success_noty();
+					$('#comment_' + id).remove();
+					hide_node(id);
+				},
+				error: function() {
+					error_noty();
+				}
+			});
+		} else if (evt.data.type == "hide_all_selected") {
+			data.ids = evt.data.dids;
+			$.ajax({
+				type: 'POST',
+				url: '/hide_comments',
+				data: data,
+				success: function() {
+					$('#hide_modal_box').modal('toggle');
+					success_noty();
+					for (var i=0; i<evt.data.ids.length; i++) {
+						$('#comment_' + evt.data.ids[i]).remove();
+						hide_node(evt.data.ids[i]);
+					}
+				},
+				error: function() {
+					error_noty();
+				}
+			});
+		} else {
+			data.id = evt.data.data_id; 
+			$.ajax({
+				type: 'POST',
+				url: '/hide_replies',
+				data: data,
+				success: function() {
+					$('#hide_modal_box').modal('toggle');
+					success_noty();
+				},
+				error: function() {
+					error_noty();
+				}
+			});
+		}
 		
 	});
 });
@@ -521,10 +653,10 @@ function construct_comment(d) {
 	if (!summary && d.name.length > 300) {
 		text += '<hr><P>';
 		if (!d.children) {
-			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-id="' + d.id + '">Hide Comment</a> | ';
+			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Hide Comment</a> | ';
 		} else {
 			text += '<a>Summarize Comment and all Replies</a> | ';
-			text += '<a>Hide all Replies</a> | ';
+			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Hide all Replies</a> | ';
 		}
 		text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
 		text += '<div id="summarize_' + d.id + '" style="display: none;">';
@@ -535,12 +667,12 @@ function construct_comment(d) {
 	} else {
 		if (!d.children) {
 			text += '<hr><P>';
-			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-id="' + d.id + '">Hide Comment</a>';
+			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Hide Comment</a>';
 			text += '</p>';
 		} else {
 			text += '<hr><P>';
 			text += '<a>Summarize Comment and all Replies</a> | ';
-			text += '<a>Hide all Replies</a></p>';
+			text += '<a data-toggle="modal" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Hide all Replies</a></p>';
 		}
 	}
 	return text;
@@ -616,7 +748,7 @@ function show_text(d) {
 }
 
 function construct_box_top() {
-	var text = '<a>Hide all Selected Comments</a>';
+	var text = '<a data-toggle="modal" data-target="#hide_modal_box" data-type="hide_all_selected">Hide all Selected Comments</a>';
 	text += ' | <a>Summarize all Selected Comments</a>';
 	$('#box_top').css('border-bottom', '#000000 1px solid');
 	$('#box_top').html(text);

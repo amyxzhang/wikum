@@ -3,6 +3,7 @@
 
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/visualization.css" %}>
+	<link rel="stylesheet" href={% static "website/css/jquery-ui.min.css" %}>
 {% endblock %}
 
 
@@ -41,8 +42,8 @@
 	        <h4 class="modal-title">Hide Comment</h4>
 	      </div>
 	      <div class="modal-body">
-	        <p>Hide this comment from view.</p>
-	        <div id="hide_comment_box"></div>
+	        <div id="hide_comment_text"></div>
+	        <div id="hide_comment_box" class="resizable"></div>
 	        <BR>
 	        <P>Leave a note as to why this comment should be hidden (optional):<BR>
 	        	<textarea id="hide_comment_textarea"></textarea>

@@ -23,7 +23,9 @@ urlpatterns = [
     url(r'^viz_data','website.views.viz_data'),
     url(r'^history','website.views.history'),
     
+    url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
+    url(r'^hide_replies','website.views.hide_replies'),
     url(r'^summarize_comment','website.views.summarize_comment'),
     
     url(r"^account/", include("account.urls")),

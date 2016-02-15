@@ -92,7 +92,13 @@ def recurse_up_post(post):
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
     if parent.count() > 0:
         recurse_up_post(parent[0])
-    
+
+def recurse_down_post(post):
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id)
+    for child in children:
+        child.json_flatten = ""
+        child.save()
+        recurse_down_post(child)
 
 def recurse_viz(posts):
     children = []
@@ -158,15 +164,50 @@ def summarize_comment(request):
                                        explanation='initial summary')
         
         h.comments.add(c)
-
         recurse_up_post(c)
-            
         return JsonResponse({})
         
     except Exception, e:
         print e
         return HttpResponseBadRequest()
                 
+
+def hide_comments(request):
+    try:
+        user = request.user
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        print request.POST
+        ids = request.POST['ids[]']
+        explain = request.POST['comment']
+        
+        affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
+        
+        if affected > 0:
+            
+            if request.user.is_authenticated():
+                h = History.objects.create(user=request.user, 
+                                           article=a,
+                                           action='hide_comments',
+                                           explanation=explain)
+            else:
+                h = History.objects.create(user=None, 
+                                           article=a,
+                                           action='hide_comments',
+                                           explanation=explain)
+            
+            for id in ids:
+                c = Comment.objects.get(id=id)
+                h.comments.add(c)
+                
+                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+                if parent.count() > 0:
+                    recurse_up_post(parent[0])
+            
+        return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
 
 def hide_comment(request):
     try:
@@ -176,11 +217,9 @@ def hide_comment(request):
         id = request.POST['id']
         explain = request.POST['comment']
         
-        c = Comment.objects.get(id=id)
+        affected = Comment.objects.filter(id=id, hidden=False).update(hidden=True)
         
-        if not c.hidden:
-            c.hidden = True
-            c.save()
+        if affected:
             
             if request.user.is_authenticated():
                 h = History.objects.create(user=request.user, 
@@ -193,18 +232,71 @@ def hide_comment(request):
                                            action='hide_comment',
                                            explanation=explain)
             
+            c = Comment.objects.get(id=id)
             h.comments.add(c)
             
             parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
             if parent.count() > 0:
                 recurse_up_post(parent[0])
             
-            return JsonResponse({})
+        return JsonResponse({})
     except Exception, e:
         print e
         return HttpResponseBadRequest()
     
+def recurse_down_hidden(replies, count):
+    for reply in replies:
+        if not reply.hidden:
+            reply.hidden = True
+            reply.json_flatten = ''
+            reply.save()
+            count += 1
+            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id)
+            count = recurse_down_hidden(reps, count)
+    return count
     
+def hide_replies(request):
+    try:
+        user = request.user
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        explain = request.POST['comment']
+        
+        c = Comment.objects.get(id=id)
+
+        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+        
+        affected = recurse_down_hidden(replies, 0)
+        
+        if affected > 0:
+            
+            if request.user.is_authenticated():
+                h = History.objects.create(user=request.user, 
+                                           article=a,
+                                           action='hide_replies',
+                                           explanation=explain)
+            else:
+                h = History.objects.create(user=None, 
+                                           article=a,
+                                           action='hide_replies',
+                                           explanation=explain)
+            
+            
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+            for reply in replies:
+                h.comments.add(reply)
+            
+            recurse_up_post(c)
+            
+            ids = [reply.id for reply in replies]
+            
+            return JsonResponse({'ids': ids})
+        else:
+            return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
    
 @render_to('website/history.html')
 def history(request):

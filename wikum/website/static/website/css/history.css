@@ -17,3 +17,8 @@ p {
 	font-size: 10px;
 	margin-bottom: 10px;
 }
+
+.comments {
+	max-height: 100px;
+	overflow-x: scroll;
+}

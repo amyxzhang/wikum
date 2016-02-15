@@ -361,12 +361,21 @@ textarea {
 
 #hide_comment_box {
 	display: block;
-	width: 560px;
-	height: 90px;
 	padding-left: 8px;
 	padding-right: 8px;
     padding-top: 5px;
+}
+
+.hide_comment_comment {
+	display: block;
 	background-color: #eef7fa;
-	overflow-y: scroll;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+.resizable { 
+	width: 580px; 
+	height: 102px;
 }
 
