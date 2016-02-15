@@ -65,13 +65,10 @@ else:
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'y#sx%sqz4lt5zapaou#(aigq0!d@zti1=0&5a53mx0hsrdud-6'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['wikum.csail.mit.edu']
+ALLOWED_HOSTS = ['.wikum.csail.mit.edu']
 
 
 # Application definition
