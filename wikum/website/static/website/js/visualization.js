@@ -68,12 +68,14 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		var min_level = 50;
 		$('.clicked').each(function(index) {
 			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
-			ids.push(id_clicked);
-			var data = nodes_all[id_clicked-1];
-			datas.push(data);
-			dids.push(data.d_id);
-			if (data.depth < min_level) {
-				min_level = data.depth;
+			if (id_clicked != 1) {
+				ids.push(id_clicked);
+				var data = nodes_all[id_clicked-1];
+				datas.push(data);
+				dids.push(data.d_id);
+				if (data.depth < min_level) {
+					min_level = data.depth;
+				}
 			}
 		});
 		
@@ -623,8 +625,11 @@ function submit_summary(id, d_id) {
 		data: data,
 		success: function() {
 			success_noty();
-			$('#comment_text_' + id).html('<P><strong>Summary:</strong> ' + summary + '</P>');
+			var text = '<P><strong>Summary:</strong> ' + summary + '</P>';
+			text += '<P><a>Edit Comment Summary</a> | <a>View Original Comment</a></p>';
+			$('#comment_text_' + id).html(text);
 			show_summarize(id);
+			highlight_box(id);
 		},
 		error: function() {
 			error_noty();

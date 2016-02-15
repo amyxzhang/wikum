@@ -177,8 +177,8 @@ def hide_comments(request):
         user = request.user
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
-        print request.POST
-        ids = request.POST['ids[]']
+        
+        ids = request.POST.getlist('ids[]')
         explain = request.POST['comment']
         
         affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
@@ -321,7 +321,7 @@ def viz_data(request):
            'size': 400,
            'article': True}
 
-    posts = a.comment_set.filter(reply_to_disqus=None).order_by('-likes')[0:20]
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:20]
     val['children'], val['hid'] = recurse_viz(posts)
     return JsonResponse(val)
     

@@ -71,7 +71,7 @@ SECRET_KEY = 'y#sx%sqz4lt5zapaou#(aigq0!d@zti1=0&5a53mx0hsrdud-6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['wikum.csail.mit.edu']
 
 
 # Application definition
