@@ -57,6 +57,33 @@
 	
 	  </div>
 	</div>
+	
+	
+	<div id="summarize_modal_box" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Summarize Comments</h4>
+	      </div>
+	      <div class="modal-body">
+	        <div id="summarize_comment_text"></div>
+	        <div id="summarize_comment_box" class="resizable"></div>
+	        <BR>
+	        <P>Summary:<BR>
+	        	<textarea id="summarize_comment_textarea"></textarea>
+	        </P>
+	      </div>
+	      <div class="modal-footer">
+	      	<button type="button" class="btn btn-default" id="summarize_comment_submit">Submit</button>
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	
+	  </div>
+	</div>
 
 {% endblock %}
 

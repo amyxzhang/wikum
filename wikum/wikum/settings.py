@@ -51,7 +51,6 @@ def _get_debug():
     
 DEBUG = _get_debug()
 
-
 if ENV == 'prod':
     BASE_URL = 'murmur.csail.mit.edu'
     MYSQL = MYSQL_PROD

@@ -366,7 +366,22 @@ textarea {
     padding-top: 5px;
 }
 
+#summarize_comment_box {
+	display: block;
+	padding-left: 8px;
+	padding-right: 8px;
+    padding-top: 5px;
+}
+
 .hide_comment_comment {
+	display: block;
+	background-color: #eef7fa;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+.summarize_comment_comment {
 	display: block;
 	background-color: #eef7fa;
 	margin-top: 5px;
@@ -376,6 +391,6 @@ textarea {
 
 .resizable { 
 	width: 580px; 
-	height: 102px;
+	height: 152px;
 }
 
