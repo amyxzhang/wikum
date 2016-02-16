@@ -170,7 +170,44 @@ def summarize_comment(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
-                
+              
+              
+
+def summarize_comments(request):
+    try:
+        user = request.user
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        summary = request.POST['summary']
+        
+        c = Comment.objects.get(id=id)
+        from_summary = c.summary
+        c.summary = summary
+        c.save()
+            
+        if request.user.is_authenticated():
+            h = History.objects.create(user=request.user, 
+                                       article=a,
+                                       action='sum_comment',
+                                       from_str=from_summary,
+                                       to_str=summary,
+                                       explanation='initial summary')
+        else:
+            h = History.objects.create(user=None, 
+                                       article=a,
+                                       action='sum_comment',
+                                       from_str=from_summary,
+                                       to_str=summary,
+                                       explanation='initial summary')
+        
+        h.comments.add(c)
+        recurse_up_post(c)
+        return JsonResponse({})
+        
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()  
 
 def hide_comments(request):
     try:

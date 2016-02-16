@@ -359,6 +359,11 @@ textarea {
 	width: 100%;
 }
 
+.modal-body {
+    height: 400px;
+}
+
+
 #hide_comment_box {
 	display: block;
 	padding-left: 8px;
@@ -391,6 +396,6 @@ textarea {
 
 .resizable { 
 	width: 580px; 
-	height: 152px;
+	height: 282px;
 }
 
