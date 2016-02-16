@@ -808,12 +808,13 @@ function construct_comment(d) {
 	if (!summary && d.name.length > 300) {
 		text += '<hr><P>';
 		if (!d.children) {
+			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark as Unimportant and Hide</a> | ';
 		} else {
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment and all Replies</a> | ';
+			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant and Hide</a> | ';
 		}
-		text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a></P>';
 		text += '<div id="summarize_' + d.id + '" style="display: none;">';
 		text += '<textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea>';
 		text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
@@ -903,8 +904,9 @@ function show_text(d) {
 }
 
 function construct_box_top() {
-	var text = '<a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide all Selected Comments</a>';
-	text += ' | <a>Summarize all Selected Comments</a>';
+	var text = '<a>Summarize all Selected Comments</a>';
+	text += ' | <a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark all Selected Comments as Unimportant and Hide</a>';
+	
 	$('#box_top').css('border-bottom', '#000000 1px solid');
 	$('#box_top').html(text);
 }
