@@ -809,11 +809,11 @@ function construct_comment(d) {
 		text += '<hr><P>';
 		if (!d.children) {
 			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a> | ';
-			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark as Unimportant and Hide</a> | ';
+			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark as Unimportant and Hide</a>';
 		} else {
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment and all Replies</a> | ';
 			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a> | ';
-			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant and Hide</a> | ';
+			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant and Hide</a>';
 		}
 		text += '</p>';
 		text += '<div id="summarize_' + d.id + '" style="display: none;">';
