@@ -387,6 +387,7 @@ svg.append('svg:rect')
   	clearTimeout(cancelClick);
   	if (isClick) {
   		d3.selectAll( '.clicked').classed( "clicked", false);
+  		unhighlight_all();
   		show_text(null);
   	} else {
   		show_text('clicked');
@@ -477,7 +478,8 @@ svg.append('svg:rect')
         s.attr( d);
         
 		// deselect all temporary selected state objects
-        d3.selectAll( '.clicked').classed( "clicked", false);
+		d3.selectAll( '.clicked').classed( "clicked", false);
+        unhighlight_all();
 
         d3.selectAll( 'circle').each( function(state_data, i) {
             if( 
@@ -486,9 +488,12 @@ svg.append('svg:rect')
                 state_data.x>=d.y && state_data.x<=d.y+d.height && 
                 state_data.y>=d.x && state_data.y<=d.x+d.width
             ) {
-
-                d3.select( this)
-                .classed( "clicked", true);
+            	if (!state_data.article) {
+					d3.select(this)
+					.style("stroke","#000000")
+					.style("stroke-width", "1.5px")
+					.attr("class", "clicked");
+				}
             }
         });
         
@@ -578,10 +583,9 @@ function update(source) {
       .style("fill", color)
       .attr("id", function(d) { return 'node_' + d.id; })
       .on("click", function(d) {
-      	show_text(d);
       	d3.selectAll(".clicked").classed("clicked", false);
-		d3.select(this).classed('clicked', true);
-		
+      	unhighlight_all();
+      	show_text(d);
       })
       .on("mouseover", showdiv)
       .on("mouseout", hidediv);
@@ -861,11 +865,28 @@ function get_subtree_box(text, d, level) {
 			}
 			text +=  construct_comment(d.children[i]);
 			text += '</div>';
-			text = get_subtree(text, d.children[i], level+1);
+			highlight_node(d.children[i].id);
+			text = get_subtree_box(text, d.children[i], level+1);
 		}
 	}
 		
 	return text;
+}
+
+function highlight_node(id) {
+	if (id != 1) {
+		d3.select("#node_" + id)
+			.attr("class", "clicked")
+			.style("stroke","#000000")
+			.style("stroke-width", "1.5px");
+	}
+}
+
+function unhighlight_all() {
+	for (var i=1; i<nodes_all.length; i++) {
+		d3.select("#node_" + nodes_all[i].id)
+		.style("stroke-width", "0px");
+	}
 }
 
 function show_text(d) {
@@ -878,6 +899,7 @@ function show_text(d) {
 			var text = '<div class="comment_box" id="comment_' + d.id + '">';
 			text += construct_comment(d);
 			text += '</div>';
+			highlight_node(d.id);
 			text = get_subtree_box(text, d, 1);
 		}
 		$('#box').html(text);
