@@ -943,8 +943,32 @@ function show_text(d) {
 			text += '</div>';
 			$('#box').append(text);
 		};
-		
-		
+	}
+	
+	$('.comment_box').hover(
+		  function() {
+		    var id = parseInt(this.id.substring(8));
+		    extra_highlight_node(id);
+		  }, function() {
+		    var id = parseInt(this.id.substring(8));
+		    unextra_highlight_node(id);
+		  }
+);
+}
+
+function extra_highlight_node(id) {
+	if (id != 1) {
+		d3.select("#node_" + id)
+			.style("stroke","#d73c37")
+			.style("stroke-width", "2px");
+	}
+}
+
+function unextra_highlight_node(id) {
+	if (id != 1) {
+		d3.select("#node_" + id)
+			.style("stroke","#000000")
+			.style("stroke-width", "1.5px");
 	}
 }
 
