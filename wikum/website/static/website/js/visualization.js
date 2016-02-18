@@ -279,7 +279,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	
 	$("#summarize_comment_submit").off("click");
 	
-	$('#summarize_comment_submit').click({data_id: did, type: type, ids: ids, dids: dids}, function(evt) {
+	$('#summarize_comment_submit').click({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		
 		var comment = $('#summarize_comment_textarea').val();
 		var article_id = $('#article_id').text();
@@ -298,7 +298,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				data: data,
 				success: function() {
 					$('#summarize_modal_box').modal('toggle');
-					
+
 					var d = nodes_all[evt.data.id-1];
 					
 					if (d.children) {
@@ -324,7 +324,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					d.replace = true;
 					
 					d3.select("#node_" + evt.data.id)
-					.attr("color","red");
+					.style("fill","red");
 					
 					success_noty();
 				},
