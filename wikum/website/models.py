@@ -41,7 +41,7 @@ class History(models.Model):
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
-    author = models.ForeignKey('CommentAuthor')
+    author = models.ForeignKey('CommentAuthor', null=True)
     text = models.TextField()
     reply_to = models.ForeignKey('self', null=True, related_name="replies")
     disqus_id = models.CharField(max_length=15)
@@ -50,7 +50,7 @@ class Comment(models.Model):
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
     spam = models.BooleanField(default=False)
     highlighted = models.BooleanField(default=False)
@@ -62,6 +62,9 @@ class Comment(models.Model):
     hidden = models.BooleanField(default=False)
     
     summary = models.TextField()
+    is_replacement = models.BooleanField(default=False)
+    
+    
     
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)

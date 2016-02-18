@@ -4,10 +4,16 @@ from website.models import Article, Source, CommentAuthor, Comment, History
 from wikum.settings import DISQUS_API_KEY
 import datetime
 from django.core.paginator import Paginator
+from random import randint
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
 COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&thread=%s'
 
+
+def random_with_N_digits(n):
+    range_start = 10**(n-1)
+    range_end = (10**n)-1
+    return randint(range_start, range_end)
 
 def get_source(url):
     if 'theatlantic' in url:

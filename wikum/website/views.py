@@ -9,7 +9,6 @@ from django.http import HttpResponse
 from annoying.decorators import render_to
 from django.http.response import HttpResponseBadRequest
 
-
 @render_to('website/index.html')
 def index(request):
     return {'page': 'index'}
@@ -108,20 +107,36 @@ def recurse_viz(posts):
     for post in posts:
         if post.json_flatten == '':
         # if True:
+        
+            if post.author:
+                if post.author.anonymous:
+                    author = "Anonymous"
+                else:
+                    author = post.author.username
+            else:
+                author = ""
+                
+                
             v1 = {'size': post.likes,
                   'd_id': post.id,
-                  'author': post.author.username if not post.author.anonymous else 'Anonymous'
+                  'author': author,
+                  'replace': post.is_replacement
                   }
             if post.summary != '':
                 v1['name'] = '<P><strong>Summary:</strong> ' + post.summary + '</p>'
             else:
                 v1['name'] = post.text
-            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
-            if c1.count() == 0:
+            
+            if not post.is_replacement:
+                c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
+                if c1.count() == 0:
+                    vals = []
+                    hid = []
+                else:
+                    vals, hid = recurse_viz(c1)
+            else:
                 vals = []
                 hid = []
-            else:
-                vals, hid = recurse_viz(c1)
             v1['children'] = vals
             v1['hid'] = hid
             post.json_flatten = json.dumps(v1)
@@ -179,25 +194,33 @@ def summarize_comments(request):
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
-        summary = request.POST['summary']
+        summary = request.POST['comment']
         
         c = Comment.objects.get(id=id)
-        from_summary = c.summary
-        c.summary = summary
+
+        new_id = random_with_N_digits(10);
+        
+        new_comment = Comment.objects.create(article=a, 
+                                             is_replacement=True, 
+                                             reply_to_disqus=c.reply_to_disqus,
+                                             summary=summary,
+                                             disqus_id=new_id)
+        
+        c.reply_to_disqus = new_id
         c.save()
+        
+        
             
         if request.user.is_authenticated():
             h = History.objects.create(user=request.user, 
                                        article=a,
                                        action='sum_comment',
-                                       from_str=from_summary,
                                        to_str=summary,
                                        explanation='initial summary')
         else:
             h = History.objects.create(user=None, 
                                        article=a,
                                        action='sum_comment',
-                                       from_str=from_summary,
                                        to_str=summary,
                                        explanation='initial summary')
         
