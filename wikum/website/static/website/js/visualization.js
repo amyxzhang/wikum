@@ -1,6 +1,7 @@
-var timer;
+var timer = null;
 var isClick = true;
 var isMouseDown = false;
+var hover_timer = null;
 
 $("#hide_modal_box").draggable({
     handle: ".modal-title"
@@ -1019,9 +1020,11 @@ function showdiv(d) {
 			$('#expand').show();
 		}
 		if (d3.select(this).classed("clicked")) {
-			highlight_box(d.id);
-			$("#box").scrollTo("#comment_" + d.id, 500);
 			extra_highlight_node(d.id);
+			highlight_box(d.id);
+			hover_timer = window.setTimeout(function(d) {
+				$("#box").scrollTo("#comment_" + d.id, 500);
+			}, 500, d);
 		}
 	}
 }
@@ -1030,6 +1033,7 @@ function hidediv(d) {
 	if (!isMouseDown && d3.select(this).classed("clicked")) {
 		unextra_highlight_node(d.id);
 	}
+	window.clearTimeout(hover_timer);
 	timer = setTimeout(remove_dic, 100);
 	
 }
