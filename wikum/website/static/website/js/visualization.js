@@ -322,10 +322,17 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 						}
 					}
 					
-					d.replace = true;
+					d.replace_node = true;
 					
 					d3.select("#node_" + evt.data.id)
 					.style("fill","red");
+					
+					var text = '<P><strong>Summary:</strong> ' + comment + '</P>';
+					text += '<P><a>Edit Comment Summary</a> | <a>View Original Comment</a></p>';
+					$('#comment_text_' + evt.data.id).html(text);
+					highlight_box(evt.data.id);
+					
+					d.name = '<P><strong>Summary:</strong> ' + comment + '</P>';
 					
 					success_noty();
 				},
@@ -1061,7 +1068,7 @@ function stroke(d) {
  }
 
 function color(d) {
-	if (d.replace) {
+	if (d.replace_node) {
 		return "red";
 	}
 	if (d.parent && d.parent.article) {

@@ -99,14 +99,16 @@ def recurse_down_post(post):
         child.save()
         recurse_down_post(child)
 
-def recurse_viz(posts):
+def recurse_viz(posts, replaced):
     children = []
     hid_children = []
+    replace_children = []
+    
     pids = [post.disqus_id for post in posts]
     reps = Comment.objects.filter(reply_to_disqus__in=pids).select_related()
     for post in posts:
         if post.json_flatten == '':
-        # if True:
+        #if True:
         
             if post.author:
                 if post.author.anonymous:
@@ -120,34 +122,39 @@ def recurse_viz(posts):
             v1 = {'size': post.likes,
                   'd_id': post.id,
                   'author': author,
-                  'replace': post.is_replacement
+                  'replace_node': post.is_replacement
                   }
             if post.summary != '':
                 v1['name'] = '<P><strong>Summary:</strong> ' + post.summary + '</p>'
             else:
                 v1['name'] = post.text
             
-            if not post.is_replacement:
-                c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
-                if c1.count() == 0:
-                    vals = []
-                    hid = []
-                else:
-                    vals, hid = recurse_viz(c1)
-            else:
+            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
+            if c1.count() == 0:
                 vals = []
                 hid = []
+                rep = []
+            else:
+                if replaced or post.is_replacement:
+                    vals, hid, rep = recurse_viz(c1, True)
+                else:
+                    vals, hid, rep = recurse_viz(c1, False)
             v1['children'] = vals
             v1['hid'] = hid
+            v1['replace'] = rep
             post.json_flatten = json.dumps(v1)
             post.save()
         else:
             v1 = json.loads(post.json_flatten)
-        if not post.hidden:
-            children.append(v1)
-        else:
+        
+        if post.hidden:
             hid_children.append(v1)
-    return children, hid_children
+        elif replaced:
+            replace_children.append(v1)
+        else:
+            children.append(v1)
+            
+    return children, hid_children, replace_children
         
 
 def summarize_comment(request):
@@ -204,7 +211,8 @@ def summarize_comments(request):
                                              is_replacement=True, 
                                              reply_to_disqus=c.reply_to_disqus,
                                              summary=summary,
-                                             disqus_id=new_id)
+                                             disqus_id=new_id,
+                                             likes=c.likes)
         
         c.reply_to_disqus = new_id
         c.save()
@@ -382,7 +390,7 @@ def viz_data(request):
            'article': True}
 
     posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:20]
-    val['children'], val['hid'] = recurse_viz(posts)
+    val['children'], val['hid'], val['replace'] = recurse_viz(posts, False)
     return JsonResponse(val)
     
     
