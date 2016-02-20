@@ -711,19 +711,28 @@ function hide_node(id) {
 	return null;
 }
 
+function recurse_hide_node(d) {
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			$('#comment_' + d.children[i].id).remove();
+			recurse_hide_node(d.children[i]);
+		}
+	}
+}
+
 // Toggle children on click.
 function click_node(id) {
   d = nodes_all[id-1];
   
-  console.log(d);
-  
   if (d.children) {
+	recurse_hide_node(d);
     d._children = d.children;
     d.children = null;
   } else {
     d.children = d._children;
     d._children = null;
   }
+  
   update(d);
   return null;
 }
