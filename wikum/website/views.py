@@ -222,13 +222,13 @@ def summarize_comments(request):
         if request.user.is_authenticated():
             h = History.objects.create(user=request.user, 
                                        article=a,
-                                       action='sum_comment',
+                                       action='sum_nodes',
                                        to_str=summary,
                                        explanation='initial summary')
         else:
             h = History.objects.create(user=None, 
                                        article=a,
-                                       action='sum_comment',
+                                       action='sum_nodes',
                                        to_str=summary,
                                        explanation='initial summary')
         

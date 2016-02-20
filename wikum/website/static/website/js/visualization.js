@@ -302,25 +302,24 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 
 					var d = nodes_all[evt.data.id-1];
 					
-					if (d.children) {
-						ids = [];
-						for (var i=0; i<d.children.length; i++) {
-							ids.push(d.children[i].id);
-						}
-						for (var i=0; i<ids.length; i++) {
-							$('#comment_' + ids[i]).remove();
-							hide_node(ids[i]);
-						}
-					} else if (d._children) {
-						ids = [];
-						for (var i=0; i<d._children.length; i++) {
-							ids.push(d._children[i].id);
-						}
-						for (var i=0; i<d._children.length; i++) {
-							$('#comment_' + ids[i]).remove();
-							hide_node(ids[i]);
-						}
+					if (!d.replace) {
+						d.replace = [];
 					}
+					
+					if (d.children) {
+						for (var i=0; i<d.children.length; i++) {
+							d.replace.push(d.children[i]);
+						}
+						recurse_hide_node(d);
+						d.children = null;
+					} else if (d._children) {
+						for (var i=0; i<d._children.length; i++) {
+							d.replace.push(d._children[i]);
+						}
+						d._children = null;
+					}
+					
+					update(d);
 					
 					d.replace_node = true;
 					
@@ -834,10 +833,10 @@ function construct_comment(d) {
 	
 	if (!summary && d.name.length > 300) {
 		text += '<hr><P>';
-		if (!d.children) {
+		if (!d.children && !d.replace_node) {
 			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a> | ';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark as Unimportant</a>';
-		} else {
+		} else if (!d.replace_node) {
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment and all Replies</a> | ';
 			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a> | ';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant</a>';
@@ -849,11 +848,11 @@ function construct_comment(d) {
 		text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
 		text += '</div>​';
 	} else {
-		if (!d.children) {
+		if (!d.children && !d.replace_node) {
 			text += '<hr><P>';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark as Unimportant</a>';
 			text += '</p>';
-		} else {
+		} else if (!d.replace_node) {
 			text += '<hr><P>';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment and all Replies</a> | ';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant</a></p>';
@@ -1027,7 +1026,18 @@ function highlight_box(id) {
 
 function showdiv(d) {
 	if (!isMouseDown) {
-		if (d.children || d._children) {
+		if (d.replace_node) {
+			clearTimeout(timer);
+			var offset = $('svg').offset();
+			$('#expand').css({top: offset.top + d.x + 22, 
+				left: offset.left + d.y + ((d.size + 100)/60) + 28});
+			if (d.children || d._children) {
+				$('#expand').html('<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>');		
+			} else {
+				$('#expand').html('<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>');	
+			}
+			$('#expand').show();
+		} else if (d.children || d._children) {
 			clearTimeout(timer);
 			var offset = $('svg').offset();
 			$('#expand').css({top: offset.top + d.x + 22, 
@@ -1035,6 +1045,7 @@ function showdiv(d) {
 			$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a> | <a onclick="collapse_node(' + d.id + ');">Collapse replies</a> | <a onclick="expand_node(' + d.id + ');">Expand replies</a>');
 			$('#expand').show();
 		}
+		
 		if (d3.select(this).classed("clicked")) {
 			extra_highlight_node(d.id);
 			highlight_box(d.id);
@@ -1042,6 +1053,35 @@ function showdiv(d) {
 				$("#box").scrollTo("#comment_" + d.id, 500);
 			}, 500, d);
 		}
+	}
+}
+
+
+function hide_replace_nodes(id) {
+	d = nodes_all[id-1];
+	if (d.children) {
+		if (!d.replace) {
+			d.replace = [];
+		}
+		for (var i=0; i<d.children.length; i++) {
+			d.replace.push(d.children[i]);
+		}
+		d.children = null;
+		update(d);
+	}
+}
+
+function show_replace_nodes(id) {
+	d = nodes_all[id-1];
+	if (d.replace) {
+		if (!d.children) {
+			d.children = [];
+		}
+		for (var i=0; i<d.replace.length; i++) {
+			d.children.push(d.replace[i]);
+		}
+		d.replace = [];
+		update(d);
 	}
 }
 

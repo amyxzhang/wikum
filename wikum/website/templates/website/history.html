@@ -35,6 +35,8 @@
 	            		<td>Hide All Replies of a Comment</td>
 	            	{% elif h.action == "hide_comments" %}
 	            		<td>Hide Multiple Comments</td>
+	            	{% elif h.action == "sum_nodes" %}
+	            		<td>Summarize Comment and Replies</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}
@@ -66,6 +68,8 @@
 	            		{% elif h.action == "hide_comments" %}
 	            			All Comments Hidden
 	            		{% elif h.action == "sum_comment" %}
+	            			{{ h.to_str }}
+	            		{% elif h.action == "sum_nodes" %}
 	            			{{ h.to_str }}
 	            		{% endif %} </td>
 	            	
