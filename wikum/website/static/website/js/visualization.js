@@ -580,7 +580,16 @@ function update(source) {
 
   // Update the nodes…
   var node = svg.selectAll("g.node")
-      .data(nodes, function(d) { return d.id || (d.id = ++i); });
+      .data(nodes, function(d) { 
+	      	if (d.id) {
+	      		nodes_all[d.id-1] = d;
+	      		return d.id;
+	      	} else {
+	      		d.id = ++i;
+	      		nodes_all[d.id-1] = d;
+	      		return d.id;
+	      	}
+      	});
 
   var nodeEnter = node.enter().append("g")
       .attr("class", "node")

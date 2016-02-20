@@ -99,7 +99,7 @@ def recurse_down_post(post):
         child.save()
         recurse_down_post(child)
 
-def recurse_viz(posts, replaced):
+def recurse_viz(parent, posts):
     children = []
     hid_children = []
     replace_children = []
@@ -135,10 +135,7 @@ def recurse_viz(posts, replaced):
                 hid = []
                 rep = []
             else:
-                if replaced or post.is_replacement:
-                    vals, hid, rep = recurse_viz(c1, True)
-                else:
-                    vals, hid, rep = recurse_viz(c1, False)
+                vals, hid, rep = recurse_viz(post, c1)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
@@ -149,7 +146,7 @@ def recurse_viz(posts, replaced):
         
         if post.hidden:
             hid_children.append(v1)
-        elif replaced:
+        elif parent and parent.is_replacement:
             replace_children.append(v1)
         else:
             children.append(v1)
@@ -390,7 +387,7 @@ def viz_data(request):
            'article': True}
 
     posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:20]
-    val['children'], val['hid'], val['replace'] = recurse_viz(posts, False)
+    val['children'], val['hid'], val['replace'] = recurse_viz(None, posts)
     return JsonResponse(val)
     
     
