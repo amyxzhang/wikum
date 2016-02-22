@@ -95,7 +95,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	var type = $(e.relatedTarget).data('type');
 	
-	$('#hide_comment_textarea').val();
+	$('#hide_comment_textarea').val("");
 	
 	d = nodes_all[id-1];
 	var ids = [];
@@ -264,7 +264,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	} else if (type == "hide_all_selected") {
 	}
 	
-	$('#summarize_comment_textarea').val();
+	$('#summarize_comment_textarea').val("");
 	
 	text = '<div class="img-rounded" id="tooltip_sum">Quote</div>' + text;
 	
@@ -425,14 +425,14 @@ function error_noty() {
 
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     width = 600 - margin.left - margin.right,
-    barHeight = 23;
+    barHeight = 27;
 
 var i = 0,
     duration = 400,
     root;
 
 var tree = d3.layout.tree()
-    .nodeSize([0, 23]);
+    .nodeSize([0, 27]);
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
@@ -647,7 +647,7 @@ function update(source) {
       	if (d.article) {
       		return 10;
       	} else {
-      		return (d.size + 150 )/40; 
+      		return (d.size + 400 )/65; 
       	}
       	})
       .attr("height", barHeight)
@@ -1185,8 +1185,8 @@ function color(d) {
 		return "#ffffff";
 	}
 	if (d._children || d.children) {
-		return "#c6dbef";
+		return "#8ab5de";
 	} else {
-		return "#fd8d3c";
+		return "#dae8f5";
 	}
 }
