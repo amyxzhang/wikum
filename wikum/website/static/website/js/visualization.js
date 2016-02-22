@@ -982,7 +982,7 @@ function clear_box_top() {
 function get_subtree_box(text, d, level) {
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			if (d.children[i].replace) {
+			if (d.children[i].replace_node) {
 				if (level == 0) {
 					text += '<div class="comment_box summary_box" id="comment_' + d.children[i].id + '">';
 				} else if (level == 1) {
@@ -1078,17 +1078,28 @@ function show_text(d) {
 			var text = '';
 			if (objs[i].replace) {
 				
-			} else {
+				if (objs[i].depth - min_level == 0) {
+					text += '<div class="comment_box summary_box" id="comment_' + objs[i].id + '">'; 
+				} else if (objs[i].depth - min_level == 1) {
+					text += '<div class="comment_box summary_box level1" id="comment_' + objs[i].id + '">'; 
+				} else if (objs[i].depth - min_level == 2) {
+					text += '<div class="comment_box summary_box level2" id="comment_' + objs[i].id + '">'; 
+				} else {
+					text += '<div class="comment_box summary_box level3" id="comment_' + objs[i].id + '">'; 
+				}
 				
-			}
-			if (objs[i].depth - min_level == 0) {
-				text += '<div class="comment_box" id="comment_' + objs[i].id + '">'; 
-			} else if (objs[i].depth - min_level == 1) {
-				text += '<div class="comment_box level1" id="comment_' + objs[i].id + '">'; 
-			} else if (objs[i].depth - min_level == 2) {
-				text += '<div class="comment_box level2" id="comment_' + objs[i].id + '">'; 
 			} else {
-				text += '<div class="comment_box level3" id="comment_' + objs[i].id + '">'; 
+				if (objs[i].depth - min_level == 0) {
+					text += '<div class="comment_box" id="comment_' + objs[i].id + '">'; 
+				} else if (objs[i].depth - min_level == 1) {
+					text += '<div class="comment_box level1" id="comment_' + objs[i].id + '">'; 
+				} else if (objs[i].depth - min_level == 2) {
+					text += '<div class="comment_box level2" id="comment_' + objs[i].id + '">'; 
+				} else {
+					text += '<div class="comment_box level3" id="comment_' + objs[i].id + '">'; 
+				}
+				
+				
 			}
 			text += construct_comment(objs[i]);
 			text += '</div>';
