@@ -125,9 +125,11 @@ def recurse_viz(parent, posts):
                   'replace_node': post.is_replacement
                   }
             if post.summary != '':
-                v1['name'] = '<P><strong>Summary:</strong> ' + post.summary + '</p>'
+                v1['summary'] = post.summary
             else:
-                v1['name'] = post.text
+                v1['summary'] = '' 
+                
+            v1['name'] = post.text
             
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
             if c1.count() == 0:

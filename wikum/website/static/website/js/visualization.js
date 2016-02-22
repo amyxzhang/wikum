@@ -371,12 +371,19 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					d3.select("#node_" + evt.data.id)
 					.style("fill","red");
 					
-					var text = '<P><strong>Summary:</strong> ' + comment + '</P>';
-					text += '<P><a>Edit Comment Summary</a> | <a>View Original Comment</a></p>';
+					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
+					text += '<P><a onclick="show_summarize(' + d.id + ');">Edit Comment Summary</a></P>';
+
+					text += '<div id="summarize_' + d.id + '" style="display: none;">';
+					text += '<textarea type="text" id="summarize_textbox_' + d.id + '">' + comment + '</textarea>';
+					text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
+					text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
+					text += '</div>';
+					
 					$('#comment_text_' + evt.data.id).html(text);
 					highlight_box(evt.data.id);
 					
-					d.name = '<P><strong>Summary:</strong> ' + comment + '</P>';
+					d.summary = comment;
 					
 					success_noty();
 				},
@@ -860,7 +867,20 @@ function submit_summary(id, d_id) {
 		success: function() {
 			success_noty();
 			var text = '<P><strong>Summary:</strong> ' + summary + '</P>';
-			text += '<P><a>Edit Comment Summary</a> | <a>View Original Comment</a></p>';
+			text += '<P><a onclick="show_summarize(' + d.id + ');">Edit Comment Summary</a>';
+			
+			d = nodes_all[id-1];
+			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
+			text += '<div id="orig_' + d.id + '" style="display: none;">' + d.name + '</div>';
+			
+			text += '<div id="summarize_' + d.id + '" style="display: none;">';
+			text += '<textarea type="text" id="summarize_textbox_' + d.id + '">' + summary + '</textarea>';
+			text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
+			text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
+			text += '</div>';
+			
+			d.summary = summary;
+			
 			$('#comment_text_' + id).html(text);
 			show_summarize(id);
 			highlight_box(id);
@@ -871,22 +891,44 @@ function submit_summary(id, d_id) {
 	});
 }
 
+function toggle_original(id) {
+	$('#orig_' + id).toggle();
+}
+
 function construct_comment(d) {
 	var text = '';
 	var summary = false;
-	if (d.name.lastIndexOf('<P><strong>Summary:</strong>', 0) === 0) {
+	if (d.summary != '') {
 		summary = true;
 	}
 	
-	text += '<div id="comment_text_' + d.id + '">' + d.name;
-	if (!summary) {
+	if (summary) {
+		if (d.replace_node) {
+			text += '<div id="comment_text_' + d.id + '"><P><strong>Summary Node:</strong> ' + d.summary + '</P>';
+		} else {
+			text += '<div id="comment_text_' + d.id + '"><P><strong>Summary:</strong> ' + d.summary + '</P>';	
+		}
+	} else {
+		text += '<div id="comment_text_' + d.id + '">' + d.name;
 		text += '<P>-- ' + d.author + '</P>';
 		text += '<P>Likes: ' + d.size + '</P>';
 	}
 	text += '</div>';
 	
 	if (summary) {
-		text += '<P><a>Edit Comment Summary</a> | <a>View Original Comment</a></p>';
+		text += '<P><a onclick="show_summarize(' + d.id + ');">Edit Comment Summary</a>';
+		
+		if (!d.replace_node) {
+			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
+			text += '<div id="orig_' + d.id + '" style="display: none;">' + d.name + '</div>';
+		}
+		
+		text += '<div id="summarize_' + d.id + '" style="display: none;">';
+		text += '<textarea type="text" id="summarize_textbox_' + d.id + '">' + d.summary + '</textarea>';
+		text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
+		text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
+		text += '</div>';
+		
 	}
 	
 	if (!summary && d.name.length > 300) {
@@ -904,7 +946,7 @@ function construct_comment(d) {
 		text += '<textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea>';
 		text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
 		text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
-		text += '</div>​';
+		text += '</div>';
 	} else {
 		if (!d.children && !d.replace_node) {
 			text += '<hr><P>';
@@ -940,15 +982,28 @@ function clear_box_top() {
 function get_subtree_box(text, d, level) {
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			if (level == 0) {
-				text += '<div class="comment_box" id="comment_' + d.children[i].id + '">';
-			} else if (level == 1) {
-				text += '<div class="comment_box level1" id="comment_' + d.children[i].id + '">';
-			} else if (level == 2) {
-				text += '<div class="comment_box level2" id="comment_' + d.children[i].id + '">';
-			} else if (level > 2) {
-				text += '<div class="comment_box level3" id="comment_' + d.children[i].id + '">';
+			if (d.children[i].replace) {
+				if (level == 0) {
+					text += '<div class="comment_box summary_box" id="comment_' + d.children[i].id + '">';
+				} else if (level == 1) {
+					text += '<div class="comment_box summary_box level1" id="comment_' + d.children[i].id + '">';
+				} else if (level == 2) {
+					text += '<div class="comment_box summary_box level2" id="comment_' + d.children[i].id + '">';
+				} else if (level > 2) {
+					text += '<div class="comment_box summary_box level3" id="comment_' + d.children[i].id + '">';
+				}
+			} else {
+				if (level == 0) {
+					text += '<div class="comment_box" id="comment_' + d.children[i].id + '">';
+				} else if (level == 1) {
+					text += '<div class="comment_box level1" id="comment_' + d.children[i].id + '">';
+				} else if (level == 2) {
+					text += '<div class="comment_box level2" id="comment_' + d.children[i].id + '">';
+				} else if (level > 2) {
+					text += '<div class="comment_box level3" id="comment_' + d.children[i].id + '">';
+				}
 			}
+
 			text +=  construct_comment(d.children[i]);
 			text += '</div>';
 			highlight_node(d.children[i].id);
@@ -982,7 +1037,12 @@ function show_text(d) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
 		} else {
-			var text = '<div class="comment_box" id="comment_' + d.id + '">';
+			if (d.replace) {
+				var text = '<div class="comment_box summary_box" id="comment_' + d.id + '">';
+			} else {
+				var text = '<div class="comment_box" id="comment_' + d.id + '">';
+			}
+			
 			text += construct_comment(d);
 			text += '</div>';
 			highlight_node(d.id);
@@ -1016,6 +1076,11 @@ function show_text(d) {
 		objs.sort(compare_nodes);
 		for (var i in objs) {
 			var text = '';
+			if (objs[i].replace) {
+				
+			} else {
+				
+			}
 			if (objs[i].depth - min_level == 0) {
 				text += '<div class="comment_box" id="comment_' + objs[i].id + '">'; 
 			} else if (objs[i].depth - min_level == 1) {
