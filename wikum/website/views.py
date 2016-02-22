@@ -11,7 +11,9 @@ from django.http.response import HttpResponseBadRequest
 
 @render_to('website/index.html')
 def index(request):
-    return {'page': 'index'}
+    a = Article.objects.all()
+    return {'page': 'index',
+            'articles': a}
 
 
 @render_to('website/comments.html')

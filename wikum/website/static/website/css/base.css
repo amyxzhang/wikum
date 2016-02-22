@@ -2,3 +2,10 @@
 footer p {
 	font-size: 10px;
 }
+
+.dropdown-menu {
+  left: 50%;
+  right: auto;
+  text-align: center;
+  transform: translate(-50%, 0);
+}

@@ -18,11 +18,29 @@
                         
                         <p class="intro-text">Organize long comment threads.
                         	<br>
+                        	
+                        	<div class="dropdown">
+							  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							    View an existing article
+							    <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+							  	
+							  	{% for a in articles %}
+							    	<li><a href="/visualization?article={{ a.url }}">{{ a.title }}</a></li>
+								{% endfor %}
+							  </ul>
+							</div>
+                        </P>
+                        
+                        	<P>
 							   <form>
 							  <div class="form-group">
-							    <input type="url" class="form-control" id="articleUrl" placeholder="Paste an article url">
+							    <input type="url" class="form-control" id="articleUrl" placeholder="Or import a new article by pasting an article url here.">
 							  </div>
-                        </P>
+							  </form>
+							  </p>
+                 
                         <!--
                         <a href="#about" class="btn btn-circle page-scroll">
                             <i class="fa fa-angle-double-down animated"></i>
