@@ -95,7 +95,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	var type = $(e.relatedTarget).data('type');
 	
-	$('hide_comment_textarea').val();
+	$('#hide_comment_textarea').val();
 	
 	d = nodes_all[id-1];
 	var ids = [];
@@ -264,7 +264,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	} else if (type == "hide_all_selected") {
 	}
 	
-	$('summarize_comment_textarea').val();
+	$('#summarize_comment_textarea').val();
 	
 	text = '<div class="img-rounded" id="tooltip_sum">Quote</div>' + text;
 	
