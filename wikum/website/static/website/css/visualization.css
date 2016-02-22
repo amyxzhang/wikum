@@ -270,6 +270,7 @@ div.selected {
 
 textarea {
 	font-size: 10px;
+	min-height: 100px;
 }
 
 #box_top {
@@ -360,7 +361,7 @@ textarea {
 }
 
 .modal-body {
-    height: 400px;
+    height: 470px;
 }
 
 
@@ -376,6 +377,7 @@ textarea {
 	padding-left: 8px;
 	padding-right: 8px;
     padding-top: 5px;
+    position: relative;
 }
 
 .hide_comment_comment {
@@ -404,3 +406,15 @@ textarea {
 	height: 20px;
 }
 
+#tooltip_sum {
+	position: absolute;
+	display: block;
+	width: 50px;
+	height: 20px;
+	padding-left: 4px;
+	padding-right: 3px;
+	background-color: #000000;
+	color: #ffffff;
+	display: none;
+	cursor: pointer;
+}

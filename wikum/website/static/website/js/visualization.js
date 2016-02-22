@@ -1,7 +1,10 @@
 var timer = null;
 var isClick = true;
+var isClick2 = true;
 var isMouseDown = false;
 var hover_timer = null;
+var highlighted_text = null;
+var highlighted_comm = null;
 
 $("#hide_modal_box").draggable({
     handle: ".modal-title"
@@ -47,24 +50,24 @@ function get_subtree_summarize(text, d, level) {
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
 			if (level == 1) {
-				text += '<div class="summarize_comment_comment level1">' + d.children[i].name + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level1"><P>ID: ' + d.children[i].d_id + '</P>' + d.children[i].name + '</div>';
 			} else if (level == 2) {
-				text += '<div class="summarize_comment_comment level2">' + d.children[i].name + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level2"><P>ID: ' + d.children[i].d_id + '</P>' + d.children[i].name + '</div>';
 			} else if (level > 2) {
-				text += '<div class="summarize_comment_comment level3">' + d.children[i].name + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level3"><P>ID: ' + d.children[i].d_id + '</P>' + d.children[i].name + '</div>';
 			}
-			text = get_subtree(text, d.children[i], level+1);
+			text = get_subtree_summarize(text, d.children[i], level+1);
 		}
 	} else if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
 			if (level == 1) {
-				text += '<div class="summarize_comment_comment level1">' + d._children[i].name + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level1"><P>ID: ' + d.children[i].d_id + '</P>' + d._children[i].name + '</div>';
 			} else if (level == 2) {
-				text += '<div class="summarize_comment_comment level2">' + d._children[i].name + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level2"><P>ID: ' + d.children[i].d_id + '</P>' + d._children[i].name + '</div>';
 			} else if (level > 2) {
-				text += '<div class="summarize_comment_comment level3">' + d._children[i].name + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level3"><P>ID: ' + d.children[i].d_id + '</P>' + d._children[i].name + '</div>';
 			}
-			text = get_subtree(text, d._children[i], level+1);
+			text = get_subtree_summarize(text, d._children[i], level+1);
 		}
 	}
 		
@@ -91,6 +94,8 @@ $('#summarize_modal_box').on('hidden.bs.modal', function () {
 $('#hide_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	var type = $(e.relatedTarget).data('type');
+	
+	$('hide_comment_textarea').val();
 	
 	d = nodes_all[id-1];
 	var ids = [];
@@ -124,13 +129,13 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		datas.sort(compare_nodes);
 		for (var i in datas) {
 			if (datas[i].depth - min_level == 0) {
-				text += '<div class="hide_comment_comment">' + datas[i].name + '</div>';
+				text += '<div class="hide_comment_comment">ID: ' + datas[i].d_id + '<BR><BR>' + datas[i].name + '</div>';
 			} else if (datas[i].depth - min_level == 1) {
-				text += '<div class="hide_comment_comment level1">' + datas[i].name + '</div>'; 
+				text += '<div class="hide_comment_comment level1">ID: ' + datas[i].d_id + '<BR><BR>' + datas[i].name + '</div>'; 
 			} else if (datas[i].depth - min_level == 2) {
-				text += '<div class="hide_comment_comment level2">' + datas[i].name + '</div>'; 
+				text += '<div class="hide_comment_comment level2">ID: ' + datas[i].d_id + '<BR><BR>' + datas[i].name + '</div>'; 
 			} else {
-				text += '<div class="hide_comment_comment level3">' + datas[i].name + '</div>'; 
+				text += '<div class="hide_comment_comment level3">ID: ' + datas[i].d_id + '<BR><BR>' + datas[i].name + '</div>'; 
 			}
 		}
 		
@@ -253,11 +258,15 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	
 	highlight_box(id);
 	if (type == "summarize") {
-		var text = '<div class="summarize_comment_comment">' + d.name + '</div>';
+		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
 		text = get_subtree_summarize(text, d, 1);
 		$('#summarize_comment_text').text('Summarize this comment and all replies (replaces them all).');
 	} else if (type == "hide_all_selected") {
 	}
+	
+	$('summarize_comment_textarea').val();
+	
+	text = '<div class="img-rounded" id="tooltip_sum">Quote</div>' + text;
 	
 	$('#summarize_comment_box').html(text);
 	$('#summarize_comment_box').wrap('<div/>')
@@ -276,7 +285,43 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
                             width:'100%',
                             height:'100%'});
 	
+	
 	var did = $(e.relatedTarget).data('did');
+	
+	$("#summarize_comment_box").off("mouseup");
+	$("#summarize_comment_box").off("mousedown");
+	
+	
+	$("#tooltip_sum").off("click");
+	
+	$('#tooltip_sum').mousedown(function(evt) {
+		evt.stopPropagation();
+	}).mouseup(function(evt) {
+		evt.stopPropagation();
+		var box = $('#summarize_comment_textarea');
+		
+		box.val(box.val() + '"' + highlighted_text + '" [[comment_' + nodes_all[highlighted_comm - 1].d_id +']]\n');
+	});
+	
+	$('#summarize_comment_box').mouseup(function(evt) {
+		clearTimeout(cancelClick2);
+		if (!isClick2) {
+			highlighted_text = window.getSelection().toString();
+	   		if (highlighted_text.length > 10) {
+	   			highlighted_comm = parseInt(evt.target.parentNode.id.substring(8));
+	   			var offset = $("#summarize_comment_box").offset();
+	   			var scroll = $("#summarize_comment_box").scrollTop();
+	   			$('#tooltip_sum').css({'top': evt.pageY - offset.top + scroll + 'px', 'left': evt.pageX - offset.left + 'px'});
+	   			$('#tooltip_sum').show();
+	   		}
+	 } else {
+	  	$('#tooltip_sum').hide();
+	  }
+	  isClick2 = true;
+	})
+	.mousedown(function(evt) {
+		cancelClick2 = setTimeout(is_click2, 250);
+	});
 	
 	$("#summarize_comment_submit").off("click");
 	
@@ -684,6 +729,10 @@ function is_click() {
 	isClick = false;
 }
 
+function is_click2() {
+	isClick2 = false;
+}
+
 function hide_node(id) {
 	d = nodes_all[id-1];
 	parent = d.parent;
@@ -1013,6 +1062,7 @@ function unextra_highlight_node(id) {
 
 function construct_box_top() {
 	var text = '<a>Summarize all Selected</a>';
+	text += ' | <a>Group all Selected</a>';
 	text += ' | <a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark all Selected as Unimportant</a>';
 	
 	$('#box_top').css('border-bottom', '#000000 1px solid');
