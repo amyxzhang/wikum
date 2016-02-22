@@ -1037,7 +1037,7 @@ function show_text(d) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
 		} else {
-			if (d.replace) {
+			if (d.replace_node) {
 				var text = '<div class="comment_box summary_box" id="comment_' + d.id + '">';
 			} else {
 				var text = '<div class="comment_box" id="comment_' + d.id + '">';
@@ -1076,7 +1076,7 @@ function show_text(d) {
 		objs.sort(compare_nodes);
 		for (var i in objs) {
 			var text = '';
-			if (objs[i].replace) {
+			if (objs[i].replace_node) {
 				
 				if (objs[i].depth - min_level == 0) {
 					text += '<div class="comment_box summary_box" id="comment_' + objs[i].id + '">'; 
