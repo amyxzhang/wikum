@@ -562,7 +562,7 @@ svg.append('svg:rect')
             	if (!state_data.article) {
 					d3.select(this)
 					.style("stroke","#000000")
-					.style("stroke-width", "1.5px")
+					.style("stroke-width", "2px")
 					.attr("class", "clicked");
 				}
             }
@@ -1019,7 +1019,7 @@ function highlight_node(id) {
 		d3.select("#node_" + id)
 			.attr("class", "clicked")
 			.style("stroke","#000000")
-			.style("stroke-width", "1.5px");
+			.style("stroke-width", "2px");
 	}
 }
 
@@ -1131,7 +1131,7 @@ function unextra_highlight_node(id) {
 	if (id != 1) {
 		d3.select("#node_" + id)
 			.style("stroke","#000000")
-			.style("stroke-width", "1.5px");
+			.style("stroke-width", "2px");
 		highlight_box(id);
 	}
 }
@@ -1255,13 +1255,11 @@ function color(d) {
 	if (d.replace_node) {
 		return "red";
 	}
-	if (d.parent && d.parent.article) {
-		return "#19668c";
-	} else if (d.article) {
+	if (d.article) {
 		return "#ffffff";
 	}
 	if (d._children || d.children) {
-		return "#8ab5de";
+		return "#7ca2c7";
 	} else {
 		return "#dae8f5";
 	}

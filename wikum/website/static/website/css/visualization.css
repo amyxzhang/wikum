@@ -352,7 +352,7 @@ blockquote {
 
 hr {
 	border-top: 1px solid #000000;
-	margin-top: 0px;
+	margin-top: 5px;
     margin-bottom: 0px;
 }
 
@@ -421,8 +421,4 @@ textarea {
 
 .summary_box {
 	background-color: #fbefeb;
-}
-
-.btn {
-	margin-bottom: 5px;
 }
