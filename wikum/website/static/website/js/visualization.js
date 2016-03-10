@@ -1140,25 +1140,58 @@ function highlight_box(id) {
 	$('#comment_' + id).addClass('highlighted');
 }
 
+function set_expand_position(d) {
+	var offset = $('svg').offset();
+	var width = $('#expand').width();
+	if (d.article) {
+		var node_width = 10;
+	} else {
+		var node_width = (d.size + 400)/65;
+	}
+	$('#expand').css({top: offset.top + d.x + 22, 
+		left: offset.left + d.y + ((d.size + 100)/60) - width + 10 - node_width});
+}
+
 function showdiv(d) {
 	if (!isMouseDown) {
 		if (d.replace_node) {
 			clearTimeout(timer);
-			var offset = $('svg').offset();
-			$('#expand').css({top: offset.top + d.x + 22, 
-				left: offset.left + d.y + ((d.size + 100)/60) + 28});
+
 			if (d.children || d._children) {
 				$('#expand').html('<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>');		
 			} else {
 				$('#expand').html('<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>');	
 			}
+			
+			set_expand_position(d);
 			$('#expand').show();
 		} else if (d.children || d._children) {
 			clearTimeout(timer);
-			var offset = $('svg').offset();
-			$('#expand').css({top: offset.top + d.x + 22, 
-				left: offset.left + d.y + ((d.size + 100)/60) + 28});
-			$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a> | <a onclick="collapse_node(' + d.id + ');">Collapse replies</a> | <a onclick="expand_node(' + d.id + ');">Expand replies</a>');
+			
+			one_depth = true;
+			if (d.children){
+				for (var i=0; i<d.children.length; i++) {
+					if (d.children[i].children || d.children[i]._children) {
+						one_depth = false;
+					}
+				}
+			}
+			if (d._children) {
+				for (var i=0; i<d._children.length; i++) {
+					if (d._children[i].children || d._children[i]._children) {
+						one_depth = false;
+					}
+				}
+			}
+			
+			if (one_depth) {
+				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a>');
+			} else {
+				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a><BR><a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>');
+			}
+			
+			set_expand_position(d);
+			
 			$('#expand').show();
 		}
 		
@@ -1185,6 +1218,7 @@ function hide_replace_nodes(id) {
 		d.children = null;
 		update(d);
 	}
+	$('#expand').html('<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>');
 }
 
 function show_replace_nodes(id) {
@@ -1197,8 +1231,9 @@ function show_replace_nodes(id) {
 			d.children.push(d.replace[i]);
 		}
 		d.replace = [];
-		update(d);
+		update(d);	
 	}
+	$('#expand').html('<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>');
 }
 
 function hidediv(d) {
