@@ -286,7 +286,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			text = get_subtree_summarize(text, d.children[0], 1);
 		}
 		$('#summarize_comment_textarea').val(d.summary);
-		$('#summarize_comment_text').text('Edit the summary for this subtree of nodes.');
+		$('#summarize_comment_text').text('Edit the summary for this entire subtree of comments.');
 	} else if (type == "hide_all_selected") {
 		$('#summarize_comment_textarea').val("");
 	}
@@ -392,7 +392,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				}
 			});
 
-		} else if (evt.data.type == "summarize") {
+		} else if (evt.data.type == "summarize" || evt.data.type == "edit_summarize") {
 			data.id = evt.data.data_id; 
 			$.ajax({
 				type: 'POST',
@@ -400,36 +400,40 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				data: data,
 				success: function() {
 					$('#summarize_modal_box').modal('toggle');
-
-					var d = nodes_all[evt.data.id-1];
-					
-					if (!d.replace) {
-						d.replace = [];
-					}
-					
-					if (d.children) {
-						for (var i=0; i<d.children.length; i++) {
-							d.replace.push(d.children[i]);
-						}
-						recurse_hide_node(d);
-						d.children = null;
-					} else if (d._children) {
-						for (var i=0; i<d._children.length; i++) {
-							d.replace.push(d._children[i]);
-						}
-						d._children = null;
-					}
-					
-					update(d);
-					
-					d.replace_node = true;
-					
-					d3.select("#node_" + evt.data.id)
-					.style("fill","red");
 					
 					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
-					text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + evt.data.id + '">Edit Summary Node</a></P>';
 
+					if (evt.data.type == "summarize") {
+						var d = nodes_all[evt.data.id-1];
+					
+						if (!d.replace) {
+							d.replace = [];
+						}
+						
+						if (d.children) {
+							for (var i=0; i<d.children.length; i++) {
+								d.replace.push(d.children[i]);
+							}
+							recurse_hide_node(d);
+							d.children = null;
+						} else if (d._children) {
+							for (var i=0; i<d._children.length; i++) {
+								d.replace.push(d._children[i]);
+							}
+							d._children = null;
+						}
+						
+						update(d);
+					
+						d.replace_node = true;
+					
+						d3.select("#node_" + evt.data.id)
+						.style("fill","red");
+						
+						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + evt.data.id + '">Edit Summary Node</a></P>';
+					}
+					
+					
 					$('#comment_text_' + evt.data.id).html(text);
 
 					highlight_box(evt.data.id);

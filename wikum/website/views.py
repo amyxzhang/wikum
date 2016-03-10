@@ -160,11 +160,12 @@ def recurse_viz(parent, posts):
 
 def summarize_comment(request):
     try:
-        user = request.user
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         summary = request.POST['comment']
+        
+        req_user = request.user if request.user.is_authenticated() else None
         
         c = Comment.objects.get(id=id)
         from_summary = c.summary
@@ -178,21 +179,13 @@ def summarize_comment(request):
             action = 'sum_comment'
             explanation = 'initial summary'
             
-        if request.user.is_authenticated():
 
-            h = History.objects.create(user=request.user, 
-                                       article=a,
-                                       action=action,
-                                       from_str=from_summary,
-                                       to_str=summary,
-                                       explanation=explanation)
-        else:
-            h = History.objects.create(user=None, 
-                                       article=a,
-                                       action=action,
-                                       from_str=from_summary,
-                                       to_str=summary,
-                                       explanation=explanation)
+        h = History.objects.create(user=req_user, 
+                                   article=a,
+                                   action=action,
+                                   from_str=from_summary,
+                                   to_str=summary,
+                                   explanation=explanation)
         
         h.comments.add(c)
         recurse_up_post(c)
@@ -206,40 +199,46 @@ def summarize_comment(request):
 
 def summarize_comments(request):
     try:
-        user = request.user
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         summary = request.POST['comment']
         
+        req_user = request.user if request.user.is_authenticated() else None
+        
         c = Comment.objects.get(id=id)
-
-        new_id = random_with_N_digits(10);
         
-        new_comment = Comment.objects.create(article=a, 
-                                             is_replacement=True, 
-                                             reply_to_disqus=c.reply_to_disqus,
-                                             summary=summary,
-                                             disqus_id=new_id,
-                                             likes=c.likes)
-        
-        c.reply_to_disqus = new_id
-        c.save()
-        
-        
+        if not c.is_replacement:
+            new_id = random_with_N_digits(10);
             
-        if request.user.is_authenticated():
-            h = History.objects.create(user=request.user, 
+            new_comment = Comment.objects.create(article=a, 
+                                                 is_replacement=True, 
+                                                 reply_to_disqus=c.reply_to_disqus,
+                                                 summary=summary,
+                                                 disqus_id=new_id,
+                                                 likes=c.likes)
+        
+            c.reply_to_disqus = new_id
+            c.save()
+
+            h = History.objects.create(user=req_user, 
                                        article=a,
                                        action='sum_nodes',
                                        to_str=summary,
-                                       explanation='initial summary')
+                                       explanation='initial summary of subtree')
+            
         else:
-            h = History.objects.create(user=None, 
-                                       article=a,
-                                       action='sum_nodes',
-                                       to_str=summary,
-                                       explanation='initial summary')
+            from_summary = c.summary
+            c.summary = summary
+            c.save()
+            
+            h = History.objects.create(user=req_user, 
+                           article=a,
+                           action='edit_sum_nodes',
+                           from_str=from_summary,
+                           to_str=summary,
+                           explanation='edit summary of subtree')
+        
         
         h.comments.add(c)
         recurse_up_post(c)
@@ -251,9 +250,9 @@ def summarize_comments(request):
 
 def hide_comments(request):
     try:
-        user = request.user
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
+        req_user = request.user if request.user.is_authenticated() else None
         
         ids = request.POST.getlist('ids[]')
         explain = request.POST['comment']
@@ -262,16 +261,10 @@ def hide_comments(request):
         
         if affected > 0:
             
-            if request.user.is_authenticated():
-                h = History.objects.create(user=request.user, 
-                                           article=a,
-                                           action='hide_comments',
-                                           explanation=explain)
-            else:
-                h = History.objects.create(user=None, 
-                                           article=a,
-                                           action='hide_comments',
-                                           explanation=explain)
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='hide_comments',
+                                       explanation=explain)
             
             for id in ids:
                 c = Comment.objects.get(id=id)
@@ -288,26 +281,19 @@ def hide_comments(request):
 
 def hide_comment(request):
     try:
-        user = request.user
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         explain = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
         
         affected = Comment.objects.filter(id=id, hidden=False).update(hidden=True)
         
         if affected:
-            
-            if request.user.is_authenticated():
-                h = History.objects.create(user=request.user, 
-                                           article=a,
-                                           action='hide_comment',
-                                           explanation=explain)
-            else:
-                h = History.objects.create(user=None, 
-                                           article=a,
-                                           action='hide_comment',
-                                           explanation=explain)
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='hide_comment',
+                                       explanation=explain)
             
             c = Comment.objects.get(id=id)
             h.comments.add(c)
@@ -334,11 +320,11 @@ def recurse_down_hidden(replies, count):
     
 def hide_replies(request):
     try:
-        user = request.user
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         explain = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
         
         c = Comment.objects.get(id=id)
 
@@ -347,18 +333,10 @@ def hide_replies(request):
         affected = recurse_down_hidden(replies, 0)
         
         if affected > 0:
-            
-            if request.user.is_authenticated():
-                h = History.objects.create(user=request.user, 
-                                           article=a,
-                                           action='hide_replies',
-                                           explanation=explain)
-            else:
-                h = History.objects.create(user=None, 
-                                           article=a,
-                                           action='hide_replies',
-                                           explanation=explain)
-            
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='hide_replies',
+                                       explanation=explain)
             
             replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
             for reply in replies:

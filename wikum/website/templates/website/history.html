@@ -38,7 +38,9 @@
 	            	{% elif h.action == "hide_comments" %}
 	            		<td>Hide Multiple Comments</td>
 	            	{% elif h.action == "sum_nodes" %}
-	            		<td>Summarize Comment and Replies</td>
+	            		<td>Summarize Subtree</td>
+	            	{% elif h.action == "edit_sum_nodes" %}
+	            		<td>Edit Summary of Subtree</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}
@@ -52,7 +54,7 @@
 	            	</td>
 	            	
 	            	<td>
-	            		{% if h.action == "edit_sum" %}
+	            		{% if h.action == "edit_sum" or h.action == "edit_sum_nodes" %}
 	            			{{ h.from_str }}
 	            		{% else %}
 		            		<div class="comments">
