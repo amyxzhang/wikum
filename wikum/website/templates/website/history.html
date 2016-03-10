@@ -31,6 +31,8 @@
 	            		<td>Hide Comment</td>
 	            	{% elif h.action == "sum_comment" %}
 	            		<td>Summarize Comment</td>
+	            	{% elif h.action == "edit_sum" %}
+	            		<td>Edit Summary of a Comment</td>
 	            	{% elif h.action == "hide_replies" %}
 	            		<td>Hide All Replies of a Comment</td>
 	            	{% elif h.action == "hide_comments" %}
@@ -50,15 +52,19 @@
 	            	</td>
 	            	
 	            	<td>
-	            		<div class="comments">
-	            		{% for c in h.comments.all %}
-	            			<div class="comment">
-	            			  {% autoescape off %}
-							  {{ c.text }}
-							  {% endautoescape %}
-						    </div>
-						{% endfor %}
-						</div>
+	            		{% if h.action == "edit_sum" %}
+	            			{{ h.from_str }}
+	            		{% else %}
+		            		<div class="comments">
+		            		{% for c in h.comments.all %}
+		            			<div class="comment">
+		            			  {% autoescape off %}
+								  {{ c.text }}
+								  {% endautoescape %}
+							    </div>
+							{% endfor %}
+							</div>
+						{% endif %}
 	            	</td>
 	            	
 	            	<td>{% if h.action == "hide_comment" %}
@@ -67,9 +73,7 @@
 	            			All Comments Hidden
 	            		{% elif h.action == "hide_comments" %}
 	            			All Comments Hidden
-	            		{% elif h.action == "sum_comment" %}
-	            			{{ h.to_str }}
-	            		{% elif h.action == "sum_nodes" %}
+	            		{% else %}
 	            			{{ h.to_str }}
 	            		{% endif %} </td>
 	            	

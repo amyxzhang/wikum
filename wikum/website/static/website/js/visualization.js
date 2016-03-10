@@ -261,10 +261,18 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
 		text = get_subtree_summarize(text, d, 1);
 		$('#summarize_comment_text').text('Summarize this comment and all replies (replaces them all).');
+		$('#summarize_comment_textarea').val("");
+	} else if (type == "summarize_one") {
+		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
+		$('#summarize_comment_text').text('Summarize this comment.');
+		$('#summarize_comment_textarea').val("");
+	} else if (type == "edit_summarize_one") {
+		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
+		$('#summarize_comment_textarea').val(d.summary);
+		$('#summarize_comment_text').text('Edit the summary for this comment.');
 	} else if (type == "hide_all_selected") {
+		$('#summarize_comment_textarea').val("");
 	}
-	
-	$('#summarize_comment_textarea').val("");
 	
 	text = '<div class="img-rounded" id="tooltip_sum">Quote</div>' + text;
 	
@@ -336,7 +344,38 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		
 		if (evt.data.type == "hide_all_selected") {
 
-		} else {
+		} else if (evt.data.type == "summarize_one" || evt.data.type == "edit_summarize_one") {
+			data.id = evt.data.data_id; 
+			$.ajax({
+				type: 'POST',
+				url: '/summarize_comment',
+				data: data,
+				success: function() {
+					$('#summarize_modal_box').modal('toggle');
+					
+					success_noty();
+					var text = '<P><strong>Summary:</strong> ' + comment + '</P>';
+					
+					if (evt.data.type == "summarize_one") {
+						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + evt.data.id + '">Edit Comment Summary</a>';
+						
+						d = nodes_all[evt.data.id-1];
+						text += ' | <a onclick="toggle_original(' + evt.data.id + ');">View Original Comment</a></p>';
+						text += '<div id="orig_' + evt.data.id + '" style="display: none;">' + d.name + '</div>';
+					}
+						
+					$('#comment_text_' + evt.data.id).html(text);
+					
+					d.summary = comment;
+					
+					highlight_box(evt.data.id);
+				},
+				error: function() {
+					error_noty();
+				}
+			});
+
+		} else if (evt.data.type == "summarize") {
 			data.id = evt.data.data_id; 
 			$.ajax({
 				type: 'POST',
@@ -372,15 +411,10 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					.style("fill","red");
 					
 					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
-					text += '<P><a onclick="show_summarize(' + d.id + ');">Edit Comment Summary</a></P>';
+					text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + evt.data.id + '">Edit Comment Summary</a></P>';
 
-					text += '<div id="summarize_' + d.id + '" style="display: none;">';
-					text += '<textarea type="text" id="summarize_textbox_' + d.id + '">' + comment + '</textarea>';
-					text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
-					text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
-					text += '</div>';
-					
 					$('#comment_text_' + evt.data.id).html(text);
+
 					highlight_box(evt.data.id);
 					
 					d.summary = comment;
@@ -853,44 +887,6 @@ function expand_node(id) {
   return null;
 }
 
-function submit_summary(id, d_id) {
-	var summary = $('#summarize_textbox_' + id).val();
-	var article_id = $('#article_id').text();
-	var csrf = $('#csrf').text();
-		
-	data = {csrfmiddlewaretoken: csrf, id: d_id, summary: summary, article: article_id};
-	
-	$.ajax({
-		type: 'POST',
-		url: '/summarize_comment',
-		data: data,
-		success: function() {
-			success_noty();
-			var text = '<P><strong>Summary:</strong> ' + summary + '</P>';
-			text += '<P><a onclick="show_summarize(' + d.id + ');">Edit Comment Summary</a>';
-			
-			d = nodes_all[id-1];
-			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
-			text += '<div id="orig_' + d.id + '" style="display: none;">' + d.name + '</div>';
-			
-			text += '<div id="summarize_' + d.id + '" style="display: none;">';
-			text += '<textarea type="text" id="summarize_textbox_' + d.id + '">' + summary + '</textarea>';
-			text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
-			text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
-			text += '</div>';
-			
-			d.summary = summary;
-			
-			$('#comment_text_' + id).html(text);
-			show_summarize(id);
-			highlight_box(id);
-		},
-		error: function() {
-			error_noty();
-		}
-	});
-}
-
 function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
@@ -916,37 +912,27 @@ function construct_comment(d) {
 	text += '</div>';
 	
 	if (summary) {
-		text += '<P><a onclick="show_summarize(' + d.id + ');">Edit Comment Summary</a>';
+		text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a>';
 		
 		if (!d.replace_node) {
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
 			text += '<div id="orig_' + d.id + '" style="display: none;">' + d.name + '</div>';
 		}
 		
-		text += '<div id="summarize_' + d.id + '" style="display: none;">';
-		text += '<textarea type="text" id="summarize_textbox_' + d.id + '">' + d.summary + '</textarea>';
-		text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
-		text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
-		text += '</div>';
 		
 	}
 	
 	if (!summary && d.name.length > 300) {
 		text += '<hr><P>';
 		if (!d.children && !d.replace_node) {
-			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a> | ';
+			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a> | ';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark as Unimportant</a>';
 		} else if (!d.replace_node) {
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment and all Replies</a> | ';
-			text += '<a onclick="show_summarize(' + d.id + ');">Summarize Comment</a> | ';
+			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a> | ';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant</a>';
 		}
 		text += '</p>';
-		text += '<div id="summarize_' + d.id + '" style="display: none;">';
-		text += '<textarea type="text" name="Summarize the comment" id="summarize_textbox_' + d.id + '"></textarea>';
-		text += '<button type="button" class="btn btn-default btn-xs" onclick="submit_summary(' + d.id + ',' + d.d_id + ')">Submit</button> ';
-		text += '<button type="button" class="btn btn-default btn-xs" onclick="show_summarize(' + d.id + ');">Cancel</button>';
-		text += '</div>';
 	} else {
 		if (!d.children && !d.replace_node) {
 			text += '<hr><P>';
@@ -959,11 +945,6 @@ function construct_comment(d) {
 		}
 	}
 	return text;
-}
-
-
-function show_summarize(id) {
-	$('#summarize_' + id).toggle();
 }
 
 function escapeHtml(text) {

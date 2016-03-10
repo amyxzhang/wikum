@@ -164,27 +164,35 @@ def summarize_comment(request):
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
-        summary = request.POST['summary']
+        summary = request.POST['comment']
         
         c = Comment.objects.get(id=id)
         from_summary = c.summary
         c.summary = summary
         c.save()
+        
+        if from_summary != '':
+            action = 'edit_sum'
+            explanation = 'edit summary'
+        else :
+            action = 'sum_comment'
+            explanation = 'initial summary'
             
         if request.user.is_authenticated():
+
             h = History.objects.create(user=request.user, 
                                        article=a,
-                                       action='sum_comment',
+                                       action=action,
                                        from_str=from_summary,
                                        to_str=summary,
-                                       explanation='initial summary')
+                                       explanation=explanation)
         else:
             h = History.objects.create(user=None, 
                                        article=a,
-                                       action='sum_comment',
+                                       action=action,
                                        from_str=from_summary,
                                        to_str=summary,
-                                       explanation='initial summary')
+                                       explanation=explanation)
         
         h.comments.add(c)
         recurse_up_post(c)
