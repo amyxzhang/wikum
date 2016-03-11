@@ -15,31 +15,42 @@ $("#summarize_modal_box").draggable({
 }); 
 
 function get_subtree(text, d, level) {
+	
+	if (level <= 3) {
+		var lvl = level;
+	} else {
+		var lvl = 3;
+	}
+	
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			if (level == 0) {
-				text += '<div class="hide_comment_comment">' + d.children[i].name + '</div>';
-			} else if (level == 1) {
-				text += '<div class="hide_comment_comment level1">' + d.children[i].name + '</div>';
-			} else if (level == 2) {
-				text += '<div class="hide_comment_comment level2">' + d.children[i].name + '</div>';
-			} else if (level > 2) {
-				text += '<div class="hide_comment_comment level3">' + d.children[i].name + '</div>';
+			if (d.children[i].summary != '') {
+				if (d.children[i].replace_node) {
+					text += '<div class="hide_comment_comment summary_box level' + lvl + '"><P><strong>Summary Node:</strong> ' + d.children[i].summary + '</p></div>';
+				} else {
+					text += '<div class="hide_comment_comment level' + lvl + '"><P><strong>Summary:</strong> ' + d.children[i].summary + '</p></div>';
+				}
+			} else {
+				text += '<div class="hide_comment_comment level' + lvl + '">' + d.children[i].name + '</div>';
 			}
-			text = get_subtree(text, d.children[i], level+1);
+			if (!d.children[i].replace_node) {
+				text = get_subtree(text, d.children[i], level+1);
+			}
 		}
 	} else if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
-			if (level == 0) {
-				text += '<div class="hide_comment_comment">' + d._children[i].name + '</div>';
-			} else if (level == 1) {
-				text += '<div class="hide_comment_comment level1">' + d._children[i].name + '</div>';
-			} else if (level == 2) {
-				text += '<div class="hide_comment_comment level2">' + d._children[i].name + '</div>';
-			} else if (level > 2) {
-				text += '<div class="hide_comment_comment level3">' + d._children[i].name + '</div>';
+			if (d._children[i].summary != '') {
+				if (d._children[i].replace_node) {
+					text += '<div class="hide_comment_comment summary_box level' + lvl + '"><P><strong>Summary Node:</strong> ' + d._children[i].summary + '</p></div>';
+				} else {
+					text += '<div class="hide_comment_comment level' + lvl + '"><P><strong>Summary:</strong> ' + d._children[i].summary + '</p></div>';
+				}
+			} else {
+				text += '<div class="hide_comment_comment level' + lvl + '">' + d._children[i].name + '</div>';
 			}
-			text = get_subtree(text, d._children[i], level+1);
+			if (!d._children[i].replace_node) {
+				text = get_subtree(text, d._children[i], level+1);
+			}
 		}
 	}
 		
@@ -56,7 +67,7 @@ function get_subtree_summarize(text, d, level) {
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
 
-			if (d.children[i].summary) {
+			if (d.children[i].summary != '') {
 				if (d.children[i].replace_node) {
 					text += '<div id="sum_box_' + d.children[i].id + '" class="summary_box summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + '</P><P><strong>Summary Node:</strong> ' + d.children[i].summary + '</P></div>';
 				} else {
@@ -71,8 +82,12 @@ function get_subtree_summarize(text, d, level) {
 		}
 	} else if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
-			if (d._children[i].summary) {
-				text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + '</P>' + d._children[i].summary + '</div>';
+			if (d._children[i].summary != '') {
+				if (d.children[i].replace_node) {
+					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment summary_box level' + lvl + '"><P>ID: ' + d._children[i].d_id + '</P><P><strong>Summary Node:</strong> ' + d._children[i].summary + '</p></div>';
+				} else {
+					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + '</P><P><strong>Summary:</strong> ' + d._children[i].summary + '</p></div>';
+				}
 			} else {
 				text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + '</P>' + d._children[i].name + '</div>';
 			}
@@ -115,9 +130,9 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		var text = '<div class="hide_comment_comment">' + $(".highlighted").children().first().html() + '</div>';
 		$('#hide_comment_text').text('Hide this comment from view.');
 	} else if (type == "hide_replies") {
-		var text = '';
+		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + $(".highlighted").children().first().html() + '</div><BR><strong>Replies:</strong><BR>';
 		text = get_subtree(text, d, 0);
-		$('#hide_comment_text').text('Hide these replies from view.');
+		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
 	} else if (type == "hide_all_selected") {
 		var text = '';
 		var datas = [];
@@ -138,26 +153,27 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		datas.sort(compare_nodes);
 		for (var i in datas) {
 			
+			var class_sum = "";
 			if (datas[i].replace_node) {
 				var node_text = '<P><strong>Summary Node:</strong> ' + datas[i].summary + '</p>';
 				var class_sum = "summary_box";
+			} else if (datas[i].summary != '') {
+				var node_text = '<P><strong>Summary:</strong> ' + datas[i].summary + '</p>';
 			} else {
 				var node_text = datas[i].name;
-				var class_sum = "";
 			}
 			
-			if (datas[i].depth - min_level == 0) {
-				text += '<div class="hide_comment_comment">ID: ' + datas[i].d_id + '<BR><BR>' + node_text+ '</div>';
-			} else if (datas[i].depth - min_level == 1) {
-				text += '<div class="hide_comment_comment level1">ID: ' + datas[i].d_id + '<BR><BR>' + node_text + '</div>'; 
-			} else if (datas[i].depth - min_level == 2) {
-				text += '<div class="hide_comment_comment level2">ID: ' + datas[i].d_id + '<BR><BR>' + node_text + '</div>'; 
+			if (datas[i].depth - min_level <= 3) {
+				var lvl = datas[i].depth - min_level;
 			} else {
-				text += '<div class="hide_comment_comment level3">ID: ' + datas[i].d_id + '<BR><BR>' + node_text + '</div>'; 
+				var lvl = 3;
 			}
+			
+			text += '<div class="hide_comment_comment level' + lvl + ' ' + class_sum + '"><P>ID: ' + datas[i].d_id + '</p>' + node_text+ '</div>';
+			
 		}
 		
-		$('#hide_comment_text').text('Hide all these comments from view. Any replies to these comments will also be hidden.');
+		$('#hide_comment_text').text('Hide all these comments from view.');
 	}
 	
 	$('#hide_comment_box').html(text);
@@ -267,42 +283,82 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 });
 
 $('#summarize_modal_box').on('show.bs.modal', function(e) {
-	var id = $(e.relatedTarget).data('id');
+	
 	var type = $(e.relatedTarget).data('type');
 	
-	d = nodes_all[id-1];
 	var ids = [];
 	var dids = [];
 	
-	highlight_box(id);
-	if (type == "summarize") {
-		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
-		text = get_subtree_summarize(text, d, 1);
-		$('#summarize_comment_text').text('Summarize this comment and all replies (replaces them all).');
-		$('#summarize_comment_textarea').val("");
-	} else if (type == "summarize_one") {
-		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
-		$('#summarize_comment_text').text('Summarize this comment.');
-		$('#summarize_comment_textarea').val("");
-	} else if (type == "edit_summarize_one") {
-		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
-		$('#summarize_comment_textarea').val(d.summary);
-		$('#summarize_comment_text').text('Edit the summary for this comment.');
-	} else if (type == "edit_summarize") {
-		
-		show_replace_nodes(d.id);
-		
-		if (d.replace.length > 0) {
-			var text = '<div id="sum_box_' + d.replace[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[0].d_id + '</P>' + d.replace[0].name + '</div>';
-			text = get_subtree_summarize(text, d.replace[0], 1);
-		} else {
-			var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[0].d_id + '</P>' + d.children[0].name + '</div>';
-			text = get_subtree_summarize(text, d.children[0], 1);
+	if (type == "summarize_selected") {
+		var objs = [];
+		var min_level = 50;
+		d3.selectAll('.clicked').each( function(data) {
+			if (!data.article) {
+				objs.push(data);
+				if (data.depth < min_level) {
+					min_level = data.depth;
+				}
+			}
+		});
+
+		objs.sort(compare_nodes);
+		var text = '';
+		for (var i in objs) {
+			ids.push(objs[i].id);
+			dids.push(objs[i].d_id);
+			
+			if (objs[i].depth - min_level <= 3) {
+				var depth = objs[i].depth - min_level;
+			} else {
+				var depth = 3;
+			}
+			if (objs[i].replace_node) {
+				text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment summary_box level' + depth + '"><P>ID: ' + objs[i].d_id + '</P><P><strong>Summary Node:</strong> ' + objs[i].summary + '</p></div>';
+			} else {
+				if (objs[i].summary != "") {
+					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + '</P><P><strong>Summary:</strong> ' + objs[i].summary + '</p></div>';
+				} else {
+					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + '</P>' + objs[i].name + '</div>';
+				}
+			}
 		}
-		$('#summarize_comment_textarea').val(d.summary);
-		$('#summarize_comment_text').text('Edit the summary for this entire subtree of comments.');
-	} else if (type == "hide_all_selected") {
+		$('#summarize_comment_text').text('Summarize these selected comments.');
 		$('#summarize_comment_textarea').val("");
+	} else {
+	
+		var id = $(e.relatedTarget).data('id');
+		var did = $(e.relatedTarget).data('did');
+		
+		d = nodes_all[id-1];
+		
+		highlight_box(id);
+		if (type == "summarize") {
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
+			text = get_subtree_summarize(text, d, 1);
+			$('#summarize_comment_text').text('Summarize this comment and all replies (replaces them all).');
+			$('#summarize_comment_textarea').val("");
+		} else if (type == "summarize_one") {
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
+			$('#summarize_comment_text').text('Summarize this comment.');
+			$('#summarize_comment_textarea').val("");
+		} else if (type == "edit_summarize_one") {
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
+			$('#summarize_comment_textarea').val(d.summary);
+			$('#summarize_comment_text').text('Edit the summary for this comment.');
+		} else if (type == "edit_summarize") {
+			
+			show_replace_nodes(d.id);
+			
+			if (d.replace.length > 0) {
+				var text = '<div id="sum_box_' + d.replace[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[0].d_id + '</P>' + d.replace[0].name + '</div>';
+				text = get_subtree_summarize(text, d.replace[0], 1);
+			} else {
+				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[0].d_id + '</P>' + d.children[0].name + '</div>';
+				text = get_subtree_summarize(text, d.children[0], 1);
+			}
+			$('#summarize_comment_textarea').val(d.summary);
+			$('#summarize_comment_text').text('Edit the summary for this entire subtree of comments.');
+		}
 	}
 	
 	text = '<div class="img-rounded" id="tooltip_sum">Quote</div>' + text;
@@ -324,9 +380,6 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
                             width:'100%',
                             height:'100%'});
 	
-	
-	var did = $(e.relatedTarget).data('did');
-	
 	$("#summarize_comment_box").off("mouseup");
 	$("#summarize_comment_box").off("mousedown");
 	
@@ -338,7 +391,6 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	}).mouseup(function(evt) {
 		evt.stopPropagation();
 		var box = $('#summarize_comment_textarea');
-		
 		box.val(box.val() + '"' + highlighted_text + '" [[comment_' + nodes_all[highlighted_comm - 1].d_id +']]\n');
 	});
 	
@@ -373,8 +425,91 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			comment: comment, 
 			article: article_id};
 		
-		if (evt.data.type == "hide_all_selected") {
+		if (evt.data.type == "summarize_selected") {
+			data.ids = evt.data.dids;
+			
+			var objs = [];
+			d3.selectAll('.clicked').each( function(data) {
+				if (!data.article) {
+					objs.push(data);
+					if (data.depth < min_level) {
+						min_level = data.depth;
+					}
+				}
+			});
+			
+			children = [];
+			children_dids = [];
+			lowest_id = 500;
+			lowest_d = null;
+			size = 0;
+			for (var i=0; i<objs.length; i++) {
+				if (objs[i].depth == min_level) {
+					children.push(objs[i]);
+					children_dids.push(objs[i].d_id);
+					if (objs[i].id < lowest_id) {
+						lowest_id = objs[i].id;
+						lowest_d = objs[i];
+					}
+					if (objs[i].size > size) {
+						size = objs[i].size;
+					}
+				}
+			}
+			
+			data.children = children_dids;
+			data.child = lowest_d.d_id;
+					
+			console.log(data);
+			$.ajax({
+				type: 'POST',
+				url: '/summarize_selected',
+				data: data,
+				success: function(res) {
+					
+					new_d = {d_id: res.disqus_id,
+							 name: "",
+							 summary: comment,
+							 parent: lowest_d.parent,
+							 replace: children,
+							 author: "",
+							 replace_node: true,
+							 size: size,
+							 depth: lowest_d.depth,
+							 x: lowest_d.x,
+							 x0: lowest_d.x0,
+							 y: lowest_d.y,
+							 y0: lowest_d.y0,
+							};
+							
+					for (var d=0; d<children.length; d++) {
+						for (var i=0; i<children[d].parent.children.length; i++) {
+							if (children[d].parent.children[i] == children[d]) {
+								children[d].parent.children.splice(i,1);
+								children[d].parent = new_d;
+	  							break;
+							}
+						}
+					}
+						
+					for (var i=0; i<new_d.parent.children.length; i++) {
+							if (new_d.parent.children[i].size < new_d.size) {
+								new_d.parent.children.splice(i, 0, new_d);
+							}
+					}
 
+					update(new_d.parent);
+					
+					d3.select("#node_" + new_d.id)
+					.style("fill","red");
+					
+					$('#summarize_modal_box').modal('toggle');
+					
+					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
+					text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + new_d.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + new_d.id + '">Edit Summary Node</a></P>';
+					
+				}
+			});
 		} else if (evt.data.type == "summarize_one" || evt.data.type == "edit_summarize_one") {
 			data.id = evt.data.data_id; 
 			$.ajax({
@@ -412,40 +547,49 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				type: 'POST',
 				url: '/summarize_comments',
 				data: data,
-				success: function() {
+				success: function(res) {
+					
+					
+					var d = nodes_all[evt.data.id-1];
+					
 					$('#summarize_modal_box').modal('toggle');
 					
 					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
 
-					var d = nodes_all[evt.data.id-1];
-					d.summary = comment;
 
 					if (evt.data.type == "summarize") {
-						if (!d.replace) {
-							d.replace = [];
-						}
 						
-						if (d.children) {
-							for (var i=0; i<d.children.length; i++) {
-								d.replace.push(d.children[i]);
+						new_d = {d_id: res.disqus_id,
+							 name: "",
+							 summary: comment,
+							 parent: d.parent,
+							 replace: [d],
+							 author: "",
+							 replace_node: true,
+							 size: d.size,
+							 depth: d.depth,
+							 x: d.x,
+							 x0: d.x0,
+							 y: d.y,
+							 y0: d.y0,
+							};
+							
+						for (var i=0; i<d.parent.children.length; i++) {
+							if (d.parent.children[i] == d) {
+								 d.parent.children.splice(i,1);
+      							break;
 							}
-							recurse_hide_node(d);
-							d.children = null;
-						} else if (d._children) {
-							for (var i=0; i<d._children.length; i++) {
-								d.replace.push(d._children[i]);
-							}
-							d._children = null;
 						}
-						
-						update(d);
 					
-						d.replace_node = true;
+						d.parent = new_d;
+						new_d.parent.children.push(new_d);
+							
+						update(new_d.parent);
 					
-						d3.select("#node_" + evt.data.id)
+						d3.select("#node_" + new_d.id)
 						.style("fill","red");
 						
-						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + evt.data.id + '">Edit Summary Node</a></P>';
+						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + new_d.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + new_d.id + '">Edit Summary Node</a></P>';
 					}
 					
 					
@@ -1196,8 +1340,7 @@ function construct_box_top(objs) {
 	}
 	
 	if (accepted) {
-	
-		var text = '<a>Summarize all Selected</a>';
+		var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_modal_box" data-type="summarize_selected">Summarize all Selected</a>';
 		text += ' | <a>Group all Selected</a>';
 		text += ' | <a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark all Selected as Unimportant</a>';
 		

@@ -194,7 +194,53 @@ def summarize_comment(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
-              
+           
+def summarize_selected(request):
+    try:
+        print request.POST
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        ids = request.POST['ids[]']
+        children_ids = request.POST['children[]']
+        child_id = request.POST['child']
+        
+        summary = request.POST['comment']
+        
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        comments = Comment.objects.filter(id__in=ids)
+        children = [c for c in comments if unicode(c.id) in children_ids]
+        child = Comment.objects.get(id=child_id)
+
+        new_id = random_with_N_digits(10);
+            
+        new_comment = Comment.objects.create(article=a, 
+                                             is_replacement=True, 
+                                             reply_to_disqus=child.reply_to_disqus,
+                                             summary=summary,
+                                             disqus_id=new_id,
+                                             likes=child.likes)
+
+        h = History.objects.create(user=req_user, 
+                                   article=a,
+                                   action='sum_nodes',
+                                   to_str=summary,
+                                   explanation='initial summary of group of comments') 
+       
+        for c in children:
+            c.reply_to_disqus = new_id
+            c.json_flatten = '';
+            c.save()
+            h.comments.add(c)
+        
+        recurse_up_post(child)
+        
+        return JsonResponse({"disqus_id": new_id})
+        
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()  
+   
               
 
 def summarize_comments(request):
@@ -227,6 +273,8 @@ def summarize_comments(request):
                                        to_str=summary,
                                        explanation='initial summary of subtree')
             
+            disqus_id = new_id
+            
         else:
             from_summary = c.summary
             c.summary = summary
@@ -238,11 +286,13 @@ def summarize_comments(request):
                            from_str=from_summary,
                            to_str=summary,
                            explanation='edit summary of subtree')
+            
+            disqus_id = c.disqus_id
         
         
         h.comments.add(c)
         recurse_up_post(c)
-        return JsonResponse({})
+        return JsonResponse({"disqus_id": disqus_id})
         
     except Exception, e:
         print e
