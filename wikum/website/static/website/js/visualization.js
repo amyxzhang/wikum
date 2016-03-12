@@ -459,8 +459,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			
 			data.children = children_dids;
 			data.child = lowest_d.d_id;
-					
-			console.log(data);
+			
 			$.ajax({
 				type: 'POST',
 				url: '/summarize_selected',
@@ -482,22 +481,29 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 							 y0: lowest_d.y0,
 							};
 							
+					console.log(new_d);
 					for (var d=0; d<children.length; d++) {
 						for (var i=0; i<children[d].parent.children.length; i++) {
 							if (children[d].parent.children[i] == children[d]) {
 								children[d].parent.children.splice(i,1);
-								children[d].parent = new_d;
 	  							break;
 							}
 						}
+						children[d].parent = new_d;
 					}
-						
+					
+					added = false;
 					for (var i=0; i<new_d.parent.children.length; i++) {
-							if (new_d.parent.children[i].size < new_d.size) {
-								new_d.parent.children.splice(i, 0, new_d);
-							}
+						if (new_d.parent.children[i].size < new_d.size) {
+							new_d.parent.children.splice(i, 0, new_d);
+							added = true;
+							break;
+						}
 					}
-
+					if (!added) {
+						new_d.parent.children.push(new_d);
+					}
+					
 					update(new_d.parent);
 					
 					d3.select("#node_" + new_d.id)
@@ -505,9 +511,19 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					
 					$('#summarize_modal_box').modal('toggle');
 					
-					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
+					var text = '<div id="comment_text_' + new_d.id + '"><P><strong>Summary Node:</strong> ' + comment + '</P></div>';
 					text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + new_d.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + new_d.id + '">Edit Summary Node</a></P>';
 					
+					for (var i=0; i<children.length; i++) {
+						if (children[i] == lowest_d) {
+							$('#comment_' + children[i].id).html(text);
+							$('#comment_' + children[i].id).addClass('summary_box');
+							$('#comment_' + children[i].id).attr('id', new_d.id);
+						} else {
+							$('#comment_' + children[i].id).remove();
+						}
+					}
+					clear_box_top();
 				}
 			});
 		} else if (evt.data.type == "summarize_one" || evt.data.type == "edit_summarize_one") {
@@ -1301,6 +1317,7 @@ function construct_box_top(objs) {
 	var parent_node = null;
 	
 	accepted = true;
+	count = 0;
 	
 	for (var i=0; i<objs.length; i++) {
 		parent = objs[i].parent;
@@ -1328,10 +1345,12 @@ function construct_box_top(objs) {
 			continue;
 		}
 		if (parent_node && parent == parent_node) {
+			count += 1;
 			continue;
 		}
 		if (!parent_node) {
 			parent_node = parent;
+			count += 1;
 			continue;
 		}
 		
@@ -1339,9 +1358,8 @@ function construct_box_top(objs) {
 		break;
 	}
 	
-	if (accepted) {
-		var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_modal_box" data-type="summarize_selected">Summarize all Selected</a>';
-		text += ' | <a>Group all Selected</a>';
+	if (accepted && count > 1 && !parent_node.replace_node) {
+		var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_modal_box" data-type="summarize_selected">Summarize and Group all Selected</a>';
 		text += ' | <a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark all Selected as Unimportant</a>';
 		
 		$('#box_top').css('border-bottom', '#000000 1px solid');

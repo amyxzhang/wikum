@@ -197,11 +197,11 @@ def summarize_comment(request):
            
 def summarize_selected(request):
     try:
-        print request.POST
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
-        ids = request.POST['ids[]']
-        children_ids = request.POST['children[]']
+        ids = request.POST.getlist('ids[]')
+        children_ids = request.POST.getlist('children[]')
+        children_ids = [int(x) for x in children_ids]
         child_id = request.POST['child']
         
         summary = request.POST['comment']
@@ -209,7 +209,7 @@ def summarize_selected(request):
         req_user = request.user if request.user.is_authenticated() else None
         
         comments = Comment.objects.filter(id__in=ids)
-        children = [c for c in comments if unicode(c.id) in children_ids]
+        children = [c for c in comments if c.id in children_ids]
         child = Comment.objects.get(id=child_id)
 
         new_id = random_with_N_digits(10);
@@ -229,11 +229,12 @@ def summarize_selected(request):
        
         for c in children:
             c.reply_to_disqus = new_id
-            c.json_flatten = '';
             c.save()
+            
+        for c in comments:
             h.comments.add(c)
         
-        recurse_up_post(child)
+        recurse_up_post(new_comment)
         
         return JsonResponse({"disqus_id": new_id})
         
