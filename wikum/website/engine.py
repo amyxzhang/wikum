@@ -37,6 +37,15 @@ def get_article(url, source):
         
     return article
 
+def count_replies(article):
+    comments = Comment.objects.filter(article=article)
+    for c in comments:
+        if c.disqus_id != '':
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id).count()
+            c.num_replies = replies
+            c.save()
+
+
 def import_posts(result, article):
     for response in result['response']:
         comment_id = response['id']
@@ -71,6 +80,7 @@ def import_posts(result, article):
                                              text = response['message'],
                                              disqus_id = response['id'],
                                              reply_to_disqus = response['parent'],
+                                             text_len = len(response['message']),
                                              likes = response['likes'],
                                              dislikes = response['dislikes'],
                                              reports = response['numReports'],
@@ -110,6 +120,8 @@ def get_posts(article):
             
             import_posts(result, article)
             
+        count_replies(article)
+        
         posts = article.comment_set.filter(reply_to_disqus=None).order_by('-likes')
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-likes')

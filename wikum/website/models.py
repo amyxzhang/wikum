@@ -46,6 +46,8 @@ class Comment(models.Model):
     reply_to = models.ForeignKey('self', null=True, related_name="replies")
     disqus_id = models.CharField(max_length=15)
     reply_to_disqus = models.CharField(max_length=15, null=True, blank=True)
+    num_replies = models.IntegerField(default=0)
+    text_len = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     reports = models.IntegerField(default=0)

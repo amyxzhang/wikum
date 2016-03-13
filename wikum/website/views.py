@@ -219,11 +219,12 @@ def summarize_selected(request):
                                              reply_to_disqus=child.reply_to_disqus,
                                              summary=summary,
                                              disqus_id=new_id,
-                                             likes=child.likes)
+                                             likes=child.likes,
+                                             text_len=len(summary))
 
         h = History.objects.create(user=req_user, 
                                    article=a,
-                                   action='sum_nodes',
+                                   action='sum_selected',
                                    to_str=summary,
                                    explanation='initial summary of group of comments') 
        
@@ -263,7 +264,8 @@ def summarize_comments(request):
                                                  reply_to_disqus=c.reply_to_disqus,
                                                  summary=summary,
                                                  disqus_id=new_id,
-                                                 likes=c.likes)
+                                                 likes=c.likes,
+                                                 text_len=len(summary))
         
             c.reply_to_disqus = new_id
             c.save()
@@ -420,6 +422,7 @@ def history(request):
 
 def viz_data(request):
     article_url = request.GET['article']
+    sort = request.GET['sort']
     
     a = Article.objects.get(url=article_url)
     
@@ -427,7 +430,19 @@ def viz_data(request):
            'size': 400,
            'article': True}
 
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:20]
+    if sort == 'likes':
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:20]
+    elif sort == "replies":
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[0:20]
+    elif sort == "long":
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-text_len')[0:20]
+    elif sort == "short":
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('text_len')[0:20]
+    elif sort == 'newest':
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-created_at')[0:20]
+    elif sort == 'oldest':
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[0:20]
+            
     val['children'], val['hid'], val['replace'] = recurse_viz(None, posts)
     return JsonResponse(val)
     

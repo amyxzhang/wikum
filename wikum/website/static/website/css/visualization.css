@@ -424,3 +424,10 @@ textarea {
 .summary_box {
 	background-color: #fbefeb;
 }
+
+#node_sort {
+	position: absolute;
+	display: block;
+	top: 90px;
+	left: 200px;
+}

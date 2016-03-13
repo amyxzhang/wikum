@@ -821,8 +821,12 @@ svg.append('svg:rect')
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
+var sort = getParameterByName('sort');
+if (!sort) {
+	sort = "likes";
+}
 
-d3.json('/viz_data?article=' + article_url, function(error, flare) {
+d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -833,7 +837,88 @@ d3.json('/viz_data?article=' + article_url, function(error, flare) {
   update(root = flare);
   
   show_text(nodes_all[0]);
+  
+  make_key();
+  
+  make_dropdown();
+  
 });
+
+function make_dropdown() {
+	
+	text = '<button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
+	
+	if (!sort || sort == "likes") {
+		text += 'Sort all by - # Likes';
+	} else if (sort == "replies") {
+		text += 'Sort all by - # Replies';
+	} else if (sort == "long") {
+		text += 'Sort all by - Longest';
+	} else if (sort == "short") {
+		text += 'Sort all by - Shortest';
+	} else if (sort == "newest") {
+		text += 'Sort all by - Newest';
+	} else if (sort == "oldest") {
+		text += 'Sort all by - Oldest';
+	}
+	
+	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
+	
+	url = "/visualization?article=" + article_url + '&sort=';
+	
+	if (sort == "replies") {
+		text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	} else if (sort == "long") {
+		text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	} else if (sort == "short") {
+		text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	} else if (sort == "newest") {
+		text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	} else if (sort == "oldest") {
+		text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li></ul>';
+	} else {
+		text += '<li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	}
+			    
+			  
+	$('#node_sort').html(text);
+}
+
+function make_key() {
+	
+  var key_data = [
+	{ "cx": 10, "cy": 50, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
+ 	{ "cx": 10, "cy": 65, "r": 7, "color" : "#dae8f5", "text": "no replies"},
+ 	{ "cx": 10, "cy": 80, "r": 7, "color" : "red", "text": "summary"},
+ 	];
+ 	
+  var svg = d3.select("svg");
+	
+  var circles = svg.selectAll(".dataCircle")
+                           .data(key_data)
+                           .enter()
+                           .append("circle");
+                           
+  var circleAttributes = circles
+                       .attr("cx", function (d) { return d.cx; })
+                       .attr("cy", function (d) { return d.cy; })
+                       .attr("r", function (d) { return d.r; })
+                       .style("fill", function (d) { return d.color; });
+
+  var text = svg.selectAll("text")
+                        .data(key_data)
+                        .enter()
+                        .append("text");
+ 
+  var textLabels = text
+                 .attr("x", function(d) { return d.cx + 10; })
+                 .attr("y", function(d) { return d.cy + 4; })
+                 .text( function (d) { return d.text; })
+                 .attr("font-family", "sans-serif")
+                 .attr("font-size", "10px")
+                 .style('cursor', "default")
+                 .attr("fill", "black");
+}
 
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
