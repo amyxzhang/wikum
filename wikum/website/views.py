@@ -236,7 +236,7 @@ def summarize_selected(request):
         
         recurse_up_post(new_comment)
         
-        return JsonResponse({"disqus_id": new_id})
+        return JsonResponse({"d_id": new_comment.id})
         
     except Exception, e:
         print e
@@ -274,7 +274,7 @@ def summarize_comments(request):
                                        to_str=summary,
                                        explanation='initial summary of subtree')
             
-            disqus_id = new_id
+            d_id = new_comment.id
             
         else:
             from_summary = c.summary
@@ -288,12 +288,12 @@ def summarize_comments(request):
                            to_str=summary,
                            explanation='edit summary of subtree')
             
-            disqus_id = c.disqus_id
+            d_id = c.id
         
         
         h.comments.add(c)
         recurse_up_post(c)
-        return JsonResponse({"disqus_id": disqus_id})
+        return JsonResponse({"d_id": d_id})
         
     except Exception, e:
         print e

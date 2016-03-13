@@ -466,7 +466,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				data: data,
 				success: function(res) {
 					
-					new_d = {d_id: res.disqus_id,
+					new_d = {d_id: res.d_id,
 							 name: "",
 							 summary: comment,
 							 parent: lowest_d.parent,
@@ -518,7 +518,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 						if (children[i] == lowest_d) {
 							$('#comment_' + children[i].id).html(text);
 							$('#comment_' + children[i].id).addClass('summary_box');
-							$('#comment_' + children[i].id).attr('id', new_d.id);
+							$('#comment_' + children[i].id).attr('id', 'comment_' + new_d.id);
 						} else {
 							$('#comment_' + children[i].id).remove();
 						}
@@ -569,13 +569,9 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					var d = nodes_all[evt.data.id-1];
 					
 					$('#summarize_modal_box').modal('toggle');
-					
-					var text = '<P><strong>Summary Node:</strong> ' + comment + '</P>';
-
-
 					if (evt.data.type == "summarize") {
 						
-						new_d = {d_id: res.disqus_id,
+						new_d = {d_id: res.d_id,
 							 name: "",
 							 summary: comment,
 							 parent: d.parent,
@@ -605,13 +601,20 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 						d3.select("#node_" + new_d.id)
 						.style("fill","red");
 						
-						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + new_d.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + new_d.id + '">Edit Summary Node</a></P>';
 					}
 					
+					var text = '<div id="comment_text_' + new_d.id + '"><P><strong>Summary Node:</strong> ' + comment + '</P></div>';
+					text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + new_d.id + '" data-target="#summarize_modal_box" data-type="edit_summarize" data-id="' + new_d.id + '">Edit Summary Node</a></P>';
 					
-					$('#comment_text_' + evt.data.id).html(text);
+					$('#comment_' + evt.data.id).html(text);
+					$('#comment_' + evt.data.id).addClass('summary_box');
+					$('#comment_' + evt.data.id).attr('id', 'comment_' + new_d.id);
+					
+					node = nodes_all[new_d.id-1];
+					
+					delete_children_boxes(node.replace[0]);
 
-					highlight_box(evt.data.id);
+					highlight_box(new_d.id);
 					success_noty();
 				},
 				error: function() {
@@ -622,6 +625,16 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		
 	});
 });
+
+function delete_children_boxes(node) {
+	console.log(node);
+	if (node.children) {
+		for (var i=0; i<node.children.length; i++) {
+			$('#comment_' + node.children[i].id).remove();
+			delete_children_boxes(node.children[i]);
+		}
+	}
+}
 
 function success_noty() {
 	noty({
