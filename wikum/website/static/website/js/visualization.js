@@ -5,6 +5,7 @@ var isMouseDown = false;
 var hover_timer = null;
 var highlighted_text = null;
 var highlighted_comm = null;
+var highlight_text = null;
 
 $("#hide_modal_box").draggable({
     handle: ".modal-title"
@@ -507,7 +508,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					update(new_d.parent);
 					
 					d3.select("#node_" + new_d.id)
-					.style("fill","red");
+					.style("fill","purple");
 					
 					$('#summarize_modal_box').modal('toggle');
 					
@@ -599,7 +600,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 						update(new_d.parent);
 					
 						d3.select("#node_" + new_d.id)
-						.style("fill","red");
+						.style("fill","purple");
 						
 					}
 					
@@ -842,7 +843,42 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, fl
   
   make_dropdown();
   
+  make_highlight();
+  
 });
+
+function make_highlight() {
+	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
+	$('#node_highlight').html(text);
+	
+	$('#inputHighlight').keypress(function (e) {
+	 var key = e.which;
+	 if(key == 13)  // the enter key code
+	  {
+	  	highlight_text = $('#inputHighlight').val();
+	  	count = 0;
+	  	if (highlight_text.length > 0) {
+	  		var pattern = new RegExp('\\b' + highlight_text.toLowerCase() + '\\b');
+		  	for (var i=1; i<nodes_all.length; i++) {
+		  		text = nodes_all[i].name;
+		  		if (pattern.test(text.toLowerCase())) {
+		  			d3.select("#node_" + nodes_all[i].id)
+						.style("fill","#ffd700");
+					count += 1;
+		  		}
+		  	}
+		  	$('#box').highlight(highlight_text);
+		$('#count_result').text(count + ' comments highlighted');
+		} else {
+			for (var i=1; i<nodes_all.length; i++) {
+				d3.select("#node_" + nodes_all[i].id)
+						.style("fill", color(nodes_all[i]));
+			}
+			$('#box').removeHighlight();
+		}
+	}
+	});  
+}
 
 function make_dropdown() {
 	
@@ -863,22 +899,19 @@ function make_dropdown() {
 	}
 	
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	
 	url = "/visualization?article=" + article_url + '&sort=';
-	
-	
 	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
-	    
-			  
+	
 	$('#node_sort').html(text);
 }
 
 function make_key() {
 	
   var key_data = [
-	{ "cx": 10, "cy": 50, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
- 	{ "cx": 10, "cy": 65, "r": 7, "color" : "#dae8f5", "text": "no replies"},
- 	{ "cx": 10, "cy": 80, "r": 7, "color" : "red", "text": "summary"},
+	{ "cx": 300, "cy": 50, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
+ 	{ "cx": 300, "cy": 65, "r": 7, "color" : "#dae8f5", "text": "no replies"},
+ 	{ "cx": 300, "cy": 80, "r": 7, "color" : "purple", "text": "summary"},
+ 	{ "cx": 300, "cy": 95, "r": 7, "color" : "#ffd700", "text": "highlighted"},
  	];
  	
   var svg = d3.select("svg");
@@ -980,6 +1013,9 @@ function update(source) {
       	d3.selectAll(".clicked").classed("clicked", false);
       	unhighlight_all();
       	show_text(d);
+      	if (highlight_text) {
+      		$('#box').highlight(highlight_text);
+      	}
       })
       .on("mouseover", showdiv)
       .on("mouseout", hidediv);
@@ -1597,7 +1633,7 @@ function stroke(d) {
 
 function color(d) {
 	if (d.replace_node) {
-		return "red";
+		return "purple";
 	}
 	if (d.article) {
 		return "#ffffff";

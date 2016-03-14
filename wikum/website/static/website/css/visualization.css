@@ -431,3 +431,21 @@ textarea {
 	top: 90px;
 	left: 200px;
 }
+
+#node_highlight {
+    position: fixed;
+    display: block;
+    top: 90px;
+    left: 30px;
+}
+
+.input-sm {
+    height: 25px;
+    line-height: 1.2;
+}
+
+#count_result {
+	font-size: 12px;
+}
+
+.highlight { background-color: yellow }
