@@ -942,8 +942,12 @@ var sort = getParameterByName('sort');
 if (!sort) {
 	sort = "likes";
 }
+var next = parseInt(getParameterByName('next'));
+if (!next) {
+	next = 0;
+}
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, flare) {
+d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -961,7 +965,7 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, fl
   
   make_highlight();
   
-  $('#button_subtree').html('<a class="btn-sm btn-info" href="/subtree?article=' + article_url + '">Switch to Subtree View</a>');
+  $('#button_subtree').html('<strong>You\'re seeing one subtree at a time.</strong><BR><a class="btn-sm btn-info" href="/visualization?article=' + article_url + '">Switch to Overall View</a>');
 	
   
 });
@@ -1005,34 +1009,40 @@ function make_dropdown() {
 	
 	text = '<button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 	
-	if (!sort || sort == "likes") {
-		text += 'Sort all by - # Likes';
+	if (!sort || sort == "random") {
+	    text += 'Get Random Subtree';
+	    sort = "random";
+	}
+	if (sort == "likes") {
+		text += 'Get Subtree by # Likes';
 	} else if (sort == "replies") {
-		text += 'Sort all by - # Replies';
+		text += 'Get Subtree by # Replies';
 	} else if (sort == "long") {
-		text += 'Sort all by - Longest';
+		text += 'Get Long Comment Subtree';
 	} else if (sort == "short") {
-		text += 'Sort all by - Shortest';
+		text += 'Get Short Comment Subtree';
 	} else if (sort == "newest") {
-		text += 'Sort all by - Newest';
+		text += 'Get New Subtree';
 	} else if (sort == "oldest") {
-		text += 'Sort all by - Oldest';
+		text += 'Get Old Subtree';
 	}
 	
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/visualization?article=" + article_url + '&sort=';
-	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	url = "/subtree?article=" + article_url + '&sort=';
+	text += '<li><a href="' + url + 'random">Random</a></li><li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
 
+	next_sub = next + 1;
+	text += '<BR><BR><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get another subtree &gt;&gt;</a>';
 	$('#node_sort').html(text);
 }
 
 function make_key() {
 	
   var key_data = [
-	{ "cx": 300, "cy": 50, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
- 	{ "cx": 300, "cy": 65, "r": 7, "color" : "#dae8f5", "text": "no replies"},
- 	{ "cx": 300, "cy": 80, "r": 7, "color" : "purple", "text": "summary"},
- 	{ "cx": 300, "cy": 95, "r": 7, "color" : "#ffd700", "text": "highlighted"},
+	{ "cx": 320, "cy": 50, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
+ 	{ "cx": 320, "cy": 65, "r": 7, "color" : "#dae8f5", "text": "no replies"},
+ 	{ "cx": 320, "cy": 80, "r": 7, "color" : "purple", "text": "summary"},
+ 	{ "cx": 320, "cy": 95, "r": 7, "color" : "#ffd700", "text": "highlighted"},
  	];
  	
   var svg = d3.select("svg");

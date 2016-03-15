@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^$','website.views.index'),
     url(r'^comments$','website.views.comments'),
     url(r'^visualization','website.views.visualization'),
+    url(r'^subtree_data','website.views.subtree_data'),
+    url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
     url(r'^history','website.views.history'),
     

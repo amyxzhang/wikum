@@ -61,6 +61,7 @@ class Comment(models.Model):
     approved = models.BooleanField(default=True)
     
     json_flatten = models.TextField()
+    num_subchildren = models.IntegerField(default=0)
     hidden = models.BooleanField(default=False)
     
     summary = models.TextField()

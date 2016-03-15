@@ -8,6 +8,7 @@ from engine import *
 from django.http import HttpResponse
 from annoying.decorators import render_to
 from django.http.response import HttpResponseBadRequest
+import random
 
 @render_to('website/index.html')
 def index(request):
@@ -85,6 +86,13 @@ def visualization(request):
     return {'article': article,
             'source': article.source}
 
+@render_to('website/subtree.html')
+def subtree(request):
+    url = request.GET['article']
+    article = Article.objects.get(url=url)
+    return {'article': article,
+            'source': article.source}
+
 
 def recurse_up_post(post):
     post.json_flatten = ""
@@ -100,18 +108,30 @@ def recurse_down_post(post):
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
+        
+def recurse_down_num_subtree(post):
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id)
+    for child in children:
+        child.num_subchildren = 0
+        child.save()
+        recurse_down_post(child)
 
-def recurse_viz(parent, posts):
+def recurse_viz(parent, posts, replaced):
     children = []
     hid_children = []
     replace_children = []
     
     pids = [post.disqus_id for post in posts]
+    
+    if replaced:
+        num_subtree_children = 0
+    else:
+        num_subtree_children = len(pids)
+    
     reps = Comment.objects.filter(reply_to_disqus__in=pids).select_related()
     for post in posts:
         if post.json_flatten == '':
         #if True:
-        
             if post.author:
                 if post.author.anonymous:
                     author = "Anonymous"
@@ -120,12 +140,12 @@ def recurse_viz(parent, posts):
             else:
                 author = ""
                 
-                
             v1 = {'size': post.likes,
                   'd_id': post.id,
                   'author': author,
                   'replace_node': post.is_replacement
                   }
+            
             if post.summary != '':
                 v1['summary'] = post.summary
             else:
@@ -138,13 +158,21 @@ def recurse_viz(parent, posts):
                 vals = []
                 hid = []
                 rep = []
+                num_subchildren = 0
             else:
-                vals, hid, rep = recurse_viz(post, c1)
+                replace_future = replaced or post.is_replacement
+                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
             post.json_flatten = json.dumps(v1)
+            if not post.is_replacement:
+                post.num_subchildren = num_subchildren
+            else:
+                post.num_subchildren = 0
             post.save()
+            if not post.is_replacement:
+                num_subtree_children += num_subchildren
         else:
             v1 = json.loads(post.json_flatten)
         
@@ -155,7 +183,7 @@ def recurse_viz(parent, posts):
         else:
             children.append(v1)
             
-    return children, hid_children, replace_children
+    return children, hid_children, replace_children, num_subtree_children
         
 
 def summarize_comment(request):
@@ -237,6 +265,8 @@ def summarize_selected(request):
         
         recurse_up_post(new_comment)
         
+        recurse_down_num_subtree(new_comment)
+        
         return JsonResponse({"d_id": new_comment.id})
         
     except Exception, e:
@@ -295,6 +325,8 @@ def summarize_comments(request):
         
         h.comments.add(c)
         recurse_up_post(c)
+        recurse_down_num_subtree(new_comment)
+        
         return JsonResponse({"d_id": d_id})
         
     except Exception, e:
@@ -443,11 +475,50 @@ def viz_data(request):
     elif sort == 'oldest':
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[0:20]
             
-    val['children'], val['hid'], val['replace'] = recurse_viz(None, posts)
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
     return JsonResponse(val)
     
     
+def subtree_data(request):
+    article_url = request.GET['article']
+    sort = request.GET.get('sort')
+    next = request.GET.get('next')
     
+    a = Article.objects.get(url=article_url)
+    
+    val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
+           'size': 400,
+           'article': True}
+
+    
+    least = 3
+    most = 15
+    
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+    
+    posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[0]]
+        
+    if sort == 'likes':
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-likes')[next]]
+    elif sort == "replies":
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')[next]]
+    elif sort == "long":
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-text_len')[next]]
+    elif sort == "short":
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('text_len')[next]]
+    elif sort == 'newest':
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-created_at')[next]]
+    elif sort == 'oldest':
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('created_at')[next]]
+    else:
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[next]]       
+    
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
+    return JsonResponse(val)
+     
     
     
     
