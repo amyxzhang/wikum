@@ -330,6 +330,11 @@ rect.selection {
 	padding-left: 5px;
 	padding-right: 5px;
 	border: 1px #ffffff solid;
+	font-size: 10px;
+}
+
+.summarize_comment_comment {
+	font-size: 10px;
 }
 
 .highlighted {
@@ -350,6 +355,10 @@ rect.selection {
 
 blockquote {
 	font-size: 10px;
+	border-left: 5px solid pink;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	margin-bottom: 0px;
 }
 
 hr {
@@ -423,6 +432,7 @@ textarea {
 
 .summary_box {
 	background-color: #fbefeb;
+	white-space: pre-wrap;
 }
 
 #node_sort {
@@ -449,3 +459,13 @@ textarea {
 }
 
 .highlight { background-color: yellow }
+
+
+.btn-edit {
+    background-color: #000000;
+    color: #ffffff;
+  }
+  
+.btn-edit:hover {
+	color: #ffffff;
+}
