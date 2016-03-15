@@ -339,11 +339,11 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			$('#summarize_comment_text').text('Summarize this comment and all replies (replaces them all).');
 			$('#summarize_comment_textarea').val("");
 		} else if (type == "summarize_one") {
-			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + d.name + '</div>';
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
 			$('#summarize_comment_text').text('Summarize this comment.');
 			$('#summarize_comment_textarea').val("");
 		} else if (type == "edit_summarize_one") {
-			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + d.name + '</div>';
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + d.name + '</div>';
 			$('#summarize_comment_textarea').val(d.summary);
 			$('#summarize_comment_text').text('Edit the summary for this comment.');
 		} else if (type == "edit_summarize") {
@@ -560,6 +560,8 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					
 					d = nodes_all[evt.data.id-1];
 					
+					d.summary = comment;
+					
 					var text = '<P><strong>Summary:</strong> ' + render_summary_node(d) + '</P>';
 					
 					if (evt.data.type == "summarize_one") {
@@ -570,8 +572,6 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					}
 						
 					$('#comment_text_' + evt.data.id).html(text);
-					
-					d.summary = comment;
 					
 					highlight_box(evt.data.id);
 				},
@@ -1334,7 +1334,7 @@ function construct_comment(d) {
 		if (d.replace_node) {
 			text += '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong> ' + render_summary_node(d);
 		} else {
-			text += '<div id="comment_text_' + d.id + '"><strong>Summary:</strong> ' + d.summary;	
+			text += '<div id="comment_text_' + d.id + '"><strong>Summary:</strong> ' + render_summary_node(d);	
 		}
 	} else {
 		text += '<div id="comment_text_' + d.id + '">' + d.name;
