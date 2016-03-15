@@ -485,22 +485,15 @@ def subtree_data(request):
     next = request.GET.get('next')
     
     a = Article.objects.get(url=article_url)
-    
-    val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
-           'size': 400,
-           'article': True}
 
-    
     least = 3
-    most = 15
+    most = 20
     
     if not next:
         next = 0
     else:
         next = int(next)
     
-    posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[0]]
-        
     if sort == 'likes':
         posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-likes')[next]]
     elif sort == "replies":
@@ -516,9 +509,65 @@ def subtree_data(request):
     else:
         posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[next]]       
     
-    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
+
+    val2 = {}
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False)
+    
+    val = recurse_get_parents(val2, posts[0], a)
+    
     return JsonResponse(val)
      
+def recurse_get_parents(parent_dict, post, article):
+    
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    if parent:
+        parent = parent[0]
+        
+        
+        if parent.author:
+            if parent.author.anonymous:
+                author = "Anonymous"
+            else:
+                author = parent.author.username
+        else:
+            author = ""
+                    
+        parent_dict['size'] = parent.likes
+        parent_dict['d_id'] = parent.id
+        parent_dict['author'] = author
+        parent_dict['replace_node'] = parent.is_replacement
+        parent_dict['parent_node'] = True
+        
+
+        if parent.summary != '':
+            parent_dict['summary'] = parent.summary
+        else:
+            parent_dict['summary'] = '' 
+            
+        parent_dict['name'] = parent.text
+        
+        new_dict = {}
+        
+        new_dict['children'] = [parent_dict]
+        new_dict['hid'] = []
+        new_dict['replace'] = []
+        
+        return recurse_get_parents(new_dict, parent, article)
+
+    else:
+        parent_dict['name'] = '<P><a href="%s">Read the article in the %s</a></p>' % (article.url, article.source.source_name)
+        parent_dict['size'] = 400
+        parent_dict['article'] = True
+        
+        return parent_dict
     
     
+
+   
+                
+        
+        
+        
+    
+                
     

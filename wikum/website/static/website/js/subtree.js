@@ -957,7 +957,13 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   
   update(root = flare);
   
-  show_text(nodes_all[0]);
+  
+  d = nodes_all[1];
+  while (d.parent_node) {
+  	d = d.children[0];
+  }
+  
+  show_text(d);
   
   make_key();
   
@@ -1007,7 +1013,7 @@ function make_highlight() {
 
 function make_dropdown() {
 	
-	text = '<button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
+	text = '<div class="dropdown"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 	
 	if (!sort || sort == "random") {
 	    text += 'Get Random Subtree';
@@ -1032,7 +1038,7 @@ function make_dropdown() {
 	text += '<li><a href="' + url + 'random">Random</a></li><li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
 
 	next_sub = next + 1;
-	text += '<BR><BR><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get another subtree &gt;&gt;</a>';
+	text += '</div><BR><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get another subtree &gt;&gt;</a>';
 	$('#node_sort').html(text);
 }
 
@@ -1765,6 +1771,11 @@ function stroke(d) {
  }
 
 function color(d) {
+	
+	if (d.parent_node) {
+		return "#cccccc";
+	}
+	
 	if (d.replace_node) {
 		return "purple";
 	}
