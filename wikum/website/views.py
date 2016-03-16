@@ -492,7 +492,7 @@ def subtree_data(request):
     
     a = Article.objects.get(url=article_url)
 
-    least = 0
+    least = 1
     most = 7
     
     if not next:
