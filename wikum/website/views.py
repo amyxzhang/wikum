@@ -484,6 +484,27 @@ def viz_data(request):
     val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
     return JsonResponse(val)
     
+def cluster_data(request):
+    article_url = request.GET['article']
+    next = request.GET.get('next')
+    
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+    
+    a = Article.objects.get(url=article_url)
+    
+    val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
+           'size': 400,
+           'article': True}
+    
+    posts = a.comment_set.filter(hidden=False, num_subchildren=0, reply_to_disqus=None)[(next*10):(next*10) + 10]
+    
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
+    
+    return JsonResponse(val)
+    
     
 def subtree_data(request):
     article_url = request.GET['article']

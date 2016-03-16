@@ -167,7 +167,7 @@ if (!next) {
 	next = 0;
 }
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, flare) {
+d3.json('/cluster_data?article=' + article_url + '&next=' + next, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
