@@ -93,6 +93,12 @@ def subtree(request):
     return {'article': article,
             'source': article.source}
 
+@render_to('website/cluster.html')
+def cluster(request):
+    url = request.GET['article']
+    article = Article.objects.get(url=url)
+    return {'article': article,
+            'source': article.source}
 
 def recurse_up_post(post):
     post.json_flatten = ""
@@ -486,8 +492,8 @@ def subtree_data(request):
     
     a = Article.objects.get(url=article_url)
 
-    least = 3
-    most = 20
+    least = 0
+    most = 7
     
     if not next:
         next = 0

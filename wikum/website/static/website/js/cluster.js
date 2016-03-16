@@ -162,6 +162,10 @@ var sort = getParameterByName('sort');
 if (!sort) {
 	sort = "likes";
 }
+var next = parseInt(getParameterByName('next'));
+if (!next) {
+	next = 0;
+}
 
 d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, flare) {
   if (error) throw error;
@@ -181,34 +185,15 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, fl
   
   make_highlight();
   
- $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '">Cluster View</a>');
+  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> ');
 	
   
 });
 
 function make_dropdown() {
+	url = "/cluster?article=" + article_url + '&sort=';
+	next_cluster = next + 1;
 	
-	text = '<button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
-	
-	if (!sort || sort == "likes") {
-		text += 'Sort all by - # Likes';
-	} else if (sort == "replies") {
-		text += 'Sort all by - # Replies';
-	} else if (sort == "long") {
-		text += 'Sort all by - Longest';
-	} else if (sort == "short") {
-		text += 'Sort all by - Shortest';
-	} else if (sort == "newest") {
-		text += 'Sort all by - Newest';
-	} else if (sort == "oldest") {
-		text += 'Sort all by - Oldest';
-	}
-	
-	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/visualization?article=" + article_url + '&sort=';
-	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
-
+	text = '<a class="btn btn-xs" href="' +url+sort+ '&next=' + next_cluster + '">Get another cluster &gt;&gt;</a>';
 	$('#node_sort').html(text);
 }
-
-

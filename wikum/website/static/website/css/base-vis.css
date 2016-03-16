@@ -438,22 +438,23 @@ textarea {
 #node_sort {
 	position: absolute;
 	display: block;
-	top: 90px;
-	left: 200px;
+	top: 120px;
+	left: 300px;
 }
 
 #node_highlight {
     position: fixed;
     display: block;
-    top: 90px;
+    top: 120px;
     left: 30px;
 }
 
 #button_subtree {
     position: absolute;
     display: block;
-    top: 89px;
-    left: 490px;
+    top: 80px;
+    left: 200px;
+    font-size: 12px;
 }
 
 .input-sm {

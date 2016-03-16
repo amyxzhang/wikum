@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block styles %}
-	<link rel="stylesheet" href={% static "website/css/subtree.css" %}>
+	<link rel="stylesheet" href={% static "website/css/base-vis.css" %}>
 	<link rel="stylesheet" href={% static "website/css/jquery-ui.min.css" %}>
 {% endblock %}
 
@@ -106,6 +106,8 @@
 	<script src={% static "website/js/jquery-ui.min.js" %}></script>
 	<script src={% static "website/js/jquery.noty.packaged.min.js" %}></script>
 	<script src={% static "website/js/jquery.highlight-5.js" %}></script>
+	    
+    <script src={% static "website/js/base.js" %}></script>
 	<script src={% static "website/js/subtree.js" %}></script>
 
 {% endblock %}
