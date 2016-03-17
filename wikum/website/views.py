@@ -460,7 +460,16 @@ def history(request):
 
 def viz_data(request):
     article_url = request.GET['article']
-    sort = request.GET['sort']
+    sort = request.GET.get('sort')
+    next = request.GET.get('next')
+    
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+        
+    start = 20 * next
+    end = (20 * next) + 20
     
     a = Article.objects.get(url=article_url)
     
@@ -469,17 +478,17 @@ def viz_data(request):
            'article': True}
 
     if sort == 'likes':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:20]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[start:end]
     elif sort == "replies":
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[0:20]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[start:end]
     elif sort == "long":
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-text_len')[0:20]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-text_len')[start:end]
     elif sort == "short":
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('text_len')[0:20]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('text_len')[start:end]
     elif sort == 'newest':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-created_at')[0:20]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-created_at')[start:end]
     elif sort == 'oldest':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[0:20]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[start:end]
             
     val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
     return JsonResponse(val)

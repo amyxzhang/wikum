@@ -162,8 +162,12 @@ var sort = getParameterByName('sort');
 if (!sort) {
 	sort = "likes";
 }
+var next = parseInt(getParameterByName('next'));
+if (!next) {
+	next = 0;
+}
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, flare) {
+d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -188,7 +192,7 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort, function(error, fl
 
 function make_dropdown() {
 	
-	text = '<button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
+	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 	
 	if (!sort || sort == "likes") {
 		text += 'Sort all by - # Likes';
@@ -207,6 +211,9 @@ function make_dropdown() {
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
 	url = "/visualization?article=" + article_url + '&sort=';
 	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+
+	next_sub = next + 1;
+	text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
 
 	$('#node_sort').html(text);
 }
