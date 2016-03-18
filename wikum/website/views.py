@@ -336,6 +336,8 @@ def summarize_comments(request):
                            explanation='edit summary of subtree')
             
             d_id = c.id
+            
+            new_comment = c
         
         
         h.comments.add(c)

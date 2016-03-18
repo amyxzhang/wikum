@@ -477,3 +477,7 @@ textarea {
 .btn-edit:hover {
 	color: #ffffff;
 }
+
+.summarize_comment_comment>p {
+	padding-bottom: 15px;
+}
