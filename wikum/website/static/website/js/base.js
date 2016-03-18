@@ -230,7 +230,11 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 
 function cite_para(did, para_num) {
 	var box = $('#summarize_comment_textarea');
-	box.val(box.val() + '[[comment_' + did + '_p' +  para_num + ']]\n');
+	var cursorPos = box.prop('selectionStart');
+    var v = box.val();
+    var textBefore = v.substring(0,  cursorPos );
+    var textAfter  = v.substring( cursorPos, v.length );
+    box.val( textBefore + '[[comment_' + did + '_p' +  para_num + ']]\n' + textAfter );
 }
 
 function show_comment_text(text, did) {
@@ -247,6 +251,19 @@ function show_comment_text(text, did) {
 		}
 	}
 	return text;
+}
+
+function insert_quote(highlighted_text, did) {
+	var box = $('#summarize_comment_textarea');
+	var cursorPos = box.prop('selectionStart');
+    var v = box.val();
+    var textBefore = v.substring(0,  cursorPos );
+    var textAfter  = v.substring( cursorPos, v.length );
+    if (did == null) {
+    	box.val( textBefore + '[quote]"' + highlighted_text + '"[endquote]\n' + textAfter );
+    } else {
+    	box.val( textBefore + '[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
+    }
 }
 
 $('#summarize_modal_box').on('show.bs.modal', function(e) {
@@ -318,7 +335,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				if (d.replace.length > 0) {
 					var text = '';
 					for (var i=0; i<d.replace.length; i++) {
-						text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + d.replace[i].name + '</div>';
+						text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.replace[i].name, d.replace[i].d_id)  + '</div>';
 						text = get_subtree_summarize(text, d.replace[i], 1);
 					}
 					
@@ -369,16 +386,14 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			evt.stopPropagation();
 		}).mouseup(function(evt) {
 			evt.stopPropagation();
-			var box = $('#summarize_comment_textarea');
-			box.val(box.val() + '[quote]"' + highlighted_text + '"[endquote]\n');
+			insert_quote(highlighted_text, null);
 		});
 	} else {
 		$('#tooltip_sum').mousedown(function(evt) {
 			evt.stopPropagation();
 		}).mouseup(function(evt) {
 			evt.stopPropagation();
-			var box = $('#summarize_comment_textarea');
-			box.val(box.val() + '[quote]"' + highlighted_text + '" [[comment_' + nodes_all[highlighted_comm - 1].d_id +']] [endquote]\n');
+			insert_quote(highlighted_text, nodes_all[highlighted_comm - 1].d_id);
 		});
 	}
 	
@@ -816,7 +831,11 @@ function render_summary_node(d) {
 
 function cite_comment(did) {
 	var box = $('#summarize_comment_textarea');
-	box.val(box.val() + '[[comment_' + did +']]\n');
+	var cursorPos = box.prop('selectionStart');
+    var v = box.val();
+    var textBefore = v.substring(0,  cursorPos );
+    var textAfter  = v.substring( cursorPos, v.length );
+    box.val( textBefore + '[[comment_' + did +']]\n' + textAfter );
 }
 
 function delete_children_boxes(node) {
