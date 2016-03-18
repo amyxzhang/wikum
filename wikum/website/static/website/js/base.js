@@ -2,10 +2,10 @@
 function make_key() {
 	
   var key_data = [
-	{ "cx": 400, "cy": 80, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
- 	{ "cx": 400, "cy": 95, "r": 7, "color" : "#dae8f5", "text": "no replies"},
- 	{ "cx": 400, "cy": 110, "r": 7, "color" : "purple", "text": "summary"},
- 	{ "cx": 400, "cy": 125, "r": 7, "color" : "#ffd700", "text": "highlighted"},
+	{ "cx": 450, "cy": 80, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
+ 	{ "cx": 450, "cy": 95, "r": 7, "color" : "#dae8f5", "text": "no replies"},
+ 	{ "cx": 450, "cy": 110, "r": 7, "color" : "purple", "text": "summary"},
+ 	{ "cx": 450, "cy": 125, "r": 7, "color" : "#ffd700", "text": "highlighted"},
  	];
  	
   var svg = d3.select("svg");
@@ -820,10 +820,18 @@ function make_highlight() {
 	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
 	$('#node_highlight').html(text);
 	
-	$('#inputHighlight').keypress(function (e) {
-	 var key = e.which;
-	 if(key == 13)  // the enter key code
-	  {
+	$('#inputHighlight').keyup(function (e) {
+		 
+	 	$('#box').removeHighlight();
+	  	
+	  	for (var i=1; i<nodes_all.length; i++) {
+				d3.select("#node_" + nodes_all[i].id)
+						.style("fill", color(nodes_all[i]));
+		}
+		
+		$('#count_result').text('0 comments highlighted');
+		 
+	
 	  	highlight_text = $('#inputHighlight').val();
 	  	count = 0;
 	  	if (highlight_text.length > 0) {
@@ -837,15 +845,10 @@ function make_highlight() {
 		  		}
 		  	}
 		  	$('#box').highlight(highlight_text);
-		$('#count_result').text(count + ' comments highlighted');
-		} else {
-			for (var i=1; i<nodes_all.length; i++) {
-				d3.select("#node_" + nodes_all[i].id)
-						.style("fill", color(nodes_all[i]));
-			}
-			$('#box').removeHighlight();
+		  	
+			$('#count_result').text(count + ' comments highlighted');
+		
 		}
-	}
 	});  
 }
 

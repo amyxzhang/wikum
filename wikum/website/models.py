@@ -20,6 +20,8 @@ class Article(models.Model):
     title = models.TextField()
     url = models.URLField(unique=True)
     source = models.ForeignKey('Source')
+    
+    vectorizer = models.BinaryField()
 
     def __unicode__(self):
         return self.title
@@ -66,6 +68,8 @@ class Comment(models.Model):
     
     summary = models.TextField()
     is_replacement = models.BooleanField(default=False)
+    
+    vector = models.BinaryField()
     
     
     

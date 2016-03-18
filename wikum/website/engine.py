@@ -6,6 +6,18 @@ import datetime
 from django.core.paginator import Paginator
 from random import randint
 
+from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
+import re
+import nltk
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pickle
+
+stemmer = SnowballStemmer("english")
+stop = stopwords.words('english')
+
+
+
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
 COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&thread=%s'
 
@@ -121,6 +133,7 @@ def get_posts(article):
             import_posts(result, article)
             
         count_replies(article)
+        create_vectors(article)
         
         posts = article.comment_set.filter(reply_to_disqus=None).order_by('-likes')
     else:
@@ -128,3 +141,68 @@ def get_posts(article):
     
     return posts[0:50]
 
+
+def tokenize_and_stem(text):
+    # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
+    tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
+    filtered_tokens = []
+    # filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
+    for token in tokens:
+        if re.search('[a-zA-Z]', token):
+            filtered_tokens.append(token)
+    stems = [stemmer.stem(t) for t in filtered_tokens]
+    return stems
+
+def tokenize_only(text):
+    # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
+    tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
+    filtered_tokens = []
+    # filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
+    for token in tokens:
+        if re.search('[a-zA-Z]', token):
+            filtered_tokens.append(token)
+    return filtered_tokens
+
+def create_vectors(article):
+    comments = Comment.objects.filter(article=article, num_subchildren=0, reply_to_disqus=None)
+    ids = []
+    comment_list = []
+    for comment in comments:
+        ids.append(comment.id)
+        comment_list.append(comment.text)
+    
+    tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
+                                     min_df=0.2, stop_words='english',
+                                     use_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1,3))
+      
+    vectorizer = tfidf_vectorizer.fit(comment_list)  
+    
+    article.vectorizer = pickle.dumps(vectorizer)
+    article.save()
+    
+    tfidf_matrix = tfidf_vectorizer.transform(comment_list)
+    
+    for id, row in zip(ids, tfidf_matrix):
+        c = Comment.objects.get(id=id)
+        c.vector = pickle.dumps(row)
+        c.save()
+    
+    
+def make_vector(comment, article):
+    
+    vectorizer = pickle.loads(article.vectorizer)
+    
+    summary = comment.summary
+    
+    summary = re.sub(r'\[\[.*?\]\]', ' ', summary)
+    summary = re.sub(r'\[quote\]', ' ', summary)
+    summary = re.sub(r'\[endquote\]', ' ', summary)
+    
+    vector = vectorizer.transform([summary])[0]
+    
+    comment.vector = pickle.dumps(vector)
+    comment.save()
+    
+    
+    
+    

@@ -1,6 +1,6 @@
 
 p {
-	font-size: 10px;
+	font-size: 12px;
 	margin: 0px;
 	padding: 0px;
 	padding-bottom: 10px;
@@ -265,11 +265,11 @@ div.selected {
 
 .btn-xs {
     padding: 1px 3px;
-    font-size: 10px;
+    font-size: 12px;
 }
 
 textarea {
-	font-size: 10px;
+	font-size: 12px;
 	min-height: 100px;
 }
 
@@ -300,7 +300,7 @@ text {
 #expand {
 	position: absolute;
 	display: block;
-	font-size: 10px;
+	font-size: 12px;
 	padding: 2px;
 	background: rgba(255,255,255,0.8);
 	border: 1px #cccccc solid;
@@ -330,11 +330,11 @@ rect.selection {
 	padding-left: 5px;
 	padding-right: 5px;
 	border: 1px #ffffff solid;
-	font-size: 10px;
+	font-size: 12px;
 }
 
 .summarize_comment_comment {
-	font-size: 10px;
+	font-size: 12px;
 }
 
 .highlighted {
@@ -354,7 +354,7 @@ rect.selection {
 }
 
 blockquote {
-	font-size: 10px;
+	font-size: 12px;
 	border-left: 5px solid pink;
 	padding-bottom: 5px;
 	padding-top: 5px;

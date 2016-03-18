@@ -5,10 +5,17 @@ from django.http import JsonResponse
 
 from engine import *
 
+from sklearn.cluster import KMeans
+
 from django.http import HttpResponse
 from annoying.decorators import render_to
 from django.http.response import HttpResponseBadRequest
 import random
+import numpy as np
+import pickle
+from math import floor
+from sklearn.cluster.k_means_ import MiniBatchKMeans
+from sklearn.metrics.pairwise import euclidean_distances
 
 @render_to('website/index.html')
 def index(request):
@@ -273,6 +280,8 @@ def summarize_selected(request):
         
         recurse_down_num_subtree(new_comment)
         
+        make_vector(new_comment, a)
+        
         return JsonResponse({"d_id": new_comment.id})
         
     except Exception, e:
@@ -332,6 +341,8 @@ def summarize_comments(request):
         h.comments.add(c)
         recurse_up_post(c)
         recurse_down_num_subtree(new_comment)
+        
+        make_vector(new_comment, a)
         
         return JsonResponse({"d_id": d_id})
         
@@ -495,12 +506,7 @@ def viz_data(request):
     
 def cluster_data(request):
     article_url = request.GET['article']
-    next = request.GET.get('next')
-    
-    if not next:
-        next = 0
-    else:
-        next = int(next)
+    cluster_size = int(request.GET.get('size'))
     
     a = Article.objects.get(url=article_url)
     
@@ -508,9 +514,76 @@ def cluster_data(request):
            'size': 400,
            'article': True}
     
-    posts = a.comment_set.filter(hidden=False, num_subchildren=0, reply_to_disqus=None)[(next*10):(next*10) + 10]
+    posts = a.comment_set.filter(hidden=False, num_subchildren=0, reply_to_disqus=None)
     
-    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
+    num_posts = posts.count()
+
+    clust_size = int(round(((float(cluster_size) * (80 - 60)) / 100.0) + 60.0))
+
+    clustval = int(round(float(num_posts)/100.0)) * clust_size
+    
+    posts_vectors = []
+    for post in posts:
+        posts_vectors.append(pickle.loads(post.vector).toarray()[0])
+    
+    num_clusters = num_posts - clustval
+     
+    km = MiniBatchKMeans(n_clusters=num_clusters)
+     
+    km.fit(posts_vectors)
+     
+    clusters = km.labels_.tolist()
+    
+    cluster_centers = km.cluster_centers_
+    
+    cluster_dict = {}
+    for cluster in clusters:
+        if cluster not in cluster_dict:
+            cluster_dict[cluster] = 0
+        cluster_dict[cluster] += 1
+        
+    count_dict = {}
+    
+    for cluster, num in cluster_dict.items():
+        if num != 1:
+            if num not in count_dict:
+                count_dict[num] = []
+            count_dict[num].append(cluster)
+            
+    counts_sorted = sorted(count_dict.keys())
+    
+    indice = int(round(((float(cluster_size) * (len(counts_sorted))) / 100.0)))
+    if indice == 0:
+        indice = 1
+    
+    indice = counts_sorted[indice-1]
+    
+    potential_clusters = count_dict[indice]
+    
+    vector_dict = {}
+    
+    for cluster, vector in zip(clusters, posts_vectors):
+        if cluster in potential_clusters:
+            if cluster not in vector_dict:
+                vector_dict[cluster] = []
+            vector_dict[cluster].append(vector)
+    
+    min_dist = 10000
+    min_cluster = None
+    
+    for cluster, vectors in vector_dict.items():
+        dist = np.mean(euclidean_distances(np.array(vectors), [cluster_centers[cluster]]))
+        if dist < min_dist:
+            min_dist = dist
+            min_cluster = cluster
+
+    posts_cluster = []
+    
+    for cluster, post in zip(clusters, posts):
+        if cluster == min_cluster:
+            posts_cluster.append(post)
+    
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts_cluster, False)
     
     return JsonResponse(val)
     

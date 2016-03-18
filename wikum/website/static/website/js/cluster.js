@@ -158,16 +158,12 @@ svg.append('svg:rect')
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
-var sort = getParameterByName('sort');
-if (!sort) {
-	sort = "likes";
-}
-var next = parseInt(getParameterByName('next'));
-if (!next) {
-	next = 0;
+var size = parseInt(getParameterByName('size'));
+if (!size) {
+	size = 0;
 }
 
-d3.json('/cluster_data?article=' + article_url + '&next=' + next, function(error, flare) {
+d3.json('/cluster_data?article=' + article_url + '&size=' + size, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -188,12 +184,21 @@ d3.json('/cluster_data?article=' + article_url + '&next=' + next, function(error
   $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> ');
 	
   
+  $( "#slider" ).slider({
+  	value: size,
+  	change: function( event, ui ) {
+  		url = "/cluster?article=" + article_url + '&size=';
+  		window.location.href = url + ui.value;
+  	}
+  });
+  
 });
 
 function make_dropdown() {
-	url = "/cluster?article=" + article_url + '&sort=';
-	next_cluster = next + 1;
+	url = "/cluster?article=" + article_url + '&size=';
 	
-	text = '<a class="btn btn-xs" href="' +url+sort+ '&next=' + next_cluster + '">Get another cluster &gt;&gt;</a>';
+	text = '<a class="btn btn-xs" href="' +url + size + '">Get another random cluster &gt;&gt;</a>';
+	
+	text += '<BR>Cluster size: <div id="slider"></div>';
 	$('#node_sort').html(text);
 }
