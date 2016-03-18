@@ -518,7 +518,7 @@ def cluster_data(request):
     
     num_posts = posts.count()
 
-    clust_size = int(round(((float(cluster_size) * (80 - 60)) / 100.0) + 60.0))
+    clust_size = int(round(((float(cluster_size) * (90 - 60)) / 100.0) + 60.0))
 
     clustval = int(round(float(num_posts)/100.0)) * clust_size
     

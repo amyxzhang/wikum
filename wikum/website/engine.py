@@ -135,6 +135,12 @@ def get_posts(article):
         count_replies(article)
         create_vectors(article)
         
+        posts = article.comment_set.filter(reply_to_disqus=None)
+        from wikum.website.views import recurse_viz
+        
+        recurse_viz(None, posts, False)
+        
+        
         posts = article.comment_set.filter(reply_to_disqus=None).order_by('-likes')
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-likes')
@@ -169,7 +175,9 @@ def create_vectors(article):
     comment_list = []
     for comment in comments:
         ids.append(comment.id)
-        comment_list.append(comment.text)
+        
+        text = re.sub(r'<.*?>', ' ', comment.text)
+        comment_list.append(text)
     
     tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
                                      min_df=0.2, stop_words='english',
