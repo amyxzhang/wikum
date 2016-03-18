@@ -967,6 +967,9 @@ function update(source) {
     	var o = {x: source.x0, y: source.y0};
     	return diagonal({source: o, target: o});
       })
+      .attr("id", function(d) { 
+     	return 'link_' + d.source.id + '_' + d.target.id;
+      })
     .transition()
       .duration(duration)
       .attr("d", diagonal);
@@ -1239,6 +1242,29 @@ function unhighlight_all() {
 	}
 }
 
+function highlight_link(from_id, to_id) {
+	d3.select("#link_" + from_id + '_' + to_id).transition()
+		.style("stroke", "red")
+		.style("stroke-width", "3px")
+		.each("end", function() {
+			extra_highlight_node(from_id);
+			d3.select(this)
+				.transition()
+				.style("stroke", "#cccccc")
+				.style("stroke-width", "2px");
+				
+		});
+}
+
+function show_parent(id) {
+	d = nodes_all[id-1];
+	unextra_highlight_node(id);
+	parent = d.parent;
+	highlight_node(parent.id);
+	highlight_link(parent.id, id);
+	show_text('clicked');
+}
+
 function show_text(d) {
 	if (d && d != 'clicked') {
 		clear_box_top();
@@ -1251,6 +1277,10 @@ function show_text(d) {
 			} else {
 				var text = '<div class="comment_box" id="comment_' + d.id + '">';
 			}
+			
+			if (d.depth > 1) {
+				text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
+			} 
 			
 			text += construct_comment(d);
 			text += '</div>';
@@ -1288,7 +1318,10 @@ function show_text(d) {
 			if (objs[i].replace_node) {
 				
 				if (objs[i].depth - min_level == 0) {
-					text += '<div class="comment_box summary_box" id="comment_' + objs[i].id + '">'; 
+					text += '<div class="comment_box summary_box" id="comment_' + objs[i].id + '">';
+					if (objs[i].depth > 1) {
+						text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
+					} 
 				} else if (objs[i].depth - min_level == 1) {
 					text += '<div class="comment_box summary_box level1" id="comment_' + objs[i].id + '">'; 
 				} else if (objs[i].depth - min_level == 2) {
@@ -1300,6 +1333,9 @@ function show_text(d) {
 			} else {
 				if (objs[i].depth - min_level == 0) {
 					text += '<div class="comment_box" id="comment_' + objs[i].id + '">'; 
+					if (objs[i].depth > 1) {
+						text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
+					} 
 				} else if (objs[i].depth - min_level == 1) {
 					text += '<div class="comment_box level1" id="comment_' + objs[i].id + '">'; 
 				} else if (objs[i].depth - min_level == 2) {
