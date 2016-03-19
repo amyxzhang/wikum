@@ -1128,8 +1128,9 @@ function save_node_position() {
 	        }
 	        // Make sure that the node being added to is expanded so user can see added node is correctly moved
 	        expand(selectedNode);
-	        d.x0 = 0;
-			d.y0 = 0;
+	        
+	        draggingNode.x0 = 0;
+			draggingNode.y0 = 0;
 	        
 	        endDrag();
 	        
