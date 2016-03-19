@@ -941,6 +941,9 @@ function dragstart(d) {
 function initiateDrag(d, domNode) {
     draggingNode = d;
     
+    d3.selectAll(".clicked").classed("clicked", false);
+    unhighlight_all();
+    
     d3.select(domNode).select('.ghostCircle').attr('pointer-events', 'none');
         d3.selectAll('.ghostCircle').attr('class', 'ghostCircle show');
         d3.select(domNode).attr('class', 'node activeDrag');
