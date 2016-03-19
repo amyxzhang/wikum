@@ -1,3 +1,5 @@
+draggingNode = null;
+selectedNode = null;
 
 function make_key() {
 	
@@ -927,6 +929,249 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function dragstart(d) {
+    if (d.article || d.parent_node) {
+        return;
+    }
+    dragStarted = true;
+    d3.event.sourceEvent.stopPropagation();
+}
+
+
+function initiateDrag(d, domNode) {
+    draggingNode = d;
+    
+    d3.select(domNode).select('.ghostCircle').attr('pointer-events', 'none');
+        d3.selectAll('.ghostCircle').attr('class', 'ghostCircle show');
+        d3.select(domNode).attr('class', 'node activeDrag');
+    
+    
+    svg.selectAll("g.node").sort(function(a, b) { // select the parent and sort the path's
+            if (a.id != draggingNode.id) return 1; // a is not the hovered element, send "a" to the back
+            else return -1; // a is the hovered element, bring "a" to the front
+        });
+        
+    nodes = tree.nodes(d);
+    
+    // if nodes has children, remove the links and nodes
+    if (nodes.length > 1) {
+        // remove link paths
+        links = tree.links(nodes);
+        nodePaths = svg.selectAll("path.link")
+            .data(links, function(d) {
+                return d.target.id;
+            }).remove();
+        // remove child nodes
+        nodesExit = svg.selectAll("g.node")
+            .data(nodes, function(d) {
+                return d.id;
+            }).filter(function(d, i) {
+                if (d.id == draggingNode.id) {
+                    return false;
+                }
+                return true;
+            }).remove();
+    }
+
+    // remove parent link
+    parentLink = tree.links(tree.nodes(draggingNode.parent));
+    svg.selectAll('path.link').filter(function(d, i) {
+        if (d.target.id == draggingNode.id) {
+            return true;
+        }
+        return false;
+    }).remove();
+
+    dragStarted = null;
+}
+
+function dragmove(d) {
+    if (d.article || d.parent_node) {
+        return;
+    }
+    if (dragStarted) {
+        domNode = this;
+        initiateDrag(d, domNode);
+        dragStarted = null;
+    }
+    
+    $('#expand').hide();
+    
+    
+    x = d3.event.x, y = d3.event.y;
+    
+	node = d3.select(this);
+	node.attr("transform", "translate(" + x+ "," + y + ")");
+	updateTempConnector();
+}
+
+  var overCircle = function(d) {
+  		if (d != draggingNode) {
+	        selectedNode = d;
+	        updateTempConnector();
+	    }
+    };
+    var outCircle = function(d) {
+        selectedNode = null;
+        updateTempConnector();
+    };
+
+ var updateTempConnector = function() {
+        if (draggingNode !== null && selectedNode !== null) {
+        	node = d3.select('#node_' + selectedNode.id);
+            node.attr("r", 20)
+            	.attr('class', 'selected');
+            	
+        } else {
+        	d3.selectAll('.selected')
+        	.classed("selected", false)
+        	.attr('r', function(d) {
+        		return (d.size + 400 )/65; 
+        	});
+        }
+};
+
+function expand(d) {
+	if (d.replace_node) {
+		show_replace_nodes(d.id);
+	} else {
+		expand_recurs(d);
+	}
+}
+
+function dragend(d) {
+ 	if (d.article || d.parent_node) {
+        return;
+    }
+    
+    domNode = this;
+    if (selectedNode) {
+        save_node_position();
+    } else {
+    	
+    	d.x0 = 0;
+		d.y0 = 0;
+		
+		node = d3.select(this);
+		node
+		.attr("transform", "translate(" + d.y0 + "," + d.x0 + ")")
+		.attr("r", function(d) { 
+	      	return (d.size + 400 )/65; 
+	    });
+        endDrag();
+    }
+}
+
+function save_node_position() {
+	
+	var csrf = $('#csrf').text();
+	data = {csrfmiddlewaretoken: csrf,
+			new_parent: selectedNode.d_id,
+			node: draggingNode.d_id}
+	
+	$.ajax({
+		type: 'POST',
+		url: '/move_comments',
+		data: data,
+		success: function(res) {
+			
+			
+			// now remove the element from the parent, and insert it into the new elements children
+	        var index = draggingNode.parent.children.indexOf(draggingNode);
+	        if (index > -1) {
+	            draggingNode.parent.children.splice(index, 1);
+	        }
+	        draggingNode.parent = selectedNode;
+	        if (typeof selectedNode.children !== 'undefined' || typeof selectedNode._children !== 'undefined') {
+	            if (typeof selectedNode.children !== 'undefined') {
+	            	added = false;
+	            	for (var i=0; i<selectedNode.children.length; i++) {
+							if (selectedNode.children[i].size < draggingNode.size) {
+								selectedNode.children.splice(i, 0, draggingNode);
+								added = true;
+								break;
+							}
+						}
+					if (!added) {
+						selectedNode.children.push(draggingNode);
+					}
+	            } else {
+	            	added = false;
+	                for (var i=0; i<selectedNode._children.length; i++) {
+							if (selectedNode._children[i].size < draggingNode.size) {
+								selectedNode._children.splice(i, 0, draggingNode);
+								added = true;
+								break;
+							}
+						}
+					if (!added) {
+						selectedNode._children.push(draggingNode);
+					}
+	            }
+	        } else {
+	        	if (selectedNode.replace_node) {
+	        		added = false;
+	        		for (var i=0; i<selectedNode.replace.length; i++) {
+							if (selectedNode.replace[i].size < draggingNode.size) {
+								selectedNode.replace.splice(i, 0, draggingNode);
+								added = true
+								break;
+							}
+						}
+					if (!added) {
+						selectedNode.replace.push(draggingNode);
+					}
+	        	} else {
+	        		selectedNode.children = [];
+	            	selectedNode.children.push(draggingNode);
+	        	}
+	        }
+	        // Make sure that the node being added to is expanded so user can see added node is correctly moved
+	        expand(selectedNode);
+	        d.x0 = 0;
+			d.y0 = 0;
+	        
+	        endDrag();
+	        
+			success_noty();
+		},
+		error: function() {
+			
+			draggingNode.x0 = 0;
+			draggingNode.y0 = 0;
+			
+			node = d3.select('#node_' + draggingNode.id);
+			node.attr("transform", "translate(" + draggingNode.y0 + "," + draggingNode.x0 + ")")
+				.attr("r", function(d) { 
+			      	return (d.size + 400 )/65; 
+			    });
+			    
+	        endDrag();
+			
+			error_noty();
+		}
+	});
+}
+
+
+function endDrag() {
+    selectedNode = null;
+    d3.selectAll('.ghostCircle').attr('class', 'ghostCircle');
+    d3.select(domNode).attr('class', 'node');
+    // now restore the mouseover event or we won't be able to drag a 2nd time
+    d3.select(domNode).select('.ghostCircle').attr('pointer-events', '');
+    updateTempConnector();
+    if (draggingNode !== null) {
+    	
+    	d3.select("#node_" + draggingNode.id)
+			.attr("transform", "translate(" + 0 + "," + 0 + ")")
+			
+        update(draggingNode.parent);
+        
+        draggingNode = null;
+    }
+}
+
 function update(source) {
 
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
@@ -970,6 +1215,13 @@ function update(source) {
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .style("opacity", 1e-6);
 
+  var node_drag = d3.behavior.drag()
+  	.origin(function(d) { return {x: 0, y: 0}; })
+    .on("dragstart", dragstart)
+    .on("drag", dragmove)
+    .on("dragend", dragend);
+  
+
   // Enter any new nodes at the parent's previous position.
   nodeEnter.append("circle")
       .attr("r", function(d) { 
@@ -994,7 +1246,21 @@ function update(source) {
       	}
       })
       .on("mouseover", showdiv)
-      .on("mouseout", hidediv);
+      .on("mouseout", hidediv)
+      .call(node_drag);
+      
+	nodeEnter.append("circle")
+            .attr('class', 'ghostCircle')
+            .attr("r", 20)
+            .attr("opacity", 0.0) // change this to zero to hide the target area
+        .style("fill", "red")
+            .attr('pointer-events', 'mouseover')
+            .on("mouseover", function(node) {
+                overCircle(node);
+            })
+            .on("mouseout", function(node) {
+                outCircle(node);
+            });
 
   // Transition nodes to their new position.
   nodeEnter.transition()

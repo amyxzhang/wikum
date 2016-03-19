@@ -25,7 +25,11 @@ urlpatterns = [
     url(r'^viz_data','website.views.viz_data'),
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),
+    
+    url(r'^summary','website.views.summary'),
     url(r'^history','website.views.history'),
+    
+    url(r'^move_comments','website.views.move_comments'),
     
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),

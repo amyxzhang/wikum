@@ -130,21 +130,19 @@ svg.append('svg:rect')
         unhighlight_all();
 
         d3.selectAll( 'circle').each( function(state_data, i) {
-        	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
-	            if( 
-	                !d3.select( this).classed( "selected") && 
-	                    // inner circle inside selection frame
-	                state_data.x>=d.y && state_data.x<=d.y+d.height && 
-	                state_data.y>=d.x && state_data.y<=d.x+d.width
-	            ) {
-	            	if (!state_data.article) {
-						d3.select(this)
-						.style("stroke","#000000")
-						.style("stroke-width", "2px")
-						.attr("class", "clicked");
-					}
-	            }
-	         }
+            if( 
+                !d3.select( this).classed( "selected") && 
+                    // inner circle inside selection frame
+                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+                state_data.y>=d.x && state_data.y<=d.x+d.width
+            ) {
+            	if (!state_data.article) {
+					d3.select(this)
+					.style("stroke","#000000")
+					.style("stroke-width", "2px")
+					.attr("class", "clicked");
+				}
+            }
         });
         
         }
@@ -169,7 +167,7 @@ if (!next) {
 	next = 0;
 }
 
-d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
+d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -179,13 +177,7 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   
   update(root = flare);
   
-  
-  d = nodes_all[1];
-  while (d.parent_node) {
-  	d = d.children[0];
-  }
-  
-  show_text(d);
+  show_text(nodes_all[0]);
   
   make_key();
   
@@ -193,7 +185,7 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   
   make_highlight();
   
-  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '">Overall View</a> &nbsp;<strong>Subtree View</strong> &nbsp; <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '">Cluster View</a> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '">Summary View</a>');
+ $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '">Cluster View</a>');
 	
   
 });
@@ -202,29 +194,28 @@ function make_dropdown() {
 	
 	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 	
-	if (!sort || sort == "random") {
-	    text += 'Get Random Subtree';
-	    sort = "random";
-	}
-	if (sort == "likes") {
-		text += 'Get Subtree by # Likes';
+	if (!sort || sort == "likes") {
+		text += 'Sort all by - # Likes';
 	} else if (sort == "replies") {
-		text += 'Get Subtree by # Replies';
+		text += 'Sort all by - # Replies';
 	} else if (sort == "long") {
-		text += 'Get Long Comment Subtree';
+		text += 'Sort all by - Longest';
 	} else if (sort == "short") {
-		text += 'Get Short Comment Subtree';
+		text += 'Sort all by - Shortest';
 	} else if (sort == "newest") {
-		text += 'Get New Subtree';
+		text += 'Sort all by - Newest';
 	} else if (sort == "oldest") {
-		text += 'Get Old Subtree';
+		text += 'Sort all by - Oldest';
 	}
 	
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/subtree?article=" + article_url + '&sort=';
-	text += '<li><a href="' + url + 'random">Random</a></li><li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	url = "/visualization?article=" + article_url + '&sort=';
+	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
 
 	next_sub = next + 1;
-	text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get another subtree &gt;&gt;</a>';
+	text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
+
 	$('#node_sort').html(text);
 }
+
+

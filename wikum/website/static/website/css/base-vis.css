@@ -481,3 +481,11 @@ textarea {
 .summarize_comment_comment>p {
 	padding-bottom: 15px;
 }
+
+  .ghostCircle.show{
+      display:block;
+  }
+
+  .ghostCircle, .activeDrag .ghostCircle{
+       display: none;
+  }

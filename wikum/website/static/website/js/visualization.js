@@ -130,19 +130,21 @@ svg.append('svg:rect')
         unhighlight_all();
 
         d3.selectAll( 'circle').each( function(state_data, i) {
-            if( 
-                !d3.select( this).classed( "selected") && 
-                    // inner circle inside selection frame
-                state_data.x>=d.y && state_data.x<=d.y+d.height && 
-                state_data.y>=d.x && state_data.y<=d.x+d.width
-            ) {
-            	if (!state_data.article) {
-					d3.select(this)
-					.style("stroke","#000000")
-					.style("stroke-width", "2px")
-					.attr("class", "clicked");
-				}
-            }
+        	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
+	            if( 
+	                !d3.select( this).classed( "selected") && 
+	                    // inner circle inside selection frame
+	                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+	                state_data.y>=d.x && state_data.y<=d.x+d.width
+	            ) {
+	            	if (!state_data.article) {
+						d3.select(this)
+						.style("stroke","#000000")
+						.style("stroke-width", "2px")
+						.attr("class", "clicked");
+					}
+	            }
+	        }
         });
         
         }
@@ -154,7 +156,7 @@ svg.append('svg:rect')
 	    svg.selectAll( "rect.selection").remove();
 	    
 	});
-
+	
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
@@ -185,7 +187,7 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next, 
   
   make_highlight();
   
- $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '">Cluster View</a>');
+ $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '">Cluster View</a> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '">Summary View</a>');
 	
   
 });

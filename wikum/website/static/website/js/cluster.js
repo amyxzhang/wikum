@@ -130,19 +130,21 @@ svg.append('svg:rect')
         unhighlight_all();
 
         d3.selectAll( 'circle').each( function(state_data, i) {
-            if( 
-                !d3.select( this).classed( "selected") && 
-                    // inner circle inside selection frame
-                state_data.x>=d.y && state_data.x<=d.y+d.height && 
-                state_data.y>=d.x && state_data.y<=d.x+d.width
-            ) {
-            	if (!state_data.article) {
-					d3.select(this)
-					.style("stroke","#000000")
-					.style("stroke-width", "2px")
-					.attr("class", "clicked");
-				}
-            }
+        	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
+	            if( 
+	                !d3.select( this).classed( "selected") && 
+	                    // inner circle inside selection frame
+	                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+	                state_data.y>=d.x && state_data.y<=d.x+d.width
+	            ) {
+	            	if (!state_data.article) {
+						d3.select(this)
+						.style("stroke","#000000")
+						.style("stroke-width", "2px")
+						.attr("class", "clicked");
+					}
+	            }
+	         }
         });
         
         }
@@ -181,7 +183,7 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size, function(error
   
   make_highlight();
   
-  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> ');
+  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '">Summary View</a>');
 	
   
   $( "#slider" ).slider({

@@ -92,6 +92,13 @@ def visualization(request):
     article = Article.objects.get(url=url)
     return {'article': article,
             'source': article.source}
+    
+@render_to('website/summary.html')
+def summary(request):
+    url = request.GET['article']
+    article = Article.objects.get(url=url)
+    return {'article': article,
+            'source': article.source}
 
 @render_to('website/subtree.html')
 def subtree(request):
@@ -383,6 +390,47 @@ def hide_comments(request):
         print e
         return HttpResponseBadRequest()
 
+def move_comments(request):
+    try:
+        new_parent_id = request.POST['new_parent']
+        node_id = request.POST['node']
+        
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        comment = Comment.objects.get(id=node_id)
+        
+        old_parent = None
+        if comment.reply_to_disqus:
+            old_parent = Comment.objects.get(disqus_id=comment.reply_to_disqus)
+        
+        article = comment.article
+        
+        new_parent_comment = Comment.objects.get(id=new_parent_id)
+        
+        comment.reply_to_disqus = new_parent_comment.disqus_id
+        comment.save()
+        
+        h = History.objects.create(user=req_user, 
+                                       article=article,
+                                       action='move_comment',
+                                       explanation='Move comment')
+
+        h.comments.add(comment)
+        if old_parent:
+            h.comments.add(old_parent)
+
+        recurse_up_post(new_parent_comment)
+        
+        if old_parent:
+            recurse_up_post(old_parent)
+        
+        return JsonResponse({})
+    
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+            
+            
 def hide_comment(request):
     try:
         article_id = request.POST['article']
@@ -460,7 +508,7 @@ def hide_replies(request):
 @render_to('website/history.html')
 def history(request):
     article = request.GET['article']
-    hist = History.objects.filter(article_id=article).order_by('-datetime').select_related()
+    hist = History.objects.filter(article_id=article).order_by('-datetime').select_related()[0:20]
     
     if hist.count() > 0:
         a = hist[0].article

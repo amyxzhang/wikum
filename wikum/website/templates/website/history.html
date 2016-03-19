@@ -43,6 +43,8 @@
 	            		<td>Summarize Group of Comments</td>
 	            	{% elif h.action == "edit_sum_nodes" %}
 	            		<td>Edit Summary of Subtree</td>
+	            	{% elif h.action == "move_comment" %}
+	            		<td>Move Comment</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}
@@ -77,6 +79,8 @@
 	            			All Comments Hidden
 	            		{% elif h.action == "hide_comments" %}
 	            			All Comments Hidden
+	            		{% elif h.action == "move_comment" %}
+	            			Move Comment
 	            		{% else %}
 	            			{{ h.to_str }}
 	            		{% endif %} </td>
