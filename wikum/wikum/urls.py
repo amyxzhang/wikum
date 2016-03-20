@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^viz_data','website.views.viz_data'),
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),
-    
+    url(r'^summary_data','website.views.summary_data'),
     url(r'^summary','website.views.summary'),
     url(r'^history','website.views.history'),
     

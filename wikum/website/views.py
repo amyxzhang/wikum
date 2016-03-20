@@ -97,8 +97,25 @@ def visualization(request):
 def summary(request):
     url = request.GET['article']
     article = Article.objects.get(url=url)
+    
+    
     return {'article': article,
-            'source': article.source}
+            'source': article.source,
+            }
+    
+def summary_data(request):
+    url = request.GET['article']
+    a = Article.objects.get(url=url)
+    
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:2]
+    val = {'posts': []}
+    for post in posts:
+        val['posts'].append(
+                            {'text': post.text if post.summary == '' else post.summary
+                             })
+    
+    
+    return JsonResponse(val)
 
 @render_to('website/subtree.html')
 def subtree(request):
