@@ -96,18 +96,31 @@ def visualization(request):
 @render_to('website/summary.html')
 def summary(request):
     url = request.GET['article']
+    next = request.GET.get('next')
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+        
     article = Article.objects.get(url=url)
     
     
     return {'article': article,
             'source': article.source,
+            'next': next+1,
             }
     
 def summary_data(request):
     url = request.GET['article']
     a = Article.objects.get(url=url)
     
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[0:2]
+    next = request.GET.get('next')
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+    
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[next:next+1]
     val = {'posts': []}
     for post in posts:
         val['posts'].append(

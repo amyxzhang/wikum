@@ -1,9 +1,33 @@
 P {
-	font-size: 12px;
+	font-size: 14px;
 	text-align: left;
 }
 
 #summary {
-	font-size: 12px;
+	font-size: 14px;
 	text-align: left;
+}
+
+#summary>a {
+	color: #000000;
+}
+
+#summary>a:hover {
+	background-color: orange;
+	cursor: pointer;
+}
+
+#summary>a>blockquote:hover {
+	background-color: orange;
+	cursor: pointer;
+}
+
+.insert_comment {
+	display: block;
+	position: relative;
+	left: 20px;
+	background-color: #ffffef;
+	border: 1px #cccccc solid;
+	padding: 5px;
+	margin: 5px;
 }
