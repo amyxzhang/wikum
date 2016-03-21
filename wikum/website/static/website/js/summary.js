@@ -12,14 +12,57 @@ function getParameterByName(name, url) {
 function get_comment(comment_str) {
 	link = event.target;
 	
+	console.log(link);
+	
 	if ($('#' + comment_str).length > 0) {
 		$('#' + comment_str).toggle();	
 	} else {
-		new_comment = '<div class="insert_comment" id="' + comment_str + '">HERE</div>';
-		$(link).after(new_comment);
+		p = comment_str.indexOf('p');
+		if (p > -1) {
+			comment = parseInt(comment_str.substring(8, p-1));
+			para = parseInt(comment_str.substring(p+1));
+		} else {
+			comment = parseInt(comment_str.substring(8));
+			para = null;
+		}
+		
+		
+		$.ajax({ 
+		    type: 'GET', 
+		    url: '/get_comments?comment=' + comment,
+		    dataType: 'json',
+		    success: function (data) { 
+		    	
+		    	children = data.children;
+		    	
+		    	text = '<div class="insert_comment" id="' + comment_str + '">';
+		    	
+		    	left = 0;
+		    	
+		    	if (children.length == 1 && children[0].parent_node) {
+		    		text += '<a>Show more comments</a>';
+		    	}
+		    	
+		    	while (children.length == 1 && children[0].parent_node) {
+		    		left += 10;
+		    		new_comment = '<div class="insert_comment" style="display: none; position: relative; left:' + left + 'px;" id="' + children[0].d_id + '">' + children[0].name + '</div>';
+		    		text += new_comment;
+		    		children = children[0].children;
+		    	}
+		    	
+		    	if (children[0].summary != '') {
+		    		new_comment = '<div class="raw_comment" style="position: relative; left:' + left + 'px;" id="' + children[0].d_id + '">' + children[0].summary + '</div>';
+		    	} else {
+		    		new_comment = '<div class="raw_comment" style="position: relative; left:' + left + 'px;" id="' + children[0].d_id + '">' + children[0].name + '</div>';
+		    	}
+		    	
+				text += new_comment;
+				text += '</div>';
+		    	
+				$(link).after(text);
+		    }
+		 });
 	}
-	
-	
 }
 
 $(document).ready(function () {

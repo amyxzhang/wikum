@@ -706,6 +706,25 @@ def subtree_data(request):
     
     return JsonResponse(val)
      
+     
+def get_comments(request):
+    try:
+        comment_id = int(request.GET.get('comment'))
+        
+        c = Comment.objects.get(id=comment_id)
+        
+        val2 = {}
+        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [c], False)
+        
+        val = recurse_get_parents(val2, c, c.article)
+        
+        return JsonResponse(val)
+        
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+        
+     
 def recurse_get_parents(parent_dict, post, article):
     
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)

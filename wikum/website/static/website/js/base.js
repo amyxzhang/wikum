@@ -75,10 +75,10 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	
 	highlight_box(id);
 	if (type == "hide_comment") {
-		var text = '<div class="hide_comment_comment">' + $(".highlighted").children().first().html() + '</div>';
+		var text = '<div class="hide_comment_comment">' + d.name + '</div>';
 		$('#hide_comment_text').text('Hide this comment from view.');
 	} else if (type == "hide_replies") {
-		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + $(".highlighted").children().first().html() + '</div><BR><strong>Replies:</strong><BR>';
+		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>Replies:</strong><BR>';
 		text = get_subtree(text, d, 0);
 		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
 	} else if (type == "hide_all_selected") {
