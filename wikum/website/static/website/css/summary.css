@@ -1,6 +1,7 @@
 P {
 	font-size: 14px;
 	text-align: left;
+	margin-bottom: 10px;
 }
 
 #summary {
@@ -26,6 +27,11 @@ P {
 	display: block;
 	position: relative;
 	left: 20px;
+}
+
+.raw_comment {
+	display: block;
+	position: relative;
 	background-color: #ffffef;
 	border: 1px #cccccc solid;
 	padding: 5px;

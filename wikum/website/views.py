@@ -124,7 +124,8 @@ def summary_data(request):
     val = {'posts': []}
     for post in posts:
         val['posts'].append(
-                            {'text': post.text if post.summary == '' else post.summary
+                            {'text': post.text if post.summary == '' else post.summary,
+                             'd_id': post.id
                              })
     
     

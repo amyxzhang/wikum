@@ -699,9 +699,9 @@ function get_subtree(text, d, level) {
 
 function get_subtree_summarize(text, d, level) {
 	if (level <= 2) {
-		lvl = level;
+		var lvl = level;
 	} else {
-		lvl = 2;
+		var lvl = 2;
 	}
 	
 	if (d.children) {
