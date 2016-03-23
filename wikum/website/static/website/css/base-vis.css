@@ -489,3 +489,24 @@ textarea {
   .ghostCircle, .activeDrag .ghostCircle{
        display: none;
   }
+  
+#summarize_multiple_modal_box {
+	width: 70%;
+	height: 80%;
+}
+
+#summarize_multiple_comment_textarea {
+	width: 100%;
+	height: 400px;
+}
+
+#summarize_multiple_comment_box {
+	width: 100%;
+	height: 400px;
+	overflow-y: scroll;
+    border: 1px solid #000000;
+}
+
+td {
+	padding: 10px;
+}
