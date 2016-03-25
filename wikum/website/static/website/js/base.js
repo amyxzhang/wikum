@@ -1047,6 +1047,8 @@ function render_summary_node_edit(d) {
 	
 	if (matches > 1) {
 		text = text.replace(pattern, '</a>] | <a class="btn-xs btn-edit" onclick="copy_summary_node_quote(' + d.d_id + ');">Cut & Paste This</a> | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>');
+	} else {
+		text = text.replace(pattern, '</a>]');
 	}
 	
 	var pattern = /\[quote\]/g;
