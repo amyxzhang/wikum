@@ -510,3 +510,7 @@ textarea {
 td {
 	padding: 10px;
 }
+
+.summary_box>span>strong {
+	color: red;
+}
