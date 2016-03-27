@@ -283,6 +283,19 @@ def summarize_selected(request):
         children_ids = [int(x) for x in children_ids]
         child_id = request.POST['child']
         
+        
+        delete_nodes = request.POST.getlist('delete_nodes[]')
+        delete_sents = request.POST.get('delete_sents')
+        
+        delete_sents = json.loads(delete_sents)
+        
+        for node in delete_nodes:
+            delete_node(node)
+        
+        for sent in delete_sents:
+            delete_sent(sent[1], sent[0])
+        
+        
         summary = request.POST['comment']
         
         req_user = request.user if request.user.is_authenticated() else None
@@ -326,14 +339,56 @@ def summarize_selected(request):
         print e
         return HttpResponseBadRequest()  
    
-              
+def delete_node(did):
+    
+    c = Comment.objects.get(id=did)
+    
+    if c.is_replacement:
+        parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+        
+        if parent.count() > 0:
+            parent_id = parent[0].disqus_id
+        else:
+            parent_id = None
+        
+        children = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+        
+        for child in children:
+            child.reply_to_disqus = parent_id
+            child.json_flatten = ''
+            child.save()
+        
+        c.delete()
+    
+        if parent.count() > 0:
+            recurse_up_post(parent[0])
 
+def delete_sent(sent, did):
+    c = Comment.objects.get(id=did)
+    summary = c.summary
+    summary = summary.replace(sent, '')
+    c.summary = summary.strip()
+    c.save()
+    
+    recurse_up_post(c)
+    
 def summarize_comments(request):
     try:
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         summary = request.POST['comment']
+        
+        delete_nodes = request.POST.getlist('delete_nodes[]')
+        delete_sents = request.POST.get('delete_sents')
+        
+        delete_sents = json.loads(delete_sents)
+        
+        for node in delete_nodes:
+            delete_node(node)
+        
+        for sent in delete_sents:
+            delete_sent(sent[1], sent[0])
         
         req_user = request.user if request.user.is_authenticated() else None
         
@@ -388,6 +443,10 @@ def summarize_comments(request):
         
     except Exception, e:
         print e
+        
+        import traceback
+        print traceback.format_exc()
+        
         return HttpResponseBadRequest()  
 
 def hide_comments(request):

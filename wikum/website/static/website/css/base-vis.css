@@ -430,6 +430,19 @@ textarea {
 	cursor: pointer;
 }
 
+#tooltip_sum2 {
+	position: relative;
+	display: block;
+	width: 50px;
+	height: 20px;
+	padding-left: 4px;
+	padding-right: 3px;
+	background-color: #000000;
+	color: #ffffff;
+	visibility: hidden;
+	cursor: pointer;
+}
+
 .summary_box {
 	background-color: #fbefeb;
 	white-space: pre-wrap;
@@ -511,6 +524,3 @@ td {
 	padding: 10px;
 }
 
-.summary_box>span>strong {
-	color: red;
-}
