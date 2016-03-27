@@ -529,7 +529,17 @@ def hide_comment(request):
         explain = request.POST['comment']
         req_user = request.user if request.user.is_authenticated() else None
         
-        affected = Comment.objects.filter(id=id, hidden=False).update(hidden=True)
+        comment = Comment.objects.get(id=id)
+        
+        if comment.is_replacement:
+            delete_node(comment.id)
+            affected = False
+        elif not comment.hidden:
+            comment.hidden = True
+            comment.save()
+            affected = True
+        else:
+            affected = False
         
         if affected:
             h = History.objects.create(user=req_user, 
