@@ -12,7 +12,7 @@ function make_key() {
   var key_data = [
 	{ "cx": 450, "cy": 80, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
  	{ "cx": 450, "cy": 95, "r": 7, "color" : "#dae8f5", "text": "no replies"},
- 	{ "cx": 450, "cy": 110, "r": 7, "color" : "purple", "text": "summary"},
+ 	{ "cx": 450, "cy": 110, "r": 7, "color" : "#885ead", "text": "summary"},
  	{ "cx": 450, "cy": 125, "r": 7, "color" : "#ffd700", "text": "highlighted"},
  	];
  	
@@ -2366,7 +2366,7 @@ function color(d) {
 	}
 	
 	if (d.replace_node) {
-		return "purple";
+		return "#885ead";
 	}
 	if (d.article) {
 		return "#ffffff";
