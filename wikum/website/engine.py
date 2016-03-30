@@ -202,11 +202,16 @@ def make_vector(comment, article):
     
     summary = comment.summary
     
-    summary = re.sub(r'\[\[.*?\]\]', ' ', summary)
-    summary = re.sub(r'\[quote\]', ' ', summary)
-    summary = re.sub(r'\[endquote\]', ' ', summary)
+    if summary != '':
     
-    vector = vectorizer.transform([summary])[0]
+        summary = re.sub(r'\[\[.*?\]\]', ' ', summary)
+        summary = re.sub(r'\[quote\]', ' ', summary)
+        summary = re.sub(r'\[endquote\]', ' ', summary)
+        
+        vector = vectorizer.transform([summary])[0]
+        
+    else:
+        vector = vectorizer.transform([comment.text])[0]
     
     comment.vector = pickle.dumps(vector)
     comment.save()

@@ -67,6 +67,7 @@ class Comment(models.Model):
     hidden = models.BooleanField(default=False)
     
     summary = models.TextField()
+    extra_summary = models.TextField()
     is_replacement = models.BooleanField(default=False)
     
     vector = models.BinaryField()

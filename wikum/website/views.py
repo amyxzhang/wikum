@@ -194,14 +194,11 @@ def recurse_viz(parent, posts, replaced):
             v1 = {'size': post.likes,
                   'd_id': post.id,
                   'author': author,
-                  'replace_node': post.is_replacement
+                  'replace_node': post.is_replacement,
+                  'summary': post.summary,
+                  'extra_summary': post.extra_summary
                   }
-            
-            if post.summary != '':
-                v1['summary'] = post.summary
-            else:
-                v1['summary'] = '' 
-                
+
             v1['name'] = post.text
             
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
@@ -244,11 +241,14 @@ def summarize_comment(request):
         id = request.POST['id']
         summary = request.POST['comment']
         
+        top_summary, bottom_summary = get_summary(summary)
+        
         req_user = request.user if request.user.is_authenticated() else None
         
         c = Comment.objects.get(id=id)
-        from_summary = c.summary
-        c.summary = summary
+        from_summary = c.summary + '\n----------\n' + c.extra_summary
+        c.summary = top_summary
+        c.extra_summary = bottom_summary
         c.save()
         
         if from_summary != '':
@@ -268,7 +268,8 @@ def summarize_comment(request):
         
         h.comments.add(c)
         recurse_up_post(c)
-        return JsonResponse({})
+        return JsonResponse({'top_summary': top_summary,
+                             'bottom_summary': bottom_summary})
         
     except Exception, e:
         print e
@@ -298,6 +299,8 @@ def summarize_selected(request):
         
         summary = request.POST['comment']
         
+        top_summary, bottom_summary = get_summary(summary)
+        
         req_user = request.user if request.user.is_authenticated() else None
         
         comments = Comment.objects.filter(id__in=ids)
@@ -309,7 +312,8 @@ def summarize_selected(request):
         new_comment = Comment.objects.create(article=a, 
                                              is_replacement=True, 
                                              reply_to_disqus=child.reply_to_disqus,
-                                             summary=summary,
+                                             summary=top_summary,
+                                             extra_summary=bottom_summary,
                                              disqus_id=new_id,
                                              likes=child.likes,
                                              text_len=len(summary))
@@ -333,7 +337,9 @@ def summarize_selected(request):
         
         make_vector(new_comment, a)
         
-        return JsonResponse({"d_id": new_comment.id})
+        return JsonResponse({'d_id': new_comment.id,
+                             'top_summary': top_summary,
+                             'bottom_summary': bottom_summary})
         
     except Exception, e:
         print e
@@ -372,6 +378,18 @@ def delete_sent(sent, did):
     
     recurse_up_post(c)
     
+def get_summary(summary):
+    
+    summary_split = re.compile("([-=]){5,}").split(summary)
+    top_summary = summary_split[0].strip()
+    bottom_summary = ''
+    
+    if len(summary_split) > 1:
+        bottom_summary = ' '.join(summary_split[2:]).strip()
+        
+    return top_summary, bottom_summary
+    
+    
 def summarize_comments(request):
     try:
         article_id = request.POST['article']
@@ -379,6 +397,8 @@ def summarize_comments(request):
         id = request.POST['id']
         summary = request.POST['comment']
         
+        top_summary, bottom_summary = get_summary(summary)
+
         delete_nodes = request.POST.getlist('delete_nodes[]')
         delete_sents = request.POST.get('delete_sents')
         
@@ -400,7 +420,8 @@ def summarize_comments(request):
             new_comment = Comment.objects.create(article=a, 
                                                  is_replacement=True, 
                                                  reply_to_disqus=c.reply_to_disqus,
-                                                 summary=summary,
+                                                 summary=top_summary,
+                                                 extra_summary=bottom_summary,
                                                  disqus_id=new_id,
                                                  likes=c.likes,
                                                  text_len=len(summary))
@@ -417,8 +438,9 @@ def summarize_comments(request):
             d_id = new_comment.id
             
         else:
-            from_summary = c.summary
-            c.summary = summary
+            from_summary = c.summary + '\n----------\n' + c.extra_summary
+            c.summary = top_summary
+            c.extra_summary=bottom_summary
             c.save()
             
             h = History.objects.create(user=req_user, 
@@ -439,7 +461,9 @@ def summarize_comments(request):
         
         make_vector(new_comment, a)
         
-        return JsonResponse({"d_id": d_id})
+        return JsonResponse({'d_id': d_id,
+                             'top_summary': top_summary,
+                             'bottom_summary': bottom_summary})
         
     except Exception, e:
         print e
@@ -674,7 +698,11 @@ def cluster_data(request):
     
     posts_vectors = []
     for post in posts:
-        posts_vectors.append(pickle.loads(post.vector).toarray()[0])
+        try:
+            posts_vectors.append(pickle.loads(post.vector).toarray()[0])
+        except Exception, e:
+            make_vector(post, a)
+            posts_vectors.append(pickle.loads(post.vector).toarray()[0])
     
     num_clusters = num_posts - clustval
      
@@ -815,12 +843,8 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['parent_node'] = True
-        
-
-        if parent.summary != '':
-            parent_dict['summary'] = parent.summary
-        else:
-            parent_dict['summary'] = '' 
+        parent_dict['summary'] = parent.summary
+        parent_dict['extra_summary'] = parent.extra_summary
             
         parent_dict['name'] = parent.text
         

@@ -307,7 +307,11 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		$('#summarize_comment_textarea').val("");
 	} else if (type == "edit_summarize_one") {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '</div>';
-		$('#summarize_comment_textarea').val(d.summary);
+		if (d.extra_summary != '') {
+			$('#summarize_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+		} else {
+			$('#summarize_comment_textarea').val(d.summary);
+		}
 		$('#summarize_comment_text').text('Edit the summary for this comment.');
 	} 
 	
@@ -379,14 +383,15 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			type: 'POST',
 			url: '/summarize_comment',
 			data: data,
-			success: function() {
+			success: function(res) {
 				$('#summarize_modal_box').modal('toggle');
 				
 				success_noty();
 				
 				d = nodes_all[evt.data.id-1];
-				
-				d.summary = comment;
+
+				d.summary = res.top_summary;
+				d.extra_summary = res.bottom_summary;
 				
 				var text = '<P><strong>Summary:</strong> ' + render_summary_node(d) + '</P>';
 				
@@ -511,7 +516,13 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[0].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[0].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[0].name, d.children[0].d_id) + '</div>';
 				text = get_subtree_summarize(text, d.children[0], 1);
 			}
-			$('#summarize_multiple_comment_textarea').val(d.summary);
+			
+			if (d.extra_summary != '') {
+				$('#summarize_multiple_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+			} else {
+				$('#summarize_multiple_comment_textarea').val(d.summary);
+			}
+		
 			$('#summarize_multiple_comment_text').text('Edit the summary for this entire subtree of comments.');
 		}
 	}
@@ -625,7 +636,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					new_d = {d_id: res.d_id,
 							 name: "",
-							 summary: comment,
+							 summary: res.top_summary,
+							 extra_summary: res.bottom_summary,
 							 parent: lowest_d.parent,
 							 replace: children,
 							 author: "",
@@ -703,7 +715,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						
 						new_d = {d_id: res.d_id,
 							 name: "",
-							 summary: comment,
+							 summary: res.top_summary,
+							 extra_summary: res.bottom_summary,
 							 parent: d.parent,
 							 replace: [d],
 							 author: "",
@@ -740,7 +753,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						d = new_d;
 					}
 					
-					d.summary = comment;
+					d.summary = res.top_summary;
+					d.extra_summary = res.bottom_summary;
 					
 					var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d) + '</div>';
 					text += '<BR><P><a data-toggle="modal" data-backdrop="false" data-did="' + d.id + '" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="' + d.id + '">Edit Summary Node</a> | <a onclick="post_delete_summary_node(' + d.id + ');">Delete Summary Node</a></P>';
@@ -767,6 +781,10 @@ function delete_summary_sent(sent_info, id) {
 	d.summary = d.summary.replace(sent, '');
 	
 	d.summary = d.summary.replace(/(?:\n\n)/g, '\n');
+	
+	d.extra_summary = d.summary.replace(sent, '');
+	
+	d.extra_summary = d.summary.replace(/(?:\n\n)/g, '\n');
 	
 	text = construct_comment(d);
 	
@@ -1296,8 +1314,17 @@ function render_summary_node(d) {
 	var pattern = /\[endquote\]/g;
 	text = text.replace(pattern, '</blockquote>');
 	
+	if (d.extra_summary != '') {
+		text += '<BR><a onclick="show_extra_summary(' + d.id + ');">...</a>';
+		text += '<BR><div class="extra_summary" id="extra_summary_' + d.id + '">' + d.extra_summary + '</div>';
+	}
+	
 	return text;
 	
+}
+
+function show_extra_summary(id) {
+	$('#extra_summary_' + id).toggle();
 }
 
 function cite_comment(did) {

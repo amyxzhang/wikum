@@ -524,3 +524,6 @@ td {
 	padding: 10px;
 }
 
+.extra_summary {
+	display: none;
+}
