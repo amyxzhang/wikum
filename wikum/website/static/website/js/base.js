@@ -4,8 +4,6 @@ activeBox = null;
 
 delete_summary_nodes = [];
 delete_summary_node_ids = [];
-delete_summary_sents = [];
-delete_summary_sent_ids = [];
 
 function make_key() {
 	
@@ -74,6 +72,8 @@ $('#summarize_modal_box').on('hidden.bs.modal', function () {
 
 $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
 	$('#summarize_multiple_comment_box').text('');
+	delete_summary_nodes = [];
+	delete_summary_node_ids = [];
 });
 
 
@@ -551,10 +551,13 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			highlighted_text = window.getSelection().toString();
 	   		if (highlighted_text.length > 10) {
 	   			highlighted_comm = parseInt(evt.target.parentNode.id.substring(8));
-	   			var offset = $("#summarize_multiple_comment_box").offset();
-	   			var scroll = $("#summarize_multiple_comment_box").scrollTop();
-	   			$('#tooltip_sum2').css({'position': 'relative', 'top': (evt.pageY - offset.top + scroll) + 'px', 'left': evt.pageX - offset.left + 'px'});
-	   			$('#tooltip_sum2').css('visibility','visible');
+	   			d = nodes_all[highlighted_comm-1];
+	   			if (!d.replace_node && d.summary == '' && d.extra_summary == '') {
+		   			var offset = $("#summarize_multiple_comment_box").offset();
+		   			var scroll = $("#summarize_multiple_comment_box").scrollTop();
+		   			$('#tooltip_sum2').css({'position': 'relative', 'top': (evt.pageY - offset.top + scroll) + 'px', 'left': evt.pageX - offset.left + 'px'});
+		   			$('#tooltip_sum2').css('visibility','visible');
+		   		}
 	   		}
 	 } else {
 	  	$('#tooltip_sum2').css('visibility','hidden');
@@ -575,8 +578,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		var data = {csrfmiddlewaretoken: csrf,
 			comment: comment, 
 			article: article_id,
-			delete_nodes: delete_summary_nodes,
-			delete_sents: JSON.stringify(delete_summary_sents),
+			delete_nodes: delete_summary_nodes
 		};
 		
 		if (evt.data.type == "summarize_selected") {
@@ -620,20 +622,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				data: data,
 				success: function(res) {
 					
-					for (var i=0; i<delete_summary_node_ids.length; i++) {
-						delete_summary_node(delete_summary_node_ids[i]);
-					}
-					
-					for (var i=0; i<delete_summary_sent_ids.length; i++) {
-						delete_summary_sent(delete_summary_sents[i], delete_summary_sent_ids[i]);
-					}
-					
-					delete_summary_nodes = [];
-					delete_summary_node_ids = [];
-					
-					delete_summary_sents = [];
-					delete_summary_sent_ids = [];
-					
 					new_d = {d_id: res.d_id,
 							 name: "",
 							 summary: res.top_summary,
@@ -662,10 +650,18 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					insert_node_to_children(new_d, new_d.parent);
 					
+					for (var i=0; i<delete_summary_node_ids.length; i++) {
+						delete_summary_node(delete_summary_node_ids[i]);
+					}
+					
+					delete_summary_nodes = [];
+					delete_summary_node_ids = [];
+					
+					
 					update(new_d.parent);
 					
 					d3.select("#node_" + new_d.id)
-					.style("fill","purple");
+					.style("fill","#885ead");
 					
 					$('#summarize_multiple_modal_box').modal('toggle');
 					
@@ -691,21 +687,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				url: '/summarize_comments',
 				data: data,
 				success: function(res) {
-					
-					for (var i=0; i<delete_summary_node_ids.length; i++) {
-						delete_summary_node(delete_summary_node_ids[i]);
-					}
-					
-					delete_summary_nodes = [];
-					delete_summary_node_ids = [];
-					
-					
-					for (var i=0; i<delete_summary_sent_ids.length; i++) {
-						delete_summary_sent(delete_summary_sents[i], delete_summary_sent_ids[i]);
-					}
-					
-					delete_summary_sents = [];
-					delete_summary_sent_ids = [];
 					
 					var d = nodes_all[evt.data.id-1];
 					
@@ -740,10 +721,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						
 						insert_node_to_children(new_d, new_d.parent);
 						
-						update(new_d.parent);
-					
 						d3.select("#node_" + new_d.id)
-						.style("fill","purple");
+						.style("fill","#885ead");
 
 						$('#comment_' + d.id).addClass('summary_box');
 						$('#comment_' + d.id).attr('id', 'comment_' + new_d.id);
@@ -752,6 +731,16 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						
 						d = new_d;
 					}
+					
+					for (var i=0; i<delete_summary_node_ids.length; i++) {
+						delete_summary_node(delete_summary_node_ids[i]);
+					}
+					
+					delete_summary_nodes = [];
+					delete_summary_node_ids = [];
+					
+					update(d.parent);
+					
 					
 					d.summary = res.top_summary;
 					d.extra_summary = res.bottom_summary;
@@ -772,25 +761,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		
 	});
 });
-
-function delete_summary_sent(sent_info, id) {
-	sent = sent_info[1];
-	
-	d = nodes_all[id-1];
-	
-	d.summary = d.summary.replace(sent, '');
-	
-	d.summary = d.summary.replace(/(?:\n\n)/g, '\n');
-	
-	d.extra_summary = d.summary.replace(sent, '');
-	
-	d.extra_summary = d.summary.replace(/(?:\n\n)/g, '\n');
-	
-	text = construct_comment(d);
-	
-	$('#comment_' + id).html(text);
-	
-}
 
 function post_delete_summary_node(id) {
 	d = nodes_all[id-1];
@@ -827,9 +797,21 @@ function delete_summary_node(id) {
 		parent = d.parent;
 		
 		//delete node from parent's children
-		for (var i=0; i<parent.children.length; i++) {
-			if (parent.children[i] == d) {
-				parent.children.splice(i,1);
+		if (parent.children) {
+			for (var i=0; i<parent.children.length; i++) {
+				if (parent.children[i] == d) {
+					parent.children.splice(i,1);
+				}
+			}
+		
+		} else {
+			//delete node from parent's replace's
+			if (parent.replace) {
+				for (var i=0; i<parent.replace.length; i++) {
+					if (parent.replace[i] == d) {
+						parent.replace.splice(i,1);
+					}
+				}
 			}
 		}
 		
@@ -857,17 +839,38 @@ function delete_summary_node(id) {
 
 function insert_node_to_children(node_insert, node_parent) {
 	added = false;
-	for (var i=0; i<node_parent.children.length; i++) {
-		if (node_parent.children[i].size < node_insert.size) {
-			node_parent.children.splice(i, 0, node_insert);
-			added = true;
-			break;
+	
+	if (node_parent.children) {
+		for (var i=0; i<node_parent.children.length; i++) {
+			if (node_parent.children[i].size < node_insert.size) {
+				node_parent.children.splice(i, 0, node_insert);
+				added = true;
+				break;
+			}
+		}
+		
+		if (!added) {
+			node_parent.children.push(node_insert);
+		}
+			
+	} else if (node_parent.replace) {
+		for (var i=0; i<node_parent.replace.length; i++) {
+			if (node_parent.replace[i].size < node_insert.size) {
+				node_parent.replace.splice(i, 0, node_insert);
+				added = true;
+				break;
+			}
+		}
+		
+		if (!added) {
+			node_parent.replace.push(node_insert);
 		}
 	}
-	if (!added) {
-		node_parent.children.push(node_insert);
-	}	
+				
 }
+	
+	
+	
 
 function insert_node_to_un_children(node_insert, node_parent) {
 	added = false;
@@ -907,7 +910,7 @@ function get_subtree(text, d, level) {
 	
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			if (d.children[i].summary != '') {
+			if (d.children[i].summary != '' || d.children[i].extra_summary != '') {
 				if (d.children[i].replace_node) {
 					text += '<div class="hide_comment_comment summary_box level' + lvl + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d.children[i]) + '</div>';
 				} else {
@@ -922,7 +925,7 @@ function get_subtree(text, d, level) {
 		}
 	} else if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
-			if (d._children[i].summary != '') {
+			if (d._children[i].summary != '' || d._children[i].extra_summary != '') {
 				if (d._children[i].replace_node) {
 					text += '<div class="hide_comment_comment summary_box level' + lvl + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d._children[i]) + '</div>';
 				} else {
@@ -950,7 +953,7 @@ function get_subtree_summarize(text, d, level) {
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
 
-			if (d.children[i].summary != '') {
+			if (d.children[i].summary != '' || d.children[i].extra_summary != '') {
 				if (d.children[i].replace_node) {
 					text += '<div id="sum_box_' + d.children[i].id + '" class="summary_box summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary_node(' + d.children[i].id + ');">Cut & Paste Summary</a> | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d.children[i]) + '</div>';
 				} else {
@@ -965,7 +968,7 @@ function get_subtree_summarize(text, d, level) {
 		}
 	} else if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
-			if (d._children[i].summary != '') {
+			if (d._children[i].summary != '' || d._children[i].summary != '') {
 				if (d._children[i].replace_node) {
 					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment summary_box level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs" btn-edit onclick="copy_summary_node(' + d._children[i].id + ');">Cut & Paste Summary</a> | <a class="btn-xs" btn-edit onclick="copy_summary(' + d._children[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d._children[i]) + '</div>';
 				} else {
@@ -1064,63 +1067,6 @@ function open_comment_hyperlink(id) {
 	}
 }
 
-function copy_summary_node_quote(did, id) {
-	node = $(event.target).parent()[0];
-	text = $(event.target).parent()[0].innerText;
-	text = text.replace(/\[/g, "[[");
-	text = text.replace(/\]/g, "]]");
-	text = text.substring(0, text.length - 12);
-	
-	var regex = /Copy This/g;
-	if (text.match(regex)) {
-		subs = null;
-		while (match = regex.exec(text)) {
-			var index = match.index;
-			subs = text.substring(index+10);
-		}
-		text = subs;
-	}
-	
-	var regex = / \| Cut & Paste This/g;
-	if (text.match(regex)) {
-		subs = null;
-		while (match = regex.exec(text)) {
-			var index = match.index;
-			subs = text.substring(0, index);
-		}
-		text = subs;
-	}
-	
-	text = text.trim();
-	
-	if (node.tagName == "BLOCKQUOTE") {
-		text = '[quote]' + text + ' [endquote]';	
-	}
-	
-	var html_str = $(node).html();
-	
-	if (html_str.indexOf("This following text will be deleted.") == -1) {
-		delete_summary_sents.push([did, text]);
-		delete_summary_sent_ids.push(id);
-		if (html_str.substring(0,1) == '\n') {
-			html_str = html_str.substring(1);
-			html_str = '<BR><strong style="color:red;">This following text will be deleted.</strong> <a class="btn-xs btn-warning" onclick="undo_delete_summary_quote(' + did + ');">Undo</a> ' + html_str;
-
-		} else {
-			html_str = '<strong style="color:red;">This following text will be deleted.</strong> <a class="btn-xs btn-warning" onclick="undo_delete_summary_quote(' + did + ');">Undo</a> ' + html_str;
-		}
-	}
-	
-	$(node).html(html_str);
-	
-	var box = $('#' + activeBox + '_comment_textarea');
-	var cursorPos = box.prop('selectionStart');
-    var v = box.val();
-    var textBefore = v.substring(0,  cursorPos );
-    var textAfter  = v.substring( cursorPos, v.length );
-    box.val( textBefore + text + '\n' + textAfter );
-}
-
 function copy_summary_quote() {
 	node = $(event.target).parent()[0];
 	text = $(event.target).parent()[0].innerText;
@@ -1137,16 +1083,16 @@ function copy_summary_quote() {
 		}
 		text = subs;
 	}
-	
-	var regex = / \| Cut & Paste This/g;
-	if (text.match(regex)) {
-		subs = null;
-		while (match = regex.exec(text)) {
-			var index = match.index;
-			subs = text.substring(0, index);
-		}
-		text = subs;
-	}
+// 	
+	// var regex = / \| Cut & Paste This/g;
+	// if (text.match(regex)) {
+		// subs = null;
+		// while (match = regex.exec(text)) {
+			// var index = match.index;
+			// subs = text.substring(0, index);
+		// }
+		// text = subs;
+	// }
 	
 	text = text.trim();
 	
@@ -1164,6 +1110,11 @@ function copy_summary_quote() {
 
 function render_summary_node_edit(d) {
 	text = d.summary;
+	
+	if (d.extra_summary != '') {
+		text += '\n\n----------\n';
+		text += d.extra_summary;
+	}
 	
 	if (d.replace_node) {
 		var regex = /(?:\n\n)/g, result, indices = [];
@@ -1197,11 +1148,7 @@ function render_summary_node_edit(d) {
 	}
 	
 	if (matches > 1) {
-		if (d.replace_node) {
-			text = text.replace(pattern, '</a>] | <a class="btn-xs btn-edit" onclick="copy_summary_node_quote(' + d.d_id + ',' + d.id + ');">Cut & Paste This</a> | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>');
-		} else {
-			text = text.replace(pattern, '</a>] | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>');
-		}
+		text = text.replace(pattern, '</a>] | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>');
 	} else {
 		text = text.replace(pattern, '</a>]');
 	}
@@ -1218,6 +1165,11 @@ function copy_summary(id) {
 	d = nodes_all[id - 1];
 	text = d.summary;
 	
+	if (d.extra_summary != '') {
+		text += '\n----------\n';
+		text += d.extra_summary;
+	}
+	
 	if (!d.replace_node) {
 		if (text.indexOf('[[') == -1) {
 			text += ' [[comment_' + d.d_id + ']]';
@@ -1231,36 +1183,6 @@ function copy_summary(id) {
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + text + '\n' + textAfter );
 	
-}
-
-function undo_delete_summary_quote(did) {
-	
-	var node = $(event.target).parent()[0];
-	var html = $(event.target).parent().html();
-	
-	var spl = html.split('Undo</a> ');
-	
-	$(node).html(spl[1]);
-	
-	var text = $(node)[0].innerText;
-	
-	text = text.split(" | Cut & Paste This | Copy This")[0];
-	
-	var pattern = /\[/g;
-	text = text.replace(pattern, '[[');
-	var pattern = /\]/g;
-	text = text.replace(pattern, ']]');
-	
-	index = -1;
-	for (var i=0; i<delete_summary_sents.length; i++) {
-		if (delete_summary_sents[i][0] == did && delete_summary_sents[i][1] == text) {
-			index = i;
-		}
-	}
-	if (index != -1) {
-		delete_summary_sents.splice(index, 1);
-		delete_summary_sent_ids.splice(index, 1);
-	}
 }
 
 function undo_delete_summary(did, id) {
@@ -1290,7 +1212,12 @@ function copy_summary_node(id) {
 	
 	$('#sum_box_' + id).html(html_str);
 	
-	var text = d.summary;
+	if (d.extra_summary != '') {
+		var text = d.summary + '\n----------\n' + d.extra_summary;
+	} else {
+		var text = d.summary;
+	}
+	
 	
 	var box = $('#' + activeBox + '_comment_textarea');
 	var cursorPos = box.prop('selectionStart');
@@ -1304,6 +1231,12 @@ function copy_summary_node(id) {
 function render_summary_node(d) {
 	
 	text = d.summary;
+	
+	if (d.extra_summary != '') {
+		text += '<BR><a onclick="show_extra_summary(' + d.id + ');">...</a>';
+		text += '<BR><div class="extra_summary" id="extra_summary_' + d.id + '">' + d.extra_summary + '</div>';
+	}
+	
 	var pattern = /\[\[/g;
 	text = text.replace(pattern, '[<a onclick="open_comment_hyperlink(' + d.id + ');">');
 	var pattern = /\]\]/g;
@@ -1313,12 +1246,7 @@ function render_summary_node(d) {
 	text = text.replace(pattern, '<blockquote>');
 	var pattern = /\[endquote\]/g;
 	text = text.replace(pattern, '</blockquote>');
-	
-	if (d.extra_summary != '') {
-		text += '<BR><a onclick="show_extra_summary(' + d.id + ');">...</a>';
-		text += '<BR><div class="extra_summary" id="extra_summary_' + d.id + '">' + d.extra_summary + '</div>';
-	}
-	
+
 	return text;
 	
 }
@@ -1925,7 +1853,7 @@ function toggle_original(id) {
 function construct_comment(d) {
 	var text = 'ID: ' + d.d_id + '<BR>';
 	var summary = false;
-	if (d.summary != '') {
+	if (d.summary != '' || d.extra_summary != '') {
 		summary = true;
 	}
 	

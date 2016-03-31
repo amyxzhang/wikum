@@ -9,16 +9,16 @@ P {
 	text-align: left;
 }
 
-#summary>a {
+#summary>p>a, #summary>div>p>a, .summary_comment>a, .summary_comment>p>a {
 	color: #000000;
 }
 
-#summary>a:hover {
+#summary>p>a:hover, #summary>div>p>a:hover, .summary_comment>a:hover, .summary_comment>p>a:hover {
 	background-color: orange;
 	cursor: pointer;
 }
 
-#summary>a>blockquote:hover {
+#summary>p>a>blockquote:hover; #summary>div>p>a>blockquote:hover, .summary_comment>a>blockquote:hover, .summary_comment>p>a>blockquote:hover {
 	background-color: orange;
 	cursor: pointer;
 }
@@ -32,8 +32,34 @@ P {
 .raw_comment {
 	display: block;
 	position: relative;
-	background-color: #ffffef;
-	border: 1px #cccccc solid;
+	background-color: #dae8f5;
+	/*border: 1px #cccccc solid;
+	*/
 	padding: 5px;
 	margin: 5px;
+}
+
+.summary_comment {
+	display: block;
+	position: relative;
+	padding: 5px;
+	margin: 5px;
+}
+
+.see_full_comment {
+    color: #42dca3 !important;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+.see_full_comment:hover,
+.see_full_comment:focus {
+	background-color: white !important;
+    text-decoration: none;
+    color: #1d9b6c !important;
+}
+
+a:hover {
+	cursor: pointer;
 }

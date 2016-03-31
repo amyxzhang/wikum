@@ -123,8 +123,17 @@ def summary_data(request):
     posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[next:next+1]
     val = {'posts': []}
     for post in posts:
+        
+        if post.summary != '' or post.extra_summary != '':
+            text = post.summary
+            extra_text = post.extra_summary
+        else:
+            text = post.text
+            extra_text = ''
+        
         val['posts'].append(
-                            {'text': post.text if post.summary == '' else post.summary,
+                            {'text': text,
+                             'extra_text': extra_text,
                              'd_id': post.id
                              })
     
@@ -284,18 +293,7 @@ def summarize_selected(request):
         children_ids = [int(x) for x in children_ids]
         child_id = request.POST['child']
         
-        
         delete_nodes = request.POST.getlist('delete_nodes[]')
-        delete_sents = request.POST.get('delete_sents')
-        
-        delete_sents = json.loads(delete_sents)
-        
-        for node in delete_nodes:
-            delete_node(node)
-        
-        for sent in delete_sents:
-            delete_sent(sent[1], sent[0])
-        
         
         summary = request.POST['comment']
         
@@ -330,6 +328,11 @@ def summarize_selected(request):
             
         for c in comments:
             h.comments.add(c)
+            
+                
+        for node in delete_nodes:
+            delete_node(node)
+        
         
         recurse_up_post(new_comment)
         
@@ -346,37 +349,31 @@ def summarize_selected(request):
         return HttpResponseBadRequest()  
    
 def delete_node(did):
+    try:
     
-    c = Comment.objects.get(id=did)
-    
-    if c.is_replacement:
-        parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+        c = Comment.objects.get(id=did)
         
-        if parent.count() > 0:
-            parent_id = parent[0].disqus_id
-        else:
-            parent_id = None
+        if c.is_replacement:
+            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+            
+            if parent.count() > 0:
+                parent_id = parent[0].disqus_id
+            else:
+                parent_id = None
+            
+            children = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+            
+            for child in children:
+                child.reply_to_disqus = parent_id
+                child.json_flatten = ''
+                child.save()
+            
+            c.delete()
         
-        children = Comment.objects.filter(reply_to_disqus=c.disqus_id)
-        
-        for child in children:
-            child.reply_to_disqus = parent_id
-            child.json_flatten = ''
-            child.save()
-        
-        c.delete()
-    
-        if parent.count() > 0:
-            recurse_up_post(parent[0])
-
-def delete_sent(sent, did):
-    c = Comment.objects.get(id=did)
-    summary = c.summary
-    summary = summary.replace(sent, '')
-    c.summary = summary.strip()
-    c.save()
-    
-    recurse_up_post(c)
+            if parent.count() > 0:
+                recurse_up_post(parent[0])
+    except Exception, e:
+        print e
     
 def get_summary(summary):
     
@@ -400,15 +397,6 @@ def summarize_comments(request):
         top_summary, bottom_summary = get_summary(summary)
 
         delete_nodes = request.POST.getlist('delete_nodes[]')
-        delete_sents = request.POST.get('delete_sents')
-        
-        delete_sents = json.loads(delete_sents)
-        
-        for node in delete_nodes:
-            delete_node(node)
-        
-        for sent in delete_sents:
-            delete_sent(sent[1], sent[0])
         
         req_user = request.user if request.user.is_authenticated() else None
         
@@ -454,6 +442,10 @@ def summarize_comments(request):
             
             new_comment = c
         
+        
+        
+        for node in delete_nodes:
+            delete_node(node)
         
         h.comments.add(c)
         recurse_up_post(c)
@@ -809,12 +801,29 @@ def get_comments(request):
     try:
         comment_id = int(request.GET.get('comment'))
         
+        cur_id = int(request.GET.get('curr_comment'))
+        
         c = Comment.objects.get(id=comment_id)
         
-        val2 = {}
-        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [c], False)
+        if c.author:
+            if c.author.anonymous:
+                author = "Anonymous"
+            else:
+                author = c.author.username
+        else:
+                author = ""
+            
+        val2 = {'size': c.likes,
+                'd_id': c.id,
+                'author': author,
+                'replace_node': c.is_replacement,
+                'summary': c.summary,
+                'extra_summary': c.extra_summary,
+                'name': c.text,
+                }
         
-        val = recurse_get_parents(val2, c, c.article)
+        val3 = {'children': [val2]}
+        val = recurse_get_parents_stop(val3, c, c.article, cur_id)
         
         return JsonResponse(val)
         
@@ -865,7 +874,42 @@ def recurse_get_parents(parent_dict, post, article):
     
     
 
-   
+def recurse_get_parents_stop(parent_dict, post, article, stop_id):
+    
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    if parent and parent[0].id != stop_id:
+        parent = parent[0]
+        
+        
+        if parent.author:
+            if parent.author.anonymous:
+                author = "Anonymous"
+            else:
+                author = parent.author.username
+        else:
+            author = ""
+                    
+        parent_dict['size'] = parent.likes
+        parent_dict['d_id'] = parent.id
+        parent_dict['author'] = author
+        parent_dict['replace_node'] = parent.is_replacement
+        parent_dict['parent_node'] = True
+        parent_dict['summary'] = parent.summary
+        parent_dict['extra_summary'] = parent.extra_summary
+            
+        parent_dict['name'] = parent.text
+        
+        new_dict = {}
+        
+        new_dict['children'] = [parent_dict]
+        new_dict['hid'] = []
+        new_dict['replace'] = []
+        
+        return recurse_get_parents_stop(new_dict, parent, article, stop_id)
+
+    else:
+        return parent_dict['children'][0]
+    
                 
         
         
