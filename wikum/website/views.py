@@ -786,7 +786,12 @@ def subtree_data(request):
     elif sort == 'oldest':
         posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('created_at')[next]]
     else:
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[next]]       
+        posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
+        count = posts_all.count()
+        
+        rand = random.randint(0,count-1)
+        
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[rand]]       
     
 
     val2 = {}
@@ -799,33 +804,39 @@ def subtree_data(request):
      
 def get_comments(request):
     try:
-        comment_id = int(request.GET.get('comment'))
+        comment_ids = request.GET.get('comment')
+        comment_ids = comment_ids.split(',')
         
-        cur_id = int(request.GET.get('curr_comment'))
+        vals = {}
         
-        c = Comment.objects.get(id=comment_id)
+        for i, comment_id in enumerate(comment_ids):
         
-        if c.author:
-            if c.author.anonymous:
-                author = "Anonymous"
+       
+        
+            c = Comment.objects.get(id=comment_id)
+        
+            if c.author:
+                if c.author.anonymous:
+                    author = "Anonymous"
+                else:
+                    author = c.author.username
             else:
-                author = c.author.username
-        else:
-                author = ""
-            
-        val2 = {'size': c.likes,
-                'd_id': c.id,
-                'author': author,
-                'replace_node': c.is_replacement,
-                'summary': c.summary,
-                'extra_summary': c.extra_summary,
-                'name': c.text,
-                }
+                    author = ""
+                
+            val2 = {'size': c.likes,
+                    'd_id': c.id,
+                    'author': author,
+                    'replace_node': c.is_replacement,
+                    'summary': c.summary,
+                    'extra_summary': c.extra_summary,
+                    'name': c.text,
+                    }
+            vals[i] = val2
         
-        val3 = {'children': [val2]}
-        val = recurse_get_parents_stop(val3, c, c.article, cur_id)
+       # val3 = {'children': [val2]}
+       # val = recurse_get_parents_stop(val3, c, c.article, cur_id)
         
-        return JsonResponse(val)
+        return JsonResponse(vals)
         
     except Exception, e:
         print e
