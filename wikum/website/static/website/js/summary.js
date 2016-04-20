@@ -1,4 +1,7 @@
 
+var discuss_info = null;
+var discuss_dict = {};
+
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -16,6 +19,23 @@ function show_hidden_before() {
 function show_hidden_after() {
 	$(event.target).next().toggle();
 }
+
+// function expand_summary(did) {
+// 	
+	// link = event.target;
+// 	
+	// if ($(link).parent().next().is('#expand_' + comment_strs[0])) {
+		// next_com = $(link).parent().next();
+	// } else {
+		// comment = discuss_dict[did];
+		// if (comment.children) {
+			// for (var i=0; i<comment.children.length; i++) {
+// 				
+			// }
+		// }
+	// }
+// 
+// }
 
 function get_comment(comment_str, did) {
 	
@@ -53,105 +73,115 @@ function get_comment(comment_str, did) {
 			}
 		}
 		
-		$.ajax({ 
-		    type: 'GET', 
-		    url: '/get_comments?comment=' + comments.substring(0,comments.length-1),
-		    dataType: 'json',
-		    success: function (data) { 
-		    	var total_text = '';
-		    	
-		    	length = Object.keys(data).length;
-		    	
-		    	for (var j=0; j<length; j++) {
-		    		text = '';
-		    		node = data[j];
-		    		if (j < length -1) {
-		    			text += '<div style="margin-bottom: 20px;" class="insert_comment" id="' + comment_strs[j] + '">';
-					} else {
-			    		text += '<div class="insert_comment" id="' + comment_strs[j] + '">';
-			    	}
-			    	left = 10;
-			    	count = 0;
-			    	new_comment = '';
-			    	
-			    	if (node.replace_node) {
-			    		new_comment = '<div class="summary_comment" style="left:' + left + 'px;" id="' + node.d_id + '">';
-			    	} else {
-			    		new_comment = '<div class="raw_comment" style="left:' + left + 'px;" id="' + node.d_id + '">';
-			    	}
-			    	
-			    	if (paras[j] > -1) {
-			    		if (node.replace_node) {
-			    			if (node.extra_summary != '') {
-			    				t = node.summary + '\n\n' + node.extra_summary;
-			    				strs = t.split('\n\n');
-			    			} else {
-			    				strs = node.summary.split('\n\n');
-			    			}
-			    		} else {
-			    			strs = node.name.split('</p><p>');
-			    		}
-			    		
-			    		if (paras[j] > 0) {
-			    			new_comment += '<div style="display: none;" id="hidden_comment_before_' + node.d_id + '_' + paras[j] + '">';
-			    			for (var i=0; i<paras[j]; i++) {
-			    				new_comment = split_text(strs[i], new_comment, node.d_id);
-			    				if (i < paras[j]-1) {
-			    					new_comment += '<BR><BR>';
-			    				}
-			    			}
-			    			new_comment += '</div>';
-			    			new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">... ( ' +paras[j]+ ' )</a><BR>';
-			    		}
-			    		
-			    		t = strs[paras[j]].replace(/<[\/]{0,1}(p|P)[^><]*>/g, "");
-			    		new_comment = split_text(t, new_comment, node.d_id);
-			    	
-			    		if (paras[j] < strs.length -1) {
-			    			new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">... ( ' +(strs.length-paras[j]-1)+ ' )</a>';
-			    			
-			    			new_comment += '<div style="display: none;" id="hidden_comment_after_' + node.d_id + '_' + paras[j] + '">';
-			    			for (var i=paras[j]+1; i<strs.length; i++) {
-			    				new_comment = split_text(strs[i], new_comment, node.d_id);
-			    				if (i < strs.length-1) {
-			    					new_comment += '<BR><BR>';
-			    				}
-			    				
-			    			}
-			    			new_comment += '</div>';
-			    			
-			    		}
-			    		
-			    	} else {
-			    		if (node.replace_node) {
-			    			if (node.extra_summary != '') {
-			    				t = node.summary + '\n<BR><a>...</a><BR>\n' + node.extra_summary;
-			    				new_comment = split_text(t, new_comment, node.d_id);
-			    			} else {
-			    				new_comment = split_text(node.summary, new_comment, node.d_id);
-			    			}
-			    		} else {
-			    			new_comment += node.name;
-			    		}
-			    		
-			    	}
-			    	
-			    	new_comment += '</div>';
-			    	
-					text += new_comment;
-					
-					if (j == length -1) {
-						text += '<a class="see_full_comment btn-xs" onclick="toggle_hide(' + length + ');">Hide</a>';
-			    	}
-			    	
-					text += '</div>';
-			    	
-					total_text += text;
-				}
-				
-				$(link).after(total_text);
-		    }
-		 });
+		comments_list = comments.substring(0,comments.length-1).split(',');
+		
+		data = [];
+		for (var i=0; i<comments_list.length; i++) {
+			data.push(discuss_dict[comments_list[i]]);
+		}
+		
+
+    	var total_text = '';
+    	
+    	length = data.length;
+    	
+    	for (var j=0; j<length; j++) {
+    		text = '';
+    		node = data[j];
+    		if (j < length -1) {
+    			text += '<div style="margin-bottom: 20px;" class="insert_comment" id="' + comment_strs[j] + '">';
+			} else {
+	    		text += '<div class="insert_comment" id="' + comment_strs[j] + '">';
+	    	}
+	    	left = 10;
+	    	count = 0;
+	    	new_comment = '';
+	    	
+	    	if (node.replace_node) {
+	    		new_comment = '<div class="summary_comment" style="left:' + left + 'px;" id="' + node.d_id + '">';
+	    	} else {
+	    		new_comment = '<div class="raw_comment" style="left:' + left + 'px;" id="' + node.d_id + '">';
+	    	}
+	    	
+	    	if (paras[j] > -1) {
+	    		if (node.replace_node) {
+	    			if (node.extra_summary != '') {
+	    				t = node.summary + '\n\n' + node.extra_summary;
+	    				strs = t.split('\n\n');
+	    			} else {
+	    				strs = node.summary.split('\n\n');
+	    			}
+	    		} else {
+	    			strs = node.name.split('</p><p>');
+	    		}
+	    		
+	    		if (paras[j] > 0) {
+	    			new_comment += '<div style="display: none;" id="hidden_comment_before_' + node.d_id + '_' + paras[j] + '">';
+	    			for (var i=0; i<paras[j]; i++) {
+	    				new_comment = split_text(strs[i], new_comment, node.d_id);
+	    				if (i < paras[j]-1) {
+	    					new_comment += '<BR><BR>';
+	    				}
+	    			}
+	    			new_comment += '</div>';
+	    			if (paras[j] == 1) {
+	    				new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">... ( ' +paras[j]+ ' para before )</a><BR>';
+	    			} else {
+	    				new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">... ( ' +paras[j]+ ' paras before )</a><BR>';
+	    			}
+	    		}
+	    		
+	    		t = strs[paras[j]].replace(/<[\/]{0,1}(p|P)[^><]*>/g, "");
+	    		new_comment = split_text(t, new_comment, node.d_id);
+	    	
+	    		if (paras[j] < strs.length -1) {
+	    			if ((strs.length-paras[j]-1) == 1) {
+	    				new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">... ( ' +(strs.length-paras[j]-1)+ ' para after )</a>';
+	    			} else {
+	    				new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">... ( ' +(strs.length-paras[j]-1)+ ' paras after )</a>';
+	    			}
+	    			
+	    			new_comment += '<div style="display: none;" id="hidden_comment_after_' + node.d_id + '_' + paras[j] + '">';
+	    			for (var i=paras[j]+1; i<strs.length; i++) {
+	    				new_comment = split_text(strs[i], new_comment, node.d_id);
+	    				if (i < strs.length-1) {
+	    					new_comment += '<BR><BR>';
+	    				}
+	    				
+	    			}
+	    			new_comment += '</div>';
+	    			
+	    		}
+	    		
+	    	} else {
+	    		if (node.replace_node) {
+	    			if (node.extra_summary != '') {
+	    				t = node.summary + '\n<BR><a>...</a><BR>\n' + node.extra_summary;
+	    				new_comment = split_text(t, new_comment, node.d_id);
+	    			} else {
+	    				new_comment = split_text(node.summary, new_comment, node.d_id);
+	    			}
+	    		} else {
+	    			new_comment += node.name;
+	    		}
+	    		
+	    	}
+	    	
+	    	new_comment += '</div>';
+	    	
+			text += new_comment;
+			
+			if (j == length -1) {
+				text += '<a class="see_full_comment btn-xs" onclick="toggle_hide(' + length + ');">Hide</a>';
+	    	}
+	    	
+			text += '</div>';
+	    	
+			total_text += text;
+		}
+		
+		$(link).after(total_text);
+
 	}
 }
 
@@ -182,8 +212,8 @@ function split_text(text, summary_text, d_id) {
 		part = splitted[i];
 		
 		if (part == '<BR><a>...</a><BR>') {
-			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">... ( ' + hidden_para_num + ' )</a>';
-			summary_text += '<div id="hidden_' + d_id + '" style="display: none;"><P>';
+			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">... ( ' + hidden_para_num + ' summary points below the fold )</a>';
+			summary_text += '<div id="hidden_' + d_id + '" style="display: none; margin-top: 15px;"><P>';
 			hidden = true;
 		} else {
 			var pattern = /\[quote\]/g;
@@ -216,6 +246,26 @@ function show_div() {
 	$(event.target).next().toggle();
 }
 
+function unpack_posts(post) {
+	discuss_dict[post.d_id] = post;
+	
+	if (post.children) {
+		for (var i=0; i<post.children.length; i++) {
+			unpack_posts(post.children[i]);
+		}
+	}
+	if (post.hid) {
+		for (var i=0; i<post.hid.length; i++) {
+			unpack_posts(post.hid[i]);
+		}
+	}
+	if (post.replace) {
+		for (var i=0; i<post.replace.length; i++) {
+			unpack_posts(post.replace[i]);
+		}
+	}
+}
+
 $(document).ready(function () {
 	
 	var article_url = getParameterByName('article');
@@ -229,26 +279,36 @@ $(document).ready(function () {
 	    url: '/summary_data?article=' + article_url + '&next=' + next, 
 	    dataType: 'json',
 	    success: function (data) { 
-	        $.each(data.posts, function(index, element) {
+	    	
+	    	discuss_info = data.posts.children[0];
+	    	
+	    	unpack_posts(discuss_info);
+	    	
+	    	if (discuss_info.replace_node) {
+	    		text = discuss_info.summary;
+	    	} else {
+	    		text = discuss_info.name;
+	    	}
 	        	
-	        	text = element.text;
-	        	extra_text = element.extra_text;
-	        	d_id = element.d_id;
-	        	
-	        	summary_text = '<P>';
-	        	
-	        	if (extra_text != '') {
-	        		text += '\n<BR><a>...</a><BR>\n';
-	        		text += extra_text;
-	        	}
-	        	
-	        	summary_text = split_text(text, summary_text, d_id);
-	        
-	        	summary_text += '</P>';
+        	extra_text = discuss_info.extra_summary;
+        	d_id = discuss_info.d_id;
+        	
+        	summary_text = '<P>';
+        	
+        	if (extra_text != '') {
+        		text += '\n<BR><a>...</a><BR>\n';
+        		text += extra_text;
+        	}
+        	
+        	summary_text = split_text(text, summary_text, d_id);
+        
+        	summary_text += '</P>';
+        	
+        	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
 
-	        	$('#summary').html(summary_text);
-	        	
-	        });
+			summary_text += '<BR><hr>';
+        	$('#summary').html(summary_text);
+
 	    }
 	    
 	    

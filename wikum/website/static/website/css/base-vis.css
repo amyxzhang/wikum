@@ -527,3 +527,13 @@ td {
 .extra_summary {
 	display: none;
 }
+
+#summarize_comment_submit, #summarize_multiple_comment_submit {
+	background-color: #42dca3;
+	color: #000000;
+}
+
+#summarize_comment_submit:hover, #summarize_multiple_comment_submit:hover {
+	background-color: #42dca3;
+	color: #ffffff;
+}

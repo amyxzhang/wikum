@@ -121,24 +121,13 @@ def summary_data(request):
         next = int(next)
     
     posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[next:next+1]
-    val = {'posts': []}
-    for post in posts:
-        
-        if post.summary != '' or post.extra_summary != '':
-            text = post.summary
-            extra_text = post.extra_summary
-        else:
-            text = post.text
-            extra_text = ''
-        
-        val['posts'].append(
-                            {'text': text,
-                             'extra_text': extra_text,
-                             'd_id': post.id
-                             })
     
     
-    return JsonResponse(val)
+    val2 = {}
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False)
+    
+    return JsonResponse({'posts': val2})
+    
 
 @render_to('website/subtree.html')
 def subtree(request):
@@ -800,47 +789,6 @@ def subtree_data(request):
     val = recurse_get_parents(val2, posts[0], a)
     
     return JsonResponse(val)
-     
-     
-def get_comments(request):
-    try:
-        comment_ids = request.GET.get('comment')
-        comment_ids = comment_ids.split(',')
-        
-        vals = {}
-        
-        for i, comment_id in enumerate(comment_ids):
-        
-       
-        
-            c = Comment.objects.get(id=comment_id)
-        
-            if c.author:
-                if c.author.anonymous:
-                    author = "Anonymous"
-                else:
-                    author = c.author.username
-            else:
-                    author = ""
-                
-            val2 = {'size': c.likes,
-                    'd_id': c.id,
-                    'author': author,
-                    'replace_node': c.is_replacement,
-                    'summary': c.summary,
-                    'extra_summary': c.extra_summary,
-                    'name': c.text,
-                    }
-            vals[i] = val2
-        
-       # val3 = {'children': [val2]}
-       # val = recurse_get_parents_stop(val3, c, c.article, cur_id)
-        
-        return JsonResponse(vals)
-        
-    except Exception, e:
-        print e
-        return HttpResponseBadRequest()
         
      
 def recurse_get_parents(parent_dict, post, article):

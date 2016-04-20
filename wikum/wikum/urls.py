@@ -29,8 +29,6 @@ urlpatterns = [
     url(r'^summary','website.views.summary'),
     url(r'^history','website.views.history'),
     
-    url(r'^get_comments','website.views.get_comments'),
-    
     url(r'^move_comments','website.views.move_comments'),
     
     url(r'^hide_comments','website.views.hide_comments'),
