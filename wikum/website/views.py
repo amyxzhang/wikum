@@ -5,6 +5,14 @@ from django.http import JsonResponse
 
 from engine import *
 
+from sumy.nlp.stemmers import Stemmer
+from sumy.utils import get_stop_words
+from sumy.parsers.html import HtmlParser
+from sumy.nlp.tokenizers import Tokenizer
+#from sumy.summarizers.lsa import LsaSummarizer as Summarizer
+#from sumy.summarizers.text_rank import TextRankSummarizer as Summarizer
+from sumy.summarizers.lex_rank import LexRankSummarizer as Summarizer
+
 from sklearn.cluster import KMeans
 
 from django.http import HttpResponse
@@ -16,6 +24,12 @@ import pickle
 from math import floor
 from sklearn.cluster.k_means_ import MiniBatchKMeans
 from sklearn.metrics.pairwise import euclidean_distances
+
+
+
+     
+stemmer = Stemmer("english")
+summarizer = Summarizer(stemmer)
 
 @render_to('website/index.html')
 def index(request):
@@ -524,7 +538,32 @@ def move_comments(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
-            
+           
+           
+def auto_summarize_comment(request):
+    comment_id = request.GET['comment_id']
+    num_sents = request.GET.get('num_sents', None)
+     
+    comment = Comment.objects.get(id=comment_id)
+    text = comment.text
+    
+    text = re.sub('<br>', ' ', text)
+    text = re.sub('<BR>', ' ', text)
+    
+    parser = HtmlParser.from_string(text, '', Tokenizer("english"))
+    
+    if not num_sents:
+        all_sents = parser.tokenize_sentences(text)
+        num_sents = floor(float(len(all_sents))/3.0)
+    
+    sents = summarizer(parser.document, num_sents)
+     
+    sent_list = []
+    for sent in sents:
+        sent_list.append(sent._text)
+     
+    return JsonResponse({"sents": sent_list})
+     
             
 def hide_comment(request):
     try:

@@ -31,6 +31,8 @@ urlpatterns = [
     
     url(r'^move_comments','website.views.move_comments'),
     
+    url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
+    
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
     url(r'^hide_replies','website.views.hide_replies'),

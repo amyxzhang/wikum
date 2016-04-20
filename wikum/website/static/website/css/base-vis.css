@@ -537,3 +537,11 @@ td {
 	background-color: #42dca3;
 	color: #ffffff;
 }
+
+.button-checkbox {
+	float: right;
+}
+
+#summarize_multiple_highlight_button, #summarize_highlight_button  {
+	margin-right: 50px;
+}

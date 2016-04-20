@@ -5,6 +5,112 @@ activeBox = null;
 delete_summary_nodes = [];
 delete_summary_node_ids = [];
 
+current_summarize_d_id = [];
+
+
+function highlight_sents() {
+	d_ids = current_summarize_d_id;
+	
+	for (var j=0; j<d_ids.length; j++) {
+		$.ajax({
+			type: 'GET',
+			url: '/auto_summarize_comment?comment_id=' + d_ids[j],
+			success: function(res) {
+				for (var i=0; i<res.sents.length; i++) {
+					console.log(res.sents[i]);
+					if (d_ids.length == 1) {
+						$('#summarize_comment_box').highlight(res.sents[i]);
+					} else {
+						$('#summarize_multiple_comment_box').highlight(res.sents[i]);
+					}
+					
+				}
+			}
+		});
+	}
+
+}
+
+function unhighlight_sents() {
+	$('#summarize_comment_box').removeHighlight();
+	$('#summarize_multipe_comment_box').removeHighlight();
+}
+
+function check_button_checkbox() {
+    $('.button-checkbox').each(function () {
+
+        // Settings
+        var $widget = $(this),
+            $button = $widget.find('button'),
+            $checkbox = $widget.find('input:checkbox'),
+            color = $button.data('color'),
+            settings = {
+                on: {
+                    icon: 'glyphicon glyphicon-check'
+                },
+                off: {
+                    icon: 'glyphicon glyphicon-unchecked'
+                }
+            };
+
+        // Event Handlers
+        $button.on('click', function () {
+            $checkbox.prop('checked', !$checkbox.is(':checked'));
+            $checkbox.triggerHandler('change');
+            updateDisplay();
+            
+        });
+        $checkbox.on('change', function () {
+            updateDisplay();
+        });
+
+        // Actions
+        function updateDisplay() {
+            var isChecked = $checkbox.is(':checked');
+            
+            if (isChecked) {
+            	highlight_sents();
+            } else {
+            	unhighlight_sents();
+            }
+            
+            localStorage.setItem('highlight_check', isChecked);
+
+            // Set the button's state
+            $button.data('state', (isChecked) ? "on" : "off");
+
+            // Set the button's icon
+            $button.find('.state-icon')
+                .removeClass()
+                .addClass('state-icon ' + settings[$button.data('state')].icon);
+
+            // Update the button's color
+            if (isChecked) {
+                $button
+                    .removeClass('btn-default')
+                    .addClass('btn-' + color + ' active');
+            }
+            else {
+                $button
+                    .removeClass('btn-' + color + ' active')
+                    .addClass('btn-default');
+            }
+        }
+
+        // Initialization
+        function init() {
+
+            updateDisplay();
+
+            // Inject the icon if applicable
+            if ($button.find('.state-icon').length == 0) {
+                $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+            }
+        }
+        init();
+    });
+};
+
 function make_key() {
 	
   var key_data = [
@@ -68,12 +174,16 @@ $('#summarize_modal_box').on('hidden.bs.modal', function () {
 	$(".ui-resizable-handle").remove();
 	$('#summarize_comment_box').attr('style', '');
 	$('#summarize_comment_box').text('');
+	current_summarize_d_id = [];
+	unhighlight_sents();
 });
 
 $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
 	$('#summarize_multiple_comment_box').text('');
 	delete_summary_nodes = [];
 	delete_summary_node_ids = [];
+	current_summarize_d_id = [];
+	unhighlight_sents();
 });
 
 
@@ -268,6 +378,9 @@ function show_comment_text(text, did) {
 			}
 		}
 	}
+	
+	text = text.replace(/<br>/g, ' ');
+	
 	return text;
 }
 
@@ -299,12 +412,26 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	var did = $(e.relatedTarget).data('did');
 	
 	d = nodes_all[id-1];
+	current_summarize_d_id.push(d.d_id);
 	
 	highlight_box(id);
+	
+	
+	highlight_check = localStorage.getItem('highlight_check');
+		
+	if (highlight_check == "true") {
+		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
+	} else {
+		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');	
+	}
+	check_button_checkbox();
+	
 	if (type == "summarize_one") {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '</div>';
+		
 		$('#summarize_comment_text').text('Summarize this comment.');
 		$('#summarize_comment_textarea').val("");
+		
 	} else if (type == "edit_summarize_one") {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '</div>';
 		if (d.extra_summary != '') {
@@ -312,6 +439,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		} else {
 			$('#summarize_comment_textarea').val(d.summary);
 		}
+		
 		$('#summarize_comment_text').text('Edit the summary for this comment.');
 	} 
 	
@@ -433,6 +561,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 	var ids = [];
 	var dids = [];
 	
+
+	
 	if (type == "summarize_selected") {
 		var objs = [];
 		var min_level = 50;
@@ -450,6 +580,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		for (var i in objs) {
 			ids.push(objs[i].id);
 			dids.push(objs[i].d_id);
+			
+			current_summarize_d_id.push(objs[i].d_id);
 			
 			if (objs[i].depth - min_level <= 3) {
 				var depth = objs[i].depth - min_level;
@@ -481,7 +613,10 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d) + '</div>';
 			} else {
 				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + show_comment_text(d.name, d.d_id) + '</div>';
+			
+				current_summarize_d_id.push(d.d_id);
 			}
+			
 			text = get_subtree_summarize(text, d, 1);
 			$('#summarize_multiple_comment_text').text('Summarize this comment and all replies (replaces them all).');
 			$('#summarize_multiple_comment_textarea').val("");
@@ -514,6 +649,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				}
 			} else {
 				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[0].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[0].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[0].name, d.children[0].d_id) + '</div>';
+				
+				current_summarize_d_id.push(d.children[0].d_id);
+				
 				text = get_subtree_summarize(text, d.children[0], 1);
 			}
 			
@@ -526,6 +664,17 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			$('#summarize_multiple_comment_text').text('Edit the summary for this entire subtree of comments.');
 		}
 	}
+	
+		
+	highlight_check = localStorage.getItem('highlight_check');
+		
+	if (highlight_check == "true") {
+		$('#summarize_multiple_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
+	} else {
+		$('#summarize_multiple_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');	
+	}
+	check_button_checkbox();
+	
 	
 	text = '<div class="img-rounded" id="tooltip_sum2">Quote</div>' + text;
 	
@@ -960,6 +1109,9 @@ function get_subtree_summarize(text, d, level) {
 					text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
 				}
 			} else {
+				
+				current_summarize_d_id.push(d.children[i].d_id);
+				
 				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '</div>';
 			}
 			if (!d.children[i].replace_node) {
@@ -975,6 +1127,9 @@ function get_subtree_summarize(text, d, level) {
 					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d._children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P><strong>Summary:</strong> ' + render_summary_node_edit(d._children[i]) + '</div>';
 				}
 			} else {
+				
+				current_summarize_d_id.push(d._children[i].d_id);
+				
 				text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d._children[i].name, d._children[i].d_id) + '</div>';
 			}
 			text = get_subtree_summarize(text, d._children[i], level+1);
