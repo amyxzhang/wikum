@@ -427,13 +427,13 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	check_button_checkbox();
 	
 	if (type == "summarize_one") {
-		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '</div>';
+		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
 		
 		$('#summarize_comment_text').text('Summarize this comment.');
 		$('#summarize_comment_textarea').val("");
 		
 	} else if (type == "edit_summarize_one") {
-		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '</div>';
+		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
 		if (d.extra_summary != '') {
 			$('#summarize_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
 		} else {
@@ -594,7 +594,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				if (objs[i].summary != "") {
 					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + objs[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + objs[i].d_id +');">Cite Comment</a></P><strong>Summary:</strong> ' + render_summary_node_edit(objs[i]) + '</div>';
 				} else {
-					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + objs[i].d_id +');">Cite Comment</a></P>' + show_comment_text(objs[i].name, objs[i].d_id) + '</div>';
+					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + objs[i].d_id +');">Cite Comment</a></P>' + show_comment_text(objs[i].name, objs[i].d_id) + '<P>-- ' + objs[i].author + '</P></div>';
 				}
 			}
 		}
@@ -612,7 +612,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			if (d.summary != '') {
 				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d) + '</div>';
 			} else {
-				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + show_comment_text(d.name, d.d_id) + '</div>';
+				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
 			
 				current_summarize_d_id.push(d.d_id);
 			}
@@ -631,7 +631,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						if (d.replace[i].summary != '') {
 							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.replace[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.replace[i]) + '</div>';
 						} else {
-							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.replace[i].name, d.replace[i].d_id)  + '</div>';
+							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.replace[i].name, d.replace[i].d_id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
 						}
 						text = get_subtree_summarize(text, d.replace[i], 1);
 					}
@@ -642,13 +642,13 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						if (d.children[i].summary != '') {
 							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
 						} else {
-							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '</div>';
+							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
 						}
 						text = get_subtree_summarize(text, d.children[i], 1);
 					}
 				}
 			} else {
-				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[0].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[0].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[0].name, d.children[0].d_id) + '</div>';
+				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[0].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[0].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[0].name, d.children[0].d_id) + '<P>-- ' + d.children[0].author + '</P></div>';
 				
 				current_summarize_d_id.push(d.children[0].d_id);
 				
@@ -1112,7 +1112,7 @@ function get_subtree_summarize(text, d, level) {
 				
 				current_summarize_d_id.push(d.children[i].d_id);
 				
-				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '</div>';
+				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
 			}
 			if (!d.children[i].replace_node) {
 				text = get_subtree_summarize(text, d.children[i], level+1);
@@ -1130,7 +1130,7 @@ function get_subtree_summarize(text, d, level) {
 				
 				current_summarize_d_id.push(d._children[i].d_id);
 				
-				text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d._children[i].name, d._children[i].d_id) + '</div>';
+				text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d._children[i].name, d._children[i].d_id) + '<P>-- ' + d._children[i].author + '</P></div>';
 			}
 			text = get_subtree_summarize(text, d._children[i], level+1);
 		}
@@ -2181,10 +2181,10 @@ function show_text(d) {
 		$('#box').html(d.name);
 		clear_box_top();
 	} else if (d == null){
-		$('#box').html('');
+		$('#box').html('Click on a node to see it and its children or drag to select multiple nodes.');
 		clear_box_top();
 	} else {
-		$('#box').html('');
+		$('#box').html('Click on a node to see it and its children or drag to select multiple nodes.');
 		clear_box_top();
 		var objs = [];
 		var min_level = 50;

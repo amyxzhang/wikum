@@ -125,9 +125,9 @@ function get_comment(comment_str, did) {
 	    			}
 	    			new_comment += '</div>';
 	    			if (paras[j] == 1) {
-	    				new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">... ( ' +paras[j]+ ' para before )</a><BR>';
+	    				new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">. . . ( ' +paras[j]+ ' para before )</a><BR>';
 	    			} else {
-	    				new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">... ( ' +paras[j]+ ' paras before )</a><BR>';
+	    				new_comment += '<a class="see_full_comment btn-xs" onclick="show_hidden_before()">. . . ( ' +paras[j]+ ' paras before )</a><BR>';
 	    			}
 	    		}
 	    		
@@ -136,9 +136,9 @@ function get_comment(comment_str, did) {
 	    	
 	    		if (paras[j] < strs.length -1) {
 	    			if ((strs.length-paras[j]-1) == 1) {
-	    				new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">... ( ' +(strs.length-paras[j]-1)+ ' para after )</a>';
+	    				new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">. . . ( ' +(strs.length-paras[j]-1)+ ' para after )</a>';
 	    			} else {
-	    				new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">... ( ' +(strs.length-paras[j]-1)+ ' paras after )</a>';
+	    				new_comment += '<BR><a class="see_full_comment btn-xs" onclick="show_hidden_after()">. . . ( ' +(strs.length-paras[j]-1)+ ' paras after )</a>';
 	    			}
 	    			
 	    			new_comment += '<div style="display: none;" id="hidden_comment_after_' + node.d_id + '_' + paras[j] + '">';
@@ -200,7 +200,7 @@ function toggle_hide(comments) {
 function split_text(text, summary_text, d_id) {
 	var splitted = text.split("\n");
 	
-	hidden_para_num = text.split("<BR><a>...</a><BR>");
+	hidden_para_num = text.split("<BR><a>. . .</a><BR>");
 	if (hidden_para_num.length > 1) {
 		hidden_para_num = hidden_para_num[1].split('\n\n').length;
 	} else {
@@ -211,8 +211,8 @@ function split_text(text, summary_text, d_id) {
 	for (var i=0; i<splitted.length; i++) {
 		part = splitted[i];
 		
-		if (part == '<BR><a>...</a><BR>') {
-			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">... ( ' + hidden_para_num + ' summary points below the fold )</a>';
+		if (part == '<BR><a>. . .</a><BR>') {
+			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary points below the fold )</a>';
 			summary_text += '<div id="hidden_' + d_id + '" style="display: none; margin-top: 15px;"><P>';
 			hidden = true;
 		} else {
@@ -296,7 +296,7 @@ $(document).ready(function () {
         	summary_text = '<P>';
         	
         	if (extra_text != '') {
-        		text += '\n<BR><a>...</a><BR>\n';
+        		text += '\n<BR><a>. . .</a><BR>\n';
         		text += extra_text;
         	}
         	
