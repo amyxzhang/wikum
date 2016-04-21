@@ -17,13 +17,13 @@ function highlight_sents() {
 			url: '/auto_summarize_comment?comment_id=' + d_ids[j],
 			success: function(res) {
 				for (var i=0; i<res.sents.length; i++) {
-					console.log(res.sents[i]);
-					if (d_ids.length == 1) {
-						$('#summarize_comment_box').highlight(res.sents[i]);
-					} else {
-						$('#summarize_multiple_comment_box').highlight(res.sents[i]);
+					if (res.sents[i].length > 6) {
+						if (d_ids.length == 1) {
+							$('#summarize_comment_box').highlight(res.sents[i]);
+						} else {
+							$('#summarize_multiple_comment_box').highlight(res.sents[i]);
+						}
 					}
-					
 				}
 			}
 		});
