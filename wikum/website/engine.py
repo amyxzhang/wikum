@@ -13,7 +13,6 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
-from praw.errors import NotFound
 
 stemmer = SnowballStemmer("english")
 stop = stopwords.words('english')
@@ -150,6 +149,7 @@ def import_reddit_posts(comments, article, reply_to):
         
         if comment_wikum.count() == 0:
             
+            from praw.errors import NotFound
             
             try:
                 author_id = comment.author.id
@@ -222,7 +222,7 @@ def get_posts(article):
         create_vectors(article)
         
         posts = article.comment_set.filter(reply_to_disqus=None)
-        from wikum.website.views import recurse_viz
+        from website.views import recurse_viz
         
         recurse_viz(None, posts, False)
         
@@ -231,7 +231,7 @@ def get_posts(article):
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-points')
     
-    return posts[0:50]
+    return posts[0:10]
 
 
 def tokenize_and_stem(text):
