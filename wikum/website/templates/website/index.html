@@ -40,7 +40,11 @@
 							  </div>
 							  </form>
 							  </p>
-                 
+							  
+							  	<div id="message" style="display: block; height:20px;">
+							  		
+							  	</div>
+             
                         <!--
                         <a href="#about" class="btn btn-circle page-scroll">
                             <i class="fa fa-angle-double-down animated"></i>
@@ -100,6 +104,9 @@
 		$('#articleUrl').keydown(function(event){ 
 		    var keyCode = (event.keyCode ? event.keyCode : event.which);   
 		    if (keyCode == 13) {
+		    	
+		    	$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while!');
+		    	
 		    	var article = $('#articleUrl').val();
 		        window.location.href = '/comments?article=' + article;
 		    }

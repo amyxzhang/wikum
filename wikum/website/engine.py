@@ -13,6 +13,7 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
+from praw.errors import NotFound
 
 stemmer = SnowballStemmer("english")
 stop = stopwords.words('english')
@@ -166,6 +167,8 @@ def import_reddit_posts(comments, article, reply_to):
                                                               link_karma=comment.author.link_karma
                                                               )
             except AttributeError:
+                comment_author = CommentAuthor.objects.get(disqus_id=None)
+            except NotFound:
                 comment_author = CommentAuthor.objects.get(disqus_id=None)
             
             html_text = comment.body_html
