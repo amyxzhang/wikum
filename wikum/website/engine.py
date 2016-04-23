@@ -12,11 +12,12 @@ import re
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
+import praw
 
 stemmer = SnowballStemmer("english")
 stop = stopwords.words('english')
 
-
+USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
 COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&thread=%s'
@@ -30,19 +31,29 @@ def random_with_N_digits(n):
 def get_source(url):
     if 'theatlantic' in url:
         return Source.objects.get(source_name="The Atlantic")
+    elif 'reddit.com' in url:
+        return Source.objects.get(source_name="Reddit")
     return None
 
 def get_article(url, source):
     article = Article.objects.filter(url=url)
     if article.count() == 0:
-        thread_call = THREAD_CALL % (DISQUS_API_KEY, source.disqus_name, url)
-        result = urllib2.urlopen(thread_call)
-        result = json.load(result)
-        
-        title = result['response'][0]['clean_title']
-        link = result['response'][0]['link']
-        id = result['response'][0]['id']
-        
+        if source.source_name == "The Atlantic":
+            thread_call = THREAD_CALL % (DISQUS_API_KEY, source.disqus_name, url)
+            result = urllib2.urlopen(thread_call)
+            result = json.load(result)
+            
+            title = result['response'][0]['clean_title']
+            link = result['response'][0]['link']
+            id = result['response'][0]['id']
+            
+        elif source.source_name == "Reddit":
+            r = praw.Reddit(user_agent=USER_AGENT)
+            submission = r.get_submission(url)
+            title = submission.title
+            link = url
+            id = submission.id
+            
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
         article = article[0]
@@ -58,7 +69,7 @@ def count_replies(article):
             c.save()
 
 
-def import_posts(result, article):
+def import_disqus_posts(result, article):
     for response in result['response']:
         comment_id = response['id']
         comment = Comment.objects.filter(disqus_id=comment_id)
@@ -107,31 +118,103 @@ def import_posts(result, article):
                                              )
         
         
+def get_disqus_posts(article):
+    comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
+            
+    print comment_call
+    
+    result = urllib2.urlopen(comment_call)
+    result = json.load(result)
+    
+    import_disqus_posts(result, article)
+    
+    while result['cursor']['hasNext']:
+        next = result['cursor']['next']
+        comment_call_cursor = '%s&cursor=%s' % (comment_call, next)
+        
+        print comment_call_cursor
+        
+        result = urllib2.urlopen(comment_call_cursor)
+        result = json.load(result)
+        
+        import_disqus_posts(result, article)
+
+
+def import_reddit_posts(comments, article, reply_to):
+    
+    for comment in comments:
+        
+        comment_id = comment.id
+        comment_wikum = Comment.objects.filter(disqus_id=comment_id)
+        
+        if comment_wikum.count() == 0:
+            
+            
+            try:
+                author_id = comment.author.id
+                comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+                if comment_author.count() > 0:
+                    comment_author = comment_author[0]
+                else:
+                    comment_author = CommentAuthor.objects.create(username=comment.author.name, 
+                                                              disqus_id=author_id,
+                                                              joined_at=datetime.datetime.fromtimestamp(int(comment.author.created_utc)),
+                                                              is_reddit=True,
+                                                              is_mod=comment.author.is_mod,
+                                                              is_gold=comment.author.is_gold,
+                                                              comment_karma=comment.author.comment_karma,
+                                                              link_karma=comment.author.link_karma
+                                                              )
+            except AttributeError:
+                comment_author = CommentAuthor.objects.get(disqus_id=None)
+            
+            html_text = comment.body_html
+            html_text = re.sub('<div class="md">', '', html_text)
+            html_text = re.sub('</div>', '', html_text)
+            
+            comment_wikum = Comment.objects.create(article = article,
+                                             author = comment_author,
+                                             text = html_text,
+                                             disqus_id = comment.id,
+                                             reply_to_disqus = reply_to,
+                                             text_len = len(html_text),
+                                             likes = comment.ups,
+                                             dislikes = comment.downs,
+                                             reports = len(comment.user_reports),
+                                             points = comment.score,
+                                             controversial_score = comment.controversiality,
+                                             created_at=datetime.datetime.fromtimestamp(int(comment.created_utc)),
+                                             edited = comment.edited,
+                                             flagged = len(comment.user_reports) > 0,
+                                             deleted = comment.banned_by != None,
+                                             approved = comment.approved_by != None,
+                                             )
+            replies = comment.replies
+            import_reddit_posts(replies, article, comment.id)
+    
+
+def get_reddit_posts(article):
+    
+    r = praw.Reddit(user_agent=USER_AGENT)
+    submission = r.get_submission(submission_id=article.disqus_id)
+
+    submission.replace_more_comments(limit=None, threshold=0)
+    
+    all_forest_comments = submission.comments
+    
+    import_reddit_posts(all_forest_comments, article, None)
+    
 
 def get_posts(article):
     
     posts = article.comment_set
     if posts.count() == 0:
-        comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
         
-        print comment_call
-        
-        result = urllib2.urlopen(comment_call)
-        result = json.load(result)
-        
-        import_posts(result, article)
-        
-        while result['cursor']['hasNext']:
-            next = result['cursor']['next']
-            comment_call_cursor = '%s&cursor=%s' % (comment_call, next)
-            
-            print comment_call_cursor
-            
-            result = urllib2.urlopen(comment_call_cursor)
-            result = json.load(result)
-            
-            import_posts(result, article)
-            
+        if article.source.source_name == "The Atlantic":
+            get_disqus_posts(article)
+        elif article.source.source_name == "Reddit":
+            get_reddit_posts(article)
+                
         count_replies(article)
         create_vectors(article)
         
@@ -141,9 +224,9 @@ def get_posts(article):
         recurse_viz(None, posts, False)
         
         
-        posts = article.comment_set.filter(reply_to_disqus=None).order_by('-likes')
+        posts = article.comment_set.filter(reply_to_disqus=None).order_by('-points')
     else:
-        posts = posts.filter(reply_to_disqus=None).order_by('-likes')
+        posts = posts.filter(reply_to_disqus=None).order_by('-points')
     
     return posts[0:50]
 

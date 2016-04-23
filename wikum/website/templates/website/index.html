@@ -16,7 +16,7 @@
                         <h1 class="brand-heading">Wikum</h1>
                         
                         
-                        <p class="intro-text">Organize long comment threads.
+                        <p class="intro-text">Summarize long comment threads.
                         	<br>
                         	
                         	<div class="dropdown">
@@ -27,7 +27,7 @@
 							  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 							  	
 							  	{% for a in articles %}
-							    	<li><a href="/summary?article={{ a.url }}">{{ a.title }}</a></li>
+							    	<li><a href="/summary?article={{ a.url }}">{{a.source.source_name}}: {{ a.title }}</a></li>
 								{% endfor %}
 							  </ul>
 							</div>
@@ -36,7 +36,7 @@
                         	<P>
 							   <form>
 							  <div class="form-group">
-							    <input type="url" class="form-control" id="articleUrl" placeholder="Or import a new article by pasting an article url here.">
+							    <input type="url" class="form-control" id="articleUrl" placeholder="Or import a new discussion by pasting an Atlantic article url or Reddit page here.">
 							  </div>
 							  </form>
 							  </p>
@@ -57,7 +57,7 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
                 <h2>About Wikum</h2>
-                <p>Wikum is a tool for organizing long comment threads.
+                <p>Wikum is a tool for summarizing and exploring long comment threads.
                 </p>
             </div>
         </div>

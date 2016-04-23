@@ -18,91 +18,13 @@
 						<a href="{{ article.url }}">Read the article in {{ source.source_name }}</a>
 					
 					<BR><BR>
-						<a href="/visualization?article={{ article.url }}">View Wikum Editing Interface</a>
+						<a href="/visualization?article={{ article.url }}">View Editing Interface</a>
+						
+						<a href="/summary?article={{ article.url }}">View Summary Interface</a>
 					
 		                    </div>
                 </div>
             </section>		
-            
-     <section id="contact" class="container content-section text-center" style="padding-top: 50px;">
-        <div class="row">
-            <div class="col-lg-12 col-lg">
-					
-					
-						{% for key, values in posts %}
-							<div class="comment">
-								{% autoescape off %}{{ key.text }}{% endautoescape %}
-								<BR>
-								Likes: {{ key.likes }}
-							</div>
-							
-							{% for key2, values2 in values %}
-								<div class="comment comment-rep1">
-									{% autoescape off %}{{ key2.text }}{% endautoescape %}
-									<br>
-									Likes: {{ key2.likes }}
-								</div>
-								
-								{% for key3, values3 in values2 %}
-									<div class="comment comment-rep2">
-										{% autoescape off %}{{ key3.text }}{% endautoescape %}
-										<BR>
-											Likes: {{ key3.likes }}
-									</div>
-									
-									
-									{% for key4, values4 in values3 %}
-									<div class="comment comment-rep3">
-										{% autoescape off %}{{ key4.text }}{% endautoescape %}
-										<BR>
-											Likes: {{ key4.likes }}
-									</div>
-									
-										{% for key5, values5 in values4 %}
-										<div class="comment comment-rep4">
-											{% autoescape off %}{{ key5.text }}{% endautoescape %}
-											<BR>
-												Likes: {{ key5.likes }}
-										</div>
-										
-											{% for key6, values6 in values5 %}
-											<div class="comment comment-rep5">
-												{% autoescape off %}{{ key6.text }}{% endautoescape %}
-												<BR>
-													Likes: {{ key6.likes }}
-											</div>
-											
-												{% for key7, values7 in values6 %}
-												<div class="comment comment-rep6">
-													{% autoescape off %}{{ key7.text }}{% endautoescape %}
-													<BR>
-														Likes: {{ key7.likes }}
-												</div>
-									
-													{% for rep in values7 %}
-														<div class="comment comment-rep7">
-															{% autoescape off %}{{ rep.text }}{% endautoescape %}
-															<BR>
-															Likes: {{ rep.likes }}
-														</div>
-													{% endfor %}
-												
-												{% endfor %}
-												
-											{% endfor %}
-										
-										{% endfor %}
-									
-									{% endfor %}
-									
-								{% endfor %}
-								
-							{% endfor %}
-							
-						{% endfor %}
-                    </div>
-                </div>
-            </section>
 
 
 {% endblock %}

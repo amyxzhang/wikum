@@ -33,7 +33,7 @@ summarizer = Summarizer(stemmer)
 
 @render_to('website/index.html')
 def index(request):
-    a = Article.objects.all()
+    a = Article.objects.all().select_related()
     return {'page': 'index',
             'articles': a}
 
@@ -46,57 +46,8 @@ def comments(request):
     
     posts = get_posts(article)
     
-    threads = []
-    
-    for post in posts:
-        replies = []
-        c = Comment.objects.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
-        for i in c:
-            replies2 = []
-            t = Comment.objects.filter(reply_to_disqus=i.disqus_id).order_by('-likes')
-            for u in t:
-                replies3 = []
-                v = Comment.objects.filter(reply_to_disqus=u.disqus_id).order_by('-likes')
-                for x in v:
-                    replies4 = []
-                    a = Comment.objects.filter(reply_to_disqus=x.disqus_id).order_by('-likes')
-                    for b in a:
-                        replies5 = []
-                        d = Comment.objects.filter(reply_to_disqus=b.disqus_id).order_by('-likes')
-                        for e in d:
-                            replies6 = []
-                            f = Comment.objects.filter(reply_to_disqus=e.disqus_id).order_by('-likes')
-                            for g in f:
-                                replies7 = []
-                                h = Comment.objects.filter(reply_to_disqus=g.disqus_id).order_by('-likes')
-                                for i in h:
-                                    replies7.append(i)
-                                
-                                post_info7 = (g, replies7)
-                                replies6.append(post_info7)
-                            
-                            post_info6 = (e, replies6)
-                            replies5.append(post_info6)
-                            
-                        post_info5 = (b, replies5)
-                        replies4.append(post_info5)
-                        
-                    post_info4 = (x, replies4)
-                    replies3.append(post_info4)
-                    
-                post_info3 = (u, replies3)
-                replies2.append(post_info3)
-                
-            post_info2 = (i, replies2)
-            replies.append(post_info2)
-        
-        post_info = (post, replies)
-        threads.append(post_info)
-            
-    
     return {'article': article,
             'source': source,
-            'posts': threads,
             'page': 'comments'}
     
 
@@ -134,7 +85,7 @@ def summary_data(request):
     else:
         next = int(next)
     
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[next:next+1]
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[next:next+1]
     
     
     val2 = {}
@@ -203,7 +154,7 @@ def recurse_viz(parent, posts, replaced):
             else:
                 author = ""
                 
-            v1 = {'size': post.likes,
+            v1 = {'size': post.points,
                   'd_id': post.id,
                   'author': author,
                   'replace_node': post.is_replacement,
@@ -213,7 +164,7 @@ def recurse_viz(parent, posts, replaced):
 
             v1['name'] = post.text
             
-            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-likes')
+            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
             if c1.count() == 0:
                 vals = []
                 hid = []
@@ -316,7 +267,7 @@ def summarize_selected(request):
                                              summary=top_summary,
                                              extra_summary=bottom_summary,
                                              disqus_id=new_id,
-                                             likes=child.likes,
+                                             points=child.points,
                                              text_len=len(summary))
 
         h = History.objects.create(user=req_user, 
@@ -414,7 +365,7 @@ def summarize_comments(request):
                                                  summary=top_summary,
                                                  extra_summary=bottom_summary,
                                                  disqus_id=new_id,
-                                                 likes=c.likes,
+                                                 points=c.points,
                                                  text_len=len(summary))
         
             c.reply_to_disqus = new_id
@@ -683,7 +634,7 @@ def viz_data(request):
            'article': True}
 
     if sort == 'likes':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-likes')[start:end]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
     elif sort == "replies":
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[start:end]
     elif sort == "long":
@@ -802,7 +753,7 @@ def subtree_data(request):
         next = int(next)
     
     if sort == 'likes':
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-likes')[next]]
+        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')[next]]
     elif sort == "replies":
         posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')[next]]
     elif sort == "long":
@@ -845,7 +796,7 @@ def recurse_get_parents(parent_dict, post, article):
         else:
             author = ""
                     
-        parent_dict['size'] = parent.likes
+        parent_dict['size'] = parent.points
         parent_dict['d_id'] = parent.id
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
@@ -887,7 +838,7 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
         else:
             author = ""
                     
-        parent_dict['size'] = parent.likes
+        parent_dict['size'] = parent.points
         parent_dict['d_id'] = parent.id
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement

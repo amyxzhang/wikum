@@ -50,10 +50,13 @@ class Comment(models.Model):
     reply_to_disqus = models.CharField(max_length=15, null=True, blank=True)
     num_replies = models.IntegerField(default=0)
     text_len = models.IntegerField(default=0)
+    
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
+    
     reports = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
+    
     created_at = models.DateTimeField(auto_now=True)
     edited = models.BooleanField(default=False)
     spam = models.BooleanField(default=False)
@@ -61,6 +64,8 @@ class Comment(models.Model):
     flagged = models.BooleanField(default=False)
     deleted = models.BooleanField(default=False)
     approved = models.BooleanField(default=True)
+    
+    controversial_score = models.IntegerField(default=0)
     
     json_flatten = models.TextField()
     num_subchildren = models.IntegerField(default=0)
@@ -79,12 +84,21 @@ class Comment(models.Model):
     
 class CommentAuthor(models.Model):
     username = models.TextField(null=True)
+    
     real_name = models.TextField()
     power_contrib = models.BooleanField(default=False)
     anonymous = models.BooleanField(default=False)
     reputation = models.FloatField(default=0.0)
+    
     joined_at = models.DateTimeField(null=True)
     disqus_id = models.CharField(max_length=15, null=True)
+    
+    is_reddit = models.BooleanField(default=False)
+    is_mod = models.BooleanField(default=False)
+    is_gold = models.BooleanField(default=False)
+    comment_karma = models.IntegerField(default=0)
+    link_karma = models.IntegerField(default=0)
+    
     avatar = models.URLField()
     primary = models.BooleanField(default=False)
     
