@@ -5,7 +5,8 @@
 1. git clone https://github.com/amyxzhang/wikum.git
 2. `cd wikum/wikum`
 2. Install pip and [virtualenv](https://virtualenv.pypa.io/en/latest/)
-2. `pip install -r requirements.txt`
+3. `virtualenv wikum`
+4. `pip install -r requirements.txt`
 3. `mkdir /opt/wikum`
 3. `echo "true" > /opt/wikum/debug`
 4. `echo "prod" > /opt/wikum/env`
