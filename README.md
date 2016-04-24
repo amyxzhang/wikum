@@ -22,4 +22,5 @@
 	}
 	```
 	
-8. `python manage.py runserver`
+8. `wikum/bin/activate`
+9. `python manage.py runserver`
