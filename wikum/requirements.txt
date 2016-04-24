@@ -1,6 +1,5 @@
 praw==3.4.0
 sumy==0.4.1
-pe==0.1.0
 boto==2.39.0
 bz2file==0.98
 cycler==0.10.0
