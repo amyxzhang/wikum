@@ -21,6 +21,6 @@
 	}
 	```
 	
-8. `wikum/bin/activate`
+8. `source wikum/bin/activate`
 9. `pip install -r requirements.txt`
 9. `python manage.py runserver`
