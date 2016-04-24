@@ -21,6 +21,6 @@
 	}
 	```
 	
-8. `source wikum/bin/activate`
-9. `pip install -r requirements.txt`
+8. `source wikum/bin/activate` Your prompt should change and have `(wikum)` in front of it.
+9. `pip install -r requirements.txt` If you get an error about MySQL, open a new tab and run `brew install mysql`, then try again. If that errors too, run `brew update` first.
 9. `python manage.py runserver`
