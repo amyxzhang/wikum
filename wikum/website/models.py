@@ -18,7 +18,7 @@ class Article(models.Model):
     disqus_id = models.CharField(max_length=15, null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     title = models.TextField()
-    url = models.URLField(unique=True)
+    url = models.URLField()
     source = models.ForeignKey('Source')
     
     vectorizer = models.BinaryField()
