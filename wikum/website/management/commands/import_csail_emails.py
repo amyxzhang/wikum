@@ -40,6 +40,9 @@ class Command(BaseCommand):
                     
                     
                     reply_to = msg['In-Reply-To']
+                    if reply_to:
+                        reply_to = reply_to.split()[0]
+                        
                     message_id = msg['Message-ID']
                     from_user = msg['From']
                     
