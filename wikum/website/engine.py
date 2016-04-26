@@ -208,6 +208,7 @@ def get_reddit_posts(article):
     import_reddit_posts(all_forest_comments, article, None)
     
 
+
 def get_posts(article):
     
     posts = article.comment_set
