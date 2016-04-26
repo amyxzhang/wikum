@@ -12,9 +12,9 @@ class Command(BaseCommand):
 
         f = open('2013-January.txt', 'r')
         
-        s = Source.objects.get_or_create(source_name="csail-related")
+        s,_ = Source.objects.get_or_create(source_name="csail-related")
         
-        a = Article.objects.get_or_create(url="https://lists.csail.mit.edu/mailman/private/csail-related/2013-January.txt",
+        a,_ = Article.objects.get_or_create(url="https://lists.csail.mit.edu/mailman/private/csail-related/2013-January.txt",
                                   title="[msgs] Holiday Greetings from MIT",
                                   source=s)
         
@@ -43,7 +43,7 @@ class Command(BaseCommand):
                     message_id = msg['Message-ID']
                     from_user = msg['From']
                     
-                    author = CommentAuthor.objects.get_or_create(username=from_user)
+                    author,_ = CommentAuthor.objects.get_or_create(username=from_user)
                     
                     date = msg['Date']
                     date = parser.parse(date) 
@@ -76,7 +76,7 @@ class Command(BaseCommand):
                     if body_str.endswith('<p></p>'):
                         body_str = body_str[:-7]
                     
-                    c = Comment.objects.get_or_create(created_at=date,
+                    c,_ = Comment.objects.get_or_create(created_at=date,
                                                       reply_to_disqus=reply_to,
                                                       disqus_id=message_id,
                                                       text=body_str,
