@@ -45,8 +45,8 @@ class Comment(models.Model):
     article = models.ForeignKey('Article')
     author = models.ForeignKey('CommentAuthor', null=True)
     text = models.TextField()
-    disqus_id = models.CharField(max_length=30)
-    reply_to_disqus = models.CharField(max_length=30, null=True, blank=True)
+    disqus_id = models.CharField(max_length=60)
+    reply_to_disqus = models.CharField(max_length=60, null=True, blank=True)
     num_replies = models.IntegerField(default=0)
     text_len = models.IntegerField(default=0)
     
