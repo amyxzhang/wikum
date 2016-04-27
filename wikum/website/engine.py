@@ -72,7 +72,7 @@ def count_replies(article):
 def import_disqus_posts(result, article):
     for response in result['response']:
         comment_id = response['id']
-        comment = Comment.objects.filter(disqus_id=comment_id)
+        comment = Comment.objects.filter(disqus_id=comment_id, article=article)
         
         if comment.count() == 0:
             
