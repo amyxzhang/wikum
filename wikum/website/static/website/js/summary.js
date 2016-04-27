@@ -385,7 +385,12 @@ $(document).ready(function () {
 			summary_text = display_comments(data.posts.children, 0, '');
 			
         	$('#summary').html(summary_text);
-
+        	
+        	if (data.posts.children.length < 5) {
+        		$('#link_next').html('<BR><P>End of discussion</P>');
+        	} else {
+        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + next + '">See Next Page of Discussions &gt;&gt;</a></P>');
+			}
 	    }
 	    
 	    
