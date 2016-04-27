@@ -577,27 +577,46 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		objs.sort(compare_nodes);
 		var text = '';
+
 		for (var i in objs) {
 			ids.push(objs[i].id);
 			dids.push(objs[i].d_id);
 
 			current_summarize_d_id.push(objs[i].d_id);
 
-			if (objs[i].depth - min_level <= 3) {
-				var depth = objs[i].depth - min_level;
-			} else {
-				var depth = 3;
-			}
+			var depth = Math.min(objs[i].depth - min_level, 3);
+			var summaryClass = objs[i].replace_node? "summary_box" : "";
+
+			text += `<div id="sum_box_${objs[i].id}" class="summarize_comment_comment ${summaryClass} level${depth}">
+			<p>ID: ${objs[i].d_id} |`;
+
 			if (objs[i].replace_node) {
-				text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment summary_box level' + depth + '"><P>ID: ' + objs[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary_node(' + objs[i].id + ');">Cut & Paste Summary</a> | <a class="btn-xs btn-edit" onclick="copy_summary(' + objs[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + objs[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(objs[i]) + '</div>';
+				text += `
+					<a class="btn-xs btn-edit" onclick="copy_summary_node(${objs[i].id});">Cut & Paste Summary</a> |
+					<a class="btn-xs btn-edit" onclick="copy_summary(${objs[i].id});">Copy Summary</a> |
+					<a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Summary</a>
+				</P>
+				<strong>Summary Node:</strong><BR>
+				${render_summary_node_edit(objs[i])}`;
 			} else {
-				if (objs[i].summary != "") {
-					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + objs[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + objs[i].d_id +');">Cite Comment</a></P><strong>Summary:</strong> ' + render_summary_node_edit(objs[i]) + '</div>';
+				if (objs[i].summary) {
+					text += `
+					<a class="btn-xs btn-edit" onclick="copy_summary(${objs[i].id});">Copy Entire Summary</a> |
+					<a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Comment</a>
+					</P>
+					<strong>Summary:</strong>
+					${render_summary_node_edit(objs[i])}`;
 				} else {
-					text += '<div id="sum_box_' + objs[i].id + '" class="summarize_comment_comment level' + depth + '"><P>ID: ' + objs[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + objs[i].d_id +');">Cite Comment</a></P>' + show_comment_text(objs[i].name, objs[i].d_id) + '<P>-- ' + objs[i].author + '</P></div>';
+					text += ` | <a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Comment</a>
+					</P>
+					${show_comment_text(objs[i].name, objs[i].d_id)}
+					<P>-- ${objs[i].author}</P>`;
 				}
 			}
+
+			text += `</div>`
 		}
+
 		$('#summarize_multiple_comment_text').text('Summarize these selected comments.');
 		$('#summarize_multiple_comment_textarea').val("");
 	} else {
@@ -609,10 +628,12 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		highlight_box(id);
 		if (type == "summarize") {
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment">';
+
 			if (d.summary != '') {
-				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d) + '</div>';
+				text += ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d) + '</div>';
 			} else {
-				var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
+				text += ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
 
 				current_summarize_d_id.push(d.d_id);
 			}
@@ -2012,19 +2033,19 @@ function toggle_original(id) {
 }
 
 function construct_comment(d) {
-	var text = 'ID: ' + d.d_id + '<BR>';
-	var summary = false;
-	if (d.summary != '' || d.extra_summary != '') {
-		summary = true;
-	}
+	var text = "";
+	var summary = !!(d.summary != '' || d.extra_summary != '');
+
+	text += `<div id="comment_text_${d.id}">`;
 
 	if (summary) {
-		text += `<div id="comment_text_${d.id}"><strong>Summary${d.replace_node ? " Node" : ""}:</strong><BR>` + render_summary_node(d);
+		text += `<h1 title="ID: ${d.d_id}">Summary${d.replace_node ? " Node" : ""}</h1>`
+		text += render_summary_node(d);
 	} else {
-		text += '<div id="comment_text_' + d.id + '">' + d.name;
-		text += '<P>-- ' + d.author + '</P>';
-		text += '<P>Likes: ' + d.size + '</P>';
+		text += `<h1 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} likes)</h1>`
+		text += d.name;
 	}
+
 	text += '</div>';
 
 	if (summary) {
@@ -2036,8 +2057,6 @@ function construct_comment(d) {
 			text += '<BR><P><a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="' + d.id + '">Edit Summary Node</a> | <a onclick="post_delete_summary_node(' + d.id + ');">Delete Summary Node</a>';
 
 		}
-
-
 	}
 
 	if (!summary && d.name.length > 300) {
@@ -2066,6 +2085,7 @@ function construct_comment(d) {
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark all Replies Unimportant</a></p>';
 		}
 	}
+
 	return text;
 }
 

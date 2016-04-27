@@ -333,6 +333,10 @@ rect.selection {
 	font-size: 12px;
 }
 
+	.comment_box h1 {
+		font-size: 100%;
+	}
+
 .summarize_comment_comment {
 	font-size: 12px;
 }
