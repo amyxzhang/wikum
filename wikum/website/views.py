@@ -40,7 +40,8 @@ def index(request):
 @render_to('website/visualization.html')
 def visualization(request):
     url = request.GET['article']
-    article = Article.objects.get(url=url)
+    num = request.GET.get('num', 0)
+    article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
     
