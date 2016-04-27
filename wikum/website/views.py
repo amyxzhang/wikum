@@ -61,7 +61,7 @@ def summary(request):
     
     return {'article': article,
             'source': article.source,
-            'next': next+1,
+            'next': next+5,
             }
     
 def summary_data(request):
