@@ -299,11 +299,16 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	
 	$('#tag_comment_dropdown').html(d_text);
 	
+	var num = parseInt(getParameterByName('num'));
+	if (!num) {
+		num = 0;
+	}
+	
 	var tag_suggestions = new Bloodhound({
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  prefetch: {
-	  	url:'/tags?article=' + article_url,
+	  	url:'/tags?article=' + article_url + '&num=' + num,
 	  	cache: false,
 	  }
 	});

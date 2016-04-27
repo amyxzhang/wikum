@@ -66,7 +66,9 @@ def summary(request):
     
 def summary_data(request):
     url = request.GET['article']
-    a = Article.objects.get(url=url)
+    num = request.GET.get('num', 0)
+    
+    a = Article.objects.filter(url=url)[num]
     
     next = request.GET.get('next')
     if not next:
@@ -89,14 +91,19 @@ def summary_data(request):
 @render_to('website/subtree.html')
 def subtree(request):
     url = request.GET['article']
-    article = Article.objects.get(url=url)
+    num = request.GET.get('num', 0)
+    
+    article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
 
 @render_to('website/cluster.html')
 def cluster(request):
     url = request.GET['article']
-    article = Article.objects.get(url=url)
+    num = request.GET.get('num', 0)
+    
+    article = Article.objects.filter(url=url)[num]
+    
     return {'article': article,
             'source': article.source}
 
@@ -700,7 +707,9 @@ def history(request):
     
 def tags(request):
     article_url = request.GET['article']
-    a = Article.objects.get(url=article_url)
+    num = request.GET.get('num', 0)
+    
+    a = Article.objects.filter(url=article_url)[num]
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     
@@ -722,7 +731,9 @@ def viz_data(request):
     start = 10 * next
     end = (10 * next) + 10
     
-    a = Article.objects.get(url=article_url)
+    num = request.GET.get('num', 0)
+    
+    a = Article.objects.filter(url=article_url)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -747,8 +758,9 @@ def viz_data(request):
 def cluster_data(request):
     article_url = request.GET['article']
     cluster_size = int(request.GET.get('size'))
+    num = request.GET.get('num', 0)
     
-    a = Article.objects.get(url=article_url)
+    a = Article.objects.filter(url=article_url)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -837,7 +849,9 @@ def subtree_data(request):
     sort = request.GET.get('sort')
     next = request.GET.get('next')
     
-    a = Article.objects.get(url=article_url)
+    num = request.GET.get('num', 0)
+    
+    a = Article.objects.filter(url=article_url)[num]
 
     least = 1
     most = 7

@@ -168,8 +168,13 @@ var next = parseInt(getParameterByName('next'));
 if (!next) {
 	next = 0;
 }
+var num = parseInt(getParameterByName('num'));
+if (!num) {
+	num = 0;
+}
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
+
+d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;

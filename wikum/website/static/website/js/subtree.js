@@ -169,7 +169,12 @@ if (!next) {
 	next = 0;
 }
 
-d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
+var num = parseInt(getParameterByName('num'));
+if (!num) {
+	num = 0;
+}
+
+d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num' + num, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;

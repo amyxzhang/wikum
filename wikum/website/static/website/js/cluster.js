@@ -165,7 +165,12 @@ if (!size) {
 	size = 0;
 }
 
-d3.json('/cluster_data?article=' + article_url + '&size=' + size, function(error, flare) {
+var num = parseInt(getParameterByName('num'));
+if (!num) {
+	num = 0;
+}
+
+d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;

@@ -373,10 +373,14 @@ $(document).ready(function () {
 	if (!next) {
 		next = 0;
 	}
+	var num = parseInt(getParameterByName('num'));
+	if (!num) {
+		num = 0;
+	}
 	
 	$.ajax({ 
 	    type: 'GET', 
-	    url: '/summary_data?article=' + article_url + '&next=' + next, 
+	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num, 
 	    dataType: 'json',
 	    success: function (data) { 
 	    	
