@@ -389,7 +389,7 @@ $(document).ready(function () {
         	if (data.posts.children.length < 5) {
         		$('#link_next').html('<BR><P>End of discussion</P>');
         	} else {
-        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+5) + '">See Next Page of Discussions &gt;&gt;</a></P>');
+        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
 			}
 	    }
 	    

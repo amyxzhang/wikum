@@ -40,6 +40,15 @@ class History(models.Model):
     def __unicode__(self):
         return self.action
     
+class Tag(models.Model):
+    id = models.AutoField(primary_key=True)
+    article = models.ForeignKey('Article')
+    text = models.TextField()
+    color = models.CharField(max_length=6)
+    
+    def __unicode__(self):
+        return 'Tag of %s on article %s' % (self.text, self.article.title)
+    
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
@@ -76,10 +85,11 @@ class Comment(models.Model):
     
     vector = models.BinaryField()
     
-    
-    
+    tags = models.ManyToManyField(Tag)
+
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)
+    
     
 class CommentAuthor(models.Model):
     username = models.TextField(null=True)

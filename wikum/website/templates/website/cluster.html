@@ -4,6 +4,7 @@
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/base-vis.css" %}>
 	<link rel="stylesheet" href={% static "website/css/jquery-ui.min.css" %}>
+	<link rel="stylesheet" href={% static "website/css/typeaheadjs.css" %}>
 {% endblock %}
 
 
@@ -62,6 +63,29 @@
 	      </div>
 	      <div class="modal-footer">
 	      	<button type="button" class="btn btn-default" id="hide_comment_submit">Submit</button>
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	
+	  </div>
+	</div>
+	
+	<div id="tag_modal_box" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Tag Comment</h4>
+	      </div>
+	      <div class="modal-body">
+	        <div id="tag_comment_text"></div>
+	        <div id="tag_comment_box" class="resizable"></div>
+	        <div id="tag_comment_dropdown"></div>
+	        
+	      </div>
+	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	      </div>
 	    </div>
@@ -140,6 +164,7 @@
 	<script src={% static "website/js/jquery-ui.min.js" %}></script>
 	<script src={% static "website/js/jquery.noty.packaged.min.js" %}></script>
 	<script src={% static "website/js/jquery.highlight.js" %}></script>
+	<script src={% static "website/js/typeahead.bundle.js" %}></script>
 	    
     <script src={% static "website/js/base.js" %}></script>
 	<script src={% static "website/js/cluster.js" %}></script>

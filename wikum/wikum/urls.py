@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
+     url(r'^tags','website.views.tags'),
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),
     url(r'^summary_data','website.views.summary_data'),
@@ -34,6 +35,10 @@ urlpatterns = [
     
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
+    
+    url(r'^tag_comments','website.views.tag_comments'),
+    url(r'^tag_comment','website.views.tag_comment'),
+    
     url(r'^hide_replies','website.views.hide_replies'),
     url(r'^summarize_selected','website.views.summarize_selected'),
     url(r'^summarize_comments','website.views.summarize_comments'),

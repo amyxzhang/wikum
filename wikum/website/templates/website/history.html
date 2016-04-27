@@ -45,6 +45,10 @@
 	            		<td>Edit Summary of Subtree</td>
 	            	{% elif h.action == "move_comment" %}
 	            		<td>Move Comment</td>
+	            	{% elif h.action == "tag_comment" %}
+	            		<td>Tag Comment</td>
+	            	{% elif h.action == "tag_comments" %}
+	            		<td>Tag Comments</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}

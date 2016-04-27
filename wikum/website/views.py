@@ -61,7 +61,6 @@ def summary(request):
     
     return {'article': article,
             'source': article.source,
-            'next': next+5,
             }
     
 def summary_data(request):
@@ -73,8 +72,11 @@ def summary_data(request):
         next = 0
     else:
         next = int(next)
+        
+    start = 5 * next
+    end = (5 * next) + 5
     
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[next:next+5]
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
     
     
     val2 = {}
@@ -148,7 +150,8 @@ def recurse_viz(parent, posts, replaced):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'summary': post.summary,
-                  'extra_summary': post.extra_summary
+                  'extra_summary': post.extra_summary,
+                  'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
 
             v1['name'] = post.text
@@ -408,6 +411,52 @@ def summarize_comments(request):
         
         return HttpResponseBadRequest()  
 
+def tag_comments(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        ids = request.POST.getlist('ids[]')
+        tag = request.POST['tag']
+        
+        
+        t, created = Tag.objects.get_or_create(article=a, text=tag)
+        if created:
+            r = lambda: random.randint(0, 255)
+            color = '%02X%02X%02X' % (r(), r(), r())
+            t.color = color
+            t.save()
+        else:
+            color = t.color
+        
+        comments = Comment.objects.filter(id__in=ids, hidden=False)
+        
+        affected_comms = [];
+        
+        for comment in comments:
+            tag_exists = comment.tags.filter(text=t.text)
+            if tag_exists.count() == 0:
+                comment.tags.add(t)
+                affected_comms.append(comment)
+
+            
+        h = History.objects.create(user=req_user, 
+                                   article=a,
+                                   action='tag_comments',
+                                   explanation='Add tag %s to comments' % t.text)
+            
+        for com in affected_comms:
+            recurse_up_post(com)
+            
+        if len(affected_comms) > 0:
+            return JsonResponse({'color': color})
+        else:
+            return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 def hide_comments(request):
     try:
         article_id = request.POST['article']
@@ -504,6 +553,52 @@ def auto_summarize_comment(request):
      
     return JsonResponse({"sents": sent_list})
      
+     
+def tag_comment(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        tag = request.POST['tag']
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        comment = Comment.objects.get(id=id)
+        
+        
+        t, created = Tag.objects.get_or_create(article=a, text=tag)
+        if created:
+            r = lambda: random.randint(0, 255)
+            color = '%02X%02X%02X' % (r(), r(), r())
+            t.color = color
+            t.save()
+        else:
+            color = t.color
+        
+        affected= False
+        
+        tag_exists = comment.tags.filter(text=t.text)
+        if tag_exists.count() == 0:
+            comment.tags.add(t)
+            affected = True
+            
+        if affected:
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='tag_comment',
+                                       explanation="Add tag %s to a comment" % t.text)
+            
+            h.comments.add(comment)
+            
+            recurse_up_post(comment)
+                
+            
+        if affected:
+            return JsonResponse({'color': color})
+        else:
+            return JsonResponse()
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
             
 def hide_comment(request):
     try:
@@ -602,6 +697,16 @@ def history(request):
     return {'history': hist,
             'article': a}
     
+def tags(request):
+    article_url = request.GET['article']
+    a = Article.objects.get(url=article_url)
+    
+    tags = list(a.tag_set.all().values_list('text', flat=True))
+    
+    json_data = json.dumps(tags)
+    
+    return HttpResponse(json_data, content_type='application/json')
+
 
 def viz_data(request):
     article_url = request.GET['article']
@@ -613,8 +718,8 @@ def viz_data(request):
     else:
         next = int(next)
         
-    start = 20 * next
-    end = (20 * next) + 20
+    start = 10 * next
+    end = (10 * next) + 10
     
     a = Article.objects.get(url=article_url)
     
@@ -768,7 +873,6 @@ def subtree_data(request):
     val = recurse_get_parents(val2, posts[0], a)
     
     return JsonResponse(val)
-        
      
 def recurse_get_parents(parent_dict, post, article):
     
