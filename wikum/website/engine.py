@@ -78,7 +78,7 @@ def import_disqus_posts(result, article):
             
             anonymous = response['author']['isAnonymous']
             if anonymous:
-                comment_author = CommentAuthor.objects.get(disqus_id=None)
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             else:
                 author_id = response['author']['id']
                 
@@ -87,7 +87,7 @@ def import_disqus_posts(result, article):
                     comment_author = comment_author[0]
                 else:
                     
-                    comment_author = CommentAuthor.objects.create(username = response['author']['username'],
+                    comment_author,_ = CommentAuthor.objects.get_or_create(username = response['author']['username'],
                                                           real_name = response['author']['name'],
                                                           power_contrib = response['author']['isPowerContributor'],
                                                           anonymous = anonymous,
