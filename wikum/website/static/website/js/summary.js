@@ -1,5 +1,4 @@
 
-var discuss_info = null;
 var discuss_dict = {};
 
 function getParameterByName(name, url) {
@@ -266,54 +265,100 @@ function unpack_posts(posts) {
 	}
 }
 
-function display_comment(discuss_info_list, level, total_summary_text) {
+function uncollapse_text(d_id) {
+	info = discuss_dict[d_id];
+	summary_text = display_comment(info, d_id, '');
+	$('#node_' + d_id).html(summary_text);
+	if (info.children) {
+		for (var i=0; i<info.children.length; i++) {
+			show_node(info.children[i]);
+		}
+	}
+}
+
+function collapse_text(d_id) {
+	$('#node_' + d_id).html('ID: ' + d_id + '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">Show</a>');
+	info = discuss_dict[d_id];
+	if (info.children) {
+		for (var i=0; i<info.children.length; i++) {
+			hide_node(info.children[i]);
+		}
+	}
+	
+}
+
+function show_node(node_info) {
+	$('#node_' + node_info.d_id).show();
+	if (node_info.children) {
+		for (var i=0; i<node_info.children.length; i++) {
+			hide_node(node_info.children[i]);
+		}
+	}
+}
+
+function hide_node(node_info) {
+	$('#node_' + node_info.d_id).hide();
+	if (node_info.children) {
+		for (var i=0; i<node_info.children.length; i++) {
+			hide_node(node_info.children[i]);
+		}
+	}
+}
+
+function display_comment(info, d_id, summary_text) {
+	if (info.replace_node) {
+		summary_text += '<B>Summary:</B><BR>';
+	} else {
+		summary_text += '<a style="float: right" onclick="collapse_text(' + d_id + ');">Collapse</a>';
+		summary_text += 'ID: ' + d_id + '<BR>';
+	}
+	
+	summary_text += '<P>';
+	
+	if (info.replace_node) {
+		text = info.summary;
+	} else {
+		text = info.name;
+	}
+
+	if (extra_text != '') {
+		text += '\n<BR><a>...</a><BR>\n';
+		text += extra_text;
+	}
+	
+	summary_text = split_text(text, summary_text, d_id);
+
+	summary_text += '</P>';
+	
+	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
+
+	if (!info.replace_node) {
+		summary_text += '<BR> -- ' + info.author + '<BR>' + info.size + ' Likes';
+	}
+	return summary_text;
+}
+
+function display_comments(discuss_info_list, level, total_summary_text) {
 	
 	for (var i=0; i< discuss_info_list.length; i++) {
-		discuss_info = discuss_info_list[i];
+		info = discuss_info_list[i];
 		
-		extra_text = discuss_info.extra_summary;
-		d_id = discuss_info.d_id;
+		extra_text = info.extra_summary;
+		d_id = info.d_id;
 		
 		var levelClass = level > 2? "level3" : `level${level}`;
 		
-		var summaryClass = discuss_info.replace_node? "summary_node" : "original_node";
-		summary_text = '<div class="' + summaryClass + ' ' + levelClass + '">';
+		var summaryClass = info.replace_node? "summary_node" : "original_node";
+		summary_text = '<div id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
 		
-		if (discuss_info.replace_node) {
-			summary_text += '<B>Summary:</B><BR>';
-		} else {
-			summary_text += 'ID: ' + d_id + '<BR>';
-		}
-		
-		summary_text += '<P>';
-		
-		if (discuss_info.replace_node) {
-			text = discuss_info.summary;
-		} else {
-			text = discuss_info.name;
-		}
-	
-		if (extra_text != '') {
-			text += '\n<BR><a>...</a><BR>\n';
-			text += extra_text;
-		}
-		
-		summary_text = split_text(text, summary_text, d_id);
-	
-		summary_text += '</P>';
-		
-		//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
-	
-		if (!discuss_info.replace_node) {
-			summary_text += '<BR> -- ' + discuss_info.author + '<BR>' + discuss_info.size + ' Likes';
-		}
+		summary_text = display_comment(info, d_id, summary_text);
 		
 		summary_text += '</div>';
 		
 		total_summary_text += summary_text;
 		
-		if (!discuss_info.replace_node) {
-			total_summary_text = display_comment(discuss_info.children, level+1, total_summary_text)
+		if (!info.replace_node) {
+			total_summary_text = display_comments(info.children, level+1, total_summary_text)
 		}
 		
 	}
@@ -337,7 +382,7 @@ $(document).ready(function () {
 	    	
 	    	unpack_posts(data.posts.children);
 
-			summary_text = display_comment(data.posts.children, 0, '');
+			summary_text = display_comments(data.posts.children, 0, '');
 			
         	$('#summary').html(summary_text);
 
