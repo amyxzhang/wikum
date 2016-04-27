@@ -199,7 +199,7 @@ function toggle_hide(comments) {
 function split_text(text, summary_text, d_id) {
 	var splitted = text.split("\n");
 	
-	hidden_para_num = text.split("<BR><a>. . .</a><BR>");
+	hidden_para_num = text.split("<BR><a>...</a><BR>");
 	if (hidden_para_num.length > 1) {
 		hidden_para_num = hidden_para_num[1].split('\n\n').length;
 	} else {
@@ -210,8 +210,12 @@ function split_text(text, summary_text, d_id) {
 	for (var i=0; i<splitted.length; i++) {
 		part = splitted[i];
 		
-		if (part == '<BR><a>. . .</a><BR>') {
-			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary points below the fold )</a>';
+		if (part == '<BR><a>...</a><BR>') {
+			if (hidden_para_num == 1) {
+				summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary point below the fold )</a>';
+			} else {
+				summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary points below the fold )</a>';
+			}
 			summary_text += '<div id="hidden_' + d_id + '" class="hidden_node" style="display: none; margin-top: 15px;"><P>';
 			hidden = true;
 		} else {
@@ -290,7 +294,7 @@ function display_comment(discuss_info_list, level, total_summary_text) {
 		}
 	
 		if (extra_text != '') {
-			text += '\n<BR><a>. . .</a><BR>\n';
+			text += '\n<BR><a>...</a><BR>\n';
 			text += extra_text;
 		}
 		
