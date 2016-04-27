@@ -302,9 +302,8 @@ function display_comment(discuss_info_list, level, total_summary_text) {
 	
 		if (!discuss_info.replace_node) {
 			summary_text += '<BR> -- ' + discuss_info.author + '<BR>' + discuss_info.size + ' Likes';
-		} else {
-			summary_text += '<BR>';
 		}
+		
 		summary_text += '</div>';
 		
 		total_summary_text += summary_text;

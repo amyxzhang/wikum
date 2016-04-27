@@ -91,7 +91,8 @@ blockquote>a>blockquote:hover,
 	position: relative;
 	padding: 5px;
 	margin: 5px;
-	border-left: 1px dotted #000000;
+	background-color: #ffffff;
+    border-left: 1px dotted orange;
 }
 
 .see_full_comment {
@@ -130,8 +131,9 @@ blockquote {
 }
 
 .summary_node {
-	margin: 5px;
+	padding: 5px;
 	background-color: #ffffff;
+    border: 1px solid orange;
 }
 
 .original_node {
