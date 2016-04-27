@@ -15,6 +15,7 @@ P {
 .summary_comment>p>a, 
 .summary_comment>div>a, 
 .summary_comment>div>p>a,
+.hidden_node>p>a,
 blockquote>a
  {
 	color: #000000;
@@ -26,6 +27,7 @@ blockquote>a
 .summary_comment>p>a:hover, 
 .summary_comment>div>a:hover,
 .summary_comment>div>p>a:hover,
+.hidden_node>p>a:hover,
 blockquote>a:hover
  {
 	background-color: orange;
@@ -40,6 +42,7 @@ summary>div>p>a>blockquote:hover,
 .summary_comment>div>a>blockquote:hover,
 blockquote>a>blockquote:hover, 
 .summary_comment>div>p>a>blockquote:hover
+.hidden_node>p>a>blockquote:hover
  {
 	background-color: orange;
 	cursor: pointer;
@@ -75,7 +78,7 @@ blockquote>a>blockquote:hover,
 .raw_comment {
 	display: block;
 	position: relative;
-	background-color: #dae8f5;
+	background-color: #eef4fa;
 	/*border: 1px #cccccc solid;
 	*/
 	padding: 5px;
@@ -112,4 +115,28 @@ a:hover {
 blockquote {
 	padding-bottom: 0px;
 	margin-bottom: 0px;
+}
+
+.level1 {
+	margin-left: 50px;
+}
+
+.level2 {
+	margin-left: 100px;
+}
+
+.level3 {
+	margin-left: 150px;
+}
+
+.summary_node {
+	margin: 5px;
+	background-color: #ffffff;
+}
+
+.original_node {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 5px;
+	background-color: #eef4fa;
 }

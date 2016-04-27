@@ -79,7 +79,6 @@ function get_comment(comment_str, did) {
 		for (var i=0; i<comments_list.length; i++) {
 			data.push(discuss_dict[comments_list[i]]);
 		}
-		
 
     	var total_text = '';
     	
@@ -213,7 +212,7 @@ function split_text(text, summary_text, d_id) {
 		
 		if (part == '<BR><a>. . .</a><BR>') {
 			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary points below the fold )</a>';
-			summary_text += '<div id="hidden_' + d_id + '" style="display: none; margin-top: 15px;"><P>';
+			summary_text += '<div id="hidden_' + d_id + '" class="hidden_node" style="display: none; margin-top: 15px;"><P>';
 			hidden = true;
 		} else {
 			var pattern = /\[quote\]/g;
@@ -246,24 +245,77 @@ function show_div() {
 	$(event.target).next().toggle();
 }
 
-function unpack_posts(post) {
-	discuss_dict[post.d_id] = post;
+function unpack_posts(posts) {
+	for (var i=0; i<posts.length; i++) {
+		post = posts[i];
+		discuss_dict[post.d_id] = post;
+		
+		if (post.children) {
+			unpack_posts(post.children);
+		}
+		if (post.hid) {
+			unpack_posts(post.hid);
+		}
+		if (post.replace) {
+			unpack_posts(post.replace);
+		}
+	}
+}
+
+function display_comment(discuss_info_list, level, total_summary_text) {
 	
-	if (post.children) {
-		for (var i=0; i<post.children.length; i++) {
-			unpack_posts(post.children[i]);
+	for (var i=0; i< discuss_info_list.length; i++) {
+		discuss_info = discuss_info_list[i];
+		
+		extra_text = discuss_info.extra_summary;
+		d_id = discuss_info.d_id;
+		
+		var levelClass = level > 2? "level3" : `level${level}`;
+		
+		var summaryClass = discuss_info.replace_node? "summary_node" : "original_node";
+		summary_text = '<div class="' + summaryClass + ' ' + levelClass + '">';
+		
+		if (discuss_info.replace_node) {
+			summary_text += '<B>Summary:</B><BR>';
+		} else {
+			summary_text += 'ID: ' + d_id + '<BR>';
 		}
-	}
-	if (post.hid) {
-		for (var i=0; i<post.hid.length; i++) {
-			unpack_posts(post.hid[i]);
+		
+		summary_text += '<P>';
+		
+		if (discuss_info.replace_node) {
+			text = discuss_info.summary;
+		} else {
+			text = discuss_info.name;
 		}
-	}
-	if (post.replace) {
-		for (var i=0; i<post.replace.length; i++) {
-			unpack_posts(post.replace[i]);
+	
+		if (extra_text != '') {
+			text += '\n<BR><a>. . .</a><BR>\n';
+			text += extra_text;
 		}
+		
+		summary_text = split_text(text, summary_text, d_id);
+	
+		summary_text += '</P>';
+		
+		//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
+	
+		if (!discuss_info.replace_node) {
+			summary_text += '<BR> -- ' + discuss_info.author + '<BR>' + discuss_info.size + ' Likes';
+		} else {
+			summary_text += '<BR>';
+		}
+		summary_text += '</div>';
+		
+		total_summary_text += summary_text;
+		
+		if (!discuss_info.replace_node) {
+			total_summary_text = display_comment(discuss_info.children, level+1, total_summary_text)
+		}
+		
 	}
+	
+	return total_summary_text;
 }
 
 $(document).ready(function () {
@@ -280,33 +332,10 @@ $(document).ready(function () {
 	    dataType: 'json',
 	    success: function (data) { 
 	    	
-	    	discuss_info = data.posts.children[0];
-	    	
-	    	unpack_posts(discuss_info);
-	    	
-	    	if (discuss_info.replace_node) {
-	    		text = discuss_info.summary;
-	    	} else {
-	    		text = discuss_info.name;
-	    	}
-	        	
-        	extra_text = discuss_info.extra_summary;
-        	d_id = discuss_info.d_id;
-        	
-        	summary_text = '<P>';
-        	
-        	if (extra_text != '') {
-        		text += '\n<BR><a>. . .</a><BR>\n';
-        		text += extra_text;
-        	}
-        	
-        	summary_text = split_text(text, summary_text, d_id);
-        
-        	summary_text += '</P>';
-        	
-        	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
+	    	unpack_posts(data.posts.children);
 
-			summary_text += '<BR><hr>';
+			summary_text = display_comment(data.posts.children, 0, '');
+			
         	$('#summary').html(summary_text);
 
 	    }

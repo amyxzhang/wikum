@@ -37,20 +37,6 @@ def index(request):
     return {'page': 'index',
             'articles': a}
 
-
-@render_to('website/comments.html')
-def comments(request):
-    url = request.GET['article']
-    source = get_source(url)    
-    article = get_article(url, source)
-    
-    posts = get_posts(article)
-    
-    return {'article': article,
-            'source': source,
-            'page': 'comments'}
-    
-
 @render_to('website/visualization.html')
 def visualization(request):
     url = request.GET['article']
@@ -67,7 +53,10 @@ def summary(request):
     else:
         next = int(next)
         
-    article = Article.objects.get(url=url)
+    source = get_source(url)    
+    article = get_article(url, source)
+    
+    posts = get_posts(article)
     
     
     return {'article': article,
@@ -85,7 +74,7 @@ def summary_data(request):
     else:
         next = int(next)
     
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[next:next+1]
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[next:next+5]
     
     
     val2 = {}
