@@ -1494,9 +1494,7 @@ function make_highlight() {
 	$('#node_highlight').html(text);
 
 	$('#inputHighlight').keyup(function (e) {
-		 
 	 	$('#box').unhighlight();
-	  	
 	  	for (var i=1; i<nodes_all.length; i++) {
 				d3.select("#node_" + nodes_all[i].id)
 						.style("fill", color(nodes_all[i]));
@@ -1518,7 +1516,7 @@ function make_highlight() {
 		  		}
 		  	}
 		  	$('#box').highlight(highlight_text, { wordsOnly: true });
-		  	
+
 			$('#count_result').text(count + ' comments highlighted');
 
 		}
