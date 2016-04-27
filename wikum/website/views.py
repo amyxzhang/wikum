@@ -421,7 +421,7 @@ def tag_comments(request):
         tag = request.POST['tag']
         
         
-        t, created = Tag.objects.get_or_create(article=a, text=tag)
+        t, created = Tag.objects.get_or_create(article=a, text=tag.lower())
         if created:
             r = lambda: random.randint(0, 255)
             color = '%02X%02X%02X' % (r(), r(), r())
@@ -565,7 +565,7 @@ def tag_comment(request):
         comment = Comment.objects.get(id=id)
         
         
-        t, created = Tag.objects.get_or_create(article=a, text=tag)
+        t, created = Tag.objects.get_or_create(article=a, text=tag.lower())
         if created:
             r = lambda: random.randint(0, 255)
             color = '%02X%02X%02X' % (r(), r(), r())
