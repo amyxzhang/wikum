@@ -335,6 +335,7 @@ rect.selection {
 
 	.comment_box h1 {
 		font-size: 100%;
+		margin-bottom: 10px;
 	}
 
 .summarize_comment_comment {
