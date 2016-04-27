@@ -22,6 +22,7 @@ class Article(models.Model):
     source = models.ForeignKey('Source')
     
     num = models.IntegerField(default=0)
+    highlight_authors = models.TextField()
     
     vectorizer = models.BinaryField()
 

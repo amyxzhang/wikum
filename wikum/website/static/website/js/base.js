@@ -2286,7 +2286,15 @@ function construct_comment(d) {
 		text += `<h1 title="ID: ${d.d_id}">Summary${d.replace_node ? " Node" : ""}</h1>`;
 		text += render_summary_node(d, false);
 	} else {
-		text += `<h1 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} `;
+		
+		highlight_authors = $('#highlight_authors').text().split(',');
+		
+		if (highlight_authors.indexOf(d.author) > -1) {
+			text += `<h1 title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
+		} else {
+			text += `<h1 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} `;
+		}
+		
 		if (d.size == 1) {
 			text += `like`;
 		} else {

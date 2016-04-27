@@ -333,7 +333,14 @@ function display_comment(info, d_id, summary_text) {
 	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
 
 	if (!info.replace_node) {
-		summary_text += '<BR> -- ' + info.author + '<BR>' + info.size + ' Likes';
+		
+		highlight_authors = $('#highlight_authors').text().split(',');
+		
+		if (highlight_authors.indexOf(info.author) > -1) {
+			summary_text += '<BR> -- <span style="background-color: pink;">' + info.author + '</span><BR>' + info.size + ' Likes';
+		} else {
+			summary_text += '<BR> -- ' + info.author + '<BR>' + info.size + ' Likes';
+		}
 	}
 	return summary_text;
 }
