@@ -32,8 +32,8 @@ function highlight_sents() {
 }
 
 function unhighlight_sents() {
-	$('#summarize_comment_box').removeHighlight();
-	$('#summarize_multipe_comment_box').removeHighlight();
+	$('#summarize_comment_box').unhighlight();
+	$('#summarize_multiple_comment_box').unhighlight();
 }
 
 function check_button_checkbox() {
@@ -1474,7 +1474,7 @@ function make_highlight() {
 	
 	$('#inputHighlight').keyup(function (e) {
 		 
-	 	$('#box').removeHighlight();
+	 	$('#box').unhighlight();
 	  	
 	  	for (var i=1; i<nodes_all.length; i++) {
 				d3.select("#node_" + nodes_all[i].id)
@@ -1496,7 +1496,7 @@ function make_highlight() {
 					count += 1;
 		  		}
 		  	}
-		  	$('#box').highlight(highlight_text);
+		  	$('#box').highlight(highlight_text, { wordsOnly: true });
 		  	
 			$('#count_result').text(count + ' comments highlighted');
 		
@@ -2190,7 +2190,7 @@ function show_text(d) {
 		$('#box').html('Click on a node to see it and its children or drag to select multiple nodes.');
 		clear_box_top();
 	} else {
-		$('#box').html('Click on a node to see it and its children or drag to select multiple nodes.');
+		$('#box').html('');
 		clear_box_top();
 		var objs = [];
 		var min_level = 50;
