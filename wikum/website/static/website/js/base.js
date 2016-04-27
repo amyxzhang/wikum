@@ -9,16 +9,6 @@ current_summarize_d_id = [];
 
 var article_url = getParameterByName('article');
 
-var tag_suggestions = new Bloodhound({
-  datumTokenizer: Bloodhound.tokenizers.whitespace,
-  queryTokenizer: Bloodhound.tokenizers.whitespace,
-  prefetch: {
-  	url:'/tags?article=' + article_url,
-  	cache: false,
-  }
-});
-
-
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
 
@@ -205,7 +195,7 @@ function is_dark(c) {
 	
 	var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
 	
-	if (luma < 40) {
+	if (luma < 70) {
 	    return true;
 	}
 	return false;
@@ -308,6 +298,16 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	d_text += '<button type="button" class="btn btn-default" id="tag_comment_submit">Submit</button>';
 	
 	$('#tag_comment_dropdown').html(d_text);
+	
+	var tag_suggestions = new Bloodhound({
+	  datumTokenizer: Bloodhound.tokenizers.whitespace,
+	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  prefetch: {
+	  	url:'/tags?article=' + article_url,
+	  	cache: false,
+	  }
+	});
+
 
 	$('#remote .typeahead').typeahead({
 		hint: true,
