@@ -21,6 +21,8 @@ class Article(models.Model):
     url = models.URLField()
     source = models.ForeignKey('Source')
     
+    num = models.IntegerField(default=0)
+    
     vectorizer = models.BinaryField()
 
     def __unicode__(self):
