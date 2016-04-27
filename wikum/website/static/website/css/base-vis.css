@@ -256,10 +256,10 @@ div.selected {
 }
 
 #title_info {
-	position: fixed; 
-	width: 550px; 
-	left: 700px; 
-	top: 100px; 
+	position: fixed;
+	width: 550px;
+	left: 700px;
+	top: 100px;
 	display: block;
 }
 
@@ -284,11 +284,11 @@ textarea {
 }
 
 #box {
-	position: fixed; 
-	width: 550px; 
-	height: 580px; 
-	left: 700px; 
-	top: 170px; 
+	position: fixed;
+	width: 550px;
+	height: 580px;
+	left: 700px;
+	top: 170px;
 	display: block;
 	overflow-y: scroll;
 }
@@ -333,6 +333,10 @@ rect.selection {
 	font-size: 12px;
 }
 
+	.comment_box h1 {
+		font-size: 100%;
+	}
+
 .summarize_comment_comment {
 	font-size: 12px;
 }
@@ -372,7 +376,7 @@ textarea {
 }
 
 .modal-body {
-    height: 460px;
+    min-height: 460px;
 }
 
 
@@ -407,8 +411,8 @@ textarea {
 	padding: 5px;
 }
 
-.resizable { 
-	width: 580px; 
+.resizable {
+	width: 580px;
 	height: 282px;
 }
 
@@ -486,7 +490,7 @@ textarea {
     background-color: #000000;
     color: #ffffff;
   }
-  
+
 .btn-edit:hover {
 	color: #ffffff;
 }
@@ -502,7 +506,7 @@ textarea {
   .ghostCircle, .activeDrag .ghostCircle{
        display: none;
   }
-  
+
 #summarize_multiple_modal_box {
 	width: 70%;
 	height: 80%;
