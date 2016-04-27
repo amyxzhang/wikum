@@ -40,7 +40,7 @@ def index(request):
 @render_to('website/visualization.html')
 def visualization(request):
     url = request.GET['article']
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
@@ -49,6 +49,8 @@ def visualization(request):
 def summary(request):
     url = request.GET['article']
     next = request.GET.get('next')
+    num = int(request.GET.get('num', 0))
+    
     if not next:
         next = 0
     else:
@@ -62,11 +64,12 @@ def summary(request):
     
     return {'article': article,
             'source': article.source,
+            'num': num,
             }
     
 def summary_data(request):
     url = request.GET['article']
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     a = Article.objects.filter(url=url)[num]
     
@@ -91,7 +94,7 @@ def summary_data(request):
 @render_to('website/subtree.html')
 def subtree(request):
     url = request.GET['article']
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     article = Article.objects.filter(url=url)[num]
     return {'article': article,
@@ -100,7 +103,7 @@ def subtree(request):
 @render_to('website/cluster.html')
 def cluster(request):
     url = request.GET['article']
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     article = Article.objects.filter(url=url)[num]
     
@@ -707,7 +710,7 @@ def history(request):
     
 def tags(request):
     article_url = request.GET['article']
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     a = Article.objects.filter(url=article_url)[num]
     
@@ -731,7 +734,7 @@ def viz_data(request):
     start = 10 * next
     end = (10 * next) + 10
     
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     a = Article.objects.filter(url=article_url)[num]
     
@@ -758,7 +761,7 @@ def viz_data(request):
 def cluster_data(request):
     article_url = request.GET['article']
     cluster_size = int(request.GET.get('size'))
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     a = Article.objects.filter(url=article_url)[num]
     
@@ -849,7 +852,7 @@ def subtree_data(request):
     sort = request.GET.get('sort')
     next = request.GET.get('next')
     
-    num = request.GET.get('num', 0)
+    num = int(request.GET.get('num', 0))
     
     a = Article.objects.filter(url=article_url)[num]
 

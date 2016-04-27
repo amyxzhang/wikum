@@ -188,7 +188,7 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num,
   
   make_highlight();
   
-  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '">Summary View</a>');
+  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '&num=' + num + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '&num=' + num + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '&num=' + num + '">Summary View</a>');
 	
   
   $( "#slider" ).slider({
