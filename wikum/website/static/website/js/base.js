@@ -1486,9 +1486,38 @@ function open_comment_hyperlink(id) {
 	history.pushState(null, "", `#comment_${child.id}`)
 }
 
-$(window).bind("hashchange popstate", evt => {
-	$("#box").scrollTo(location.hash || 0, 500);
-})
+function load_permalink() {
+	var comment = $(location.hash);
+
+	if (comment.length) {
+		$("#box").scrollTo(comment, 500);
+	}
+	else if (location.hash) {
+		var id = (location.hash.match(/comment_(\d+)/) || [])[1];
+
+		if (id) {
+			$(`#node_${id}`).d3Click();
+		}
+
+	}
+	else {
+		$("#node_2").d3Click();
+	}
+}
+
+$(window).bind("hashchange popstate", load_permalink);
+
+// Make permalinks work when page is loaded
+if (location.hash) {
+	$(load_permalink);
+}
+
+// $(...).click() fails on d3 nodes
+jQuery.fn.d3Click = function () {
+	this.each(function () {
+		this.dispatchEvent(new MouseEvent("click"));
+	});
+};
 
 function copy_summary_quote() {
 	node = $(event.target).parent()[0];
