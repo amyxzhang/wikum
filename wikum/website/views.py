@@ -873,8 +873,8 @@ def subtree_data(request):
     
     a = Article.objects.filter(url=article_url)[num]
 
-    least = 1
-    most = 7
+    least = 2
+    most = 6
     
     if not next:
         next = 0
