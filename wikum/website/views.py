@@ -915,6 +915,7 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['parent_node'] = True
         parent_dict['summary'] = parent.summary
         parent_dict['extra_summary'] = parent.extra_summary
+        parent_dict['tags'] = [(tag.text, tag.color) for tag in parent.tags.all()]
             
         parent_dict['name'] = parent.text
         
