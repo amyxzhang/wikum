@@ -64,7 +64,7 @@ def count_replies(article):
     comments = Comment.objects.filter(article=article)
     for c in comments:
         if c.disqus_id != '':
-            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id).count()
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article).count()
             c.num_replies = replies
             c.save()
 
@@ -145,7 +145,7 @@ def import_reddit_posts(comments, article, reply_to):
     for comment in comments:
         
         comment_id = comment.id
-        comment_wikum = Comment.objects.filter(disqus_id=comment_id)
+        comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
         
         if comment_wikum.count() == 0:
             

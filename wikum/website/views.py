@@ -114,19 +114,19 @@ def recurse_up_post(post):
     post.json_flatten = ""
     post.save()
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
     if parent.count() > 0:
         recurse_up_post(parent[0])
 
 def recurse_down_post(post):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id)
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
         
 def recurse_down_num_subtree(post):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id)
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
         child.num_subchildren = 0
         child.save()
@@ -309,16 +309,17 @@ def delete_node(did):
     try:
     
         c = Comment.objects.get(id=did)
+        article = c.article
         
         if c.is_replacement:
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
             
             if parent.count() > 0:
                 parent_id = parent[0].disqus_id
             else:
                 parent_id = None
             
-            children = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+            children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
             
             for child in children:
                 child.reply_to_disqus = parent_id
@@ -490,7 +491,7 @@ def hide_comments(request):
                 c = Comment.objects.get(id=id)
                 h.comments.add(c)
                 
-                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     recurse_up_post(parent[0])
             
@@ -640,7 +641,7 @@ def hide_comment(request):
             c = Comment.objects.get(id=id)
             h.comments.add(c)
             
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
             if parent.count() > 0:
                 recurse_up_post(parent[0])
             
@@ -656,7 +657,7 @@ def recurse_down_hidden(replies, count):
             reply.json_flatten = ''
             reply.save()
             count += 1
-            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id)
+            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id, article=reply.article)
             count = recurse_down_hidden(reps, count)
     return count
     
@@ -670,7 +671,7 @@ def hide_replies(request):
         
         c = Comment.objects.get(id=id)
 
-        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
         
         affected = recurse_down_hidden(replies, 0)
         
@@ -680,7 +681,7 @@ def hide_replies(request):
                                        action='hide_replies',
                                        explanation=explain)
             
-            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
             for reply in replies:
                 h.comments.add(reply)
             
@@ -894,7 +895,7 @@ def subtree_data(request):
      
 def recurse_get_parents(parent_dict, post, article):
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article)
     if parent:
         parent = parent[0]
         
@@ -936,7 +937,7 @@ def recurse_get_parents(parent_dict, post, article):
 
 def recurse_get_parents_stop(parent_dict, post, article, stop_id):
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
     if parent and parent[0].id != stop_id:
         parent = parent[0]
         
