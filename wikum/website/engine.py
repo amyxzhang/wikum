@@ -13,7 +13,6 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
-from website.views import recurse_up_post
 
 stemmer = SnowballStemmer("english")
 stop = stopwords.words('english')
@@ -68,21 +67,6 @@ def count_replies(article):
             replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article).count()
             c.num_replies = replies
             c.save()
-
-
-def delete_comment(post, article):
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
-    delete_comment_recurse(post, article)
-    
-    if parent.count() > 0:
-        recurse_up_post(parent[0])
-        
-
-def delete_comment_recurse(post, article):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
-    for child in children:
-        delete_comment_recurse(child, article)
-    post.delete()
     
 
 def import_disqus_posts(result, article):
