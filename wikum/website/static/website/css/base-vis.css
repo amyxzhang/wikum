@@ -277,7 +277,7 @@ textarea {
 	position: fixed;
 	display: block;
 	width: 550px;
-	top: 150px;
+	top: 180px;
 	left: 700px;
 	height: 20px;
 	text-align: center;
@@ -288,7 +288,7 @@ textarea {
 	width: 550px;
 	height: 580px;
 	left: 700px;
-	top: 170px;
+	top: 200px;
 	display: block;
 	overflow-y: scroll;
 }
