@@ -895,7 +895,7 @@ def subtree_data(request):
      
 def recurse_get_parents(parent_dict, post, article):
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
     if parent:
         parent = parent[0]
         
