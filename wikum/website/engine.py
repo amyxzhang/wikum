@@ -35,7 +35,7 @@ def get_source(url):
         return Source.objects.get(source_name="Reddit")
     return None
 
-def get_article(url, source):
+def get_article(url, source, num):
     article = Article.objects.filter(url=url)
     if article.count() == 0:
         if source.source_name == "The Atlantic":
@@ -56,7 +56,7 @@ def get_article(url, source):
             
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
-        article = article[0]
+        article = article[num]
         
     return article
 

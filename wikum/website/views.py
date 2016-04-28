@@ -57,7 +57,7 @@ def summary(request):
         next = int(next)
         
     source = get_source(url)    
-    article = get_article(url, source)
+    article = get_article(url, source, num)
     
     posts = get_posts(article)
     
