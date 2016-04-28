@@ -1926,7 +1926,12 @@ function dragend(d) {
 		node
 		.attr("transform", "translate(" + d.y0 + "," + d.x0 + ")")
 		.attr("r", function(d) {
-	      	return (d.size + 400 )/65;
+	      	total = (d.size + 400 )/65;
+	      	if (total > 22) {
+	      		return 22;
+	      	} else {
+	      		return total;
+	      	}
 	    });
         endDrag();
     }
@@ -2068,7 +2073,7 @@ function update(source) {
       .attr("r", function(d) {
 	      	if (d.article) {
 	      		return 10;
-	      	} 
+	      	}
 	      	total = (d.size + 400 )/65;
 	      	if (total > 22) {
 	      		return 22;
