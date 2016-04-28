@@ -167,9 +167,9 @@ def import_reddit_posts(comments, article, reply_to):
                                                               link_karma=comment.author.link_karma
                                                               )
             except AttributeError:
-                comment_author = CommentAuthor.objects.get(disqus_id=None)
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             except NotFound:
-                comment_author = CommentAuthor.objects.get(disqus_id=None)
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             
             html_text = comment.body_html
             html_text = re.sub('<div class="md">', '', html_text)
