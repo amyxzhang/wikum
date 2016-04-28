@@ -37,24 +37,11 @@ def index(request):
     return {'page': 'index',
             'articles': a}
 
-
-@render_to('website/comments.html')
-def comments(request):
-    url = request.GET['article']
-    source = get_source(url)    
-    article = get_article(url, source)
-    
-    posts = get_posts(article)
-    
-    return {'article': article,
-            'source': source,
-            'page': 'comments'}
-    
-
 @render_to('website/visualization.html')
 def visualization(request):
     url = request.GET['article']
-    article = Article.objects.get(url=url)
+    num = int(request.GET.get('num', 0))
+    article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
     
@@ -62,34 +49,44 @@ def visualization(request):
 def summary(request):
     url = request.GET['article']
     next = request.GET.get('next')
+    num = int(request.GET.get('num', 0))
+    
     if not next:
         next = 0
     else:
         next = int(next)
         
-    article = Article.objects.get(url=url)
+    source = get_source(url)    
+    article = get_article(url, source)
+    
+    posts = get_posts(article)
     
     
     return {'article': article,
             'source': article.source,
-            'next': next+1,
+            'num': num,
             }
     
 def summary_data(request):
     url = request.GET['article']
-    a = Article.objects.get(url=url)
+    num = int(request.GET.get('num', 0))
+    
+    a = Article.objects.filter(url=url)[num]
     
     next = request.GET.get('next')
     if not next:
         next = 0
     else:
         next = int(next)
+        
+    start = 5 * next
+    end = (5 * next) + 5
     
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[next:next+1]
+    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
     
     
     val2 = {}
-    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False)
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a)
     
     return JsonResponse({'posts': val2})
     
@@ -97,14 +94,19 @@ def summary_data(request):
 @render_to('website/subtree.html')
 def subtree(request):
     url = request.GET['article']
-    article = Article.objects.get(url=url)
+    num = int(request.GET.get('num', 0))
+    
+    article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
 
 @render_to('website/cluster.html')
 def cluster(request):
     url = request.GET['article']
-    article = Article.objects.get(url=url)
+    num = int(request.GET.get('num', 0))
+    
+    article = Article.objects.filter(url=url)[num]
+    
     return {'article': article,
             'source': article.source}
 
@@ -112,25 +114,25 @@ def recurse_up_post(post):
     post.json_flatten = ""
     post.save()
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
     if parent.count() > 0:
         recurse_up_post(parent[0])
 
 def recurse_down_post(post):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id)
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
         
 def recurse_down_num_subtree(post):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id)
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
         child.num_subchildren = 0
         child.save()
         recurse_down_post(child)
 
-def recurse_viz(parent, posts, replaced):
+def recurse_viz(parent, posts, replaced, article):
     children = []
     hid_children = []
     replace_children = []
@@ -142,7 +144,7 @@ def recurse_viz(parent, posts, replaced):
     else:
         num_subtree_children = len(pids)
     
-    reps = Comment.objects.filter(reply_to_disqus__in=pids).select_related()
+    reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
         if post.json_flatten == '':
         #if True:
@@ -159,7 +161,8 @@ def recurse_viz(parent, posts, replaced):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'summary': post.summary,
-                  'extra_summary': post.extra_summary
+                  'extra_summary': post.extra_summary,
+                  'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
 
             v1['name'] = post.text
@@ -172,7 +175,7 @@ def recurse_viz(parent, posts, replaced):
                 num_subchildren = 0
             else:
                 replace_future = replaced or post.is_replacement
-                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future)
+                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
@@ -306,16 +309,17 @@ def delete_node(did):
     try:
     
         c = Comment.objects.get(id=did)
+        article = c.article
         
         if c.is_replacement:
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
             
             if parent.count() > 0:
                 parent_id = parent[0].disqus_id
             else:
                 parent_id = None
             
-            children = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+            children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
             
             for child in children:
                 child.reply_to_disqus = parent_id
@@ -419,6 +423,52 @@ def summarize_comments(request):
         
         return HttpResponseBadRequest()  
 
+def tag_comments(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        ids = request.POST.getlist('ids[]')
+        tag = request.POST['tag']
+        
+        
+        t, created = Tag.objects.get_or_create(article=a, text=tag.lower())
+        if created:
+            r = lambda: random.randint(0, 255)
+            color = '%02X%02X%02X' % (r(), r(), r())
+            t.color = color
+            t.save()
+        else:
+            color = t.color
+        
+        comments = Comment.objects.filter(id__in=ids, hidden=False)
+        
+        affected_comms = [];
+        
+        for comment in comments:
+            tag_exists = comment.tags.filter(text=t.text)
+            if tag_exists.count() == 0:
+                comment.tags.add(t)
+                affected_comms.append(comment)
+
+            
+        h = History.objects.create(user=req_user, 
+                                   article=a,
+                                   action='tag_comments',
+                                   explanation='Add tag %s to comments' % t.text)
+            
+        for com in affected_comms:
+            recurse_up_post(com)
+            
+        if len(affected_comms) > 0:
+            return JsonResponse({'color': color})
+        else:
+            return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 def hide_comments(request):
     try:
         article_id = request.POST['article']
@@ -441,7 +491,7 @@ def hide_comments(request):
                 c = Comment.objects.get(id=id)
                 h.comments.add(c)
                 
-                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     recurse_up_post(parent[0])
             
@@ -515,6 +565,52 @@ def auto_summarize_comment(request):
      
     return JsonResponse({"sents": sent_list})
      
+     
+def tag_comment(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        tag = request.POST['tag']
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        comment = Comment.objects.get(id=id)
+        
+        
+        t, created = Tag.objects.get_or_create(article=a, text=tag.lower())
+        if created:
+            r = lambda: random.randint(0, 255)
+            color = '%02X%02X%02X' % (r(), r(), r())
+            t.color = color
+            t.save()
+        else:
+            color = t.color
+        
+        affected= False
+        
+        tag_exists = comment.tags.filter(text=t.text)
+        if tag_exists.count() == 0:
+            comment.tags.add(t)
+            affected = True
+            
+        if affected:
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='tag_comment',
+                                       explanation="Add tag %s to a comment" % t.text)
+            
+            h.comments.add(comment)
+            
+            recurse_up_post(comment)
+                
+            
+        if affected:
+            return JsonResponse({'color': color})
+        else:
+            return JsonResponse()
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
             
 def hide_comment(request):
     try:
@@ -545,7 +641,7 @@ def hide_comment(request):
             c = Comment.objects.get(id=id)
             h.comments.add(c)
             
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus)
+            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
             if parent.count() > 0:
                 recurse_up_post(parent[0])
             
@@ -561,7 +657,7 @@ def recurse_down_hidden(replies, count):
             reply.json_flatten = ''
             reply.save()
             count += 1
-            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id)
+            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id, article=reply.article)
             count = recurse_down_hidden(reps, count)
     return count
     
@@ -575,7 +671,7 @@ def hide_replies(request):
         
         c = Comment.objects.get(id=id)
 
-        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
         
         affected = recurse_down_hidden(replies, 0)
         
@@ -585,7 +681,7 @@ def hide_replies(request):
                                        action='hide_replies',
                                        explanation=explain)
             
-            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id)
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
             for reply in replies:
                 h.comments.add(reply)
             
@@ -613,6 +709,18 @@ def history(request):
     return {'history': hist,
             'article': a}
     
+def tags(request):
+    article_url = request.GET['article']
+    num = int(request.GET.get('num', 0))
+    
+    a = Article.objects.filter(url=article_url)[num]
+    
+    tags = list(a.tag_set.all().values_list('text', flat=True))
+    
+    json_data = json.dumps(tags)
+    
+    return HttpResponse(json_data, content_type='application/json')
+
 
 def viz_data(request):
     article_url = request.GET['article']
@@ -624,10 +732,12 @@ def viz_data(request):
     else:
         next = int(next)
         
-    start = 20 * next
-    end = (20 * next) + 20
+    start = 10 * next
+    end = (10 * next) + 10
     
-    a = Article.objects.get(url=article_url)
+    num = int(request.GET.get('num', 0))
+    
+    a = Article.objects.filter(url=article_url)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -646,14 +756,15 @@ def viz_data(request):
     elif sort == 'oldest':
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[start:end]
             
-    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False)
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a)
     return JsonResponse(val)
     
 def cluster_data(request):
     article_url = request.GET['article']
     cluster_size = int(request.GET.get('size'))
+    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.get(url=article_url)
+    a = Article.objects.filter(url=article_url)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -732,7 +843,7 @@ def cluster_data(request):
         if cluster == min_cluster:
             posts_cluster.append(post)
     
-    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts_cluster, False)
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts_cluster, False, a)
     
     return JsonResponse(val)
     
@@ -742,7 +853,9 @@ def subtree_data(request):
     sort = request.GET.get('sort')
     next = request.GET.get('next')
     
-    a = Article.objects.get(url=article_url)
+    num = int(request.GET.get('num', 0))
+    
+    a = Article.objects.filter(url=article_url)[num]
 
     least = 1
     most = 7
@@ -774,16 +887,15 @@ def subtree_data(request):
     
 
     val2 = {}
-    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False)
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a)
     
     val = recurse_get_parents(val2, posts[0], a)
     
     return JsonResponse(val)
-        
      
 def recurse_get_parents(parent_dict, post, article):
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
     if parent:
         parent = parent[0]
         
@@ -825,7 +937,7 @@ def recurse_get_parents(parent_dict, post, article):
 
 def recurse_get_parents_stop(parent_dict, post, article, stop_id):
     
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus)
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
     if parent and parent[0].id != stop_id:
         parent = parent[0]
         

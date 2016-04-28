@@ -168,8 +168,13 @@ var next = parseInt(getParameterByName('next'));
 if (!next) {
 	next = 0;
 }
+var num = parseInt(getParameterByName('num'));
+if (!num) {
+	num = 0;
+}
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next, function(error, flare) {
+
+d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -187,7 +192,7 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next, 
   
   make_highlight();
   
- $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '">Cluster View</a> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '">Summary View</a>');
+ $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '&num=' + num + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '&num=' + num + '">Cluster View</a> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '&num=' + num + '">Summary View</a>');
 	
   
 });

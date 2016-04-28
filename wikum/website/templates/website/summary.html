@@ -8,6 +8,7 @@
 	
 {% block content %}
 
+<span id="highlight_authors" style="display:none;">{{ article.highlight_authors }}</span>
         	
      <section id="contact" class="container content-section text-center" style="padding-top: 150px;">
         <div class="row">
@@ -18,7 +19,7 @@
 						<a href="{{ article.url }}">Read the article in {{ source.source_name }}</a>
 					
 					<BR><BR>
-						<a href="/visualization?article={{ article.url }}">View Wikum Editing Interface</a>
+						<a href="/visualization?article={{ article.url }}&num={{ num }}">View Wikum Editing Interface</a>
 					
 		                    </div>
                 </div>
@@ -33,9 +34,7 @@
         </div>
                 
       <div class="row">
-      	<div class="col-lg-8 col-md-8 col-lg-offset-2">
-      		<BR>
-      	 <P><a style="font-size: 16px;" href="/summary?article={{ article.url }}&next={{ next }}">See Next Discussion &gt;&gt;</a></P>
+      	<div class="col-lg-8 col-md-8 col-lg-offset-2" id="link_next">
       	</div>
       </div>
                 

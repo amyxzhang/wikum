@@ -1,5 +1,4 @@
 
-var discuss_info = null;
 var discuss_dict = {};
 
 function getParameterByName(name, url) {
@@ -79,7 +78,6 @@ function get_comment(comment_str, did) {
 		for (var i=0; i<comments_list.length; i++) {
 			data.push(discuss_dict[comments_list[i]]);
 		}
-		
 
     	var total_text = '';
     	
@@ -200,7 +198,7 @@ function toggle_hide(comments) {
 function split_text(text, summary_text, d_id) {
 	var splitted = text.split("\n");
 	
-	hidden_para_num = text.split("<BR><a>. . .</a><BR>");
+	hidden_para_num = text.split("<BR><a>...</a><BR>");
 	if (hidden_para_num.length > 1) {
 		hidden_para_num = hidden_para_num[1].split('\n\n').length;
 	} else {
@@ -211,9 +209,13 @@ function split_text(text, summary_text, d_id) {
 	for (var i=0; i<splitted.length; i++) {
 		part = splitted[i];
 		
-		if (part == '<BR><a>. . .</a><BR>') {
-			summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary points below the fold )</a>';
-			summary_text += '<div id="hidden_' + d_id + '" style="display: none; margin-top: 15px;"><P>';
+		if (part == '<BR><a>...</a><BR>') {
+			if (hidden_para_num == 1) {
+				summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary point below the fold )</a>';
+			} else {
+				summary_text += '</P><a class="see_full_comment btn-xs" onclick="show_div();">. . . ( ' + hidden_para_num + ' summary points below the fold )</a>';
+			}
+			summary_text += '<div id="hidden_' + d_id + '" class="hidden_node" style="display: none; margin-top: 15px;"><P>';
 			hidden = true;
 		} else {
 			var pattern = /\[quote\]/g;
@@ -246,24 +248,129 @@ function show_div() {
 	$(event.target).next().toggle();
 }
 
-function unpack_posts(post) {
-	discuss_dict[post.d_id] = post;
+function unpack_posts(posts) {
+	for (var i=0; i<posts.length; i++) {
+		post = posts[i];
+		discuss_dict[post.d_id] = post;
+		
+		if (post.children) {
+			unpack_posts(post.children);
+		}
+		if (post.hid) {
+			unpack_posts(post.hid);
+		}
+		if (post.replace) {
+			unpack_posts(post.replace);
+		}
+	}
+}
+
+function uncollapse_text(d_id) {
+	info = discuss_dict[d_id];
+	summary_text = display_comment(info, d_id, '');
+	$('#node_' + d_id).html(summary_text);
+	if (info.children) {
+		for (var i=0; i<info.children.length; i++) {
+			show_node(info.children[i]);
+		}
+	}
+}
+
+function collapse_text(d_id) {
+	$('#node_' + d_id).html('ID: ' + d_id + '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">Show</a>');
+	info = discuss_dict[d_id];
+	if (info.children) {
+		for (var i=0; i<info.children.length; i++) {
+			hide_node(info.children[i]);
+		}
+	}
 	
-	if (post.children) {
-		for (var i=0; i<post.children.length; i++) {
-			unpack_posts(post.children[i]);
+}
+
+function show_node(node_info) {
+	$('#node_' + node_info.d_id).show();
+	if (node_info.children) {
+		for (var i=0; i<node_info.children.length; i++) {
+			hide_node(node_info.children[i]);
 		}
 	}
-	if (post.hid) {
-		for (var i=0; i<post.hid.length; i++) {
-			unpack_posts(post.hid[i]);
+}
+
+function hide_node(node_info) {
+	$('#node_' + node_info.d_id).hide();
+	if (node_info.children) {
+		for (var i=0; i<node_info.children.length; i++) {
+			hide_node(node_info.children[i]);
 		}
 	}
-	if (post.replace) {
-		for (var i=0; i<post.replace.length; i++) {
-			unpack_posts(post.replace[i]);
+}
+
+function display_comment(info, d_id, summary_text) {
+	if (info.replace_node) {
+		summary_text += '<B>Summary:</B><BR>';
+	} else {
+		summary_text += '<a style="float: right" onclick="collapse_text(' + d_id + ');">Collapse</a>';
+		summary_text += 'ID: ' + d_id + '<BR>';
+	}
+	
+	summary_text += '<P>';
+	
+	if (info.replace_node) {
+		text = info.summary;
+	} else {
+		text = info.name;
+	}
+
+	if (extra_text != '') {
+		text += '\n<BR><a>...</a><BR>\n';
+		text += extra_text;
+	}
+	
+	summary_text = split_text(text, summary_text, d_id);
+
+	summary_text += '</P>';
+	
+	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
+
+	if (!info.replace_node) {
+		
+		highlight_authors = $('#highlight_authors').text().split(',');
+		
+		if (highlight_authors.indexOf(info.author) > -1) {
+			summary_text += '<BR> -- <span style="background-color: pink;">' + info.author + '</span><BR>' + info.size + ' Likes';
+		} else {
+			summary_text += '<BR> -- ' + info.author + '<BR>' + info.size + ' Likes';
 		}
 	}
+	return summary_text;
+}
+
+function display_comments(discuss_info_list, level, total_summary_text) {
+	
+	for (var i=0; i< discuss_info_list.length; i++) {
+		info = discuss_info_list[i];
+		
+		extra_text = info.extra_summary;
+		d_id = info.d_id;
+		
+		var levelClass = level > 2? "level3" : `level${level}`;
+		
+		var summaryClass = info.replace_node? "summary_node" : "original_node";
+		summary_text = '<div id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
+		
+		summary_text = display_comment(info, d_id, summary_text);
+		
+		summary_text += '</div>';
+		
+		total_summary_text += summary_text;
+		
+		if (!info.replace_node) {
+			total_summary_text = display_comments(info.children, level+1, total_summary_text)
+		}
+		
+	}
+	
+	return total_summary_text;
 }
 
 $(document).ready(function () {
@@ -273,42 +380,28 @@ $(document).ready(function () {
 	if (!next) {
 		next = 0;
 	}
+	var num = parseInt(getParameterByName('num'));
+	if (!num) {
+		num = 0;
+	}
 	
 	$.ajax({ 
 	    type: 'GET', 
-	    url: '/summary_data?article=' + article_url + '&next=' + next, 
+	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num, 
 	    dataType: 'json',
 	    success: function (data) { 
 	    	
-	    	discuss_info = data.posts.children[0];
-	    	
-	    	unpack_posts(discuss_info);
-	    	
-	    	if (discuss_info.replace_node) {
-	    		text = discuss_info.summary;
-	    	} else {
-	    		text = discuss_info.name;
-	    	}
-	        	
-        	extra_text = discuss_info.extra_summary;
-        	d_id = discuss_info.d_id;
-        	
-        	summary_text = '<P>';
-        	
-        	if (extra_text != '') {
-        		text += '\n<BR><a>. . .</a><BR>\n';
-        		text += extra_text;
-        	}
-        	
-        	summary_text = split_text(text, summary_text, d_id);
-        
-        	summary_text += '</P>';
-        	
-        	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
+	    	unpack_posts(data.posts.children);
 
-			summary_text += '<BR><hr>';
+			summary_text = display_comments(data.posts.children, 0, '');
+			
         	$('#summary').html(summary_text);
-
+        	
+        	if (data.posts.children.length < 5) {
+        		$('#link_next').html('<BR><P>End of discussion</P>');
+        	} else {
+        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
+			}
 	    }
 	    
 	    

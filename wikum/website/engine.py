@@ -1,6 +1,6 @@
 import json
 import urllib2
-from website.models import Article, Source, CommentAuthor, Comment, History
+from website.models import Article, Source, CommentAuthor, Comment, History, Tag
 from wikum.settings import DISQUS_API_KEY
 import datetime
 from django.core.paginator import Paginator
@@ -64,7 +64,7 @@ def count_replies(article):
     comments = Comment.objects.filter(article=article)
     for c in comments:
         if c.disqus_id != '':
-            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id).count()
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article).count()
             c.num_replies = replies
             c.save()
 
@@ -72,13 +72,13 @@ def count_replies(article):
 def import_disqus_posts(result, article):
     for response in result['response']:
         comment_id = response['id']
-        comment = Comment.objects.filter(disqus_id=comment_id)
+        comment = Comment.objects.filter(disqus_id=comment_id, article=article)
         
         if comment.count() == 0:
             
             anonymous = response['author']['isAnonymous']
             if anonymous:
-                comment_author = CommentAuthor.objects.get(disqus_id=None)
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             else:
                 author_id = response['author']['id']
                 
@@ -87,7 +87,7 @@ def import_disqus_posts(result, article):
                     comment_author = comment_author[0]
                 else:
                     
-                    comment_author = CommentAuthor.objects.create(username = response['author']['username'],
+                    comment_author,_ = CommentAuthor.objects.get_or_create(username = response['author']['username'],
                                                           real_name = response['author']['name'],
                                                           power_contrib = response['author']['isPowerContributor'],
                                                           anonymous = anonymous,
@@ -145,7 +145,7 @@ def import_reddit_posts(comments, article, reply_to):
     for comment in comments:
         
         comment_id = comment.id
-        comment_wikum = Comment.objects.filter(disqus_id=comment_id)
+        comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
         
         if comment_wikum.count() == 0:
             

@@ -335,6 +335,7 @@ rect.selection {
 
 	.comment_box h1 {
 		font-size: 100%;
+		margin-bottom: 10px;
 	}
 
 .summarize_comment_comment {
@@ -380,11 +381,17 @@ textarea {
 }
 
 
-#hide_comment_box {
+#hide_comment_box, #tag_comment_box {
 	display: block;
 	padding-left: 8px;
 	padding-right: 8px;
     padding-top: 5px;
+}
+
+#tag_comment_box {
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px #000000 solid;
 }
 
 #summarize_comment_box {
@@ -395,7 +402,7 @@ textarea {
     position: relative;
 }
 
-.hide_comment_comment {
+.hide_comment_comment, .tag_comment_comment {
 	display: block;
 	background-color: #eef7fa;
 	margin-top: 5px;
@@ -549,3 +556,8 @@ td {
 #summarize_multiple_highlight_button, #summarize_highlight_button  {
 	margin-right: 50px;
 }
+
+#tag-form {
+	width: 300px;
+}
+
