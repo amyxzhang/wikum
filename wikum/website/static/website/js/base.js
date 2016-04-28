@@ -2069,6 +2069,9 @@ function update(source) {
       	if (d.article) {
       		return 10;
       	} else {
+      		if (d.size > 1000) {
+      			return 22;
+      		}
       		return (d.size + 400 )/65;
       	}
       	})
