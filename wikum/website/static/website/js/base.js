@@ -2066,14 +2066,15 @@ function update(source) {
   // Enter any new nodes at the parent's previous position.
   nodeEnter.append("circle")
       .attr("r", function(d) {
-      	if (d.article) {
-      		return 10;
-      	} else {
-      		if (d.size > 1000) {
-      			return 22;
-      		}
-      		return (d.size + 400 )/65;
-      	}
+	      	if (d.article) {
+	      		return 10;
+	      	} 
+	      	total = (d.size + 400 )/65;
+	      	if (total > 22) {
+	      		return 22;
+	      	} else {
+	      		return total;
+	      	}
       	})
       .attr("height", barHeight)
       .style("stroke-width", stroke_width)
