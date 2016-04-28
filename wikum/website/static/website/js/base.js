@@ -192,9 +192,9 @@ function is_dark(c) {
 	var r = (rgb >> 16) & 0xff;  // extract red
 	var g = (rgb >>  8) & 0xff;  // extract green
 	var b = (rgb >>  0) & 0xff;  // extract blue
-	
+
 	var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
-	
+
 	if (luma < 80) {
 	    return true;
 	}
@@ -219,20 +219,20 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			var text = '<div class="tag_comment_comment">' + d.name + '</div>';
 			$('#tag_comment_text').text('Tag this comment.');
 		}
-		
+
 		overlapping_tags = d.tags;
-		
+
 	} else if (type == "tag_selected") {
 		var text = '';
 		var datas = [];
 		var min_level = 50;
-		
+
 		$('.clicked').each(function(index) {
 			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
 			if (id_clicked != 1) {
 				ids.push(id_clicked);
 				var data = nodes_all[id_clicked-1];
-				
+
 				if (index == 0) {
 					overlapping_tags = data.tags;
 				} else {
@@ -242,7 +242,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 						}
 					}
 				}
-				
+
 				datas.push(data);
 				dids.push(data.d_id);
 				if (data.depth < min_level) {
@@ -278,9 +278,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	}
 
 	$('#tag_comment_box').html(text);
-	
+
 	d_text = '';
-	
+
 	if (overlapping_tags.length > 0) {
 		d_text += '<BR><div id="current_tags">Current tags: ';
 		for (var i=0; i<overlapping_tags.length; i++) {
@@ -296,14 +296,14 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	}
 	d_text += 'Add tag: <div id="remote"><input class="typeahead form-control" type="text" id="tag-form" placeholder="New tag"></div>';
 	d_text += '<button type="button" class="btn btn-default" id="tag_comment_submit">Submit</button>';
-	
+
 	$('#tag_comment_dropdown').html(d_text);
-	
+
 	var num = parseInt(getParameterByName('num'));
 	if (!num) {
 		num = 0;
 	}
-	
+
 	var tag_suggestions = new Bloodhound({
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -322,8 +322,8 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	  name: 'tags',
 	  source: tag_suggestions
 	});
-		
-	
+
+
 
 	var did = $(e.relatedTarget).data('did');
 
@@ -345,26 +345,26 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 				url: '/tag_comment',
 				data: data,
 				success: function(res) {
-					
+
 					if (res.color) {
-						
+
 						d = nodes_all[evt.data.id -1];
 						d.tags.push([tag, res.color]);
-						
+
 						d_text = '';
 						if (is_dark(res.color)) {
 							d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						} else {
 							d_text += '<button class="btn btn-xs" style="background-color: #' + res.color + '">' + tag + '</button> ';
 						}
-						
+
 						text = $('#current_tags').html();
 						if (text == "") {
 							$('#current_tags').html('Current tags: ' + d_text);
 						} else {
 							$('#current_tags').append(d_text);
 						}
-						
+
 						text = $('#tags_' + d.id).html();
 						if (text == "") {
 							$('#tags_' + d.id).html('Tags: ' + d_text);
@@ -372,7 +372,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 							$('#tags_' + d.id).append(d_text);
 						}
 					}
-					
+
 					success_noty();
 				},
 				error: function() {
@@ -386,27 +386,27 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 				url: '/tag_comments',
 				data: data,
 				success: function(res) {
-					
+
 					if (res.color) {
-						
+
 						d_text = '';
 						if (is_dark(res.color)) {
 							d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						} else {
 							d_text += '<button class="btn btn-xs" style="background-color: #' + res.color + '">' + tag + '</button> ';
 						}
-						
+
 						text = $('#current_tags').html();
 						if (text == "") {
 							$('#current_tags').html('Current tags: ' + d_text);
 						} else {
 							$('#current_tags').append(d_text);
 						}
-						
+
 						for (var i=0; i<evt.data.ids; i++) {
 							d = nodes_all[evt.data.ids[i] -1];
 							d.tags.push([tag, res.color]);
-							
+
 							text = $('#tags_' + d.id).html();
 							if (text == "") {
 								$('#tags_' + d.id).html('Tags: ' + d_text);
@@ -415,7 +415,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 							}
 						}
 					}
-					
+
 				},
 				error: function() {
 					error_noty();
@@ -1448,7 +1448,7 @@ function open_comment_hyperlink(id) {
 
 	var d_id = parseInt(link.substring(8));
 
-	d3.selectAll( '.clicked').classed( "clicked", false);
+	d3.selectAll('.clicked').classed("clicked", false);
   	unhighlight_all();
 
 	show_replace_nodes(id);
@@ -1487,7 +1487,13 @@ function open_comment_hyperlink(id) {
 			$("#box").scrollTo("#comment_" + child.id, 500);
 		}
 	}
+
+	history.pushState(null, "", `#comment_${child.id}`)
 }
+
+$(window).bind("hashchange popstate", evt => {
+	$("#box").scrollTo(location.hash || 0, 500);
+})
 
 function copy_summary_quote() {
 	node = $(event.target).parent()[0];
@@ -1559,7 +1565,7 @@ function render_summary_node_edit(d) {
 	text = '<P><span>' + text + '</span></P>';
 
 	var pattern = /\[\[/g;
-	text = text.replace(pattern, '[<a onclick="open_comment_hyperlink(' + d.id + ');">');
+	text = text.replace(pattern, `[<a onclick="open_comment_hyperlink(${d.id});">`);
 	var pattern = /\]\]/g;
 
 	matches = text.match(pattern);
@@ -1650,6 +1656,16 @@ function copy_summary_node(id) {
 
 }
 
+function get_d_id(id) {
+	var haystack = nodes_all.filter(o => o.id == id)[0];
+	return haystack? haystack.d_id : null;
+}
+
+function get_id(d_id) {
+	var haystack = nodes_all.filter(o => o.d_id == d_id)[0];
+	return haystack? haystack.id : null;
+}
+
 function render_summary_node(d, show_collapsible) {
 
 	text = d.summary;
@@ -1662,13 +1678,14 @@ function render_summary_node(d, show_collapsible) {
 			text += '<BR>-------------------<BR>';
 			text += '<BR>' + d.extra_summary + '</div>';
 		}
-		
+
 	}
 
-	var pattern = /\[\[/g;
-	text = text.replace(pattern, '[<a onclick="open_comment_hyperlink(' + d.id + ');">');
-	var pattern = /\]\]/g;
-	text = text.replace(pattern, '</a>]');
+	text = text.replace(/\[{2}comment_(\d+)(.*?)\]{2}/g, ($0, d_id, para) => {
+		var id = get_id(d_id);
+		var href = id? `href="#comment_${id}"` : "";
+		return `[<a ${href} onclick="open_comment_hyperlink(${d.id});">comment_${d_id}${para}</a>]`
+	});
 
 	var pattern = /\[quote\]/g;
 	text = text.replace(pattern, '<blockquote>');
@@ -2286,15 +2303,15 @@ function construct_comment(d) {
 		text += `<h1 title="ID: ${d.d_id}">Summary${d.replace_node ? " Node" : ""}</h1>`;
 		text += render_summary_node(d, false);
 	} else {
-		
+
 		highlight_authors = $('#highlight_authors').text().split(',');
-		
+
 		if (highlight_authors.indexOf(d.author) > -1) {
 			text += `<h1 title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
 		} else {
 			text += `<h1 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} `;
 		}
-		
+
 		if (d.size == 1) {
 			text += `like`;
 		} else {
@@ -2305,7 +2322,7 @@ function construct_comment(d) {
 	}
 
 	text += '</div>';
-	
+
 	if (d.tags.length > 0) {
 		text += '<BR><div id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
