@@ -241,6 +241,22 @@ def summarize_comment(request):
         print e
         return HttpResponseBadRequest()
            
+           
+def delete_comment(post, article):
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
+    delete_comment_recurse(post, article)
+    
+    if parent.count() > 0:
+        recurse_up_post(parent[0])
+        
+
+def delete_comment_recurse(post, article):
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+    for child in children:
+        delete_comment_recurse(child, article)
+    post.delete()
+       
+        
 def summarize_selected(request):
     try:
         article_id = request.POST['article']
@@ -915,6 +931,7 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['parent_node'] = True
         parent_dict['summary'] = parent.summary
         parent_dict['extra_summary'] = parent.extra_summary
+        parent_dict['tags'] = [(tag.text, tag.color) for tag in parent.tags.all()]
             
         parent_dict['name'] = parent.text
         

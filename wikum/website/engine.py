@@ -67,7 +67,7 @@ def count_replies(article):
             replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article).count()
             c.num_replies = replies
             c.save()
-
+    
 
 def import_disqus_posts(result, article):
     for response in result['response']:
