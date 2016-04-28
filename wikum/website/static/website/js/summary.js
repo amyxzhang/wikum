@@ -291,7 +291,7 @@ function show_node(node_info) {
 	$('#node_' + node_info.d_id).show();
 	if (node_info.children) {
 		for (var i=0; i<node_info.children.length; i++) {
-			hide_node(node_info.children[i]);
+			show_node(node_info.children[i]);
 		}
 	}
 }
