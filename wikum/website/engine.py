@@ -13,7 +13,7 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
-from wikum.website.views import recurse_up_post
+from website.views import recurse_up_post
 
 stemmer = SnowballStemmer("english")
 stop = stopwords.words('english')
