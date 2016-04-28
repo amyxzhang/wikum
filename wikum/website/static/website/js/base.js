@@ -294,15 +294,10 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	} else {
 		d_text += '<BR><div id="current_tags"></div><BR>';
 	}
-	d_text += 'Add tag: <div id="remote"><input class="typeahead form-control" type="text" id="tag-form" placeholder="New tag"></div>';
+	d_text += 'Add tag: <div id="remote"><input class="typeahead form-control input-sm" type="text" id="tag-form" placeholder="New tag"></div>';
 	d_text += '<button type="button" class="btn btn-default" id="tag_comment_submit">Submit</button>';
 
 	$('#tag_comment_dropdown').html(d_text);
-
-	var num = parseInt(getParameterByName('num'));
-	if (!num) {
-		num = 0;
-	}
 
 	var tag_suggestions = new Bloodhound({
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
@@ -1752,6 +1747,42 @@ function error_noty() {
 	});
 }
 
+function make_filter() {
+	text = '<div id="filter_typeahead"><input type="text" class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
+
+	$('#filter').html(text);
+	
+	if (filter != '') {
+		$('#inputFilter').val(filter);
+	}
+
+	var tag_suggestions = new Bloodhound({
+	  datumTokenizer: Bloodhound.tokenizers.whitespace,
+	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  prefetch: {
+	  	url:'/tags?article=' + article_url + '&num=' + num,
+	  	cache: false,
+	  }
+	});
+
+
+	$('#filter_typeahead .typeahead').typeahead({
+		hint: true,
+		highlight: true,
+		minLength: 1
+	}, {
+	  name: 'tags',
+	  source: tag_suggestions
+	});
+
+	$('#inputFilter').keypress(function(e) {
+	    if(e.which == 13) {
+		    filter = $('#inputFilter').val();
+	        window.location.href = '/visualization?article=' + article_url + '&num=' + num + '&filter=' + filter;
+	    }
+	});
+}
+
 function make_highlight() {
 	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
 	$('#node_highlight').html(text);
@@ -2336,9 +2367,13 @@ function construct_comment(d) {
 		text += '<BR><div id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
 			if (is_dark(d.tags[i][1])) {
+				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&filter=' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
+				text += '</a>';
 			} else {
-				text += '<button class="btn btn-xs" style="background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
+				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&filter=' + d.tags[i][0] + '">';
+				text += '<button class="btn btn-xs" style="color: #000000; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
+				text += '</a>';
 			}
 		}
 		text += '</div><BR>';

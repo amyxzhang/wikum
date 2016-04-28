@@ -469,7 +469,14 @@ textarea {
 #node_highlight {
     position: fixed;
     display: block;
-    top: 120px;
+    top: 165px;
+    left: 30px;
+}
+
+#filter {
+    position: fixed;
+    display: block;
+    top: 130px;
     left: 30px;
 }
 

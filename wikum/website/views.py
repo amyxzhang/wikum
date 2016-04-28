@@ -742,6 +742,7 @@ def viz_data(request):
     article_url = request.GET['article']
     sort = request.GET.get('sort')
     next = request.GET.get('next')
+    filter = request.GET.get('filter')
     
     if not next:
         next = 0
@@ -759,20 +760,47 @@ def viz_data(request):
            'size': 400,
            'article': True}
 
-    if sort == 'likes':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
-    elif sort == "replies":
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[start:end]
-    elif sort == "long":
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-text_len')[start:end]
-    elif sort == "short":
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('text_len')[start:end]
-    elif sort == 'newest':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-created_at')[start:end]
-    elif sort == 'oldest':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[start:end]
+
+    if filter != '':
+        
+        if sort == 'likes':
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
+        elif sort == "replies":
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')[start:end]
+        elif sort == "long":
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')[start:end]
+        elif sort == "short":
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')[start:end]
+        elif sort == 'newest':
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')[start:end]
+        elif sort == 'oldest':
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end]    
+        
+        val['children'] = []
+        val['hid'] = []
+        val['replace'] = []
+        for post in posts:
+            val2 = {}
+            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a)
             
-    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a)
+            val_child = recurse_get_parents(val2, post, a)
+            val['children'].append(val_child['children'][0])
+        
+    else:
+        if sort == 'likes':
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
+        elif sort == "replies":
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[start:end]
+        elif sort == "long":
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-text_len')[start:end]
+        elif sort == "short":
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('text_len')[start:end]
+        elif sort == 'newest':
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-created_at')[start:end]
+        elif sort == 'oldest':
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[start:end]
+                
+        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a)
     return JsonResponse(val)
     
 def cluster_data(request):

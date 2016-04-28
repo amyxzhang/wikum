@@ -172,9 +172,13 @@ var num = parseInt(getParameterByName('num'));
 if (!num) {
 	num = 0;
 }
+var filter = getParameterByName('filter');
+if (!filter) {
+	filter = '';
+}
 
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num, function(error, flare) {
+d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&filter=' + filter, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -189,6 +193,8 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next +
   make_key();
   
   make_dropdown();
+  
+  make_filter();
   
   make_highlight();
   
