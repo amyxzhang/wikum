@@ -1438,11 +1438,17 @@ function find_child_did(d, d_id) {
 	return null;
 }
 
-function open_comment_hyperlink(id) {
-	link = event.target.text;
+$(document).on("click", "a.comment-reference", function(evt) {
+	var d_id = this.dataset.refid;
 
-	var d_id = parseInt(link.substring(8));
+	if (d_id) {
+		evt.preventDefault();
+		id = this.closest(".comment_box").id.slice(8); // assuming comment_\d+ id
+		open_comment_hyperlink(id, d_id, this.dataset.refpara);
+	}
+})
 
+function open_comment_hyperlink(id, d_id, para) {
 	d3.selectAll('.clicked').classed("clicked", false);
   	unhighlight_all();
 
@@ -1450,14 +1456,7 @@ function open_comment_hyperlink(id) {
 	d = nodes_all[id-1];
 	show_text(d);
 
-	para = null;
-
-	if (link.indexOf('_p') > -1) {
-		index = link.indexOf('_p');
-		para = parseInt(event.target.text.substring(index + 2));
-	}
-
-	if (para != null && d.d_id == d_id) {
+	if (para && d.d_id == d_id) {
 		toggle_original(d.id);
 
 		$('#orig_' + d.id).children().eq(para).addClass('highlight');
@@ -1470,7 +1469,7 @@ function open_comment_hyperlink(id) {
 		extra_highlight_node(child.id);
 		highlight_box(child.id);
 
-		if (para != null) {
+		if (para) {
 			if ($('#comment_' + child.id).text().indexOf('Summary: ') > -1) {
 				toggle_original(child.id);
 				$('#orig_' + child.id).children().eq(para).addClass('highlight');
@@ -1481,9 +1480,9 @@ function open_comment_hyperlink(id) {
 		} else {
 			$("#box").scrollTo("#comment_" + child.id, 500);
 		}
-	}
 
-	history.pushState(null, "", `#comment_${child.id}`)
+		history.pushState(null, "", `#comment_${child.id}`)
+	}	
 }
 
 function load_permalink() {
@@ -1588,27 +1587,17 @@ function render_summary_node_edit(d) {
 
 	text = '<P><span>' + text + '</span></P>';
 
-	var pattern = /\[\[/g;
-	text = text.replace(pattern, `[<a onclick="open_comment_hyperlink(${d.id});">`);
-	var pattern = /\]\]/g;
+	var matches = (text.match(/\]\]/g) || []).length;
 
-	matches = text.match(pattern);
-	if (matches != null) {
-		matches = matches.length;
-	} else {
-		matches = 0;
-	}
+	text = text.replace(/\[{2}comment_(\d+)(?:_p(\d+))?\]{2}/g, ($0, d_id, para) => {
+		var id = get_id(d_id);
+		var href = id? `href="#comment_${id}"` : "";
 
-	if (matches > 1) {
-		text = text.replace(pattern, '</a>] | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>');
-	} else {
-		text = text.replace(pattern, '</a>]');
-	}
+		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]` +
+		(matches > 1? ' | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>' : "");
+	});
 
-	var pattern = /\[quote\]/g;
-	text = text.replace(pattern, '<blockquote>');
-	var pattern = /\[endquote\]/g;
-	text = text.replace(pattern, '</blockquote>');
+	text = text.replace(/\[quote\]([\S\s]+)\[endquote\]/gi, "<blockquote>$1</blockquote>");
 
 	return text;
 }
@@ -1708,13 +1697,11 @@ function render_summary_node(d, show_collapsible) {
 	text = text.replace(/\[{2}comment_(\d+)(.*?)\]{2}/g, ($0, d_id, para) => {
 		var id = get_id(d_id);
 		var href = id? `href="#comment_${id}"` : "";
-		return `[<a ${href} onclick="open_comment_hyperlink(${d.id});">comment_${d_id}${para}</a>]`
+		para = para.replace(/_p(\d+)/, "$1");
+		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]`
 	});
 
-	var pattern = /\[quote\]/g;
-	text = text.replace(pattern, '<blockquote>');
-	var pattern = /\[endquote\]/g;
-	text = text.replace(pattern, '</blockquote>');
+	text = text.replace(/\[quote\]([\S\s]+)\[endquote\]/gi, "<blockquote>$1</blockquote>");
 
 	return text;
 
@@ -1780,7 +1767,7 @@ function make_filter() {
 	text = '<div id="filter_typeahead"><input type="text" class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
 
 	$('#filter').html(text);
-	
+
 	if (filter != '') {
 		$('#inputFilter').val(filter);
 	}
