@@ -134,6 +134,7 @@ blockquote {
 	padding: 5px;
 	background-color: #ffffff;
     border: 1px solid orange;
+    margin-bottom: 10px;
 }
 
 .original_node {
