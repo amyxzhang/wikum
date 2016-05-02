@@ -140,7 +140,7 @@ svg.append('svg:rect')
 	            	if (!state_data.article) {
 						d3.select(this)
 						.style("stroke","#000000")
-						.style("stroke-width", "2px")
+						.style("stroke-width", "3px")
 						.attr("class", "clicked");
 					}
 	            }
