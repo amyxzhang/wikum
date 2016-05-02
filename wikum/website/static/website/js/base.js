@@ -1590,8 +1590,9 @@ function render_summary_node_edit(d) {
 	text = text.replace(/\[{2}comment_(\d+)(?:_p(\d+))?\]{2}/g, ($0, d_id, para) => {
 		var id = get_id(d_id);
 		var href = id? `href="#comment_${id}"` : "";
+		var paraText = para === undefined? "" : ` §${para}`
 
-		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]` +
+		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id}${paraText}</a>]` +
 		(matches > 1? ' | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>' : "");
 	});
 
@@ -1692,11 +1693,11 @@ function render_summary_node(d, show_collapsible) {
 
 	}
 
-	text = text.replace(/\[{2}comment_(\d+)(.*?)\]{2}/g, ($0, d_id, para) => {
+	text = text.replace(/\[{2}comment_(\d+)(?:_p(\d+))?\]{2}/g, ($0, d_id, para) => {
 		var id = get_id(d_id);
 		var href = id? `href="#comment_${id}"` : "";
-		para = para.replace(/_p(\d+)/, "$1");
-		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]`
+		var paraText = para === undefined? "" : " §" + para.replace(/_p(\d+)/, "$1");
+		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id}${paraText}</a>]`
 	});
 
 	text = text.replace(/\[quote\]([\S\s]+?)\[endquote\]/gi, "<blockquote>$1</blockquote>");
