@@ -291,6 +291,7 @@ textarea {
 	top: 200px;
 	display: block;
 	overflow-y: scroll;
+	resize: both;
 }
 
 text {
@@ -567,4 +568,3 @@ td {
 #tag-form {
 	width: 300px;
 }
-
