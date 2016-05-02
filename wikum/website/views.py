@@ -742,7 +742,7 @@ def viz_data(request):
     article_url = request.GET['article']
     sort = request.GET.get('sort')
     next = request.GET.get('next')
-    filter = request.GET.get('filter')
+    filter = request.GET.get('filter', '')
     
     if not next:
         next = 0

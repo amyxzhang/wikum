@@ -1975,8 +1975,8 @@ function dragend(d) {
 		.attr("transform", "translate(" + d.y0 + "," + d.x0 + ")")
 		.attr("r", function(d) {
 	      	total = (d.size + 400 )/65;
-	      	if (total > 22) {
-	      		return 22;
+	      	if (total > 18) {
+	      		return 18;
 	      	} else if (total < 8) {
 	      		return 8;
 	      	} else {
@@ -2125,8 +2125,8 @@ function update(source) {
 	      		return 10;
 	      	}
 	      	total = (d.size + 400 )/65;
-	      	if (total > 22) {
-	      		return 22;
+	      	if (total > 18) {
+	      		return 18;
 	      	} else if (total < 8) {
 	      		return 8;
 	      	} else {
@@ -2688,19 +2688,14 @@ function highlight_box(id) {
 function set_expand_position(d) {
 	var offset = $('svg').offset();
 	var width = $('#expand').width();
+	var node_width = 0;
 	if (d.article) {
-		var node_width = 10;
+		node_width = 10;
 	} else {
-		var node_width = (d.size + 400)/65;
-		if (node_width > 22) {
-			node_width = 22;
-		}
-		if (node_width < 8) {
-			node_width = 8;
-		}
+		node_width = (d.size + 400)/65;
 	}
 	$('#expand').css({top: offset.top + d.x + 22,
-		left: offset.left + d.y + ((d.size + 100)/60) - width + 12 - node_width});
+		left: offset.left + d.y + ((d.size + 100)/60) - width + 10 - node_width});
 }
 
 function showdiv(d) {
