@@ -300,6 +300,7 @@ textarea {
 #viz {
 	float: left;
 	position: relative;
+	margin-top: 110px;
 }
 
 text {
