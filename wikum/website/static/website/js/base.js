@@ -1520,9 +1520,10 @@ jQuery.fn.d3Click = function () {
 
 function copy_summary_quote() {
 	node = $(event.target).parent()[0];
-	text = $(event.target).parent()[0].innerText;
 	var cite = $(event.target).parent().find(".comment-reference")[0];
 	text = `[[comment_${cite.dataset.refid}` + (cite.dataset.para ? `_p${cite.dataset.para}` : "") + "]]";
+
+	text = $(event.target).parent()[0].firstChild.textContent.replace(/\[\s*$/, "") + text;
 
 	var regex = /Copy This/g;
 	if (text.match(regex)) {
