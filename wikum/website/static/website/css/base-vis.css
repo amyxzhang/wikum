@@ -257,11 +257,18 @@ div.selected {
 
 #title_info {
 	position: fixed;
-	width: 550px;
-	left: 700px;
+	width: calc(100vw - 600px);
+	left: 600px;
 	top: 100px;
 	display: block;
 }
+
+	#title_info h1 {
+		margin-bottom: .2em;
+		font-size: 200%;
+		text-transform: none;
+		font-weight: normal;
+	}
 
 .btn-xs {
     padding: 1px 3px;
@@ -285,13 +292,14 @@ textarea {
 
 #box {
 	position: fixed;
-	width: 550px;
-	height: 580px;
-	left: 700px;
-	top: 200px;
-	display: block;
-	overflow-y: scroll;
-	resize: both;
+	max-height: calc(100vh - 200px);
+	margin: 200px 15px 15px 600px;
+	overflow: auto;
+}
+
+#viz {
+	float: left;
+	position: relative;
 }
 
 text {
@@ -470,14 +478,14 @@ textarea {
 #node_highlight {
     position: fixed;
     display: block;
-    top: 165px;
+    top: 75px;
     left: 30px;
 }
 
 #filter {
     position: fixed;
     display: block;
-    top: 130px;
+    top: 105px;
     left: 30px;
 }
 
