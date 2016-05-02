@@ -1449,15 +1449,15 @@ $(document).on("click", "a.comment-reference", function(evt) {
 function open_comment_hyperlink(id, d_id, para) {
 	d3.selectAll('.clicked').classed("clicked", false);
   	unhighlight_all();
-	
+
 	show_replace_nodes(id);
 	d = nodes_all[id-1];
 	show_text(d);
-	
+
 
 	if (para && d.d_id == d_id) {
 		toggle_original(d.id);
-		
+
 		$('#orig_' + d.id).find('p, li').eq(para).addClass('highlight');
 		$("#box").scrollTo(".highlight", 500);
 
@@ -1471,7 +1471,7 @@ function open_comment_hyperlink(id, d_id, para) {
 		if (para) {
 			if ($('#comment_' + child.id).text().indexOf('Summary') > -1) {
 				toggle_original(child.id);
-				
+
 				$('#orig_' + child.id).find('p, li').eq(para).addClass('highlight');
 			} else {
 				$('#comment_text_' + child.id).find('p, li').eq(para).addClass('highlight');
@@ -1521,9 +1521,8 @@ jQuery.fn.d3Click = function () {
 function copy_summary_quote() {
 	node = $(event.target).parent()[0];
 	text = $(event.target).parent()[0].innerText;
-	text = text.replace(/\[/g, "[[");
-	text = text.replace(/\]/g, "]]");
-	text = text.substring(0, text.length - 12);
+	var cite = $(event.target).parent().find(".comment-reference")[0];
+	text = `[[comment_${cite.dataset.refid}` + (cite.dataset.para ? `_p${cite.dataset.para}` : "") + "]]";
 
 	var regex = /Copy This/g;
 	if (text.match(regex)) {
