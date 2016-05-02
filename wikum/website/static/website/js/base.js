@@ -2700,7 +2700,7 @@ function set_expand_position(d) {
 		}
 	}
 	$('#expand').css({top: offset.top + d.x + 22,
-		left: offset.left + d.y + ((d.size + 100)/60) - width + 8 - node_width});
+		left: offset.left + d.y + ((d.size + 100)/60) - width + 12 - node_width});
 }
 
 function showdiv(d) {
