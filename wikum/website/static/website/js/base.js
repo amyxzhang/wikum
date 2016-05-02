@@ -1480,7 +1480,7 @@ function open_comment_hyperlink(id, d_id, para) {
 		}
 
 		history.pushState(null, "", `#comment_${child.id}`)
-	}	
+	}
 }
 
 function load_permalink() {
@@ -1595,7 +1595,7 @@ function render_summary_node_edit(d) {
 		(matches > 1? ' | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>' : "");
 	});
 
-	text = text.replace(/\[quote\]([\S\s]+)\[endquote\]/gi, "<blockquote>$1</blockquote>");
+	text = text.replace(/\[quote\]([\S\s]+?)\[endquote\]/gi, "<blockquote>$1</blockquote>");
 
 	return text;
 }
@@ -1699,7 +1699,7 @@ function render_summary_node(d, show_collapsible) {
 		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]`
 	});
 
-	text = text.replace(/\[quote\]([\S\s]+)\[endquote\]/gi, "<blockquote>$1</blockquote>");
+	text = text.replace(/\[quote\]([\S\s]+?)\[endquote\]/gi, "<blockquote>$1</blockquote>");
 
 	return text;
 
