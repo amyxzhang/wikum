@@ -625,11 +625,7 @@ function insert_quote(highlighted_text, did) {
     var v = box.val();
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
-    if (did == null) {
-    	box.val( textBefore + '[quote]"' + highlighted_text + '"[endquote]\n' + textAfter );
-    } else {
-    	box.val( textBefore + '[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
-    }
+    box.val( textBefore + '[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
 }
 
 $('#summarize_modal_box').on('show.bs.modal', function(e) {
@@ -707,7 +703,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		evt.stopPropagation();
 	}).mouseup(function(evt) {
 		evt.stopPropagation();
-		insert_quote(highlighted_text, null);
+		insert_quote(highlighted_text, nodes_all[highlighted_comm - 1].d_id);
 	});
 
 	$('#summarize_comment_box').mouseup(function(evt) {
@@ -1040,6 +1036,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 parent: lowest_d.parent,
 							 replace: children,
 							 author: "",
+							 tags: [],
 							 replace_node: true,
 							 size: size,
 							 depth: lowest_d.depth,
@@ -1111,6 +1108,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 extra_summary: res.bottom_summary,
 							 parent: d.parent,
 							 replace: [d],
+							 tags: [],
 							 author: "",
 							 replace_node: true,
 							 size: d.size,
