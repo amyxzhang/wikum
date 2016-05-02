@@ -1449,15 +1449,16 @@ $(document).on("click", "a.comment-reference", function(evt) {
 function open_comment_hyperlink(id, d_id, para) {
 	d3.selectAll('.clicked').classed("clicked", false);
   	unhighlight_all();
-
+	
 	show_replace_nodes(id);
 	d = nodes_all[id-1];
 	show_text(d);
+	
 
 	if (para && d.d_id == d_id) {
 		toggle_original(d.id);
-
-		$('#orig_' + d.id).children().eq(para).addClass('highlight');
+		
+		$('#orig_' + d.id).find('p, li').eq(para).addClass('highlight');
 		$("#box").scrollTo(".highlight", 500);
 
 	} else {
@@ -1468,11 +1469,12 @@ function open_comment_hyperlink(id, d_id, para) {
 		highlight_box(child.id);
 
 		if (para) {
-			if ($('#comment_' + child.id).text().indexOf('Summary: ') > -1) {
+			if ($('#comment_' + child.id).text().indexOf('Summary') > -1) {
 				toggle_original(child.id);
-				$('#orig_' + child.id).children().eq(para).addClass('highlight');
+				
+				$('#orig_' + child.id).find('p, li').eq(para).addClass('highlight');
 			} else {
-				$('#comment_text_' + child.id).children().eq(para).addClass('highlight');
+				$('#comment_text_' + child.id).find('p, li').eq(para).addClass('highlight');
 			}
 			$("#box").scrollTo(".highlight", 500);
 		} else {
