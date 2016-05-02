@@ -1449,15 +1449,15 @@ $(document).on("click", "a.comment-reference", function(evt) {
 function open_comment_hyperlink(id, d_id, para) {
 	d3.selectAll('.clicked').classed("clicked", false);
   	unhighlight_all();
-	
+
 	show_replace_nodes(id);
 	d = nodes_all[id-1];
 	show_text(d);
-	
+
 
 	if (para && d.d_id == d_id) {
 		toggle_original(d.id);
-		
+
 		$('#orig_' + d.id).find('p, li').eq(para).addClass('highlight');
 		$("#box").scrollTo(".highlight", 500);
 
@@ -1471,7 +1471,7 @@ function open_comment_hyperlink(id, d_id, para) {
 		if (para) {
 			if ($('#comment_' + child.id).text().indexOf('Summary') > -1) {
 				toggle_original(child.id);
-				
+
 				$('#orig_' + child.id).find('p, li').eq(para).addClass('highlight');
 			} else {
 				$('#comment_text_' + child.id).find('p, li').eq(para).addClass('highlight');
@@ -1520,10 +1520,10 @@ jQuery.fn.d3Click = function () {
 
 function copy_summary_quote() {
 	node = $(event.target).parent()[0];
-	text = $(event.target).parent()[0].innerText;
-	text = text.replace(/\[/g, "[[");
-	text = text.replace(/\]/g, "]]");
-	text = text.substring(0, text.length - 12);
+	var cite = $(event.target).parent().find(".comment-reference")[0];
+	text = `[[comment_${cite.dataset.refid}` + (cite.dataset.para ? `_p${cite.dataset.para}` : "") + "]]";
+
+	text = $(event.target).parent()[0].firstChild.textContent.replace(/\[\s*$/, "") + text;
 
 	var regex = /Copy This/g;
 	if (text.match(regex)) {
@@ -1592,8 +1592,9 @@ function render_summary_node_edit(d) {
 	text = text.replace(/\[{2}comment_(\d+)(?:_p(\d+))?\]{2}/g, ($0, d_id, para) => {
 		var id = get_id(d_id);
 		var href = id? `href="#comment_${id}"` : "";
+		var paraText = para === undefined? "" : ` §${para}`
 
-		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]` +
+		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id}${paraText}</a>]` +
 		(matches > 1? ' | <a class="btn-xs btn-edit" onclick="copy_summary_quote();">Copy This</a></span><span>' : "");
 	});
 
@@ -1694,11 +1695,11 @@ function render_summary_node(d, show_collapsible) {
 
 	}
 
-	text = text.replace(/\[{2}comment_(\d+)(.*?)\]{2}/g, ($0, d_id, para) => {
+	text = text.replace(/\[{2}comment_(\d+)(?:_p(\d+))?\]{2}/g, ($0, d_id, para) => {
 		var id = get_id(d_id);
 		var href = id? `href="#comment_${id}"` : "";
-		para = para.replace(/_p(\d+)/, "$1");
-		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id} §${para}</a>]`
+		var paraText = para === undefined? "" : " §" + para.replace(/_p(\d+)/, "$1");
+		return `[<a ${href} class="comment-reference" data-refid="${d_id}" data-refpara="${para}">#${d_id}${paraText}</a>]`
 	});
 
 	text = text.replace(/\[quote\]([\S\s]+?)\[endquote\]/gi, "<blockquote>$1</blockquote>");
