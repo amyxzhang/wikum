@@ -14,19 +14,12 @@
 	<span id="csrf" style="display:none;">{{ csrf_token }}</span>
 	<span id="highlight_authors" style="display:none;">{{ article.highlight_authors }}</span>
 
-	<section id="contact" class="container content-section text-center" style="padding-top: 50px; margin: 0px;">
-    	<div id="title_info">
-    		<strong>{{ article.title }}</strong>
-    		<BR>
-    		<small><a href="/history?article={{ article.id }}">View Edit History</a></small>
-    	</div>
+	<header id="title_info">
+		<h1>{{ article.title }}</h1>
+		<small><a href="/history?article={{ article.id }}">View Edit History</a></small>
+	</header>
 
-        <div id="viz">
-
-
-        </div>
-
-	</section>
+	<div id="viz"></div>
 
 	<div id="node_sort">
 	</div>
