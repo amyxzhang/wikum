@@ -2788,10 +2788,16 @@ function showdiv(d) {
 				}
 				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 			}
-			$('#expand').html(text);
+			if (text != '') {
+				$('#expand').html(text);
+				$('#expand').show();
+			} else {
+				$('#expand').html("");
+				$('#expand').hide();
+			}
 
 			set_expand_position(d);
-			$('#expand').show();
+			
 		} else if (d.children || d._children) {
 			clearTimeout(timer);
 
@@ -2833,11 +2839,15 @@ function showdiv(d) {
 					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 				}
 			}
-			$('#expand').html(text);
+			if (text != '') {
+				$('#expand').html(text);
+				$('#expand').show();
+			} else {
+				$('#expand').html("");
+				$('#expand').hide();
+			}
 			
 			set_expand_position(d);
-
-			$('#expand').show();
 		}
 
 		if (d3.select(this).classed("clicked")) {
@@ -2869,7 +2879,11 @@ function hide_replace_nodes(id) {
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 	}
-	$('#expand').html(text);
+	if (text != '') {
+		$('#expand').html(text);
+	} else {
+		$('#expand').html("");
+	}
 }
 
 function show_replace_nodes(id) {
@@ -2889,7 +2903,11 @@ function show_replace_nodes(id) {
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 	}
-	$('#expand').html(text);
+	if (text != '') {
+		$('#expand').html(text);
+	} else {
+		$('#expand').html("");
+	}
 }
 
 function hidediv(d) {

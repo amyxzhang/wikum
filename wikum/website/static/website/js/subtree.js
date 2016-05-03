@@ -129,7 +129,7 @@ svg.append('svg:rect')
 		d3.selectAll( '.clicked').classed( "clicked", false);
         unhighlight_all();
 
-        d3.selectAll( 'circle').each( function(state_data, i) {
+        d3.selectAll( 'path').each( function(state_data, i) {
         	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
 	            if( 
 	                !d3.select( this).classed( "selected") && 
@@ -140,7 +140,7 @@ svg.append('svg:rect')
 	            	if (!state_data.article) {
 						d3.select(this)
 						.style("stroke","#000000")
-						.style("stroke-width", "3px")
+						.style("stroke-width", stroke_width)
 						.attr("class", "clicked");
 					}
 	            }
@@ -190,25 +190,20 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 	  
 	  update(root = flare);
 	  
-	  if (comment_id) {
-	  	id = nodes_all[1].id;
-	  	d = nodes_all[id-1];
-		if (d.replace) {
-			if (!d.children) {
-				d.children = [];
-			}
-			for (var i=0; i<d.replace.length; i++) {
-				d.children.push(d.replace[i]);
-			}
-			d.replace = [];
-			update(d);
-		}
-	  }
-	  
-	  
 	  d = nodes_all[1];
 	  while (d.parent_node) {
 	  	d = d.children[0];
+	  }
+	  
+	  if (comment_id && d.replace_node) {
+		if (!d.children) {
+			d.children = [];
+		}
+		for (var i=0; i<d.replace.length; i++) {
+			d.children.push(d.replace[i]);
+		}
+		d.replace = [];
+		update(d);
 	  }
 	  
 	  show_text(d);

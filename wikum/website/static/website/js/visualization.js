@@ -129,7 +129,7 @@ svg.append('svg:rect')
 		d3.selectAll( '.clicked').classed( "clicked", false);
         unhighlight_all();
 
-        d3.selectAll( 'circle').each( function(state_data, i) {
+        d3.selectAll( 'path').each( function(state_data, i) {
         	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
 	            if(
 	                !d3.select( this).classed( "selected") &&
@@ -140,7 +140,7 @@ svg.append('svg:rect')
 	            	if (!state_data.article) {
 						d3.select(this)
 						.style("stroke","#000000")
-						.style("stroke-width", "3px")
+						.style("stroke-width", stroke_width)
 						.attr("class", "clicked");
 					}
 	            }
