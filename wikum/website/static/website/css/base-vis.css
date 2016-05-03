@@ -275,6 +275,13 @@ div.selected {
     font-size: 12px;
 }
 
+.btn-default.btn-default[disabled] {
+	cursor: not-allowed;
+	border-color: transparent;
+	background: #aaa;
+	color: white;
+}
+
 textarea {
 	font-size: 12px;
 	min-height: 100px;
