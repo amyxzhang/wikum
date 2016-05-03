@@ -191,7 +191,18 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 	  update(root = flare);
 	  
 	  if (comment_id) {
-	  	show_replace_nodes(nodes_all[1].id);
+	  	id = nodes_all[1].id;
+	  	d = nodes_all[id-1];
+		if (d.replace) {
+			if (!d.children) {
+				d.children = [];
+			}
+			for (var i=0; i<d.replace.length; i++) {
+				d.children.push(d.replace[i]);
+			}
+			d.replace = [];
+			update(d);
+		}
 	  }
 	  
 	  
