@@ -577,3 +577,7 @@ td {
 #tag-form {
 	width: 300px;
 }
+
+.progress-bar {
+	color: #000000;
+}

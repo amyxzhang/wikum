@@ -524,6 +524,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					success_noty();
 					$('#comment_' + id).remove();
 					hide_node(id);
+					make_progress_bar();
 				},
 				error: function() {
 					error_noty();
@@ -543,6 +544,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 						$('#comment_' + evt.data.ids[i]).remove();
 						hide_node(evt.data.ids[i]);
 					}
+					make_progress_bar();
 				},
 				error: function() {
 					error_noty();
@@ -579,6 +581,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 							hide_node(ids[i]);
 						}
 					}
+					make_progress_bar();
 				},
 				error: function() {
 					error_noty();
@@ -764,6 +767,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				$('#comment_text_' + evt.data.id).html(text);
 
 				highlight_box(evt.data.id);
+				make_progress_bar();
 			},
 			error: function() {
 				error_noty();
@@ -1086,6 +1090,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						}
 					}
 					clear_box_top();
+					make_progress_bar();
 				}
 			});
 		} else if (evt.data.type == "summarize" || evt.data.type == "edit_summarize") {
@@ -1161,6 +1166,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 					highlight_box(d.id);
 					success_noty();
+					make_progress_bar();
 				},
 				error: function() {
 					error_noty();
@@ -1188,6 +1194,7 @@ function post_delete_summary_node(id) {
 				success: function() {
 					delete_summary_node(id);
 					success_noty();
+					make_progress_bar();
 				},
 				error: function() {
 					error_noty();
@@ -2914,4 +2921,71 @@ function color(d) {
 	} else {
 		return "#dae8f5";
 	}
+}
+
+function count_unsummarized_words(d) {
+	count = 0;
+	if (d.replace_node) {
+		count += d.summary.split(/\s+/).length;
+		count += d.extra_summary.split(/\s+/).length;
+	} else {
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				count += count_unsummarized_words(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				count += count_unsummarized_words(d._children[i]);
+			}
+		}
+		
+		if (!d.article) {
+			if (d.summary != '') {
+				count += d.summary.split(/\s+/).length;
+				count += d.extra_summary.split(/\s+/).length;
+			} else {
+				count += d.name.split(/\s+/).length;
+			}
+		}
+	}
+	return count;
+}
+
+function count_all_words(d) {
+	count = 0;
+	if (d.replace_node) {
+		if (d.replace) {
+			for (var i=0; i<d.replace.length; i++) {
+				count += count_all_words(d.replace[i]);
+			}
+		}
+	} else {
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				count += count_all_words(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				count += count_all_words(d._children[i]);
+			}
+		}
+		
+		if (!d.article) {
+			count += d.name.split(/\s+/).length;
+		}
+	}
+	return count;
+}
+
+function make_progress_bar() {
+	num_words_all = count_all_words(nodes_all[0]);
+	
+	num_words_still = count_unsummarized_words(nodes_all[0]);
+	value = Math.round((1 - (num_words_still/num_words_all)) * 100);
+	console.log(num_words_still);
+	console.log(num_words_all);
+	$('.progress-bar').css('width', value+'%').attr('aria-valuenow', value);   
+	$('.progress-bar').text(value + '% Summarized Down');
 }

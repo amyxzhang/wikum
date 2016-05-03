@@ -191,6 +191,8 @@ d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next +
   
   show_text(nodes_all[0]);
   
+  make_progress_bar();
+  
   make_key();
   
   make_dropdown();

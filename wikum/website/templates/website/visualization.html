@@ -16,6 +16,12 @@
 
 	<header id="title_info">
 		<h1>{{ article.title }}</h1>
+		<BR>
+		<div class="progress" style="width: 500px;">
+			<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width: 0%">
+				0% Summarized Down
+			</div>
+		</div>
 		<small><a href="/history?article={{ article.id }}">View Edit History</a></small>
 	</header>
 
