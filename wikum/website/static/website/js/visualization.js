@@ -40,12 +40,12 @@ svg.append('svg:rect')
   	} else {
   		show_text('clicked');
   	}
-  	
+
   	isClick = true;
   })
   .on('mousedown', function() {
   		isMouseDown = true;
-  		
+
   		cancelClick = setTimeout(is_click, 250);
    		var p = d3.mouse( this);
 
@@ -73,28 +73,28 @@ svg.append('svg:rect')
                 y : p[1] - d.y
             }
 	        ;
-	
+
 	        if( move.x < 1 || (move.x*2<d.width)) {
 	            d.x = p[0];
 	            d.width -= move.x;
 	        } else {
-	            d.width = move.x;       
+	            d.width = move.x;
 	        }
-	
+
 	        if( move.y < 1 || (move.y*2<d.height)) {
 	            d.y = p[1];
 	            d.height -= move.y;
 	        } else {
-	            d.height = move.y;       
+	            d.height = move.y;
 	        }
-	        
+
 	        s.attr( d);
-	        
+
 	    });
   })
   .on( "mousemove", function() {
     var s = svg.select( "rect.selection");
-    
+
     if( !s.empty()) {
         var p = d3.mouse(this),
             d = {
@@ -113,28 +113,28 @@ svg.append('svg:rect')
             d.x = p[0];
             d.width -= move.x;
         } else {
-            d.width = move.x;       
+            d.width = move.x;
         }
 
         if( move.y < 1 || (move.y*2<d.height)) {
             d.y = p[1];
             d.height -= move.y;
         } else {
-            d.height = move.y;       
+            d.height = move.y;
         }
-       
+
         s.attr( d);
-        
+
 		// deselect all temporary selected state objects
 		d3.selectAll( '.clicked').classed( "clicked", false);
         unhighlight_all();
 
         d3.selectAll( 'circle').each( function(state_data, i) {
         	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
-	            if( 
-	                !d3.select( this).classed( "selected") && 
+	            if(
+	                !d3.select( this).classed( "selected") &&
 	                    // inner circle inside selection frame
-	                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+	                state_data.x>=d.y && state_data.x<=d.y+d.height &&
 	                state_data.y>=d.x && state_data.y<=d.x+d.width
 	            ) {
 	            	if (!state_data.article) {
@@ -146,17 +146,17 @@ svg.append('svg:rect')
 	            }
 	        }
         });
-        
+
         }
         })
 	.on( "mouseup", function() {
 		isMouseDown = false;
-	
+
 	       // remove selection frame
 	    svg.selectAll( "rect.selection").remove();
-	    
+
 	});
-	
+
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
@@ -179,37 +179,42 @@ if (!filter) {
 
 var comment_id = null;
 
-d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&filter=' + filter, function(error, flare) {
+d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}`, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
   flare.y0 = 100;
-  
+
   nodes_all = tree.nodes(flare);
-  
+
   update(root = flare);
-  
+
   show_text(nodes_all[0]);
-  
+
   make_progress_bar();
-  
+
   make_key();
-  
+
   make_dropdown();
-  
+
   make_filter();
-  
+
   make_highlight();
-  
- $('#button_subtree').html('<strong>Overall View</strong> &nbsp; <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '&num=' + num + '">Subtree View</a> <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '&num=' + num + '">Cluster View</a> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '&num=' + num + '">Summary View</a>');
-	
-  
+
+  var article_id = $("#article_id").text();
+
+ $('#button_subtree').html(`
+    <a class="btn-sm btn-default" disabled>Overall</a>
+    <a class="btn-sm btn-default" href="/subtree?article=${article_url}&num=${num}">Subtree</a>
+    <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}">Cluster</a>-->
+    <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}">Summary</a>
+    <a class="btn-sm btn-default" href="/history?article=${article_id}">Edit History</a>`);
 });
 
 function make_dropdown() {
-	
+
 	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
-	
+
 	if (!sort || sort == "likes") {
 		text += 'Sort all by - # Likes';
 	} else if (sort == "replies") {
@@ -223,7 +228,7 @@ function make_dropdown() {
 	} else if (sort == "oldest") {
 		text += 'Sort all by - Oldest';
 	}
-	
+
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
 	url = "/visualization?article=" + article_url + '&sort=';
 	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
@@ -233,5 +238,3 @@ function make_dropdown() {
 
 	$('#node_sort').html(text);
 }
-
-
