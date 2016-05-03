@@ -2067,6 +2067,33 @@ function endDrag() {
     }
 }
 
+function count_children(d) {
+	if (d.children) {
+		total = 1;
+		for (var i=0; i<d.children.length; i++) {
+			total += count_children(d.children[i]);
+		}
+		return total;
+	} else {
+		return 1;
+	}
+}
+
+function check_clicked_node(d) {
+	if (!$("#node_" + d.id).attr('class') == 'clicked') {
+		return false;
+	}
+	
+	if (d.children) {
+		children_clicked = true;
+		for (var i=0; i<d.children.length; i++) {
+			children_clicked = children_clicked && check_clicked_node(d.children[i]);
+		}
+		return children_clicked;
+	}
+	return true;
+}
+
 function update(source) {
 
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
@@ -2138,13 +2165,16 @@ function update(source) {
       .style("fill", color)
       .attr("id", function(d) { return 'node_' + d.id; })
       .on("click", function(d) {
-      	d3.selectAll(".clicked").classed("clicked", false);
-      	unhighlight_all();
-      	show_text(d);
-      	$('#box').scrollTop(0);
-      	if (highlight_text) {
-      		$('#box').highlight(highlight_text);
-      	}
+	      	if (check_clicked_node(d) && count_children(d) == d3.selectAll(".clicked")[0].length +1) {
+	      		click_node(d.id);
+	      	}
+	      	d3.selectAll(".clicked").classed("clicked", false);
+	      	unhighlight_all();
+	      	show_text(d);
+	      	$('#box').scrollTop(0);
+	      	if (highlight_text) {
+	      		$('#box').highlight(highlight_text);
+	      	}
       })
       .on("mouseover", showdiv)
       .on("mouseout", hidediv)
@@ -2321,7 +2351,7 @@ function expand_recurs(d) {
 	}
 }
 
-// Toggle children on click.
+
 function collapse_node(id) {
   d = nodes_all[id-1];
 	if (d._children) {
@@ -2341,7 +2371,7 @@ function collapse_node(id) {
   return null;
 }
 
-// Toggle children on click.
+
 function expand_node(id) {
   d = nodes_all[id-1];
   expand_recurs(d);
@@ -2733,9 +2763,9 @@ function showdiv(d) {
 
 			
 			if (one_depth) {
-				text = '<a onclick="click_node(' + d.id + ');">Toggle</a>';
+				text = '';
 			} else {
-				text = '<a onclick="click_node(' + d.id + ');">Toggle</a><BR><a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
+				text = '<a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
 			}
 			text += '<BR><a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 			$('#expand').html(text);
