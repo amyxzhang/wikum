@@ -2703,9 +2703,13 @@ function showdiv(d) {
 			clearTimeout(timer);
 
 			if (d.children || d._children) {
-				$('#expand').html('<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>');
+				text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+				text += '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
+				$('#expand').html(text);
 			} else {
-				$('#expand').html('<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>');
+				text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+				text += '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
+				$('#expand').html(text);
 			}
 
 			set_expand_position(d);
@@ -2729,10 +2733,13 @@ function showdiv(d) {
 				}
 			}
 
+			text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
 			if (one_depth) {
-				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a>');
+				text += '<a onclick="click_node(' + d.id + ');">Toggle</a>';
+				$('#expand').html(text);
 			} else {
-				$('#expand').html('<a onclick="click_node(' + d.id + ');">Toggle</a><BR><a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>');
+				text += '<a onclick="click_node(' + d.id + ');">Toggle</a><BR><a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
+				$('#expand').html(text);
 			}
 
 			set_expand_position(d);
@@ -2765,7 +2772,9 @@ function hide_replace_nodes(id) {
 		d.children = null;
 		update(d);
 	}
-	$('#expand').html('<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>');
+	text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+	text += '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
+	$('#expand').html(text);
 }
 
 function show_replace_nodes(id) {
@@ -2780,7 +2789,9 @@ function show_replace_nodes(id) {
 		d.replace = [];
 		update(d);
 	}
-	$('#expand').html('<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>');
+	text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+	text += '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
+	$('#expand').html(text);
 }
 
 function hidediv(d) {

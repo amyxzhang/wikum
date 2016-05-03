@@ -190,6 +190,10 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 	  
 	  update(root = flare);
 	  
+	  if (comment_id) {
+	  	show_replace_nodes(nodes_all[1].id);
+	  }
+	  
 	  
 	  d = nodes_all[1];
 	  while (d.parent_node) {
