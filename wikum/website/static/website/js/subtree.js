@@ -174,27 +174,39 @@ if (!num) {
 	num = 0;
 }
 
-d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num' + num, function(error, flare) {
-  if (error) throw error;
+var comment_id = parseInt(getParameterByName('comment_id'));
+if (!comment_id) {
+	comment_id = '';
+}
 
-  flare.x0 = 100;
-  flare.y0 = 100;
+d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&comment_id=' + comment_id, function(error, flare) {
+  if (error) throw error;
   
-  nodes_all = tree.nodes(flare);
-  
-  update(root = flare);
-  
-  
-  d = nodes_all[1];
-  while (d.parent_node) {
-  	d = d.children[0];
+  if (!flare.no_subtree) {
+	  flare.x0 = 100;
+	  flare.y0 = 100;
+	  
+	  nodes_all = tree.nodes(flare);
+	  
+	  update(root = flare);
+	  
+	  
+	  d = nodes_all[1];
+	  while (d.parent_node) {
+	  	d = d.children[0];
+	  }
+	  
+	  show_text(d);
+  } else {
+  	$('#box').text('There are no more subtrees to summarize!');
   }
-  
-  show_text(d);
   
   make_key();
   
-  make_dropdown();
+  
+  if (comment_id) {
+  	make_dropdown();
+  }
   
   make_highlight();
   

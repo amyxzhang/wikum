@@ -894,8 +894,10 @@ def cluster_data(request):
     
 def subtree_data(request):
     article_url = request.GET['article']
-    sort = request.GET.get('sort')
-    next = request.GET.get('next')
+    sort = request.GET.get('sort', None)
+    next = request.GET.get('next', None)
+    
+    comment_id = request.GET.get('comment_id', None)
     
     num = int(request.GET.get('num', 0))
     
@@ -909,31 +911,41 @@ def subtree_data(request):
     else:
         next = int(next)
     
-    if sort == 'likes':
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')[next]]
-    elif sort == "replies":
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')[next]]
-    elif sort == "long":
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-text_len')[next]]
-    elif sort == "short":
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('text_len')[next]]
-    elif sort == 'newest':
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-created_at')[next]]
-    elif sort == 'oldest':
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('created_at')[next]]
+    
+    if comment_id:
+        posts = Comment.objects.filter(id=comment_id)
     else:
-        posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
-        count = posts_all.count()
-        
-        rand = random.randint(0,count-1)
-        
-        posts = [a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)[rand]]       
-    
+        if sort == 'likes':
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
+        elif sort == "replies":
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')
+        elif sort == "long":
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-text_len')
+        elif sort == "short":
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('text_len')
+        elif sort == 'newest':
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-created_at')
+        elif sort == 'oldest':
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('created_at')
+        else:
+            posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
+            count = posts_all.count()
+            next = random.randint(0,count-1)
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)     
+            
+        if posts.count() > next:
+            posts = [posts[next]]
+        else:
+            posts = None
 
-    val2 = {}
-    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a)
-    
-    val = recurse_get_parents(val2, posts[0], a)
+    if posts:
+        val2 = {}
+        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a)
+        
+        val = recurse_get_parents(val2, posts[0], a)
+        val['no_subtree'] = False
+    else:
+        val = {'no_subtree': True}
     
     return JsonResponse(val)
      
