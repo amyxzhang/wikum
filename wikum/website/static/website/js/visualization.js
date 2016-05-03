@@ -177,6 +177,7 @@ if (!filter) {
 	filter = '';
 }
 
+var comment_id = null;
 
 d3.json('/viz_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&filter=' + filter, function(error, flare) {
   if (error) throw error;
