@@ -39,7 +39,6 @@ function show_hidden_after() {
 function get_comment(comment_str, did) {
 	
 	comment_strs = comment_str.split(/\]\] \[\[/g);
-	
 	link = event.target;
 
 	if ($(link).next().is('#' + comment_strs[0])) {
@@ -102,6 +101,8 @@ function get_comment(comment_str, did) {
 	    	}
 	    	
 	    	if (paras[j] > -1) {
+	    		strs = [];
+	    		
 	    		if (node.replace_node) {
 	    			if (node.extra_summary != '') {
 	    				t = node.summary + '\n\n' + node.extra_summary;
@@ -110,7 +111,16 @@ function get_comment(comment_str, did) {
 	    				strs = node.summary.split('\n\n');
 	    			}
 	    		} else {
-	    			strs = node.name.split('</p><p>');
+	    			objs = node.name.replace(/(\r\n|\n|\r)/gm,"");
+	    			objs = $.parseHTML('<div>' + objs + '</div>');
+	    			objs = $(objs).find('p');
+	    			for (var i=0; i<objs.length; i++) {
+	    				if (objs[i].parentNode.tagName == "LI") {
+	    					strs.push('<li>' + objs[i].innerHTML + '</li>');
+	    				} else {
+	    					strs.push(objs[i].innerHTML);
+	    				}
+	    			}
 	    		}
 	    		
 	    		if (paras[j] > 0) {

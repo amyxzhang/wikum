@@ -1458,7 +1458,7 @@ function open_comment_hyperlink(id, d_id, para) {
 	if (para && d.d_id == d_id) {
 		toggle_original(d.id);
 
-		$('#orig_' + d.id).find('p, li').eq(para).addClass('highlight');
+		$('#orig_' + d.id).find('p').eq(para).addClass('highlight');
 		$("#box").scrollTo(".highlight", 500);
 
 	} else {
@@ -1472,9 +1472,9 @@ function open_comment_hyperlink(id, d_id, para) {
 			if ($('#comment_' + child.id).text().indexOf('Summary') > -1) {
 				toggle_original(child.id);
 
-				$('#orig_' + child.id).find('p, li').eq(para).addClass('highlight');
+				$('#orig_' + child.id).find('p').eq(para).addClass('highlight');
 			} else {
-				$('#comment_text_' + child.id).find('p, li').eq(para).addClass('highlight');
+				$('#comment_text_' + child.id).find('p').eq(para).addClass('highlight');
 			}
 			$("#box").scrollTo(".highlight", 500);
 		} else {
