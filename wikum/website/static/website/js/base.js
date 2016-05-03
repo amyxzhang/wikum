@@ -2080,7 +2080,7 @@ function count_children(d) {
 }
 
 function check_clicked_node(d) {
-	if (!$("#node_" + d.id).attr('class') == 'clicked') {
+	if (!($("#node_" + d.id).attr('class') == 'clicked')) {
 		return false;
 	}
 	
@@ -2784,10 +2784,7 @@ function showdiv(d) {
 			}
 			if (d.article) {
 				if (window.location.href.indexOf('/subtree') > -1) {
-					if (text != '') {
-						text += '<BR>';
-					}
-					text += '<a href="/visualization?article=' + article_url + '&num=' + num + '">See Entire Tree</a>';
+					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '">See Entire Discussion</a>';
 				}
 			} else {
 				if (comment_id != d.d_id) {
