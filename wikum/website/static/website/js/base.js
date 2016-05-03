@@ -2703,14 +2703,12 @@ function showdiv(d) {
 			clearTimeout(timer);
 
 			if (d.children || d._children) {
-				text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
-				text += '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
-				$('#expand').html(text);
+				text = '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
 			} else {
-				text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
-				text += '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
-				$('#expand').html(text);
+				text = '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
 			}
+			text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+			$('#expand').html(text);
 
 			set_expand_position(d);
 			$('#expand').show();
@@ -2733,15 +2731,15 @@ function showdiv(d) {
 				}
 			}
 
-			text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+			
 			if (one_depth) {
-				text += '<a onclick="click_node(' + d.id + ');">Toggle</a>';
-				$('#expand').html(text);
+				text = '<a onclick="click_node(' + d.id + ');">Toggle</a>';
 			} else {
-				text += '<a onclick="click_node(' + d.id + ');">Toggle</a><BR><a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
-				$('#expand').html(text);
+				text = '<a onclick="click_node(' + d.id + ');">Toggle</a><BR><a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
 			}
-
+			text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
+			$('#expand').html(text);
+			
 			set_expand_position(d);
 
 			$('#expand').show();
@@ -2772,8 +2770,8 @@ function hide_replace_nodes(id) {
 		d.children = null;
 		update(d);
 	}
-	text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
-	text += '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
+	text = '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
+	text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
 	$('#expand').html(text);
 }
 
@@ -2789,8 +2787,9 @@ function show_replace_nodes(id) {
 		d.replace = [];
 		update(d);
 	}
-	text = '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
-	text += '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
+	
+	text = '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
+	text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a><BR>';
 	$('#expand').html(text);
 }
 
