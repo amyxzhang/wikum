@@ -9,3 +9,7 @@ footer p {
   text-align: center;
   transform: translate(-50%, 0);
 }
+
+h1 > a {
+	color: inherit;
+}

@@ -4,43 +4,37 @@
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/summary.css" %}>
 {% endblock %}
-	
-	
+
+
 {% block content %}
 
 <span id="highlight_authors" style="display:none;">{{ article.highlight_authors }}</span>
-        	
-     <section id="contact" class="container content-section text-center" style="padding-top: 150px;">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-            	
-       
-						<h2>{{ article.title }}</h2>
-						<a href="{{ article.url }}">Read the article in {{ source.source_name }}</a>
-					
-					<BR><BR>
-						<a href="/visualization?article={{ article.url }}&num={{ num }}">View Wikum Editing Interface</a>
-					
-		                    </div>
-                </div>
-            </section>		
-            
+
+<header class="container content-section text-center" style="padding-top: 150px;">
+	<div class="row">
+		<div class="col-lg-8 col-lg-offset-2">
+			<h1><a href="{{ article.url }}" title="Read the article in {{ source.source_name }}">{{ article.title }}</a></h1>
+			<a href="/visualization?article={{ article.url }}&num={{ num }}">View Wikum Editing Interface</a>
+		</div>
+	</div>
+</header>
+
      <section id="contact" class="container content-section text-center" style="padding-top: 50px;">
         <div class="row">
             <div class="col-lg-8 col-md-8 col-lg-offset-2" id="summary">
-					
-					
+
+
             </div>
         </div>
-                
+
       <div class="row">
       	<div class="col-lg-8 col-md-8 col-lg-offset-2" id="link_next">
       	</div>
       </div>
-                
+
             </section>
 
-	
+
 
 {% endblock %}
 
