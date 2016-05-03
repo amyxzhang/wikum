@@ -1134,6 +1134,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						d.parent = new_d;
 
 						insert_node_to_children(new_d, new_d.parent);
+						
+						update(new_d.parent);
+
 
 						d3.select("#node_" + new_d.id)
 						.style("fill","#885ead");
@@ -1144,6 +1147,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						delete_children_boxes(new_d.replace[0]);
 
 						d = new_d;
+					} else {
+						update(d.parent);
 					}
 
 					for (var i=0; i<delete_summary_node_ids.length; i++) {
@@ -1153,8 +1158,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					delete_summary_nodes = [];
 					delete_summary_node_ids = [];
 
-					update(d.parent);
-
+					
 
 					d.summary = res.top_summary;
 					d.extra_summary = res.bottom_summary;
@@ -2983,9 +2987,13 @@ function make_progress_bar() {
 	num_words_all = count_all_words(nodes_all[0]);
 	
 	num_words_still = count_unsummarized_words(nodes_all[0]);
+	
+	if (num_words_all > 500) {
+		num_words_still = num_words_still - 250
+	}
+	
 	value = Math.round((1 - (num_words_still/num_words_all)) * 100);
-	console.log(num_words_still);
-	console.log(num_words_all);
+
 	$('.progress-bar').css('width', value+'%').attr('aria-valuenow', value);   
 	$('.progress-bar').text(value + '% Summarized Down');
 }
