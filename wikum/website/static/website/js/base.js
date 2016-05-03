@@ -115,10 +115,7 @@ function check_button_checkbox() {
 function make_key() {
 
   var key_data = [
-	{ "cx": 450, "cy": 80, "r": 7, "color" : "#7ca2c7", "text": "with replies"},
- 	{ "cx": 450, "cy": 95, "r": 7, "color" : "#dae8f5", "text": "no replies"},
- 	{ "cx": 450, "cy": 110, "r": 7, "color" : "#885ead", "text": "summary"},
- 	{ "cx": 450, "cy": 125, "r": 7, "color" : "#ffd700", "text": "highlighted"},
+ 	{ "cx": 450, "cy": 80, "r": 7, "color" : "#885ead", "text": "summary"},
  	];
 
   var svg = d3.select("svg");
@@ -2090,15 +2087,15 @@ function count_children(d) {
 	}
 }
 
-function check_clicked_node(d) {
-	if (!($("#node_" + d.id).attr('class') == 'clicked')) {
+function check_clicked_node(d, clicked_ids) {
+	if (clicked_ids.indexOf(d.id) == -1) {
 		return false;
 	}
 	
 	if (d.children) {
 		children_clicked = true;
 		for (var i=0; i<d.children.length; i++) {
-			children_clicked = children_clicked && check_clicked_node(d.children[i]);
+			children_clicked = children_clicked && check_clicked_node(d.children[i], clicked_ids);
 		}
 		return children_clicked;
 	}
@@ -2156,28 +2153,66 @@ function update(source) {
 
 
   // Enter any new nodes at the parent's previous position.
-  nodeEnter.append("circle")
-      .attr("r", function(d) {
-	      	if (d.article) {
-	      		return 10;
-	      	}
-	      	total = (d.size + 400 )/65;
-	      	if (total > 18) {
-	      		return 18;
-	      	} else if (total < 8) {
-	      		return 8;
-	      	} else {
-	      		return total;
-	      	}
-      	})
+  nodeEnter.append("path")
+  	  .attr("d", function(d) {
+  	  	if (!(d.children || d._children || d.replace_node)) {
+  	  		return "M0,5c0-1.4,0-5,0-5s3.7,0,5,0c2.8,0,5,2.2,5,5s-2.2,5-5,5S0,7.8,0,5z";
+  	  	} else {
+  	  		return "M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0";
+  	  	}
+  	  })
       .attr("height", barHeight)
       .style("stroke-width", stroke_width)
       .style("stroke", stroke)
       .style("fill", color)
       .attr("id", function(d) { return 'node_' + d.id; })
+      .attr("vector-effect", "non-scaling-stroke")
+      .style("transform", function(d) {
+      		if (d.article) {
+	      		return "";
+	      	}
+	      	
+	      	total = (d.size + 400 )/65;
+	      	
+	      	if ((total/10 < 1.3) && !(d.children || d._children || d.replace_node)) {
+	      		return "scale(1.3)";
+	      	}
+
+	      	if (total > 18) {
+	      		return "scale(1.8)";
+	      	} else if (total < 8) {
+	      		return "scale(0.8)";
+	      	} else {
+	      		return `scale(${total/10})`;
+	      	}
+      })
       .on("click", function(d) {
+      	
+      		clicked = d3.selectAll(".clicked")[0];
+      		clicked_ids = [];
+      	
+      		if ($('#node_' + d.id).css('stroke-width') != "0px") {
+      			clicked_ids.push(d.id);
+      		}
+      		
+      		for (var i=0; i<clicked.length; i++) {
+      			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
+      		}
+      		
       		if (!d.parent_node) {
-		      	if (check_clicked_node(d) && count_children(d) == d3.selectAll(".clicked")[0].length +1) {
+      			if (d.replace_node) {
+      				if (d.replace.length > 0) {
+      					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
+      						show_replace_nodes(d.id);
+      					}
+      				} else {
+      					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
+      						hide_replace_nodes(d.id);
+      					}
+      				}
+      			}
+      			
+		      	if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
 		      		click_node(d.id);
 		      	}
 		    }
@@ -2529,7 +2564,7 @@ function highlight_node(id) {
 		d3.select("#node_" + id)
 			.attr("class", "clicked")
 			.style("stroke","#000000")
-			.style("stroke-width", "3px");
+			.style("stroke-width", stroke_width);
 	}
 }
 
@@ -2543,7 +2578,7 @@ function unhighlight_all() {
 function highlight_link(from_id, to_id) {
 	d3.select("#link_" + from_id + '_' + to_id).transition()
 		.style("stroke", "red")
-		.style("stroke-width", "3px")
+		.style("stroke-width", stroke_width)
 		.each("end", function() {
 			extra_highlight_node(from_id);
 			d3.select(this)
@@ -2643,7 +2678,7 @@ function extra_highlight_node(id) {
 	if (id != 1) {
 		d3.select("#node_" + id)
 			.style("stroke","#d73c37")
-			.style("stroke-width", "3px");
+			.style("stroke-width", stroke_width);
 		highlight_box(id);
 	}
 }
@@ -2652,7 +2687,7 @@ function unextra_highlight_node(id) {
 	if (id != 1) {
 		d3.select("#node_" + id)
 			.style("stroke","#000000")
-			.style("stroke-width", "3px");
+			.style("stroke-width", stroke_width);
 		highlight_box(id);
 	}
 }
@@ -2747,13 +2782,6 @@ function showdiv(d) {
 			clearTimeout(timer);
 
 			text = '';
-			if (!d.parent_node) {
-				if (d.children || d._children) {
-					text += '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
-				} else {
-					text += '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
-				}
-			}
 			if (comment_id != d.d_id) {
 				if (text != '') {
 					text += '<BR>';
@@ -2838,13 +2866,7 @@ function hide_replace_nodes(id) {
 		update(d);
 	}
 	text = '';
-	if (!d.parent_node) {
-		text += '<a onclick="show_replace_nodes(' + d.id + ');">See Summarized Nodes</a>';
-	}
 	if (comment_id != d.d_id) {
-		if (text != '') {
-			text += '<BR>';
-		}
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 	}
 	$('#expand').html(text);
@@ -2864,13 +2886,7 @@ function show_replace_nodes(id) {
 	}
 	
 	text = '';
-	if (!d.parent_node) {
-		text += '<a onclick="hide_replace_nodes(' + d.id + ');">Hide Summarized Nodes</a>';
-	}
 	if (comment_id != d.d_id) {
-		if (text != '') {
-			text += '<BR>';
-		}
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '">See Isolated Subtree</a>';
 	}
 	$('#expand').html(text);
@@ -2898,8 +2914,9 @@ $("#expand").mouseleave(function() {
 
 function stroke_width(d) {
 	if (d.article) {
-		return 3;
-	}
+  		return 3;
+  	}
+  	return 2.5;
 }
 
 function stroke(d) {
@@ -2920,11 +2937,8 @@ function color(d) {
 	if (d.article) {
 		return "#ffffff";
 	}
-	if (d._children || d.children) {
-		return "#7ca2c7";
-	} else {
-		return "#dae8f5";
-	}
+	return "#7ca2c7";
+
 }
 
 function count_unsummarized_words(d) {
