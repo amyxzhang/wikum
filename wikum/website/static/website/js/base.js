@@ -2169,14 +2169,15 @@ function update(source) {
 		      	if (check_clicked_node(d) && count_children(d) == d3.selectAll(".clicked")[0].length +1) {
 		      		click_node(d.id);
 		      	}
-		      	d3.selectAll(".clicked").classed("clicked", false);
-		      	unhighlight_all();
-		      	show_text(d);
-		      	$('#box').scrollTop(0);
-		      	if (highlight_text) {
-		      		$('#box').highlight(highlight_text);
-		      	}
-		     }
+		    }
+	      	d3.selectAll(".clicked").classed("clicked", false);
+	      	unhighlight_all();
+	      	show_text(d);
+	      	$('#box').scrollTop(0);
+	      	if (highlight_text) {
+	      		$('#box').highlight(highlight_text);
+	      	}
+		     
       })
       .on("mouseover", showdiv)
       .on("mouseout", hidediv)
@@ -2537,7 +2538,7 @@ function highlight_link(from_id, to_id) {
 			d3.select(this)
 				.transition()
 				.style("stroke", "#cccccc")
-				.style("stroke-width", "3px");
+				.style("stroke-width", "2px");
 
 		});
 }
