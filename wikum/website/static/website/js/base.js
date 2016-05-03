@@ -1454,7 +1454,6 @@ function open_comment_hyperlink(id, d_id, para) {
 	d = nodes_all[id-1];
 	show_text(d);
 
-
 	if (para && d.d_id == d_id) {
 		toggle_original(d.id);
 
@@ -1468,7 +1467,7 @@ function open_comment_hyperlink(id, d_id, para) {
 		extra_highlight_node(child.id);
 		highlight_box(child.id);
 
-		if (para) {
+		if (para != 'undefined') {
 			if ($('#comment_' + child.id).text().indexOf('Summary') > -1) {
 				toggle_original(child.id);
 
