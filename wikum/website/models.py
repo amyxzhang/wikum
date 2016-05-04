@@ -86,6 +86,8 @@ class Comment(models.Model):
     extra_summary = models.TextField()
     is_replacement = models.BooleanField(default=False)
     
+    collapsed = models.BooleanField(default=False)
+    
     vector = models.BinaryField()
     
     tags = models.ManyToManyField(Tag)
