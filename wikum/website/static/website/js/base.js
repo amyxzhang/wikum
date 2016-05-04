@@ -1067,16 +1067,16 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					delete_summary_nodes = [];
 					delete_summary_node_ids = [];
 
-
+					console.log(new_d.collapsed);
 					if (!new_d.collapsed) {
 						if (new_d.children) {
 							for (var i=0; i<new_d.children.length; i++) {
 								cascade_collapses(new_d.children[i]);
 							}
 						}
-						if (new_d._children) {
-							for (var i=0; i<new_d._children.length; i++) {
-								cascade_collapses(new_d._children[i]);
+						if (new_d.replace) {
+							for (var i=0; i<new_d.replace.length; i++) {
+								cascade_collapses(new_d.replace[i]);
 							}
 						}
 					}
@@ -1147,15 +1147,16 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 						insert_node_to_children(new_d, new_d.parent);
 
+						console.log(new_d.collapsed);
 						if (!new_d.collapsed) {
+							if (new_d.replace) {
+								for (var i=0; i<new_d.replace.length; i++) {
+									cascade_collapses(new_d.replace[i]);
+								}
+							}
 							if (new_d.children) {
 								for (var i=0; i<new_d.children.length; i++) {
 									cascade_collapses(new_d.children[i]);
-								}
-							}
-							if (new_d._children) {
-								for (var i=0; i<new_d._children.length; i++) {
-									cascade_collapses(new_d._children[i]);
 								}
 							}
 						}
@@ -1242,15 +1243,17 @@ function delete_summary_node(id) {
 	if (d.replace_node) {
 		parent = d.parent;
 		
+		console.log(d.collapsed);
+		
 		if (!d.collapsed) {
 			if (d.children) {
 				for (var i=0; i<d.children.length; i++) {
 					cascade_undo_collapses(d.children[i]);
 				}
 			}
-			if (d._children) {
-				for (var i=0; i<d._children.length; i++) {
-					cascade_undo_collapses(d._children[i]);
+			if (d.replace) {
+				for (var i=0; i<d.replace.length; i++) {
+					cascade_undo_collapses(d.replace[i]);
 				}
 			}
 		}
@@ -1298,7 +1301,15 @@ function delete_summary_node(id) {
 }
 
 function cascade_undo_collapses(d) {
+	console.log(d.id);
+	console.log('collapse false');
 	d.collapsed = false;
+	
+	if (!d.replace_node) {
+		d3.select("#node_" + d.id)
+						.style("fill", "#7ca2c7");
+	}
+	
 	if (!d.replace_node) {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
@@ -1314,7 +1325,15 @@ function cascade_undo_collapses(d) {
 }
 
 function cascade_collapses(d) {
+	console.log(d.id);
+	console.log('collapse true');
 	d.collapsed = true;
+	
+	if (!d.replace_node) {
+		d3.select("#node_" + d.id)
+						.style("fill", "#c3aed6");
+	}
+	
 	if (!d.replace_node) {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {

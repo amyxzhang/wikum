@@ -86,7 +86,7 @@ def summary_data(request):
     
     
     val2 = {}
-    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a)
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     
     return JsonResponse({'posts': val2})
     
@@ -121,6 +121,7 @@ def recurse_up_post(post):
 def recurse_down_post(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
+        print child.id
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
@@ -129,23 +130,11 @@ def recurse_down_num_subtree(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
         child.num_subchildren = 0
-        child.collapsed = True
+        child.json_flatten = ''
         child.save()
         recurse_down_num_subtree(child)
-        
-def recurse_down_num_undo_subtree(post, is_replaced_above):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
-    for child in children:
-        child.json_flatten = ""
-        child.collapsed = is_replaced_above
-        child.save()
-        
-        if child.is_replacement:
-            is_replaced_above = True
-            
-        recurse_down_num_undo_subtree(child, is_replaced_above)
 
-def recurse_viz(parent, posts, replaced, article):
+def recurse_viz(parent, posts, replaced, article, is_collapsed):
     children = []
     hid_children = []
     replace_children = []
@@ -174,7 +163,7 @@ def recurse_viz(parent, posts, replaced, article):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'summary': post.summary,
-                  'collapsed': post.collapsed,
+                  'collapsed': is_collapsed,
                   'extra_summary': post.extra_summary,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
@@ -189,7 +178,7 @@ def recurse_viz(parent, posts, replaced, article):
                 num_subchildren = 0
             else:
                 replace_future = replaced or post.is_replacement
-                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article)
+                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
@@ -354,19 +343,12 @@ def delete_node(did):
             for child in children:
                 child.reply_to_disqus = parent_id
                 child.json_flatten = ''
-                if not c.collapsed:
-                    child.collapsed = False
                 child.save()
-
-                recurse_down_num_undo_subtree(child, c.collapsed) 
             
             c.delete()
         
             if parent.count() > 0:
                 recurse_up_post(parent[0])
-            
-               
-            
     except Exception, e:
         print e
     
@@ -446,6 +428,7 @@ def summarize_comments(request):
         
         h.comments.add(c)
         recurse_up_post(c)
+        
         
         make_vector(new_comment, a)
         
@@ -661,7 +644,11 @@ def hide_comment(request):
         comment = Comment.objects.get(id=id)
         
         if comment.is_replacement:
+            
+            recurse_down_post(comment)
+            
             delete_node(comment.id)
+            
             affected = False
         elif not comment.hidden:
             comment.hidden = True
@@ -759,6 +746,14 @@ def tags(request):
     
     return HttpResponse(json_data, content_type='application/json')
 
+def determine_is_collapsed(post, article):
+    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
+    if parent.count() > 0:
+        if parent[0].is_replacement:
+            return True
+        else:
+            return determine_is_collapsed(parent[0], article)
+    return False
 
 def viz_data(request):
     article_url = request.GET['article']
@@ -803,7 +798,10 @@ def viz_data(request):
         val['replace'] = []
         for post in posts:
             val2 = {}
-            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a)
+            
+            is_collapsed = determine_is_collapsed(post, a)
+            
+            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a, is_collapsed)
             
             val_child = recurse_get_parents(val2, post, a)
             val['children'].append(val_child['children'][0])
@@ -822,7 +820,7 @@ def viz_data(request):
         elif sort == 'oldest':
             posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('created_at')[start:end]
                 
-        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a)
+        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     return JsonResponse(val)
     
 def cluster_data(request):
@@ -909,7 +907,7 @@ def cluster_data(request):
         if cluster == min_cluster:
             posts_cluster.append(post)
     
-    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts_cluster, False, a)
+    val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts_cluster, False, a, False)
     
     return JsonResponse(val)
     
@@ -962,7 +960,10 @@ def subtree_data(request):
 
     if posts:
         val2 = {}
-        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a)
+        
+        is_collapsed = determine_is_collapsed(posts[0], a)
+        
+        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, is_collapsed)
         
         val = recurse_get_parents(val2, posts[0], a)
         val['no_subtree'] = False
@@ -992,7 +993,6 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['parent_node'] = True
         parent_dict['summary'] = parent.summary
-        parent_dict['collapsed'] = parent.collapsed
         parent_dict['extra_summary'] = parent.extra_summary
         parent_dict['tags'] = [(tag.text, tag.color) for tag in parent.tags.all()]
             
