@@ -625,7 +625,7 @@ function insert_quote(highlighted_text, did) {
     var v = box.val();
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
-    box.val( textBefore + '[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
+    box.val( textBefore + '\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
 }
 
 $('#summarize_modal_box').on('show.bs.modal', function(e) {
@@ -2976,12 +2976,12 @@ function count_unsummarized_words(d) {
 			}
 		}
 
-		if (!d.article) {
+		if (!d.article && !d.parent_node) {
 			if (d.summary != '') {
-				count += d.summary.split(/\s+/).length;
-				count += d.extra_summary.split(/\s+/).length;
+				count += wordCount(d.summary);
+				count += wordCount(d.extra_summary);
 			} else {
-				count += d.name.split(/\s+/).length;
+				count += wordCount(d.name);
 			}
 		}
 	}
@@ -2996,6 +2996,13 @@ function count_all_words(d) {
 				count += count_all_words(d.replace[i]);
 			}
 		}
+		
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				count += count_all_words(d.children[i]);
+			}
+		}
+		
 	} else {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
@@ -3008,8 +3015,8 @@ function count_all_words(d) {
 			}
 		}
 
-		if (!d.article) {
-			count += d.name.split(/\s+/).length;
+		if (!d.article && !d.parent_node) {
+			count += wordCount(d.name);
 		}
 	}
 	return count;
@@ -3017,14 +3024,24 @@ function count_all_words(d) {
 
 function make_progress_bar() {
 	num_words_all = count_all_words(nodes_all[0]);
+	console.log(num_words_all);
 
 	num_words_still = count_unsummarized_words(nodes_all[0]);
+	console.log(num_words_still);
 
-	if (num_words_all > 500) {
-		num_words_still = num_words_still - 250
+	if (num_words_all >= 250) {
+		num_words_all = num_words_all - 250;
+		num_words_still = num_words_still - 250;
+	} else {
+		var half = num_words_all/2;
+		num_words_all = num_words_all - half;
+		num_words_still = num_words_still - half;
 	}
 
 	value = Math.round((1 - (num_words_still/num_words_all)) * 100);
+	if (value > 100) {
+		value = 100;
+	}
 
 	$('.progress-bar').css('width', value+'%').attr('aria-valuenow', value);
 	$('.progress-bar').text(value + '% Summarized Down');

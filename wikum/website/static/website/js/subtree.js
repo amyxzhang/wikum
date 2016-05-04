@@ -207,6 +207,9 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 	  }
 	  
 	  show_text(d);
+	  
+	  make_progress_bar();
+	  
   } else {
   	$('#box').text('There are no more subtrees to summarize!');
   }
