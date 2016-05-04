@@ -1241,6 +1241,19 @@ function delete_summary_node(id) {
 	d = nodes_all[id-1];
 	if (d.replace_node) {
 		parent = d.parent;
+		
+		if (!d.collapsed) {
+			if (d.children) {
+				for (var i=0; i<d.children.length; i++) {
+					cascade_undo_collapses(d.children[i]);
+				}
+			}
+			if (d._children) {
+				for (var i=0; i<d._children.length; i++) {
+					cascade_undo_collapses(d._children[i]);
+				}
+			}
+		}
 
 		//delete node from parent's children
 		if (parent.children) {
@@ -1281,25 +1294,11 @@ function delete_summary_node(id) {
 		}
 	}
 	
-	is_collapsed = d.collapsed;
-	if (!is_collapsed) {
-		if (d.children) {
-			for (var i=0; i<d.children.length; i++) {
-				cascade_undo_collapses(d.children[i]);
-			}
-		}
-		if (d._children) {
-			for (var i=0; i<d._children.length; i++) {
-				cascade_undo_collapses(d._children[i]);
-			}
-		}
-	}
-	
 	update(d.parent);
 }
 
 function cascade_undo_collapses(d) {
-	d.collapsed = False;
+	d.collapsed = false;
 	if (!d.replace_node) {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
@@ -1315,7 +1314,7 @@ function cascade_undo_collapses(d) {
 }
 
 function cascade_collapses(d) {
-	d.collapsed = True;
+	d.collapsed = true;
 	if (!d.replace_node) {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
