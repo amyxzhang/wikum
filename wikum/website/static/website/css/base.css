@@ -13,3 +13,12 @@ footer p {
 h1 > a {
 	color: inherit;
 }
+
+.wordcount {
+	float: right;
+}
+
+.wordcount.invalid {
+	color: #e00;
+	font-weight: bold;
+}
