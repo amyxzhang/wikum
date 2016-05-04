@@ -3062,10 +3062,11 @@ $(".modal").on("show.bs.modal", function(){
 $(".summary-editor").on("input", function(evt) {
 	var words = wordCount($(this).closest(".modal-content").find(".summarize_comment_comment").text());
 	var summaryWords = wordCount(this.value);
-	var isValid = summaryWords < Math.min(words/2, 250);
+	var max_length = Math.round(Math.min(words/2, 250));
+	var isValid = summaryWords < max_length;
 
 	var $wordcount = $(this).prevAll(".wordcount");
-	$wordcount.text(`${summaryWords}/${words}`);
+	$wordcount.text(`${summaryWords}/${max_length}`);
 	$wordcount.toggleClass("invalid", !isValid);
 
 	this.setCustomValidity(isValid? "" : "Summary is too long");
