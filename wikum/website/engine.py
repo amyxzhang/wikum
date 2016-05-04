@@ -277,14 +277,15 @@ def recurse_populate_collapsed(is_parent_replace, post):
 def copy_article_and_comments(a):
     num_arts = Article.objects.filter(url=a.url).count()
     
-    a1 = a
+    old_id = a.id
+    old_art = Article.objects.filter(id=old_id)
     
     a.pk = None
     a.save()
     a.num = num_arts
     a.save()
     
-    comments = a1.comment_set.all()
+    comments = old_art.comment_set.all()
     for p in comments:
         p.pk = None
         p.save()

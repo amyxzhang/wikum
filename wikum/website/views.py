@@ -131,7 +131,19 @@ def recurse_down_num_subtree(post):
         child.num_subchildren = 0
         child.collapsed = True
         child.save()
-        recurse_down_post(child)
+        recurse_down_num_subtree(child)
+        
+def recurse_down_num_undo_subtree(post, is_replaced_above):
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+    for child in children:
+        child.json_flatten = ""
+        child.collapsed = is_replaced_above
+        child.save()
+        
+        if child.is_replacement:
+            is_replaced_above = True
+            
+        recurse_down_num_undo_subtree(child, is_replaced_above)
 
 def recurse_viz(parent, posts, replaced, article):
     children = []
@@ -342,12 +354,19 @@ def delete_node(did):
             for child in children:
                 child.reply_to_disqus = parent_id
                 child.json_flatten = ''
+                if not c.collapsed:
+                    child.collapsed = False
                 child.save()
+
+                recurse_down_num_undo_subtree(child, c.collapsed) 
             
             c.delete()
         
             if parent.count() > 0:
                 recurse_up_post(parent[0])
+            
+               
+            
     except Exception, e:
         print e
     
