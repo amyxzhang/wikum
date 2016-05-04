@@ -97,7 +97,7 @@
 		<button type="submit" class="btn btn-default" id="summarize_comment_submit">Submit</button>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	  </div>
-	</div>
+  </form>
 
   </div>
 </div>
@@ -106,14 +106,14 @@
   <div class="modal-dialog" style="width: 100%; height: 100%; margin: 0px;">
 
 	<!-- Modal content-->
-	<div class="modal-content">
+	<form class="modal-content" action="/summarize_selected" method="POST">
 	  <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
 		<div id="summarize_multiple_highlight_button"></div>
 		<h4 class="modal-title">Summarize Multiple Comments</h4>
 	  </div>
-	  <form class="modal-body" action="/summarize_selected" method="POST">
-		<table style="width: 100%; height: 100%">
+	  <div class="modal-body">
+		<table style="width: 100%; height: 100%; table-layout: fixed;">
 			<tr><td width="50%" height="100%">
 				<div id="summarize_multiple_comment_text"></div>
 				<div id="summarize_multiple_comment_box"></div>
@@ -124,7 +124,7 @@
 			</td>
 			</tr>
 		</table>
-	</form>
+	</div>
 	  <div class="modal-footer">
 		<button type="submit" class="btn btn-default" id="summarize_multiple_comment_submit">Submit</button>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
