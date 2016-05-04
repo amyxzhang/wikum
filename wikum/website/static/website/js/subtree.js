@@ -40,12 +40,12 @@ svg.append('svg:rect')
   	} else {
   		show_text('clicked');
   	}
-  	
+
   	isClick = true;
   })
   .on('mousedown', function() {
   		isMouseDown = true;
-  		
+
   		cancelClick = setTimeout(is_click, 250);
    		var p = d3.mouse( this);
 
@@ -73,28 +73,28 @@ svg.append('svg:rect')
                 y : p[1] - d.y
             }
 	        ;
-	
+
 	        if( move.x < 1 || (move.x*2<d.width)) {
 	            d.x = p[0];
 	            d.width -= move.x;
 	        } else {
-	            d.width = move.x;       
+	            d.width = move.x;
 	        }
-	
+
 	        if( move.y < 1 || (move.y*2<d.height)) {
 	            d.y = p[1];
 	            d.height -= move.y;
 	        } else {
-	            d.height = move.y;       
+	            d.height = move.y;
 	        }
-	        
+
 	        s.attr( d);
-	        
+
 	    });
   })
   .on( "mousemove", function() {
     var s = svg.select( "rect.selection");
-    
+
     if( !s.empty()) {
         var p = d3.mouse(this),
             d = {
@@ -113,28 +113,28 @@ svg.append('svg:rect')
             d.x = p[0];
             d.width -= move.x;
         } else {
-            d.width = move.x;       
+            d.width = move.x;
         }
 
         if( move.y < 1 || (move.y*2<d.height)) {
             d.y = p[1];
             d.height -= move.y;
         } else {
-            d.height = move.y;       
+            d.height = move.y;
         }
-       
+
         s.attr( d);
-        
+
 		// deselect all temporary selected state objects
 		d3.selectAll( '.clicked').classed( "clicked", false);
         unhighlight_all();
 
         d3.selectAll( 'path').each( function(state_data, i) {
         	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
-	            if( 
-	                !d3.select( this).classed( "selected") && 
+	            if(
+	                !d3.select( this).classed( "selected") &&
 	                    // inner circle inside selection frame
-	                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+	                state_data.x>=d.y && state_data.x<=d.y+d.height &&
 	                state_data.y>=d.x && state_data.y<=d.x+d.width
 	            ) {
 	            	if (!state_data.article) {
@@ -146,15 +146,15 @@ svg.append('svg:rect')
 	            }
 	         }
         });
-        
+
         }
         })
 	.on( "mouseup", function() {
 		isMouseDown = false;
-	
+
 	       // remove selection frame
 	    svg.selectAll( "rect.selection").remove();
-	    
+
 	});
 
 var nodes_all = null;
@@ -181,20 +181,20 @@ if (!comment_id) {
 
 d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&comment_id=' + comment_id, function(error, flare) {
   if (error) throw error;
-  
+
   if (!flare.no_subtree) {
 	  flare.x0 = 100;
 	  flare.y0 = 100;
-	  
+
 	  nodes_all = tree.nodes(flare);
-	  
+
 	  update(root = flare);
-	  
+
 	  d = nodes_all[1];
 	  while (d.parent_node) {
 	  	d = d.children[0];
 	  }
-	  
+
 	  if (comment_id && d.replace_node) {
 		if (!d.children) {
 			d.children = [];
@@ -205,33 +205,36 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 		d.replace = [];
 		update(d);
 	  }
-	  
+
 	  show_text(d);
-	  
+
 	  make_progress_bar();
-	  
+
   } else {
   	$('#box').text('There are no more subtrees to summarize!');
   }
-  
+
   make_key();
-  
-  
+
+
   if (comment_id) {
   	make_dropdown();
   }
-  
+
   make_highlight();
-  
-  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '&num=' + num + '">Overall View</a> &nbsp;<strong>Subtree View</strong> &nbsp; <a class="btn-sm btn-default" href="/cluster?article=' + article_url + '&num=' + num + '">Cluster View</a> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '&num=' + num + '">Summary View</a>');
-	
-  
+
+  $('#button_subtree').html(`
+     <a class="btn-sm btn-default" href="/visualization?article=${article_url}&num=${num}">Overall</a>
+     <a class="btn-sm btn-default" disabled>Subtree</a>
+     <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}">Cluster</a>-->
+     <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}">Summary</a>
+     <a class="btn-sm btn-default" href="/history?article=${article_id}">Edit History</a>`);
 });
 
 function make_dropdown() {
-	
+
 	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
-	
+
 	if (!sort || sort == "random") {
 	    text += 'Get Random Subtree';
 	    sort = "random";
@@ -249,7 +252,7 @@ function make_dropdown() {
 	} else if (sort == "oldest") {
 		text += 'Get Old Subtree';
 	}
-	
+
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
 	url = "/subtree?article=" + article_url + '&sort=';
 	text += '<li><a href="' + url + 'random">Random</a></li><li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
