@@ -129,6 +129,7 @@ def recurse_down_num_subtree(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
         child.num_subchildren = 0
+        child.collapsed = True
         child.save()
         recurse_down_post(child)
 
@@ -400,6 +401,8 @@ def summarize_comments(request):
             
             d_id = new_comment.id
             
+            recurse_down_num_subtree(new_comment)
+            
         else:
             from_summary = c.summary + '\n----------\n' + c.extra_summary
             c.summary = top_summary
@@ -424,7 +427,6 @@ def summarize_comments(request):
         
         h.comments.add(c)
         recurse_up_post(c)
-        recurse_down_num_subtree(new_comment)
         
         make_vector(new_comment, a)
         

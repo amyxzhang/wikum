@@ -273,6 +273,25 @@ def recurse_populate_collapsed(is_parent_replace, post):
     for child in children:
         recurse_populate_collapsed(is_parent_replace, child)
         
+        
+def copy_article_and_comments(a):
+    num_arts = Article.objects.filter(url=a.url).count()
+    
+    a1 = a
+    
+    a.pk = None
+    a.save()
+    a.num = num_arts
+    a.save()
+    
+    comments = a1.comment_set.all()
+    for p in comments:
+        p.pk = None
+        p.save()
+        p.article = a
+        p.json_flatten = ''
+        p.save()
+        
 
 
 def create_vectors(article):
