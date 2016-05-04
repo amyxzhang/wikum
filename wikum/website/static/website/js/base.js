@@ -1038,6 +1038,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 replace: children,
 							 author: "",
 							 tags: [],
+							 collapsed: lowest_d.parent.collapsed,
 							 replace_node: true,
 							 size: size,
 							 depth: lowest_d.depth,
@@ -1066,6 +1067,19 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					delete_summary_nodes = [];
 					delete_summary_node_ids = [];
 
+
+					if (!new_d.collapsed) {
+						if (new_d.children) {
+							for (var i=0; i<new_d.children.length; i++) {
+								cascade_collapses(new_d.children[i]);
+							}
+						}
+						if (new_d._children) {
+							for (var i=0; i<new_d._children.length; i++) {
+								cascade_collapses(new_d._children[i]);
+							}
+						}
+					}
 
 					update(new_d.parent);
 
@@ -1112,6 +1126,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 replace: [d],
 							 tags: [],
 							 author: "",
+							 collapsed: d.parent.collapsed,
 							 replace_node: true,
 							 size: d.size,
 							 depth: d.depth,
@@ -1131,6 +1146,20 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						d.parent = new_d;
 
 						insert_node_to_children(new_d, new_d.parent);
+
+						if (!new_d.collapsed) {
+							if (new_d.children) {
+								for (var i=0; i<new_d.children.length; i++) {
+									cascade_collapses(new_d.children[i]);
+								}
+							}
+							if (new_d._children) {
+								for (var i=0; i<new_d._children.length; i++) {
+									cascade_collapses(new_d._children[i]);
+								}
+							}
+						}
+						
 
 						update(new_d.parent);
 
@@ -1251,7 +1280,54 @@ function delete_summary_node(id) {
 			}
 		}
 	}
+	
+	is_collapsed = d.collapsed;
+	if (!is_collapsed) {
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				cascade_undo_collapses(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				cascade_undo_collapses(d._children[i]);
+			}
+		}
+	}
+	
 	update(d.parent);
+}
+
+function cascade_undo_collapses(d) {
+	d.collapsed = False;
+	if (!d.replace_node) {
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				cascade_undo_collapses(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				cascade_undo_collapses(d._children[i]);
+			}
+		}
+	}
+}
+
+function cascade_collapses(d) {
+	d.collapsed = True;
+	if (!d.replace_node) {
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				cascade_collapses(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				cascade_collapses(d._children[i]);
+			}
+		}
+	}
 }
 
 function insert_node_to_children(node_insert, node_parent) {
