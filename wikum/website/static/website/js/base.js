@@ -114,36 +114,36 @@ function check_button_checkbox() {
 
 function make_key() {
 
-  var key_data = [
- 	{ "cx": 450, "cy": 80, "r": 7, "color" : "#885ead", "text": "summary"},
- 	];
-
-  var svg = d3.select("svg");
-
-  var circles = svg.selectAll(".dataCircle")
-                           .data(key_data)
-                           .enter()
-                           .append("circle");
-
-  var circleAttributes = circles
-                       .attr("cx", function (d) { return d.cx; })
-                       .attr("cy", function (d) { return d.cy; })
-                       .attr("r", function (d) { return d.r; })
-                       .style("fill", function (d) { return d.color; });
-
-  var text = svg.selectAll("text")
-                        .data(key_data)
-                        .enter()
-                        .append("text");
-
-  var textLabels = text
-                 .attr("x", function(d) { return d.cx + 10; })
-                 .attr("y", function(d) { return d.cy + 4; })
-                 .text( function (d) { return d.text; })
-                 .attr("font-family", "sans-serif")
-                 .attr("font-size", "10px")
-                 .style('cursor', "default")
-                 .attr("fill", "black");
+  // var key_data = [
+ 	// { "cx": 450, "cy": 80, "r": 7, "color" : "#885ead", "text": "summary"},
+ 	// ];
+// 
+  // var svg = d3.select("svg");
+// 
+  // var circles = svg.selectAll(".dataCircle")
+                           // .data(key_data)
+                           // .enter()
+                           // .append("circle");
+// 
+  // var circleAttributes = circles
+                       // .attr("cx", function (d) { return d.cx; })
+                       // .attr("cy", function (d) { return d.cy; })
+                       // .attr("r", function (d) { return d.r; })
+                       // .style("fill", function (d) { return d.color; });
+// 
+  // var text = svg.selectAll("text")
+                        // .data(key_data)
+                        // .enter()
+                        // .append("text");
+// 
+  // var textLabels = text
+                 // .attr("x", function(d) { return d.cx + 10; })
+                 // .attr("y", function(d) { return d.cy + 4; })
+                 // .text( function (d) { return d.text; })
+                 // .attr("font-family", "sans-serif")
+                 // .attr("font-size", "10px")
+                 // .style('cursor', "default")
+                 // .attr("fill", "black");
 }
 
 $("#hide_modal_box").draggable({
@@ -2952,9 +2952,15 @@ function color(d) {
 	if (d.replace_node) {
 		return "#885ead";
 	}
+	
 	if (d.article) {
 		return "#ffffff";
 	}
+	
+	if (d.collapsed) {
+		return "#9f7ebd";
+	}
+	
 	return "#7ca2c7";
 
 }
