@@ -257,7 +257,7 @@ def tokenize_only(text):
     return filtered_tokens
 
 def populate_collapsed(article):
-    posts = article.comment_set.filter(reply_to_disqus=None)
+    posts = article.comment_set.filter(reply_to_disqus=None, is_replacement=True, collapsed=False)
     for post in posts:
         recurse_populate_collapsed(False, post)
         
