@@ -3035,12 +3035,21 @@ function wordCount(str) {
 		return 0;
 	}
 
-	return str.split(/\s+/).length;
+	return str.trim().split(/\s+/).length;
 }
+
+$(".modal").on("show.bs.modal", function(){
+	$(this).find(".wordcount").text("");
+})
 
 $(".summary-editor").on("input", function(evt) {
 	var words = wordCount($(this).closest(".modal-content").find(".summarize_comment_comment").text());
-	var isValid = wordCount(this.value) < words/2;
-	
+	var summaryWords = wordCount(this.value);
+	var isValid = summaryWords < words/2;
+
+	var $wordcount = $(this).prevAll(".wordcount");
+	$wordcount.text(`${summaryWords}/${words}`);
+	$wordcount.toggleClass("invalid", !isValid);
+
 	this.setCustomValidity(isValid? "" : "Summary is too long");
 })
