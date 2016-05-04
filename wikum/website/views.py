@@ -161,6 +161,7 @@ def recurse_viz(parent, posts, replaced, article):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'summary': post.summary,
+                  'collapsed': post.collapsed,
                   'extra_summary': post.extra_summary,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
@@ -970,6 +971,7 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['parent_node'] = True
         parent_dict['summary'] = parent.summary
+        parent_dict['collapsed'] = parent.collapsed
         parent_dict['extra_summary'] = parent.extra_summary
         parent_dict['tags'] = [(tag.text, tag.color) for tag in parent.tags.all()]
             
