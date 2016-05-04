@@ -592,3 +592,30 @@ td {
 .summary-editor:invalid {
 	background: rgba(255, 0, 0, .1);
 }
+
+.progress-label {
+	position: fixed;
+	top: 0; right: 0; left: 0;
+	z-index: 1031;
+	padding: 0 .5em;
+	line-height: 1.5;
+	font-size: 80%;
+	font-weight: bold;
+}
+
+progress {
+	position: absolute;
+	top: 0; left: 0; bottom: 0;
+	width: 100%;
+	z-index: -1;
+
+	height: 1.5em;
+	border: none;
+	background: hsla(30, 100%, 50%, .2);
+	--bar-background: hsla(30, 100%, 50%, .7);
+}
+
+progress::-webkit-progress-bar { background: inherit; }
+progress::-webkit-progress-value { background: var(--bar-background); }
+progress::-moz-progress-bar { background: var(--bar-background); }
+progress::-ms-fill { background: var(--bar-background); }

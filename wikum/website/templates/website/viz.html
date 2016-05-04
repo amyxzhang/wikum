@@ -4,11 +4,10 @@
 
 <header id="title_info">
 	<h1>{{ article.title }}</h1>
-	<div class="progress" style="width: 500px;">
-		<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width: 0%">
-			0% Summarized Down
-		</div>
-	</div>
+
+	<label class="progress-label"><span>20</span>% summarized
+		<progress value="20" max="100"></progress>
+	</label>
 </header>
 
 <div id="viz"></div>

@@ -3048,8 +3048,8 @@ function make_progress_bar() {
 		value = 100;
 	}
 
-	$('.progress-bar').css('width', value+'%').attr('aria-valuenow', value);
-	$('.progress-bar').text(value + '% Summarized Down');
+	$('progress').attr('value', value);
+	$('.progress-label span').text(value);
 }
 
 function wordCount(str) {
