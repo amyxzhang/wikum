@@ -79,7 +79,7 @@
   <div class="modal-dialog">
 
 	<!-- Modal content-->
-	<div class="modal-content">
+	<form class="modal-content" action="/summarize_comment" method="POST">
 	  <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
 		<div id="summarize_highlight_button"></div>
@@ -90,11 +90,11 @@
 		<div id="summarize_comment_box" class="resizable"></div>
 		<BR>
 		<P>Summary:<BR>
-			<textarea id="summarize_comment_textarea"></textarea>
+			<textarea class="summary-editor" id="summarize_comment_textarea" required placeholder="This commenter..."></textarea>
 		</P>
 	  </div>
 	  <div class="modal-footer">
-		<button type="button" class="btn btn-default" id="summarize_comment_submit">Submit</button>
+		<button type="submit" class="btn btn-default" id="summarize_comment_submit">Submit</button>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	  </div>
 	</div>
@@ -112,7 +112,7 @@
 		<div id="summarize_multiple_highlight_button"></div>
 		<h4 class="modal-title">Summarize Multiple Comments</h4>
 	  </div>
-	  <div class="modal-body">
+	  <form class="modal-body" action="/summarize_selected" method="POST">
 		<table style="width: 100%; height: 100%">
 			<tr><td width="50%" height="100%">
 				<div id="summarize_multiple_comment_text"></div>
@@ -120,17 +120,16 @@
 		   </td>
 		   <td width="50%" height="100%">
 				Summary:<BR>
-					<textarea id="summarize_multiple_comment_textarea"></textarea>
-
+					<textarea class="summary-editor" id="summarize_multiple_comment_textarea" required placeholder="The commenters..."></textarea>
 			</td>
 			</tr>
 		</table>
-	  </div>
+	</form>
 	  <div class="modal-footer">
-		<button type="button" class="btn btn-default" id="summarize_multiple_comment_submit">Submit</button>
+		<button type="submit" class="btn btn-default" id="summarize_multiple_comment_submit">Submit</button>
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	  </div>
-	</div>
+  </form>
 
   </div>
 </div>

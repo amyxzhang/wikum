@@ -588,3 +588,7 @@ td {
 .progress-bar {
 	color: #000000;
 }
+
+.summary-editor:invalid {
+	background: rgba(255, 0, 0, .1);
+}
