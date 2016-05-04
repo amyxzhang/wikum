@@ -2958,7 +2958,7 @@ function color(d) {
 	}
 	
 	if (d.collapsed) {
-		return "#b79ecd";
+		return "#c3aed6";
 	}
 	
 	return "#7ca2c7";
