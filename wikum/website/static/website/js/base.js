@@ -291,8 +291,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	} else {
 		d_text += '<BR><div id="current_tags"></div><BR>';
 	}
-	d_text += 'Add tag: <div id="remote"><input class="typeahead form-control input-sm" type="text" id="tag-form" placeholder="New tag"></div>';
-	d_text += '<button type="button" class="btn btn-default" id="tag_comment_submit">Submit</button>';
+	d_text += 'Add tag: <div id="remote"><input required class="typeahead form-control input-sm" id="tag-form" placeholder="New tag"></div>';
 
 	$('#tag_comment_dropdown').html(d_text);
 
@@ -319,10 +318,10 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 	var did = $(e.relatedTarget).data('did');
 
-	$("#tag_comment_submit").off("click");
+	$('#tag_modal_box form').off("submit");
 
-	$('#tag_comment_submit').click({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
-
+	$('#tag_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
+		evt.preventDefault();
 		var tag = $('#tag-form').val();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
@@ -364,6 +363,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 							$('#tags_' + d.id).append(d_text);
 						}
 					}
+
+					// Clear tag input
+					$("input#tag-form").prop("value", "");
 
 					success_noty();
 				},
@@ -726,7 +728,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		cancelClick = setTimeout(is_click, 250);
 	});
 
-	$("#summarize_comment_submit").off("click");
+	$('#summarize_modal_box form').off("submit");
 
 	$('#summarize_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
@@ -976,7 +978,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		cancelClick2 = setTimeout(is_click2, 250);
 	});
 
-	$("#summarize_multiple_comment_submit").off("click");
+	$('#summarize_multiple_modal_box form').off("submit")
 
 	$('#summarize_multiple_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
@@ -1772,7 +1774,7 @@ function error_noty() {
 }
 
 function make_filter() {
-	text = '<div id="filter_typeahead"><input type="text" class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
+	text = '<div id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
 
 	$('#filter').html(text);
 
@@ -2996,13 +2998,13 @@ function count_all_words(d) {
 				count += count_all_words(d.replace[i]);
 			}
 		}
-		
+
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
 				count += count_all_words(d.children[i]);
 			}
 		}
-		
+
 	} else {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
