@@ -256,6 +256,25 @@ def tokenize_only(text):
             filtered_tokens.append(token)
     return filtered_tokens
 
+def populate_collapsed(article):
+    posts = article.comment_set.filter(reply_to_disqus=None)
+    for post in posts:
+        recurse_populate_collapsed(False, post)
+        
+def recurse_populate_collapsed(is_parent_replace, post):
+    if is_parent_replace:
+        post.collapsed = True
+        post.save()
+        
+    if post.is_replacement:
+        is_parent_replace = True
+        
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+    for child in children:
+        recurse_populate_collapsed(is_parent_replace, child)
+        
+
+
 def create_vectors(article):
     comments = Comment.objects.filter(article=article, num_subchildren=0, reply_to_disqus=None)
     ids = []
