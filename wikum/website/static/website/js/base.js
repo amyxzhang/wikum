@@ -184,18 +184,21 @@ $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
 	unhighlight_sents();
 });
 
-function is_dark(c) {
-	var rgb = parseInt(c, 16);   // convert rrggbb to decimal
-	var r = (rgb >> 16) & 0xff;  // extract red
-	var g = (rgb >>  8) & 0xff;  // extract green
-	var b = (rgb >>  0) & 0xff;  // extract blue
+function luminance(color) {
+	// Formula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
+	var rgb = color.match(/.{2}/g).map(function(c){
+		c = parseInt(c, 16);
+		c /= 255;
+		return c < .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4);
+	});
 
-	var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+	var luminance = .2126 * rgb[0] + .7152 * rgb[1] + 0.0722 * rgb[2];
 
-	if (luma < 80) {
-	    return true;
-	}
-	return false;
+	return luminance * 100;
+}
+
+function is_dark(color) {
+	return luminance(color) < 50;
 }
 
 $('#tag_modal_box').on('show.bs.modal', function(e) {
