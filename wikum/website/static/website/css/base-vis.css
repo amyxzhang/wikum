@@ -653,3 +653,13 @@ progress::-ms-fill { background: var(--bar-background); }
     color: #00000;
     background-color: yellow;
 }
+
+.btn-default[type=submit] {
+    background-color: #42dca3;
+    color: #000000;
+}
+
+#hide_comment_submit {
+	background-color: #42dca3;
+    color: #000000;
+}
