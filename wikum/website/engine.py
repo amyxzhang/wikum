@@ -255,6 +255,28 @@ def tokenize_only(text):
         if re.search('[a-zA-Z]', token):
             filtered_tokens.append(token)
     return filtered_tokens
+        
+        
+def copy_article_and_comments(a):
+    num_arts = Article.objects.filter(url=a.url).count()
+    
+    old_id = a.id
+    old_art = Article.objects.filter(id=old_id)
+    
+    a.pk = None
+    a.save()
+    a.num = num_arts
+    a.save()
+    
+    comments = old_art.comment_set.all()
+    for p in comments:
+        p.pk = None
+        p.save()
+        p.article = a
+        p.json_flatten = ''
+        p.save()
+        
+
 
 def create_vectors(article):
     comments = Comment.objects.filter(article=article, num_subchildren=0, reply_to_disqus=None)
