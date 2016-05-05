@@ -11,24 +11,27 @@ var article_url = getParameterByName('article');
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
-
-	for (var j=0; j<d_ids.length; j++) {
-		$.ajax({
-			type: 'GET',
-			url: '/auto_summarize_comment?comment_id=' + d_ids[j],
-			success: function(res) {
-				for (var i=0; i<res.sents.length; i++) {
-					if (res.sents[i].length > 6) {
-						if (d_ids.length == 1) {
-							$('#summarize_comment_box').highlight(res.sents[i]);
-						} else {
-							$('#summarize_multiple_comment_box').highlight(res.sents[i]);
-						}
+	
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				d_ids: d_ids};
+	
+	$.ajax({
+		type: 'POST',
+		url: '/auto_summarize_comment',
+		data: data,
+		success: function(res) {
+			for (var i=0; i<res.sents.length; i++) {
+				if (res.sents[i].length > 6) {
+					if (d_ids.length == 1) {
+						$('#summarize_comment_box').highlight(res.sents[i]);
+					} else {
+						$('#summarize_multiple_comment_box').highlight(res.sents[i]);
 					}
 				}
 			}
-		});
-	}
+		}
+	});
 
 }
 
@@ -1089,7 +1092,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					update(new_d.parent);
 
 					d3.select("#node_" + new_d.id)
-					.style("fill","#885ead");
+					.style("fill",color);
 
 					$('#summarize_multiple_modal_box').modal('toggle');
 
@@ -1171,7 +1174,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 
 						d3.select("#node_" + new_d.id)
-						.style("fill","#885ead");
+						.style("fill", color);
 
 						$('#comment_' + d.id).addClass('summary_box');
 						$('#comment_' + d.id).attr('id', 'comment_' + new_d.id);
@@ -1312,7 +1315,7 @@ function cascade_undo_collapses(d) {
 	
 	if (!d.replace_node) {
 		d3.select("#node_" + d.id)
-						.style("fill", "#7ca2c7");
+						.style("fill", color);
 	}
 	
 	if (!d.replace_node) {
@@ -1336,7 +1339,7 @@ function cascade_collapses(d) {
 	
 	if (!d.replace_node) {
 		d3.select("#node_" + d.id)
-						.style("fill", "#c3aed6");
+						.style("fill", color);
 	}
 	
 	if (!d.replace_node) {
@@ -1914,7 +1917,7 @@ function make_highlight() {
 	 	$('#box').unhighlight();
 	  	for (var i=1; i<nodes_all.length; i++) {
 				d3.select("#node_" + nodes_all[i].id)
-						.style("fill", color(nodes_all[i]));
+						.style("fill", color);
 		}
 
 		$('#count_result').text('0 comments highlighted');

@@ -563,26 +563,30 @@ def move_comments(request):
            
            
 def auto_summarize_comment(request):
-    comment_id = request.GET['comment_id']
-    num_sents = request.GET.get('num_sents', None)
-     
-    comment = Comment.objects.get(id=comment_id)
-    text = comment.text
     
-    text = re.sub('<br>', ' ', text)
-    text = re.sub('<BR>', ' ', text)
+    comment_ids = request.POST.getlist('d_ids[]')
     
-    parser = HtmlParser.from_string(text, '', Tokenizer("english"))
-    
-    if not num_sents:
-        all_sents = parser.tokenize_sentences(text)
-        num_sents = floor(float(len(all_sents))/3.0)
-    
-    sents = summarizer(parser.document, num_sents)
-     
     sent_list = []
-    for sent in sents:
-        sent_list.append(sent._text)
+    
+    for comment_id in comment_ids:
+        comment = Comment.objects.get(id=comment_id)
+        text = comment.text
+        
+        text = re.sub('<br>', ' ', text)
+        text = re.sub('<BR>', ' ', text)
+        
+        parser = HtmlParser.from_string(text, '', Tokenizer("english"))
+        
+        num_sents = request.GET.get('num_sents', None)
+        if not num_sents:
+            all_sents = parser.tokenize_sentences(text)
+            num_sents = floor(float(len(all_sents))/3.0)
+        
+        sents = summarizer(parser.document, num_sents)
+         
+        
+        for sent in sents:
+            sent_list.append(sent._text)
      
     return JsonResponse({"sents": sent_list})
      
