@@ -88,13 +88,13 @@ function check_button_checkbox() {
             // Update the button's color
             if (isChecked) {
                 $button
-                    .removeClass('btn-default')
+                    .removeClass('btn-highlight')
                     .addClass('btn-' + color + ' active');
             }
             else {
                 $button
                     .removeClass('btn-' + color + ' active')
-                    .addClass('btn-default');
+                    .addClass('btn-highlight');
             }
         }
 
@@ -656,9 +656,9 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	highlight_check = localStorage.getItem('highlight_check');
 
 	if (highlight_check == "true") {
-		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
+		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
 	} else {
-		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');
+		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');
 	}
 	check_button_checkbox();
 
@@ -933,9 +933,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 	highlight_check = localStorage.getItem('highlight_check');
 
 	if (highlight_check == "true") {
-		$('#summarize_multiple_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
+		$('#summarize_multiple_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
 	} else {
-		$('#summarize_multiple_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="primary">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');
+		$('#summarize_multiple_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');
 	}
 	check_button_checkbox();
 

@@ -551,6 +551,7 @@ textarea {
 }
 
 #summarize_multiple_comment_box {
+	padding: 5px;
 	width: 100%;
 	height: 400px;
 	overflow-y: scroll;
@@ -621,3 +622,34 @@ progress::-webkit-progress-bar { background: inherit; }
 progress::-webkit-progress-value { background: var(--bar-background); }
 progress::-moz-progress-bar { background: var(--bar-background); }
 progress::-ms-fill { background: var(--bar-background); }
+
+.btn-yellow {
+    border: 0px;
+    color: #000000;
+    background-color: yellow;
+}
+
+.btn-yellow {
+    border: 0px;
+    color: #000000;
+    background-color: yellow;
+}
+
+.btn.active, .btn:active {
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,.125);
+    box-shadow: inset 0 0px 0px rgba(0,0,0,.125);
+}
+
+.btn-highlight {
+	border: 0px;
+    color: #000000;
+    background-color: transparent;
+}
+
+.btn-highlight:hover {
+	border: 0px;
+    color: #00000;
+    background-color: yellow;
+}
