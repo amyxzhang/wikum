@@ -217,7 +217,7 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   make_key();
 
 
-  if (comment_id) {
+  if (!comment_id) {
   	make_dropdown();
   }
 
