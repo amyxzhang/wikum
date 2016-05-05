@@ -3049,7 +3049,7 @@ function color(d) {
 	}
 
 	if (d.replace_node) {
-		return "#885ead";
+		return "#ee7600";
 	}
 	
 	if (d.article) {
@@ -3057,10 +3057,10 @@ function color(d) {
 	}
 	
 	if (d.collapsed) {
-		return "#c3aed6";
+		return "#f8c899";
 	}
 	
-	return "#7ca2c7";
+	return "#a1c5d1";
 
 }
 

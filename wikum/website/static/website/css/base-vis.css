@@ -377,7 +377,7 @@ rect.selection {
 
 blockquote {
 	font-size: 12px;
-	border-left: 5px solid pink;
+	border-left: 5px solid #cccccc;
 	padding-bottom: 5px;
 	padding-top: 5px;
 	margin-bottom: 0px;
@@ -472,7 +472,9 @@ textarea {
 }
 
 .summary_box {
-	background-color: #fbefeb;
+	background-color: #ffffff;
+    border: 1px solid;
+    border-color: hsla(30, 100%, 50%, .7);
 	white-space: pre-wrap;
 }
 
@@ -611,7 +613,7 @@ progress {
 
 	height: 1.5em;
 	border: none;
-	background: hsla(30, 100%, 50%, .2);
+	background: #eef7fa;
 	--bar-background: hsla(30, 100%, 50%, .7);
 }
 
