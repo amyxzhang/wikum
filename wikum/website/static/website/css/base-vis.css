@@ -663,3 +663,7 @@ progress::-ms-fill { background: var(--bar-background); }
 	background-color: #42dca3;
     color: #000000;
 }
+
+.collapsed {
+	background-color: #fff6e5;
+}

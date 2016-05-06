@@ -2541,7 +2541,26 @@ function construct_comment(d) {
 	text += `<div id="comment_text_${d.id}">`;
 
 	if (summary) {
-		text += `<h1 title="ID: ${d.d_id}">Summary${d.replace_node ? " Node" : ""}</h1>`;
+		text += `<h1 title="ID: ${d.d_id}">Summary`;
+		if (d.replace_node) {
+			text += ` Node</h1>`;
+		} else {
+			text += ` of Comment by <strong>`;
+			
+			highlight_authors = $('#highlight_authors').text().split(',');
+
+			if (highlight_authors.indexOf(d.author) > -1) {
+				text += `<span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
+			} else {
+				text += `${d.author}</strong> (${d.size} `;
+			}
+			if (d.size == 1) {
+				text += `like)</h1>`;
+			} else {
+				text += `likes)</h1>`;
+			}
+		}
+		
 		text += render_summary_node(d, false);
 	} else {
 
@@ -2647,9 +2666,10 @@ function get_subtree_box(text, d, level) {
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
 			var levelClass = level > 2? "level3" : `level${level}`;
-			var summaryClass = d.children[i].replace_node? " summary_box" : "";
+			var summaryClass = d.children[i].replace_node? "summary_box" : "";
+			var collapsed = d.children[i].collapsed && !d.children[i].replace_node? "collapsed" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass}" id="comment_${d.children[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed}" id="comment_${d.children[i].id}">`;
 
 			text +=  construct_comment(d.children[i]);
 			text += '</article>';
@@ -2707,9 +2727,10 @@ function show_text(d) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
 		} else {
-			var summaryClass = d.replace_node? " summary_box" : "";
+			var summaryClass = d.replace_node? "summary_box" : "";
+			var collapsed = d.collapsed && !d.replace_node? "collapsed" : "";
 
-			var text = `<article class="comment_box ${summaryClass}" id="comment_${d.id}">`;
+			var text = `<article class="comment_box ${summaryClass} ${collapsed}" id="comment_${d.id}">`;
 
 			if (d.depth > 1) {
 				text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
@@ -2752,8 +2773,9 @@ function show_text(d) {
 			var level = objs[i].depth - min_level;
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
+			var collapsed = objs[i].collapsed && !objs[i].replace_node? "collapsed" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass}" id="comment_${objs[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
 				text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';

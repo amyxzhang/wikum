@@ -19,22 +19,36 @@ function show_hidden_after() {
 	$(event.target).next().toggle();
 }
 
-// function expand_summary(did) {
-// 	
-	// link = event.target;
-// 	
-	// if ($(link).parent().next().is('#expand_' + comment_strs[0])) {
-		// next_com = $(link).parent().next();
-	// } else {
-		// comment = discuss_dict[did];
-		// if (comment.children) {
-			// for (var i=0; i<comment.children.length; i++) {
-// 				
-			// }
-		// }
-	// }
-// 
-// }
+function expand_summary(d_id) {
+	expand_info = discuss_dict[d_id];
+	$('#node_' + d_id).children().first().remove();
+	text = '<a style="float: right;" onclick="collapse_summary(' + d_id + ');">Collapse Summarized Comments</a>';
+	
+	$('#node_' + d_id).prepend(text);
+	
+	if (expand_info.replace) {
+		for (var i=0; i<expand_info.replace.length; i++) {
+			show_node(expand_info.replace[i]);
+		}
+	}
+}
+
+function collapse_summary(d_id) {
+	info = discuss_dict[d_id];
+	
+	expand_info = discuss_dict[d_id];
+	$('#node_' + d_id).children().first().remove();
+	text = '<a style="float: right;" onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a>';
+	
+	$('#node_' + d_id).prepend(text);
+	
+	if (info.replace) {
+		for (var i=0; i<info.replace.length; i++) {
+			hide_node(info.replace[i]);
+		}
+	}
+	
+}
 
 function get_comment(comment_str, did) {
 	
@@ -277,7 +291,7 @@ function unpack_posts(posts) {
 
 function uncollapse_text(d_id) {
 	info = discuss_dict[d_id];
-	summary_text = display_comment(info, d_id, '');
+	summary_text = display_comment(info, d_id);
 	$('#node_' + d_id).html(summary_text);
 	if (info.children) {
 		for (var i=0; i<info.children.length; i++) {
@@ -287,8 +301,12 @@ function uncollapse_text(d_id) {
 }
 
 function collapse_text(d_id) {
-	$('#node_' + d_id).html('ID: ' + d_id + '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">Show</a>');
 	info = discuss_dict[d_id];
+	text = '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">Show</a>';
+	text += generate_header(d_id, info);
+	
+	$('#node_' + d_id).html(text);
+	
 	if (info.children) {
 		for (var i=0; i<info.children.length; i++) {
 			hide_node(info.children[i]);
@@ -315,12 +333,35 @@ function hide_node(node_info) {
 	}
 }
 
-function display_comment(info, d_id, summary_text) {
+function generate_header(d_id, info) {
+	ttext = '';
+		
+	highlight_authors = $('#highlight_authors').text().split(',');
+
+	if (highlight_authors.indexOf(info.author) > -1) {
+		ttext  += `<strong><span title="ID: ${info.d_id}">Comment by <span style="background-color: pink;">${info.author}</span> (${info.size} `;
+	} else {
+		ttext += `<strong><span title="ID: ${info.d_id}">Comment by ${info.author} (${info.size} `;
+	}
+	
+	if (info.size == 1) {
+		ttext += `like`;
+	} else {
+		ttext += `likes`;
+	}
+	ttext += `)</span></strong>`;
+	return ttext;
+}
+
+function display_comment(info, d_id) {
+	
+	summary_text = '';
 	if (info.replace_node) {
+		summary_text += '<a style="float: right;" onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a>';
 		summary_text += '<B>Summary:</B><BR>';
 	} else {
-		summary_text += '<a style="float: right" onclick="collapse_text(' + d_id + ');">Collapse</a>';
-		summary_text += 'ID: ' + d_id + '<BR>';
+		summary_text += '<a style="float: right;" onclick="collapse_text(' + d_id + ');">Collapse</a>';
+		summary_text += generate_header(d_id, info);
 	}
 	
 	summary_text += '<P>';
@@ -339,23 +380,11 @@ function display_comment(info, d_id, summary_text) {
 	summary_text = split_text(text, summary_text, d_id);
 
 	summary_text += '</P>';
-	
-	//summary_text += '<span style="float:right;"><a onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a></span>';
 
-	if (!info.replace_node) {
-		
-		highlight_authors = $('#highlight_authors').text().split(',');
-		
-		if (highlight_authors.indexOf(info.author) > -1) {
-			summary_text += '<BR> -- <span style="background-color: pink;">' + info.author + '</span><BR>' + info.size + ' Likes';
-		} else {
-			summary_text += '<BR> -- ' + info.author + '<BR>' + info.size + ' Likes';
-		}
-	}
 	return summary_text;
 }
 
-function display_comments(discuss_info_list, level, total_summary_text) {
+function display_comments(discuss_info_list, level, total_summary_text, auto_hide) {
 	
 	for (var i=0; i< discuss_info_list.length; i++) {
 		info = discuss_info_list[i];
@@ -366,16 +395,27 @@ function display_comments(discuss_info_list, level, total_summary_text) {
 		var levelClass = level > 2? "level3" : `level${level}`;
 		
 		var summaryClass = info.replace_node? "summary_node" : "original_node";
-		summary_text = '<div id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
 		
-		summary_text = display_comment(info, d_id, summary_text);
+		if (auto_hide) {
+			if (info.replace_node) {
+				summary_text = '<div style="display: none;" id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
+			} else {
+				summary_text = '<div style="display: none;" id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + ' collapsed">';
+			}
+		} else {
+			summary_text = '<div id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
+		}
+		
+		summary_text += display_comment(info, d_id);
 		
 		summary_text += '</div>';
 		
 		total_summary_text += summary_text;
 		
 		if (!info.replace_node) {
-			total_summary_text = display_comments(info.children, level+1, total_summary_text)
+			total_summary_text = display_comments(info.children, level+1, total_summary_text, auto_hide || false)
+		} else {
+			total_summary_text = display_comments(info.replace, level+1, total_summary_text, true)
 		}
 		
 	}

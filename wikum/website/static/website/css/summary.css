@@ -144,3 +144,7 @@ blockquote {
 	padding: 5px;
 	background-color: #eef7fa;
 }
+
+.collapsed {
+	background-color: #fff6e5;
+}
