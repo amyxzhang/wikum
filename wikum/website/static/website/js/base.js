@@ -2066,6 +2066,35 @@ function expand(d) {
 	}
 }
 
+function recurse_expand_all(d) {
+	if (d.replace_node) {
+		if (!d.children) {
+			d.children = [];
+		}
+		for (var i=0; i<d.replace.length; i++) {
+			d.children.push(d.replace[i]);
+		}
+		d.replace = [];
+	}
+	
+	if (d._children) {
+	    d.children = d._children;
+	    d._children = null;
+	 }
+
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			recurse_expand_all(d.children[i]);
+		}
+	}
+}
+
+function expand_all(id) {
+	d = nodes_all[id-1];
+	recurse_expand_all(d);
+	update(d);
+}
+
 function dragend(d) {
  	if (d.article || d.parent_node) {
         return;
@@ -2911,6 +2940,7 @@ function showdiv(d) {
 					text += '<BR>';
 				}
 				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
+				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 			}
 			if (text != '') {
 				$('#expand').html(text);
@@ -2961,8 +2991,11 @@ function showdiv(d) {
 						text += '<BR>';
 					}
 					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num +'">See Isolated Subtree</a>';
+					
 				}
 			}
+			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+			
 			if (text != '') {
 				$('#expand').html(text);
 				$('#expand').show();
@@ -3002,6 +3035,7 @@ function hide_replace_nodes(id) {
 	text = '';
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -3026,6 +3060,7 @@ function show_replace_nodes(id) {
 	text = '';
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 	}
 	if (text != '') {
 		$('#expand').html(text);
