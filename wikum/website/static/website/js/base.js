@@ -2570,7 +2570,7 @@ function construct_comment(d) {
 	text += `<div id="comment_text_${d.id}">`;
 
 	if (summary) {
-		text += `<h1 title="ID: ${d.d_id}">Summary`;
+		text += `<h1 title="ID: ${d.d_id}">ID: ${d.d_id} | Summary`;
 		if (d.replace_node) {
 			text += ` Node</h1>`;
 		} else {
@@ -2596,9 +2596,9 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h1 title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
+			text += `<h1 title="ID: ${d.d_id}">ID: ${d.d_id} | Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
 		} else {
-			text += `<h1 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} `;
+			text += `<h1 title="ID: ${d.d_id}">ID: ${d.d_id} | Comment by <strong>${d.author}</strong> (${d.size} `;
 		}
 
 		if (d.size == 1) {
