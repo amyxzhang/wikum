@@ -124,7 +124,7 @@ a:focus {
 
 @media(min-width:768px) {
     .navbar-custom {
-        padding: 20px 0;
+        margin: 20px 0;
         border-bottom: 0;
         letter-spacing: 1px;
         background: 0 0;
@@ -135,6 +135,7 @@ a:focus {
 
     .navbar-custom.top-nav-collapse {
         padding: 0;
+        margin: 0;
         border-bottom: 1px solid rgba(255,255,255,.3);
         background: #000;
     }
@@ -222,7 +223,7 @@ a:focus {
     -moz-animation-timing-function: linear;
 }
 
-@-webkit-keyframes pulse {    
+@-webkit-keyframes pulse {
     0% {
         -webkit-transform: scale(1);
         transform: scale(1);
@@ -239,7 +240,7 @@ a:focus {
     }
 }
 
-@-moz-keyframes pulse {    
+@-moz-keyframes pulse {
     0% {
         -moz-transform: scale(1);
         transform: scale(1);
