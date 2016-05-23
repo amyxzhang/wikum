@@ -1579,9 +1579,13 @@ function open_comment_hyperlink(id, d_id, para) {
 
 		if (para != 'undefined') {
 			if ($('#comment_' + child.id).text().indexOf('Summary') > -1) {
-				toggle_original(child.id);
-
-				$('#orig_' + child.id).find('p').eq(para).addClass('highlight');
+				if (child.replace_node) {
+					$('#comment_text_' + child.id).find('p').eq(para).addClass('highlight');
+				} else {
+					toggle_original(child.id);
+					$('#orig_' + child.id).find('p').eq(para).addClass('highlight');
+				}
+				
 			} else {
 				$('#comment_text_' + child.id).find('p').eq(para).addClass('highlight');
 			}
@@ -1791,7 +1795,8 @@ function get_id(d_id) {
 
 function render_summary_node(d, show_collapsible) {
 
-	text = d.summary;
+	summary = d.summary.replace(/\n\n/g,'</p><p>');
+	text = '<p>' + summary + '</p>';
 
 	if (d.extra_summary != '') {
 		if (!show_collapsible) {
