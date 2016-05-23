@@ -1,6 +1,6 @@
 
 p {
-	font-size: 12px;
+	font-size: 13px;
 	margin: 0px;
 	padding: 0px;
 	padding-bottom: 10px;
@@ -347,7 +347,7 @@ rect.selection {
 	padding-left: 5px;
 	padding-right: 5px;
 	border: 1px #ffffff solid;
-	font-size: 12px;
+	font-size: 13px;
 }
 
 	.comment_box h1 {
