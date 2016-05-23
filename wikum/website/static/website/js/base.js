@@ -2893,9 +2893,9 @@ function construct_box_top(objs) {
 	}
 
 	if (accepted && count > 1 && !parent_node.replace_node) {
-		// var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a> | ';
-		// text += '<a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark Selected Unimportant</a> | ';
-		// text += '<a data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
+		 var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a> | ';
+		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark Selected Unimportant</a> | ';
+		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
 
 
 		$('#box_top').css('border-bottom', '#000000 1px solid');
