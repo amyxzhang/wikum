@@ -2613,7 +2613,7 @@ function construct_comment(d) {
 			text += `likes`;
 		}
 		text += `)</h1>`;
-		text += d.name;
+		text += '<span class="original_comment">' + d.name + '</span>';
 	}
 
 	text += '</div>';
@@ -2640,7 +2640,7 @@ function construct_comment(d) {
 		if (!d.replace_node) {
 			//text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a>';
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
-			text += '<div id="orig_' + d.id + '" style="display: none;">' + d.name + '</div>';
+			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 		//	text += '<hr><P><a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="' + d.id + '">Edit Summary</a> | ';
 		//	text += '<a onclick="post_delete_summary_node(' + d.id + ');">Delete Summary Node</a> | ';
