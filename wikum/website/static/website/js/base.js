@@ -2124,7 +2124,7 @@ function dragend(d) {
 				num_words = wordCount(d.name)
 			}
 
-	      	total = num_words/20;
+	      	total = num_words/20 + 5;
 	    
 	    
 	      	if (total > 18) {
@@ -2323,7 +2323,7 @@ function update(source) {
 				num_words = wordCount(d.name)
 			}
 
-	      	total = num_words/20;
+	      	total = num_words/20 + 5;
 
 	      	if ((total/10 < 1.3) && !(d.children || d._children || d.replace_node)) {
 	      		return "scale(1.3)";
