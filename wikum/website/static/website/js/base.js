@@ -2117,7 +2117,16 @@ function dragend(d) {
 		node
 		.attr("transform", "translate(" + d.y0 + "," + d.x0 + ")")
 		.attr("r", function(d) {
-	      	total = (d.size + 400 )/65;
+	    
+	    	if (d.replace_node || d.summary != '') {
+				num_words = wordCount(d.summary + ' ' + d.extra_summary)
+			} else {
+				num_words = wordCount(d.name)
+			}
+
+	      	total = num_words/20;
+	    
+	    
 	      	if (total > 18) {
 	      		return 18;
 	      	} else if (total < 8) {
@@ -2308,7 +2317,13 @@ function update(source) {
 	      		return "";
 	      	}
 
-	      	total = (d.size + 400 )/65;
+			if (d.replace_node || d.summary != '') {
+				num_words = wordCount(d.summary + ' ' + d.extra_summary)
+			} else {
+				num_words = wordCount(d.name)
+			}
+
+	      	total = num_words/20;
 
 	      	if ((total/10 < 1.3) && !(d.children || d._children || d.replace_node)) {
 	      		return "scale(1.3)";
