@@ -22,3 +22,11 @@ h1 > a {
 	color: #e00;
 	font-weight: bold;
 }
+/*
+.original_comment p:not(.highlight) {
+	filter: blur(1em);
+	-webkit-filter: blur(.3em);
+	transition: .4s;
+	transition-property: -webkit-filter, filter;
+}
+*/

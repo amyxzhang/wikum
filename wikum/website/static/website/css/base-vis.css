@@ -341,18 +341,54 @@ rect.selection {
 }
 
 .comment_box {
-	background-color: #eef7fa;
+	background-color: hsl(195, 59%, 96%);
 	margin-bottom: 10px;
-	padding-top: 5px;
-	padding-left: 5px;
-	padding-right: 5px;
-	border: 1px #ffffff solid;
-	font-size: 13px;
+	padding: 1.2em;
+	padding-bottom: .2em;
+	border: 1px hsl(195, 59%, 85%) solid;
+	--link-color: hsl(195, 59%, 60%);
 }
 
 	.comment_box h1 {
 		font-size: 100%;
 		margin-bottom: 10px;
+	}
+
+	.comment_box a {
+		mix-blend-mode: multiply;
+		font-weight: 500;
+		color: var(--link-color);
+	}
+
+	.comment_box footer {
+		padding: 0;
+		margin: -.2em -1.2em;
+		background: var(--background);
+		--background: hsl(195, 59%, 90%);
+		white-space: normal;
+	}
+
+		.comment_box footer a {
+			padding: .5em;
+			color: var(--link-color);
+			font-weight: 600;
+			display: inline-block;
+		}
+
+		.comment_box footer a:hover {
+			color: hsla(0,0%,100%,.9);
+			background: var(--link-color);
+		}
+
+.summary_box {
+	background-color: hsl(30, 100%, 95%);
+    border: 1px solid hsla(30, 100%, 50%, .7);
+	white-space: pre-wrap;
+	--link-color: hsl(30, 100%, 60%);
+}
+
+	.summary_box footer {
+		--background: hsl(30, 100%, 86%);
 	}
 
 .summarize_comment_comment {
@@ -469,13 +505,6 @@ textarea {
 	color: #ffffff;
 	visibility: hidden;
 	cursor: pointer;
-}
-
-.summary_box {
-	background-color: #ffffff;
-    border: 1px solid;
-    border-color: hsla(30, 100%, 50%, .7);
-	white-space: pre-wrap;
 }
 
 #node_sort {
@@ -614,7 +643,7 @@ progress {
 
 	height: 1.5em;
 	border: none;
-	background: #eef7fa;
+	background: hsla(30, 100%, 50%, .2);
 	--bar-background: hsla(30, 100%, 50%, .7);
 }
 
@@ -665,5 +694,6 @@ progress::-ms-fill { background: var(--bar-background); }
 }
 
 .collapsed {
-	background-color: #fff6e5;
+	background-color: hsl(50, 100%, 95%);
+	border-color: hsl(40, 100%, 75%);
 }
