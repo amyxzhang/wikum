@@ -346,6 +346,7 @@ rect.selection {
 	padding: 1.2em;
 	padding-bottom: .2em;
 	border: 1px hsl(195, 59%, 85%) solid;
+	--link-color: hsl(195, 59%, 60%);
 }
 
 	.comment_box h1 {
@@ -356,6 +357,7 @@ rect.selection {
 	.comment_box a {
 		mix-blend-mode: multiply;
 		font-weight: 500;
+		color: var(--link-color);
 	}
 
 	.comment_box footer {
@@ -363,7 +365,6 @@ rect.selection {
 		margin: -.2em -1.2em;
 		background: var(--background);
 		--background: hsl(195, 59%, 90%);
-		--text-color: hsl(195, 59%, 60%);
 		white-space: normal;
 	}
 
@@ -371,10 +372,10 @@ rect.selection {
 			padding: .5em;
 			color: var(--text-color);
 			font-weight: 600;
+			display: inline-block;
 		}
 
 		.comment_box footer a:hover {
-			display: inline-block;
 			color: hsla(0,0%,100%,.9);
 			background: var(--text-color);
 		}
@@ -383,11 +384,11 @@ rect.selection {
 	background-color: hsl(30, 100%, 95%);
     border: 1px solid hsla(30, 100%, 50%, .7);
 	white-space: pre-wrap;
+	--link-color: hsl(30, 100%, 60%);
 }
 
 	.summary_box footer {
 		--background: hsl(30, 100%, 86%);
-		--text-color: hsl(30, 100%, 60%);
 	}
 
 .summarize_comment_comment {
