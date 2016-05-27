@@ -358,6 +358,36 @@ rect.selection {
 		font-weight: 500;
 	}
 
+	.comment_box footer {
+		padding: 0;
+		margin: -.2em -1.2em;
+		background: var(--background);
+		--background: hsl(195, 59%, 90%);
+		--text-color: hsl(195, 59%, 60%);
+	}
+
+		.comment_box footer a {
+			padding: .5em;
+			color: var(--text-color);
+			font-weight: 600;
+		}
+
+		.comment_box footer a:hover {
+			color: var(--background);
+			background: var(--text-color);
+		}
+
+.summary_box {
+	background-color: hsl(30, 100%, 95%);
+    border: 1px solid hsla(30, 100%, 50%, .7);
+	white-space: pre-wrap;
+}
+
+	.summary_box footer {
+		--background: hsl(30, 100%, 86%);
+		--text-color: hsl(30, 100%, 60%);
+	}
+
 .summarize_comment_comment {
 	font-size: 12px;
 }
@@ -472,12 +502,6 @@ textarea {
 	color: #ffffff;
 	visibility: hidden;
 	cursor: pointer;
-}
-
-.summary_box {
-	background-color: hsl(30, 100%, 95%);
-    border: 1px solid hsla(30, 100%, 50%, .7);
-	white-space: pre-wrap;
 }
 
 #node_sort {
