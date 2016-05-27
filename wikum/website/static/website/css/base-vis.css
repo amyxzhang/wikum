@@ -340,7 +340,8 @@ rect.selection {
     fill            : transparent;
 }
 
-.comment_box {
+.comment_box,
+.summarize_comment_comment {
 	background-color: hsl(195, 59%, 96%);
 	margin-bottom: 10px;
 	padding: 1.2em;
@@ -354,7 +355,8 @@ rect.selection {
 		margin-bottom: 10px;
 	}
 
-	.comment_box a {
+	.comment_box a,
+	.summarize_comment_comment a {
 		mix-blend-mode: multiply;
 		font-weight: 500;
 		color: var(--link-color);
@@ -380,6 +382,15 @@ rect.selection {
 			background: var(--link-color);
 		}
 
+.summarize_comment_comment {
+	font-size: 12px;
+	display: block;
+}
+
+	.summarize_comment_comment > p {
+		padding-bottom: 15px;
+	}
+
 .summary_box {
 	background-color: hsl(30, 100%, 95%);
     border: 1px solid hsla(30, 100%, 50%, .7);
@@ -400,10 +411,6 @@ rect.selection {
 	.collapsed footer {
 		--background: hsl(45, 100%, 83%);
 	}
-
-.summarize_comment_comment {
-	font-size: 12px;
-}
 
 .highlighted {
 	border: 1px #000000 solid;
@@ -466,14 +473,6 @@ textarea {
 }
 
 .hide_comment_comment, .tag_comment_comment {
-	display: block;
-	background-color: #eef7fa;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	padding: 5px;
-}
-
-.summarize_comment_comment {
 	display: block;
 	background-color: #eef7fa;
 	margin-top: 5px;
@@ -565,10 +564,6 @@ textarea {
 
 .btn-edit:hover {
 	color: #ffffff;
-}
-
-.summarize_comment_comment>p {
-	padding-bottom: 15px;
 }
 
   .ghostCircle.show{
@@ -709,7 +704,7 @@ form.modal-content {
 	box-shadow: none;
 }
 
-.modal {
+.modal[role="dialog"] {
 	overflow: visible;
 	-webkit-filter: drop-shadow(0 5px 15px rgba(0,0,0,.5));
 	filter: drop-shadow(0 5px 15px rgba(0,0,0,.5));
