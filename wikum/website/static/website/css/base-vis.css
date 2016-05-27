@@ -391,6 +391,16 @@ rect.selection {
 		--background: hsl(30, 100%, 86%);
 	}
 
+.collapsed {
+	background-color: hsl(50, 100%, 95%);
+	border-color: hsl(40, 100%, 75%);
+	--link-color: hsl(45, 100%, 46%);
+}
+
+	.collapsed footer {
+		--background: hsl(45, 100%, 83%);
+	}
+
 .summarize_comment_comment {
 	font-size: 12px;
 }
@@ -691,9 +701,4 @@ progress::-ms-fill { background: var(--bar-background); }
 #hide_comment_submit {
 	background-color: #42dca3;
     color: #000000;
-}
-
-.collapsed {
-	background-color: hsl(50, 100%, 95%);
-	border-color: hsl(40, 100%, 75%);
 }
