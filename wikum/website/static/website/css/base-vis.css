@@ -423,7 +423,7 @@ rect.selection {
 
 blockquote {
 	font-size: 12px;
-	border-left: 5px solid #cccccc;
+	border-left: 5px solid var(--link-color);
 	padding-bottom: 5px;
 	padding-top: 5px;
 	margin-bottom: 0px;
@@ -701,4 +701,14 @@ progress::-ms-fill { background: var(--bar-background); }
 #hide_comment_submit {
 	background-color: #42dca3;
     color: #000000;
+}
+
+form.modal-content {
+	box-shadow: none;
+}
+
+.modal {
+	overflow: visible;
+	-webkit-filter: drop-shadow(0 5px 15px rgba(0,0,0,.5));
+	filter: drop-shadow(0 5px 15px rgba(0,0,0,.5));
 }
