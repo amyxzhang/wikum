@@ -370,14 +370,14 @@ rect.selection {
 
 		.comment_box footer a {
 			padding: .5em;
-			color: var(--text-color);
+			color: var(--link-color);
 			font-weight: 600;
 			display: inline-block;
 		}
 
 		.comment_box footer a:hover {
 			color: hsla(0,0%,100%,.9);
-			background: var(--text-color);
+			background: var(--link-color);
 		}
 
 .summary_box {
