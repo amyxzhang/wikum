@@ -341,18 +341,21 @@ rect.selection {
 }
 
 .comment_box {
-	background-color: #eef7fa;
+	background-color: hsl(195, 59%, 96%);
 	margin-bottom: 10px;
-	padding-top: 5px;
-	padding-left: 5px;
-	padding-right: 5px;
-	border: 1px #ffffff solid;
-	font-size: 13px;
+	padding: 1.2em;
+	padding-bottom: .2em;
+	border: 1px hsl(195, 59%, 85%) solid;
 }
 
 	.comment_box h1 {
 		font-size: 100%;
 		margin-bottom: 10px;
+	}
+
+	.comment_box a {
+		mix-blend-mode: multiply;
+		font-weight: 500;
 	}
 
 .summarize_comment_comment {
@@ -472,9 +475,8 @@ textarea {
 }
 
 .summary_box {
-	background-color: #ffffff;
-    border: 1px solid;
-    border-color: hsla(30, 100%, 50%, .7);
+	background-color: hsl(30, 100%, 95%);
+    border: 1px solid hsla(30, 100%, 50%, .7);
 	white-space: pre-wrap;
 }
 
@@ -614,7 +616,7 @@ progress {
 
 	height: 1.5em;
 	border: none;
-	background: #eef7fa;
+	background: hsla(30, 100%, 50%, .2);
 	--bar-background: hsla(30, 100%, 50%, .7);
 }
 
@@ -665,5 +667,6 @@ progress::-ms-fill { background: var(--bar-background); }
 }
 
 .collapsed {
-	background-color: #fff6e5;
+	background-color: hsl(50, 100%, 95%);
+	border-color: hsl(40, 100%, 75%);
 }
