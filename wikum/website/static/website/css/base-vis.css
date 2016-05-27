@@ -364,6 +364,7 @@ rect.selection {
 		background: var(--background);
 		--background: hsl(195, 59%, 90%);
 		--text-color: hsl(195, 59%, 60%);
+		white-space: normal;
 	}
 
 		.comment_box footer a {
@@ -374,6 +375,8 @@ rect.selection {
 
 		.comment_box footer a:hover {
 			color: var(--background);
+			color: hsla(0,0%,100%,.5);
+			text-shadow: var(--background);
 			background: var(--text-color);
 		}
 
