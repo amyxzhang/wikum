@@ -374,9 +374,8 @@ rect.selection {
 		}
 
 		.comment_box footer a:hover {
-			color: var(--background);
-			color: hsla(0,0%,100%,.5);
-			text-shadow: var(--background);
+			display: inline-block;
+			color: hsla(0,0%,100%,.9);
 			background: var(--text-color);
 		}
 
