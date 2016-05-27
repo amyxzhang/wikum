@@ -1800,7 +1800,7 @@ function render_summary_node(d, show_collapsible) {
 
 	if (d.extra_summary != '') {
 		if (!show_collapsible) {
-			text += '<BR><a onclick="show_extra_summary(' + d.id + ');">...</a>';
+			text += '<BR><a onclick="show_extra_summary(' + d.id + ');">Show summary below the fold</a>';
 			text += '<BR><div class="extra_summary" id="extra_summary_' + d.id + '">' + d.extra_summary + '</div>';
 		} else {
 			text += '<BR>-------------------<BR>';
@@ -2594,7 +2594,7 @@ function construct_comment(d) {
 			text += `<h1 title="ID: ${d.d_id}">Summary`;
 			text += ` Node</h1>`;
 		} else {
-			text += `<h1 title="ID: ${d.d_id}">ID: ${d.d_id} | Summary`;
+			text += `<h1 title="ID: ${d.d_id}">Summary`;
 			text += ` of Comment by <strong>`;
 			
 			highlight_authors = $('#highlight_authors').text().split(',');
@@ -2617,9 +2617,9 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h1 title="ID: ${d.d_id}">ID: ${d.d_id} | Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
+			text += `<h1 title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
 		} else {
-			text += `<h1 title="ID: ${d.d_id}">ID: ${d.d_id} | Comment by <strong>${d.author}</strong> (${d.size} `;
+			text += `<h1 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} `;
 		}
 
 		if (d.size == 1) {
