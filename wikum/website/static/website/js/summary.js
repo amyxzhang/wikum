@@ -11,6 +11,11 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function strip_html(text) {
+	var str = text.replace(/<(?:.|\n)*?>/gm, ' ');
+	return str;
+}
+
 function show_hidden_before() {
 	$(event.target).prev().toggle();
 }
@@ -22,7 +27,7 @@ function show_hidden_after() {
 function expand_summary(d_id) {
 	expand_info = discuss_dict[d_id];
 	$('#node_' + d_id).children().first().remove();
-	text = '<a style="float: right;" onclick="collapse_summary(' + d_id + ');">Collapse Summarized Comments</a>';
+	text = '<a style="float: right;" onclick="collapse_summary(' + d_id + ');">[-]</a>';
 	
 	$('#node_' + d_id).prepend(text);
 	
@@ -302,8 +307,8 @@ function uncollapse_text(d_id) {
 
 function collapse_text(d_id) {
 	info = discuss_dict[d_id];
-	text = '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">Show</a>';
-	text += generate_header(d_id, info);
+	text = '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">[+]</a>';
+	text += generate_header(d_id, info, "collapse");
 	
 	$('#node_' + d_id).html(text);
 	
@@ -333,23 +338,39 @@ function hide_node(node_info) {
 	}
 }
 
-function generate_header(d_id, info) {
+function generate_header(d_id, info, action) {
 	ttext = '';
-		
-	highlight_authors = $('#highlight_authors').text().split(',');
 
-	if (highlight_authors.indexOf(info.author) > -1) {
-		ttext  += `<strong><span title="ID: ${info.d_id}">Comment by <span style="background-color: pink;">${info.author}</span> (${info.size} `;
-	} else {
-		ttext += `<strong><span title="ID: ${info.d_id}">Comment by ${info.author} (${info.size} `;
-	}
-	
+	ttext += `<strong><span title="ID: ${info.d_id}">${info.size} `;
+
 	if (info.size == 1) {
 		ttext += `like`;
 	} else {
 		ttext += `likes`;
 	}
-	ttext += `)</span></strong>`;
+	
+	ttext += ` | ${info.children.length} `;
+
+	if (info.size == 1) {
+		ttext += `reply`;
+	} else {
+		ttext += `replies`;
+	}
+	
+	ttext += ' | ';
+		
+	highlight_authors = $('#highlight_authors').text().split(',');
+
+	if (highlight_authors.indexOf(info.author) > -1) {
+		ttext  += `<span style="background-color: pink;">${info.author}</span>`;
+	} else {
+		ttext += `${info.author}`;
+	}
+
+	ttext += `</span></strong>`;
+	if (action == "collapse") {
+		ttext += ' <span class="hint_text">' + strip_html(info.name).substring(0,100-info.author.length) + '...</span>';
+	}
 	return ttext;
 }
 
@@ -357,14 +378,14 @@ function display_comment(info, d_id) {
 	
 	summary_text = '';
 	if (info.replace_node) {
-		summary_text += '<a style="float: right;" onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a>';
+		summary_text += '<a style="float: right;" onclick="expand_summary(' + d_id + ');">[+]</a>';
 		summary_text += '<B>Summary:</B><BR>';
 	} else {
-		summary_text += '<a style="float: right;" onclick="collapse_text(' + d_id + ');">Collapse</a>';
-		summary_text += generate_header(d_id, info);
+		summary_text += '<a style="float: right;" onclick="collapse_text(' + d_id + ');">[-]</a>';
+		summary_text += generate_header(d_id, info, "show");
 	}
 	
-	summary_text += '<P>';
+	//summary_text += '<P>';
 	
 	if (info.replace_node) {
 		text = info.summary;
@@ -379,7 +400,7 @@ function display_comment(info, d_id) {
 	
 	summary_text = split_text(text, summary_text, d_id);
 
-	summary_text += '</P>';
+	//summary_text += '</P>';
 
 	return summary_text;
 }
@@ -392,7 +413,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 		extra_text = info.extra_summary;
 		d_id = info.d_id;
 		
-		var levelClass = level > 2? "level3" : `level${level}`;
+		var levelClass = level > 9? "level10" : `level${level}`;
 		
 		var summaryClass = info.replace_node? "summary_node" : "original_node";
 		

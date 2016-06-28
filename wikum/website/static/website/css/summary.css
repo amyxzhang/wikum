@@ -4,6 +4,14 @@ P {
 	margin-bottom: 10px;
 }
 
+#contact {
+	padding-left: 10px;
+}
+
+#link_next {
+	padding-bottom: 30px;
+}
+
 #summary {
 	font-size: 14px;
 	text-align: left;
@@ -131,18 +139,56 @@ blockquote {
 	margin-left: 150px;
 }
 
+.level4 {
+	margin-left: 200px;
+}
+
+.level5 {
+	margin-left: 250px;
+}
+
+.level6 {
+	margin-left: 300px;
+}
+
+.level7 {
+	margin-left: 350px;
+}
+
+.level8 {
+	margin-left: 400px;
+}
+
+.level9 {
+	margin-left: 450px;
+}
+
+.level10 {
+	margin-left: 500px;
+}
+
+.hint_text {
+	font-size: 14px;
+	font-style: italic;
+	color: #cccccc;
+	padding-left: 10px;
+}
+
 .summary_node {
 	padding: 5px;
 	background-color: #ffffff;
     border: 1px solid orange;
     margin-bottom: 10px;
+    width: 900px;
 }
 
 .original_node {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	padding: 5px;
-	background-color: #eef7fa;
+	border: 1px solid #eef7fa;
+	background-color: #ffffff;
+	width: 900px;
 }
 
 .collapsed {
