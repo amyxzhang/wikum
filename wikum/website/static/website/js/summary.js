@@ -385,7 +385,7 @@ function display_comment(info, d_id) {
 		summary_text += generate_header(d_id, info, "show");
 	}
 	
-	//summary_text += '<P>';
+	summary_text += '<P>';
 	
 	if (info.replace_node) {
 		text = info.summary;
@@ -400,7 +400,7 @@ function display_comment(info, d_id) {
 	
 	summary_text = split_text(text, summary_text, d_id);
 
-	//summary_text += '</P>';
+	summary_text += '</P>';
 
 	return summary_text;
 }
