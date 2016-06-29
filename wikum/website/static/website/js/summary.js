@@ -43,7 +43,7 @@ function collapse_summary(d_id) {
 	
 	expand_info = discuss_dict[d_id];
 	$('#node_' + d_id).children().first().remove();
-	text = '<a style="float: right;" onclick="expand_summary(' + d_id + ');">Expand Summarized Comments</a>';
+	text = '<a style="float: right;" onclick="expand_summary(' + d_id + ');">[+]</a>';
 	
 	$('#node_' + d_id).prepend(text);
 	
@@ -369,7 +369,7 @@ function generate_header(d_id, info, action) {
 
 	ttext += `</span></strong>`;
 	if (action == "collapse") {
-		ttext += ' <span class="hint_text">' + strip_html(info.name).substring(0,100-info.author.length) + '...</span>';
+		ttext += ' <div class="hint_text">' + strip_html(info.name).substring(0,150-info.author.length) + '...</div>';
 	}
 	return ttext;
 }

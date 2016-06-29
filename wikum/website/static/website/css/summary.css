@@ -171,7 +171,8 @@ blockquote {
 	font-size: 14px;
 	font-style: italic;
 	color: #cccccc;
-	padding-left: 10px;
+    display: block;
+    width: 100%;
 }
 
 .summary_node {
@@ -179,7 +180,7 @@ blockquote {
 	background-color: #ffffff;
     border: 1px solid orange;
     margin-bottom: 10px;
-    width: 900px;
+    width: 98%;
 }
 
 .original_node {
@@ -188,7 +189,7 @@ blockquote {
 	padding: 5px;
 	border: 1px solid #daeef4;
 	background-color: #ffffff;
-	width: 900px;
+	width: 98%;
 }
 
 .collapsed {
