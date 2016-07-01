@@ -170,9 +170,12 @@ blockquote {
 .hint_text {
 	font-size: 14px;
 	font-style: italic;
-	color: #cccccc;
+	color: #b3b3b3;
     display: block;
     width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .summary_node {
@@ -203,6 +206,7 @@ blockquote {
   top: 50px;
   z-index: 100;
   width: 98%;
+  padding: 5px;
   height: 50px;
   background-color: #ffffff;
   display: none;

@@ -530,7 +530,7 @@ function load_sticky() {
 	  	var load = function(stickies) {
 	    	if (typeof stickies === "object" && stickies instanceof jQuery && stickies.length > 0) {
 	      		$stickies = stickies.each(function() {
-	        		var $thisSticky = $(this);		  
+	        		var $thisSticky = $(this);
 	      			});
 	      		$window.off("scroll.stickies").on("scroll.stickies", function() {
 			  		_whenScrolling();		
@@ -545,17 +545,25 @@ function load_sticky() {
 	          
 	      var did = $thisSticky.attr('id').substring(5);
 	      
-	      if ($stickyPosition <= $window.scrollTop() + 55) {
-			if (!$thisSticky.hasClass("fixed")) {
+	      if ($stickyPosition <= $window.scrollTop() + 60) {
+			//if (!$thisSticky.hasClass("fixed")) {
 				if ($thisSticky.css('display') != 'none') {
 					stuck_list.push($thisSticky);
-					$('#first_summary').width($thisSticky.width()+10);
+					$('#first_summary').width($thisSticky.width());
 					$('#first_summary').css('left', $thisSticky.offset().left);
-					$('#first_summary').show();
-		        	add_to_header(did);
+					
+					$('.hint_text').width($thisSticky.width());				
+					
+					if ($('#node_' + did).children().eq(0).text() == '[+]') {
+						flip_header(did);
+					} else {
+						add_to_header(did);
+					}
+
 		        	$thisSticky.addClass("fixed");
+		        	$('#first_summary').show();
 		        }
-			}
+			//}
 
 	        
 	        // if ($thisSticky.hasClass("fixed") && !$thisSticky.hasClass("absolute")) {
@@ -566,9 +574,7 @@ function load_sticky() {
 		      	// }
 		    // }
 
-	      }
-	      if ($stickyPosition > $window.scrollTop() + 55) {
-	      	
+	      } else {
 	      	if ($thisSticky.hasClass("fixed")) {
 	      		if (i == 0) {
 	      			$('#first_summary').hide();
@@ -578,9 +584,14 @@ function load_sticky() {
 		      		
 		      		if ($prevSticky.css('display') != 'none') {
 			      		var prev_did = $prevSticky.attr('id').substring(5);
-			      		add_to_header(prev_did);
 			      		
-			      		$('#first_summary').width($prevSticky.width()+10);
+			      		if ($('#node_' + prev_did).children().eq(0).text() == '[+]') {
+							flip_header(prev_did);
+						} else {
+							add_to_header(prev_did);
+						}
+			      		
+			      		$('#first_summary').width($prevSticky.width());
 						$('#first_summary').css('left', $prevSticky.offset().left);
 						$('#first_summary').show();
 			      		
