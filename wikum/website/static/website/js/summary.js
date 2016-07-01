@@ -316,8 +316,21 @@ function collapse_text(d_id) {
 		for (var i=0; i<info.children.length; i++) {
 			hide_node(info.children[i]);
 		}
-	}
+	}	
+}
+
+function collapse_to_header(d_id) {
+	info = discuss_dict[d_id];
+	text = '<a style="float: right" onclick="uncollapse_text(' + d_id + ');">[+]</a>';
+	text += generate_header(d_id, info, "collapse");
 	
+	$('#node_' + d_id).html(text);
+}
+
+function expand_from_header(d_id) {
+	info = discuss_dict[d_id];
+	summary_text = display_comment(info, d_id);
+	$('#node_' + d_id).html(summary_text);
 }
 
 function show_node(node_info) {
@@ -473,10 +486,130 @@ $(document).ready(function () {
         	} else {
         		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
 			}
+			
+			load_sticky();
 	    }
 	    
 	    
 	});
 	
-	
 });
+
+var stuck_list = []; 
+
+
+
+function remove_from_sticky(item) {
+	$.each(stuck_list, function(i){
+	    if(stuck_list[i] === item) {
+	        stuck_list.splice(i,1);
+	        return false;
+	    }
+	});
+}
+
+function add_to_header(d_id) {
+	info = discuss_dict[d_id];
+	text = '<a style="float: right" onclick="collapse_text(' + d_id + '); flip_header(' + d_id + ');">[-]</a>';
+	text += generate_header(d_id, info, "collapse");
+	$('#first_summary').html(text);
+}
+
+function flip_header(d_id) {
+	info = discuss_dict[d_id];
+	text = '<a style="float: right" onclick="uncollapse_text(' + d_id + '); add_to_header(' + d_id + ');">[+]</a>';
+	text += generate_header(d_id, info, "collapse");
+	$('#first_summary').html(text);
+}
+
+function load_sticky() {
+	var stickyHeaders = (function() {
+		var $window = $(window),
+	    	$stickies;
+	    		      
+	  	var load = function(stickies) {
+	    	if (typeof stickies === "object" && stickies instanceof jQuery && stickies.length > 0) {
+	      		$stickies = stickies.each(function() {
+	        		var $thisSticky = $(this);		  
+	      			});
+	      		$window.off("scroll.stickies").on("scroll.stickies", function() {
+			  		_whenScrolling();		
+	      		});
+	    	}
+	  	};
+
+	  var _whenScrolling = function() {
+	    $stickies.each(function(i) {			
+	      var $thisSticky = $(this),
+	      	  $stickyPosition = $thisSticky.offset().top;
+	          
+	      var did = $thisSticky.attr('id').substring(5);
+	      
+	      if ($stickyPosition <= $window.scrollTop() + 55) {
+			if (!$thisSticky.hasClass("fixed")) {
+				if ($thisSticky.css('display') != 'none') {
+					stuck_list.push($thisSticky);
+					$('#first_summary').width($thisSticky.width()+10);
+					$('#first_summary').css('left', $thisSticky.offset().left);
+					$('#first_summary').show();
+		        	add_to_header(did);
+		        	$thisSticky.addClass("fixed");
+		        }
+			}
+
+	        
+	        // if ($thisSticky.hasClass("fixed") && !$thisSticky.hasClass("absolute")) {
+		        // var $nextSticky = $stickies.eq(i + 1),
+	            // $nextStickyPosition = $nextSticky.data('originalPosition') - 50;
+	            // if ($nextSticky.length > 0 && $thisSticky.offset().top >= $nextStickyPosition) {
+		          // $thisSticky.addClass("absolute").css("top", $nextStickyPosition - 250);
+		      	// }
+		    // }
+
+	      }
+	      if ($stickyPosition > $window.scrollTop() + 55) {
+	      	
+	      	if ($thisSticky.hasClass("fixed")) {
+	      		if (i == 0) {
+	      			$('#first_summary').hide();
+	      			$thisSticky.removeClass("fixed");
+	      		} else {
+		      		$prevSticky = $stickies.eq(i - 1);
+		      		
+		      		if ($prevSticky.css('display') != 'none') {
+			      		var prev_did = $prevSticky.attr('id').substring(5);
+			      		add_to_header(prev_did);
+			      		
+			      		$('#first_summary').width($prevSticky.width()+10);
+						$('#first_summary').css('left', $prevSticky.offset().left);
+						$('#first_summary').show();
+			      		
+			      		remove_from_sticky($thisSticky);
+			      		$thisSticky.removeClass("fixed");
+			      	}
+	      		}
+	      	}
+	 
+	        
+	        
+	       	// var $prevSticky = $stickies.eq(i - 1);
+	        // if ($prevSticky.length > 0 && $window.scrollTop() <= $thisSticky.data('originalPosition') - $thisSticky.data('originalHeight')) {
+	          // $prevSticky.removeClass("absolute").removeAttr("style");
+	        // }
+	       	
+	      }
+	    });
+	  };
+	
+	  return {
+	    load: load
+	  };
+	})();
+	
+	$(function() {
+		stickyHeaders.load($(".original_node"));
+ 	});
+}
+
+
+

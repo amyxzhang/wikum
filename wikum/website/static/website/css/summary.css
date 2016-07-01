@@ -190,8 +190,25 @@ blockquote {
 	border: 1px solid #daeef4;
 	background-color: #ffffff;
 	width: 98%;
+	position: relative;
+  	z-index: 1;
 }
 
 .collapsed {
 	background-color: #ffffff;
 }
+
+#first_summary {
+  position: fixed;
+  top: 50px;
+  z-index: 100;
+  width: 98%;
+  height: 50px;
+  background-color: #ffffff;
+  display: none;
+  border: 1px #000000 solid;
+}
+
+
+
+
