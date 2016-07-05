@@ -66,6 +66,50 @@ def summary(request):
             'source': article.source,
             'num': num,
             }
+
+@render_to('website/summary1.html')
+def summary1(request):
+    url = request.GET['article']
+    next = request.GET.get('next')
+    num = int(request.GET.get('num', 0))
+    
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+        
+    source = get_source(url)    
+    article = get_article(url, source, num)
+    
+    posts = get_posts(article)
+    
+    
+    return {'article': article,
+            'source': article.source,
+            'num': num,
+            }
+
+@render_to('website/summary2.html')
+def summary2(request):
+    url = request.GET['article']
+    next = request.GET.get('next')
+    num = int(request.GET.get('num', 0))
+    
+    if not next:
+        next = 0
+    else:
+        next = int(next)
+        
+    source = get_source(url)    
+    article = get_article(url, source, num)
+    
+    posts = get_posts(article)
+    
+    
+    return {'article': article,
+            'source': article.source,
+            'num': num,
+            }
     
 def summary_data(request):
     url = request.GET['article']

@@ -1,3 +1,5 @@
+
+
 P {
 	font-size: 14px;
 	text-align: left;
@@ -119,33 +121,6 @@ blockquote {
 	margin-bottom: 0px;
 }
 
-.level1 {
-	margin-left: 50px;
-}
-
-.level2 {
-	margin-left: 100px;
-}
-
-.level3 {
-	margin-left: 150px;
-}
-
-.summary_node {
-	padding: 5px;
-	background-color: #ffffff;
-    border: 1px solid orange;
-    margin-bottom: 10px;
-}
-
-.original_node {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	padding: 5px;
-	border: 1px solid #daeef4;
-	background-color: #ffffff;
-}
-
 .hint_text {
 	font-size: 14px;
 	font-style: italic;
@@ -156,4 +131,78 @@ blockquote {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.level4 {
+	margin-left: 200px;
+}
+
+.level5 {
+	margin-left: 250px;
+}
+
+.level6 {
+	margin-left: 300px;
+}
+
+.level7 {
+	margin-left: 350px;
+}
+
+.level8 {
+	margin-left: 400px;
+}
+
+.level9 {
+	margin-left: 450px;
+}
+
+.level10 {
+	margin-left: 500px;
+}
+
+.summary_node {
+	padding: 5px;
+	background-color: #ffffff;
+    border: 1px solid orange;
+    margin-bottom: 10px;
+    width: 98%;
+}
+
+.original_node {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 5px;
+	width: 98%;
+	position: relative;
+  	z-index: 1;
+  	border: 1px solid #daeef4;
+	background-color: #ffffff;
+}
+
+.collapsed {
+	background-color: #ffffff;
+}
+
+#first_summary {
+  position: fixed;
+  top: 50px;
+  z-index: 100;
+  width: 98%;
+  padding: 5px;
+  height: 50px;
+  background-color: #ffffff;
+  display: none;
+  border: 1px #000000 solid;
+}
+
+#width_setter {
+	display: block;
+	height: 5px;
+}
+
+.bright {
+	border: 2px solid orange;
+}
+
+
 

@@ -26,7 +26,12 @@ urlpatterns = [
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),
     url(r'^summary_data','website.views.summary_data'),
+    
+    url(r'^summary1','website.views.summary1'),
+    url(r'^summary2','website.views.summary2'),
+    
     url(r'^summary','website.views.summary'),
+    
     url(r'^history','website.views.history'),
     
     url(r'^move_comments','website.views.move_comments'),
