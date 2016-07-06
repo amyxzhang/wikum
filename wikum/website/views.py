@@ -158,8 +158,8 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
     
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
-        #if post.json_flatten == '':
-        if True:
+        if post.json_flatten == '':
+        #if True:
             if post.author:
                 if post.author.anonymous:
                     author = "Anonymous"
