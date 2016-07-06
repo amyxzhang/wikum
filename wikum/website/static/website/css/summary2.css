@@ -1,23 +1,36 @@
-#second_summary {
+#first_summary {
   position: fixed;
-  top: 100px;
+  top: 50px;
   z-index: 100;
   width: 98%;
   padding: 5px;
   height: 50px;
   background-color: #ffffff;
   display: none;
-  border: 1px #000000 solid;
+  border: 2px #000000 solid;
+}
+
+
+#second_summary {
+  position: fixed;
+  top: 98px;
+  z-index: 100;
+  width: 98%;
+  padding: 5px;
+  height: 50px;
+  display: none;
+  background-color: #ffffff;
+  border: 2px #000000 solid;
 }
 
 #third_summary {
   position: fixed;
-  top: 150px;
+  top: 146px;
   z-index: 100;
   width: 98%;
   padding: 5px;
   height: 50px;
-  background-color: #ffffff;
   display: none;
-  border: 1px #000000 solid;
+  background-color: #ffffff;
+  border: 2px #000000 solid;
 }

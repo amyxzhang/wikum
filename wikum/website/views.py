@@ -204,6 +204,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 
             v1 = {'size': post.points,
                   'd_id': post.id,
+                  'parent': parent.id if parent else None,
                   'author': author,
                   'replace_node': post.is_replacement,
                   'summary': post.summary,
