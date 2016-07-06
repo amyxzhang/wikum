@@ -14,12 +14,12 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 		
 		if (auto_hide) {
 			if (info.replace_node) {
-				summary_text = '<div style="display: none;" id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
+				summary_text = '<div style="display: none;" id="node_' + d_id +'" class="node ' + summaryClass + ' ' + levelClass + '">';
 			} else {
-				summary_text = '<div style="display: none;" id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + ' collapsed">';
+				summary_text = '<div style="display: none;" id="node_' + d_id +'" class="node ' + summaryClass + ' ' + levelClass + ' collapsed">';
 			}
 		} else {
-			summary_text = '<div id="node_' + d_id +'" class="' + summaryClass + ' ' + levelClass + '">';
+			summary_text = '<div id="node_' + d_id +'" class="node ' + summaryClass + ' ' + levelClass + '">';
 		}
 		
 		summary_text += display_comment(info, d_id);
@@ -290,7 +290,7 @@ function load_sticky() {
 	})();
 	
 	$(function() {
-		stickyHeaders.load($(".original_node"));
+		stickyHeaders.load($(".node"));
  	});
 }
 

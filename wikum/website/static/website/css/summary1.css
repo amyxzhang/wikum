@@ -121,17 +121,6 @@ blockquote {
 	margin-bottom: 0px;
 }
 
-.hint_text {
-	font-size: 14px;
-	font-style: italic;
-	color: #b3b3b3;
-    display: block;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .level4 {
 	margin-left: 200px;
 }
@@ -160,24 +149,24 @@ blockquote {
 	margin-left: 500px;
 }
 
-.summary_node {
-	padding: 5px;
-	background-color: #ffffff;
-    border: 1px solid orange;
-    margin-bottom: 10px;
-    width: 98%;
-}
-
-.original_node {
+.node {
 	margin-top: 10px;
 	margin-bottom: 10px;
-	padding: 5px;
 	width: 100%;
 	position: relative;
   	z-index: 1;
-  	border: 1px solid #daeef4;
 	background-color: #ffffff;
 }
+
+.summary_node {
+    border: 1px solid orange;
+}
+
+.original_node {
+	border: 1px solid #daeef4;
+}
+
+
 
 .collapsed {
 	background-color: #ffffff;
@@ -201,7 +190,7 @@ blockquote {
 }
 
 .bright {
-	border: 2px solid orange;
+	border: 2px solid #000000;
 }
 
 

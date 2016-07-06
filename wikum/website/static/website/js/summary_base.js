@@ -340,7 +340,7 @@ function hide_node(node_info) {
 function generate_header(d_id, info, action) {
 	ttext = '';
 
-	ttext += `<strong><span title="ID: ${info.d_id}">${info.size} `;
+	ttext += `<span class="node_header" title="ID: ${info.d_id}">${info.size} `;
 
 	if (info.size == 1) {
 		ttext += `like`;
@@ -366,9 +366,13 @@ function generate_header(d_id, info, action) {
 		ttext += `${info.author}`;
 	}
 
-	ttext += `</span></strong>`;
+	ttext += `</span>`;
 	if (action == "collapse") {
-		ttext += ' <div class="hint_text">' + strip_html(info.name).substring(0,200-info.author.length) + '</div>';
+		if (info.replace_node) {
+			ttext += ' <div class="hint_text"><strong>Summary:</strong> ' + strip_html(info.summary).substring(0,200-info.author.length) + '</div>';
+		} else {
+			ttext += ' <div class="hint_text">' + strip_html(info.name).substring(0,200-info.author.length) + '</div>';
+		}
 	}
 	return ttext;
 }
@@ -378,7 +382,7 @@ function display_comment(info, d_id) {
 	summary_text = '';
 	if (info.replace_node) {
 		summary_text += '<a style="float: right;" onclick="expand_summary(' + d_id + ');">[+]</a>';
-		summary_text += '<B>Summary:</B><BR>';
+		summary_text += '<span class="summary_header">Summary:</span><BR>';
 	} else {
 		summary_text += '<a style="float: right;" onclick="collapse_text(' + d_id + ');">[-]</a>';
 		summary_text += generate_header(d_id, info, "show");

@@ -131,6 +131,16 @@ blockquote {
 	margin-left: 150px;
 }
 
+.summary_header {
+	font-weight: bold;
+	color: #ee7600;
+}
+
+.node_header {
+	font-weight: bold;
+	color: #000000;
+}
+
 .summary_node {
 	padding: 5px;
 	background-color: #ffffff;
@@ -155,5 +165,9 @@ blockquote {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.hint_text>strong {
+	color: #000000;
 }
 
