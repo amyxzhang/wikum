@@ -340,36 +340,40 @@ function hide_node(node_info) {
 function generate_header(d_id, info, action) {
 	ttext = '';
 
-	ttext += `<span class="node_header" title="ID: ${info.d_id}">${info.size} `;
-
-	if (info.size == 1) {
-		ttext += `like`;
-	} else {
-		ttext += `likes`;
-	}
+	if (!info.replace_node) {
+		ttext += `<span class="node_header" title="ID: ${info.d_id}">${info.size} `;
 	
-	ttext += ` | ${info.children.length} `;
-
-	if (info.size == 1) {
-		ttext += `reply`;
-	} else {
-		ttext += `replies`;
-	}
-	
-	ttext += ' | ';
+		if (info.size == 1) {
+			ttext += `like`;
+		} else {
+			ttext += `likes`;
+		}
 		
-	highlight_authors = $('#highlight_authors').text().split(',');
-
-	if (highlight_authors.indexOf(info.author) > -1) {
-		ttext  += `<span style="background-color: pink;">${info.author}</span>`;
+		ttext += ` | ${info.children.length} `;
+	
+		if (info.size == 1) {
+			ttext += `reply`;
+		} else {
+			ttext += `replies`;
+		}
+		
+		ttext += ' | ';
+			
+		highlight_authors = $('#highlight_authors').text().split(',');
+	
+		if (highlight_authors.indexOf(info.author) > -1) {
+			ttext  += `<span style="background-color: pink;">${info.author}</span>`;
+		} else {
+			ttext += `${info.author}`;
+		}
+	
+		ttext += `</span>`;
 	} else {
-		ttext += `${info.author}`;
+		ttext += `<span class="summary_header" title="ID: ${info.d_id}">Summary:</span>`;
 	}
-
-	ttext += `</span>`;
 	if (action == "collapse") {
 		if (info.replace_node) {
-			ttext += ' <div class="hint_text"><strong>Summary:</strong> ' + strip_html(info.summary).substring(0,200-info.author.length) + '</div>';
+			ttext += ' <div class="hint_text">' + strip_html(info.summary).substring(0,200-info.author.length) + '</div>';
 		} else {
 			ttext += ' <div class="hint_text">' + strip_html(info.name).substring(0,200-info.author.length) + '</div>';
 		}
