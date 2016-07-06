@@ -168,6 +168,7 @@ blockquote {
 }
 
 .hint_text>strong {
-	color: #000000;
+	color: #ee7600;
+	font-style: none;
 }
 

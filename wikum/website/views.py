@@ -45,8 +45,7 @@ def visualization(request):
     return {'article': article,
             'source': article.source}
     
-@render_to('website/summary.html')
-def summary(request):
+def summary_page(request):
     url = request.GET['article']
     next = request.GET.get('next')
     num = int(request.GET.get('num', 0))
@@ -61,55 +60,22 @@ def summary(request):
     
     posts = get_posts(article)
     
-    
     return {'article': article,
             'source': article.source,
             'num': num,
             }
+    
+@render_to('website/summary.html')
+def summary(request):
+    return summary_page(request)
 
 @render_to('website/summary1.html')
 def summary1(request):
-    url = request.GET['article']
-    next = request.GET.get('next')
-    num = int(request.GET.get('num', 0))
-    
-    if not next:
-        next = 0
-    else:
-        next = int(next)
-        
-    source = get_source(url)    
-    article = get_article(url, source, num)
-    
-    posts = get_posts(article)
-    
-    
-    return {'article': article,
-            'source': article.source,
-            'num': num,
-            }
+    return summary_page(request)
 
 @render_to('website/summary2.html')
 def summary2(request):
-    url = request.GET['article']
-    next = request.GET.get('next')
-    num = int(request.GET.get('num', 0))
-    
-    if not next:
-        next = 0
-    else:
-        next = int(next)
-        
-    source = get_source(url)    
-    article = get_article(url, source, num)
-    
-    posts = get_posts(article)
-    
-    
-    return {'article': article,
-            'source': article.source,
-            'num': num,
-            }
+    return summary_page(request)
     
 def summary_data(request):
     url = request.GET['article']
@@ -192,8 +158,8 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
     
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
-        if post.json_flatten == '':
-        #if True:
+        #if post.json_flatten == '':
+        if True:
             if post.author:
                 if post.author.anonymous:
                     author = "Anonymous"
