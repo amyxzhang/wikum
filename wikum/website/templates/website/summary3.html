@@ -3,8 +3,7 @@
 
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/summary.css" %}>
-	<link rel="stylesheet" href={% static "website/css/summary1.css" %}>
-	<link rel="stylesheet" href={% static "website/css/summary2.css" %}>
+	<link rel="stylesheet" href={% static "website/css/summary3.css" %}>
 {% endblock %}
 
 
@@ -23,7 +22,7 @@
 				<a href="/summary2?article={{ article.url }}&num={{ num }}">2</a> |
 				<a href="/summary3?article={{ article.url }}&num={{ num }}">3</a>
 			<BR><BR>
-				Full threading view, Auto-horizontal scrolling, 3 levels of context
+				Partial threading view, 3 levels of context
 		</div>
 	</div>
 </header>
@@ -35,8 +34,6 @@
             </div>
     </div>
     </div>
-    
-    <div id="width_setter"></div>
     
     <div id="first_summary"></div>
     <div id="second_summary"></div>
@@ -61,6 +58,6 @@
 {% block scripts %}
 
 	<script src={% static "website/js/summary_base.js" %}></script>
-	<script src={% static "website/js/summary2.js" %}></script>
+	<script src={% static "website/js/summary3.js" %}></script>
 
 {% endblock %}

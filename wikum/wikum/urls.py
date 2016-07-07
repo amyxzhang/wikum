@@ -29,6 +29,7 @@ urlpatterns = [
     
     url(r'^summary1','website.views.summary1'),
     url(r'^summary2','website.views.summary2'),
+    url(r'^summary3','website.views.summary3'),
     
     url(r'^summary','website.views.summary'),
     

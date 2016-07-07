@@ -166,8 +166,6 @@ blockquote {
 	border: 1px solid #daeef4;
 }
 
-
-
 .collapsed {
 	background-color: #ffffff;
 }
@@ -182,11 +180,6 @@ blockquote {
   background-color: #ffffff;
   display: none;
   border: 1px #000000 solid;
-}
-
-#width_setter {
-	display: block;
-	height: 5px;
 }
 
 .bright {

@@ -76,6 +76,10 @@ def summary1(request):
 @render_to('website/summary2.html')
 def summary2(request):
     return summary_page(request)
+
+@render_to('website/summary3.html')
+def summary3(request):
+    return summary_page(request)
     
 def summary_data(request):
     url = request.GET['article']
