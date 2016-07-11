@@ -3,7 +3,7 @@
 
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/summary.css" %}>
-	<link rel="stylesheet" href={% static "website/css/summary3.css" %}>
+	<link rel="stylesheet" href={% static "website/css/summary4.css" %}>
 {% endblock %}
 
 
@@ -23,35 +23,25 @@
 				<a href="/summary3?article={{ article.url }}&num={{ num }}">3</a> |
 				<a href="/summary4?article={{ article.url }}&num={{ num }}">4</a>
 			<BR><BR>
-				Partial threading view, 3 levels of context
+				Partial threading view, No context
 		</div>
 	</div>
 </header>
 
-<section id="contact" style="padding-top: 50px;">
-	<div class="row">
-	<div class="col-lg-8 col-lg-offset-2">
- 			<div id="summary">
+     <section id="contact" class="container content-section text-center" style="padding-top: 50px;">
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-lg-offset-2" id="summary">
+
+
             </div>
-    </div>
-    </div>
-    
-    <div id="first_summary"></div>
-    <div id="second_summary"></div>
-    <div id="third_summary"></div>
-    
-    <div class="row">
-	<div class="col-lg-8 col-lg-offset-2">
-    
-  	<div id="link_next">
-  	</div>
-  	
-  </div>
-  </div>
+        </div>
 
-</section>
+      <div class="row">
+      	<div class="col-lg-8 col-md-8 col-lg-offset-2" id="link_next">
+      	</div>
+      </div>
 
-
+            </section>
 
 
 {% endblock %}
@@ -59,6 +49,6 @@
 {% block scripts %}
 
 	<script src={% static "website/js/summary_base.js" %}></script>
-	<script src={% static "website/js/summary3.js" %}></script>
+	<script src={% static "website/js/summary4.js" %}></script>
 
 {% endblock %}

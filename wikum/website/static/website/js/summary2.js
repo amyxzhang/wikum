@@ -8,7 +8,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 		extra_text = info.extra_summary;
 		d_id = info.d_id;
 		
-		var levelClass = level > 9? "level10" : `level${level}`;
+		var levelClass = level > 20? "level20" : `level${level}`;
 		
 		var summaryClass = info.replace_node? "summary_node" : "original_node";
 		

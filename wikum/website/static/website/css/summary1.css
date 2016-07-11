@@ -1,126 +1,4 @@
 
-
-P {
-	font-size: 14px;
-	text-align: left;
-	margin-bottom: 10px;
-}
-
-#summary {
-	font-size: 14px;
-	text-align: left;
-}
-
-#summary>p>a, 
-#summary>div>p>a, 
-.summary_comment>a, 
-.summary_comment>p>a, 
-.summary_comment>div>a, 
-.summary_comment>div>p>a,
-.hidden_node>p>a,
-blockquote>a
- {
-	color: #000000;
-}
-
-#summary>p>a:hover, 
-#summary>div>p>a:hover, 
-.summary_comment>a:hover, 
-.summary_comment>p>a:hover, 
-.summary_comment>div>a:hover,
-.summary_comment>div>p>a:hover,
-.hidden_node>p>a:hover,
-blockquote>a:hover
- {
-	background-color: orange;
-	cursor: pointer;
-	color: #000000;
-}
-
-#summary>p>a>blockquote:hover,
-summary>div>p>a>blockquote:hover, 
-.summary_comment>a>blockquote:hover, 
-.summary_comment>p>a>blockquote:hover,
-.summary_comment>div>a>blockquote:hover,
-blockquote>a>blockquote:hover, 
-.summary_comment>div>p>a>blockquote:hover
-.hidden_node>p>a>blockquote:hover
- {
-	background-color: orange;
-	cursor: pointer;
-	color: #000000;
-}
-
-.insert_comment {
-	display: block;
-	position: relative;
-	left: 20px;
-}
-
-.insert_comment>a {
-	color: #42dca3 !important;
-}
-
-.insert_comment>a:hover,
-.insert_comment>a:focus {
-	background-color: white !important;
-    text-decoration: none;
-    color: #1d9b6c !important;
-}
-
-.parent {
-	display: block;
-	height: 200px;
-	overflow-y: scroll;
-	border: 1px #000000 solid;
-	position: relative;
-	left: -20px;
-}
-
-.raw_comment {
-	display: block;
-	position: relative;
-	background-color: #eef7fa;
-	/*border: 1px #cccccc solid;
-	*/
-	font-size: 14px;
-	padding: 5px;
-	margin: 5px;
-	border-left: 1px dotted #000000;
-}
-
-.summary_comment {
-	display: block;
-	position: relative;
-	padding: 5px;
-	margin: 5px;
-	background-color: #ffffff;
-    border-left: 1px dotted orange;
-}
-
-.see_full_comment {
-    color: #42dca3 !important;
-    -webkit-transition: all .2s ease-in-out;
-    -moz-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-}
-
-.see_full_comment:hover,
-.see_full_comment:focus {
-	background-color: transparent !important;
-    text-decoration: none;
-    color: #1d9b6c !important;
-}
-
-a:hover {
-	cursor: pointer;
-}
-
-blockquote {
-	padding-bottom: 0px;
-	margin-bottom: 0px;
-}
-
 .level4 {
 	margin-left: 200px;
 }
@@ -147,6 +25,46 @@ blockquote {
 
 .level10 {
 	margin-left: 500px;
+}
+
+.level11 {
+	margin-left: 550px;
+}
+
+.level12 {
+	margin-left: 600px;
+}
+
+.level13 {
+	margin-left: 650px;
+}
+
+.level14 {
+	margin-left: 700px;
+}
+
+.level15 {
+	margin-left: 750px;
+}
+
+.level16 {
+	margin-left: 800px;
+}
+
+.level17 {
+	margin-left: 850px;
+}
+
+.level18 {
+	margin-left: 900px;
+}
+
+.level19 {
+	margin-left: 950px;
+}
+
+.level20 {
+	margin-left: 1000px;
 }
 
 .node {
@@ -186,5 +104,8 @@ blockquote {
 	border: 2px solid #000000;
 }
 
-
+#width_setter {
+	display: block;
+	height: 5px;
+}
 
