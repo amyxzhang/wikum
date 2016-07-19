@@ -222,6 +222,8 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   }
 
   make_highlight();
+  
+  var article_id = $("#article_id").text();
 
   $('#button_subtree').html(`
      <a class="btn-sm btn-default" href="/visualization?article=${article_url}&num=${num}">Overall</a>
