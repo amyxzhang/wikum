@@ -245,24 +245,30 @@ function load_sticky() {
 			}
 			if (parents.length -i == 1) {
 				$('#first_summary').css('left', $('#node_' + item).offset().left - $(window).scrollLeft());
+				$('#first_summary').css('width', $('#node_' + item).width() + 13);
 			} else if (parents.length -i == 2) {
 				$('#second_summary').css('left', $('#node_' + item).offset().left - $(window).scrollLeft());
+				$('#second_summary').css('width', $('#node_' + item).width() + 13);
 			} else {
 				$('#third_summary').css('left', $('#node_' + item).offset().left - $(window).scrollLeft());
+				$('#third_summary').css('width', $('#node_' + item).width() + 13);
 			}
 			
 			var bright_pos = parseInt($('.bright').offset().left) - $(window).scrollLeft();
 			
 			if (bright_pos == parseInt($('#third_summary').css('left'))) {
 				$('#third_summary').css('left', parseInt($('#third_summary').css('left')) - 10);
+				$('#third_summary').css('width', $('#third_summary').width() + 24);
 			}
 			
 			if (parseInt($('#second_summary').css('left')) == bright_pos) {
 				$('#second_summary').css('left', parseInt($('#second_summary').css('left')) - 20);
+				$('#second_summary').css('width', $('#second_summary').width() + 34);
 			}
 			
 			if (parseInt($('#first_summary').css('left')) == bright_pos) {
 				$('#first_summary').css('left', parseInt($('#first_summary').css('left')) - 30);
+				$('#first_summary').css('width', $('#first_summary').width() + 44);
 			}
 			
 			

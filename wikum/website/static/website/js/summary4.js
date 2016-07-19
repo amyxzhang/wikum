@@ -9,7 +9,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 		extra_text = info.extra_summary;
 		d_id = info.d_id;
 		
-		var levelClass = level > 2? "level3" : `level${level}`;
+		var levelClass = level > 1? "level2" : `level${level}`;
 		
 		var summaryClass = info.replace_node? "summary_node" : "original_node";
 		
@@ -21,7 +21,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 			}
 		} else {
 			summary_text = '<div class="node ' + levelClass + '">';
-			if (levelClass == "level3") {
+			if (levelClass == "level2") {
 				summary_text += '<div class="arrow" id="arrow_' + d_id + '"><img class="arrow_img" src="/static/website/img/arrow-left.png" width=35 height=40></div>';
 			} else {
 				summary_text += '<div class="arrow" id="arrow_' + d_id + '"><img class="arrow_img" style="display: none;" src="/static/website/img/arrow-left.png" width=35 height=40></div>';
@@ -86,6 +86,40 @@ $(document).ready(function () {
 function click_arrows() {
 	$('.arrow').click(function(evt) {
 		var id = $(evt.target.parentNode).attr('id').substring(6);
-		console.log(id);
+		$('#node_' + id).parent().removeClass('level2');
+		$('#node_' + id).parent().addClass('level1');
+		
+		$('#node_' + id).prev().first().toggle();
+		
+		var parent_id = discuss_dict[id].parent;
+		var curr_id = id;
+		while (parent_id != null) {
+			$('#node_' + parent_id).parent().removeClass('level1');
+			$('#node_' + parent_id).parent().removeClass('level2');
+			
+			$('#node_' + parent_id).prev().first().toggle();
+
+			for (var i=0; i<discuss_dict[parent_id].children.length; i++) {
+				var child_id = discuss_dict[parent_id].children[i].d_id;
+				if (child_id == curr_id) {
+					break;
+				}
+				collapse_text(child_id);
+				$('#node_' + child_id).prev().first().toggle();
+				$('#node_' + child_id).removeClass('level1');
+				$('#node_' + child_id).removeClass('level2');
+			}
+			curr_id = parent_id;
+			parent_id = discuss_dict[parent_id].parent;
+			
+		}
+		
+		
+		for (var i=0; i<discuss_dict[id].children.length; i++) {
+			var child_id = discuss_dict[id].children[i].d_id;
+			$('#node_' + child_id).parent().addClass('level2');
+		}
+		
+
 	})
 }
