@@ -225,7 +225,7 @@ def get_posts(article):
         posts = article.comment_set.filter(reply_to_disqus=None)
         from website.views import recurse_viz
         
-        recurse_viz(None, posts, False, article)
+        recurse_viz(None, posts, False, article, False)
         
         
         posts = article.comment_set.filter(reply_to_disqus=None).order_by('-points')
