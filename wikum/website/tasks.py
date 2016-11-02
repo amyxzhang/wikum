@@ -1,17 +1,19 @@
-from celery import shared_task,current_task
-from numpy import random
-from scipy.fftpack import fft
+from celery import task, current_task
+from celery.result import AsyncResult
+from time import sleep
 
-@shared_task
-def fft_random(n):
-    """
-    Brainless number crunching just to have a substantial task:
-    """
-    for i in range(n):
-        x = random.normal(0, 0.1, 2000)
-        y = fft(x)
-        if(i%30 == 0):
-            process_percent = int(100 * float(i) / float(n))
-            current_task.update_state(state='PROGRESS',
-                                      meta={'process_percent': process_percent})
-    return random.random()
+
+NUM_OBJ_TO_CREATE = 1000
+
+# when this task is called, it will create 1000 objects in the database
+@task()
+def create_models():
+    for i in range(1, NUM_OBJ_TO_CREATE+1):
+        fn = 'Fn %s' % i
+        ln = 'Ln %s' % i
+  
+        process_percent = int(100 * float(i) / float(NUM_OBJ_TO_CREATE))
+
+        sleep(0.1)
+        current_task.update_state(state='PROGRESS',
+                                  meta={'process_percent': process_percent})

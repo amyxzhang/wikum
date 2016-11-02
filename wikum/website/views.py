@@ -70,8 +70,8 @@ def poll_status(request):
 def test_stuff(request):
     data = 'Fail'
     if request.is_ajax():
-        from tasks import fft_random
-        job = fft_random.delay(int(50))
+        from tasks import create_models
+        job = create_models.delay()
         
         request.session['task_id'] = job.id
         data = job.id
