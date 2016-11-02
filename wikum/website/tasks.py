@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 from celery import shared_task, current_task
-from wikum.website.engine import get_source, get_article, COMMENTS_CALL,\
+from website.engine import get_source, get_article, COMMENTS_CALL,\
     import_disqus_posts, USER_AGENT, count_replies, create_vectors
 from wikum.settings import DISQUS_API_KEY
 import urllib2
 import json
 import praw
 import datetime
-from wikum.website.models import Comment, CommentAuthor
+from website.models import Comment, CommentAuthor
 import re
 
 @shared_task()
@@ -41,8 +41,6 @@ def get_reddit_posts(article, current_task, total_count):
     
     import_reddit_posts(all_forest_comments, article, None, current_task, total_count)
     
-
-
 
 def get_disqus_posts(article, current_task, total_count):
     comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
