@@ -67,6 +67,9 @@ def poll_status(request):
             data = 'No task_id in the request'
     else:
         data = 'This is not an ajax request'
+        
+    if task.state == 'SUCCESS':
+        request.session['task_id'] = None
 
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
@@ -79,7 +82,7 @@ def import_article(request):
         
         url = request.GET['article']
         
-        job = import_article(url).delay()
+        job = import_article().delay(url)
         
         request.session['task_id'] = job.id
         data = job.id
