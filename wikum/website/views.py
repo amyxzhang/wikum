@@ -83,7 +83,7 @@ def test_stuff(request):
   
     json_data = json.dumps(data)
 
-    return HttpResponse(json_data, mimetype='application/json')
+    return HttpResponse(json_data, content_type='application/json')
 
     
 def summary_page(request):
