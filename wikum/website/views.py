@@ -26,7 +26,7 @@ from sklearn.cluster.k_means_ import MiniBatchKMeans
 from sklearn.metrics.pairwise import euclidean_distances
 
 from django.views.decorators.csrf import csrf_exempt
-from wikum.website.import_data import get_source, get_article
+from website.import_data import get_source, get_article
 
 
      
