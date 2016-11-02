@@ -24,7 +24,7 @@ import pickle
 from math import floor
 from sklearn.cluster.k_means_ import MiniBatchKMeans
 from sklearn.metrics.pairwise import euclidean_distances
-from tasks import fft_random
+
 from celery.result import AsyncResult
 
 
