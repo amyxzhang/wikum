@@ -12,7 +12,7 @@ import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
-from wikum.website.import_data import get_disqus_posts, get_reddit_posts,\
+from website.import_data import get_disqus_posts, get_reddit_posts,\
     count_replies
 from website.models import Article, Comment
 
@@ -35,14 +35,10 @@ def get_posts(article):
             get_reddit_posts(article)
                 
         count_replies(article)
-        create_vectors(article)
         
         posts = article.comment_set.filter(reply_to_disqus=None)
         from website.views import recurse_viz
-        
         recurse_viz(None, posts, False, article, False)
-        
-        
         posts = article.comment_set.filter(reply_to_disqus=None).order_by('-points')
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-points')
