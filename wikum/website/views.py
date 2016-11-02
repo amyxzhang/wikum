@@ -62,12 +62,18 @@ def poll_status(request):
             from tasks import import_article
             task_id = request.POST['task_id']
             task = import_article.AsyncResult(task_id)
+            
+            print task.result
+            print task.state
+            
             data = task.result or task.state
         else:
             data = 'No task_id in the request'
     else:
         data = 'This is not an ajax request'
-        
+    
+    
+    
     if task.state == 'SUCCESS':
         request.session['task_id'] = None
 
