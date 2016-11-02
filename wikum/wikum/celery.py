@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'celery_try.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wikum.settings')
 
 from django.conf import settings
 from celery import Celery
 
-app = Celery('celery_try',
+app = Celery('website',
              backend='amqp',
              broker='amqp://guest@localhost//')
 

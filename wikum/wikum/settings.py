@@ -153,6 +153,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# BROKER_URL = 'message_broker://user:password@hostname:port/virtual_host'
+# message_broker --> rabbitmq = amqp
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
+# List of modules to import when celery starts.
+CELERY_IMPORTS = ("website.tasks",)
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
