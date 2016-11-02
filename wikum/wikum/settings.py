@@ -160,7 +160,7 @@ BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # List of modules to import when celery starts.
 CELERY_IMPORTS = ("website.tasks",)
 CELERY_RESULT_BACKEND = "database"
-CELERY_RESULT_DBURI = "mysql://root:koob@localhost/celery"
+CELERY_RESULT_DBURI = "db+mysql://root:koob@localhost/celery"
 
 
 # Internationalization
