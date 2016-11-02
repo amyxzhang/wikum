@@ -36,15 +36,16 @@ def get_posts(article):
                 
         count_replies(article)
         
-        posts = article.comment_set.filter(reply_to_disqus=None)
-        from website.views import recurse_viz
-        recurse_viz(None, posts, False, article, False)
         posts = article.comment_set.filter(reply_to_disqus=None).order_by('-points')
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-points')
     
     if posts[0].vectorizer == None:
         create_vectors(article)
+        
+        posts = article.comment_set.filter(reply_to_disqus=None)
+        from website.views import recurse_viz
+        recurse_viz(None, posts, False, article, False)
     
     return posts[0:10]
 

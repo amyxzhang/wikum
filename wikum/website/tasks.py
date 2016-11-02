@@ -17,8 +17,3 @@ def import_article(url):
         elif article.source.source_name == "Reddit":
             get_reddit_posts(article, current_task, total_count)
         count_replies(article)
-        
-        posts = article.comment_set.filter(reply_to_disqus=None)
-        from website.views import recurse_viz
-        recurse_viz(None, posts, False, article, False)
-

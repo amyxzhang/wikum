@@ -73,7 +73,12 @@
 					     			if (task.count) {
 					      				$('.result').html(task.count + ' comments ingested.');
 					     			} else {
-					      				$('.status').html(task);
+					     				if (task == 'SUCCESS') {
+					     					var article = $('#articleUrl').val();
+					      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
+					      				} else {
+					      					$('.status').html(task);
+					      				}
 					     			};
 					     			// create the infinite loop of Ajax calls to check the state
 					     			// of the current task
