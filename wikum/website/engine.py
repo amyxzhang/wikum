@@ -40,7 +40,7 @@ def get_posts(article):
     else:
         posts = posts.filter(reply_to_disqus=None).order_by('-points')
     
-    if posts[0].vectorizer == None:
+    if article.vectorizer == None:
         create_vectors(article)
         
         posts = article.comment_set.filter(reply_to_disqus=None)
