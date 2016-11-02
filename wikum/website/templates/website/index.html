@@ -65,21 +65,21 @@
 						  </div>
 							 {% if task_id %}
 							 <script type="text/javascript">
-							  jQuery(document).ready(function() {
+							  $(document).ready(function() {
 							   
 							   // pole state of the current task
 							   var PollState = function(task_id) {
-							    jQuery.ajax({
-							     url: "poll_state",
+							    $.ajax({
+							     url: "poll_status",
 							     type: "POST",
 							     data: "task_id=" + task_id,
 							    }).done(function(task){
 							     console.log(task);
 							     if (task.process_percent) {
-							      jQuery('.bar').css({'width': task.process_percent + '%'});
-							      jQuery('.bar').html(task.process_percent + '%')
+							      $('.bar').css({'width': task.process_percent + '%'});
+							      $('.bar').html(task.process_percent + '%')
 							     } else {
-							      jQuery('.status').html(task);
+							      $('.status').html(task);
 							     };
 							     
 							     // create the infinite loop of Ajax calls to check the state
@@ -93,16 +93,16 @@
 							 </script>
 							 {% endif %}
 							 <script type="text/javascript">
-							  jQuery('#do-task').click( function() {
-							   jQuery.ajax({
+							  $('#do-task').click( function() {
+							   $.ajax({
 							    url: "test_stuff",
 							    data: {},
 							    success: function(){
-							     jQuery.ajax({
+							     $.ajax({
 							      url: "",
 							      context: document.body,
 							      success: function(s, x) {
-							       jQuery(this).html(s);
+							       $(this).html(s);
 							      }
 							     });
 							    }
