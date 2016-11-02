@@ -38,9 +38,12 @@ def index(request):
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']
+        
+        return {'page': 'index',
+            'task_id': task_id,
+            'articles': a}
     
     return {'page': 'index',
-            'task_id': task_id,
             'articles': a}
 
 @render_to('website/visualization.html')
