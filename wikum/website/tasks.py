@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from celery import shared_task, current_task
-from wikum.website.import_data import get_source, get_article, get_disqus_posts,\
+from website.import_data import get_source, get_article, get_disqus_posts,\
     get_reddit_posts, count_replies
 
 @shared_task()
