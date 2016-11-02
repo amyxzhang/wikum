@@ -30,9 +30,9 @@ def get_posts(article):
     if posts.count() == 0:
         
         if article.source.source_name == "The Atlantic":
-            get_disqus_posts(article)
+            get_disqus_posts(article, None, None)
         elif article.source.source_name == "Reddit":
-            get_reddit_posts(article)
+            get_reddit_posts(article, None, None)
                 
         count_replies(article)
         

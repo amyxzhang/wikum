@@ -71,10 +71,11 @@ def get_disqus_posts(article, current_task, total_count):
     
     count = import_disqus_posts(result, article)
     
-    total_count += count
-                
-    current_task.update_state(state='PROGRESS',
-                              meta={'count': total_count})
+    if current_task:
+        total_count += count
+                    
+        current_task.update_state(state='PROGRESS',
+                                  meta={'count': total_count})
     
     while result['cursor']['hasNext']:
         next = result['cursor']['next']
@@ -86,15 +87,16 @@ def get_disqus_posts(article, current_task, total_count):
         
         count = import_disqus_posts(result, article)
         
-        total_count += count
-        
-        current_task.update_state(state='PROGRESS',
-                                  meta={'count': total_count})
+        if current_task:
+            total_count += count
+            
+            current_task.update_state(state='PROGRESS',
+                                      meta={'count': total_count})
 
 
 def import_reddit_posts(comments, article, reply_to, current_task, total_count):
     
-    if total_count % 30 == 0:
+    if current_task and total_count % 30 == 0:
         current_task.update_state(state='PROGRESS',
                                   meta={'count': total_count})
     
