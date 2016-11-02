@@ -59,11 +59,9 @@ def poll_status(request):
     data = 'Fail'
     if request.is_ajax():
         if 'task_id' in request.POST.keys() and request.POST['task_id']:
-            from tasks import create_models
-            
+            from tasks import import_article
             task_id = request.POST['task_id']
-            
-            task = create_models.AsyncResult(task_id)
+            task = import_article.AsyncResult(task_id)
             data = task.result or task.state
         else:
             data = 'No task_id in the request'
@@ -74,11 +72,14 @@ def poll_status(request):
     return HttpResponse(json_data, content_type='application/json')
     
 
-def test_stuff(request):
+def import_article(request):
     data = 'Fail'
     if request.is_ajax():
-        from tasks import create_models
-        job = create_models.delay()
+        from tasks import import_article
+        
+        url = request.GET['article']
+        
+        job = import_article(url).delay()
         
         request.session['task_id'] = job.id
         data = job.id

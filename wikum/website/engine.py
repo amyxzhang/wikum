@@ -70,11 +70,14 @@ def count_replies(article):
     
 
 def import_disqus_posts(result, article):
+    count = 0
     for response in result['response']:
         comment_id = response['id']
         comment = Comment.objects.filter(disqus_id=comment_id, article=article)
         
         if comment.count() == 0:
+            
+            count += 1
             
             anonymous = response['author']['isAnonymous']
             if anonymous:
@@ -117,7 +120,9 @@ def import_disqus_posts(result, article):
                                              approved = response['isApproved']
                                              )
         
-        
+    return count
+
+
 def get_disqus_posts(article):
     comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
             
