@@ -25,7 +25,6 @@ from math import floor
 from sklearn.cluster.k_means_ import MiniBatchKMeans
 from sklearn.metrics.pairwise import euclidean_distances
 
-from celery.result import AsyncResult
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -60,8 +59,11 @@ def poll_status(request):
     data = 'Fail'
     if request.is_ajax():
         if 'task_id' in request.POST.keys() and request.POST['task_id']:
+            from tasks import create_models
+            
             task_id = request.POST['task_id']
-            task = AsyncResult(task_id)
+            
+            task = create_models.AsyncResult(task_id)
             data = task.result or task.state
         else:
             data = 'No task_id in the request'
