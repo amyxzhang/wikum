@@ -82,7 +82,7 @@ def import_article(request):
         
         url = request.GET['article']
         
-        job = import_article().delay(url)
+        job = import_article.delay(url)
         
         request.session['task_id'] = job.id
         data = job.id
