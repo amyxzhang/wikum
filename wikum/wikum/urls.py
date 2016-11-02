@@ -27,6 +27,9 @@ urlpatterns = [
     url(r'^cluster','website.views.cluster'),
     url(r'^summary_data','website.views.summary_data'),
     
+    url(r'^test_stuff', 'website.views.test_stuff'),
+    url(r'^poll_status$', 'website.views.poll_status'),
+    
     url(r'^summary1','website.views.summary1'),
     url(r'^summary2','website.views.summary2'),
     url(r'^summary3','website.views.summary3'),

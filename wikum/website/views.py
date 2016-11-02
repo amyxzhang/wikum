@@ -24,7 +24,8 @@ import pickle
 from math import floor
 from sklearn.cluster.k_means_ import MiniBatchKMeans
 from sklearn.metrics.pairwise import euclidean_distances
-
+from tasks import fft_random
+from celery.result import AsyncResult
 
 
      
@@ -34,7 +35,12 @@ summarizer = Summarizer(stemmer)
 @render_to('website/index.html')
 def index(request):
     a = Article.objects.all().select_related()
+    
+    if 'task_id' in request.session.keys() and request.session['task_id']:
+        task_id = request.session['task_id']
+    
     return {'page': 'index',
+            'task_id': task_id,
             'articles': a}
 
 @render_to('website/visualization.html')
@@ -44,6 +50,38 @@ def visualization(request):
     article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
+    
+def poll_status(request):
+    data = 'Fail'
+    if request.is_ajax():
+        if 'task_id' in request.POST.keys() and request.POST['task_id']:
+            task_id = request.POST['task_id']
+            task = AsyncResult(task_id)
+            data = task.result or task.state
+        else:
+            data = 'No task_id in the request'
+    else:
+        data = 'This is not an ajax request'
+
+    json_data = json.dumps(data)
+    return HttpResponse(json_data, content_type='application/json')
+    
+
+def test_stuff(request):
+    data = 'Fail'
+    if request.is_ajax():
+        from tasks import fft_random
+        job = fft_random.delay(int(50))
+        
+        request.session['task_id'] = job.id
+        data = job.id
+    else:
+        data = 'This is not an ajax request!'
+  
+    json_data = json.dumps(data)
+
+    return HttpResponse(json_data, mimetype='application/json')
+
     
 def summary_page(request):
     url = request.GET['article']
