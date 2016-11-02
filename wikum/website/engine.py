@@ -6,16 +6,12 @@ import datetime
 from django.core.paginator import Paginator
 from random import randint
 
-from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
 import re
-import nltk
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
 
-stemmer = SnowballStemmer("english")
-stop = stopwords.words('english')
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
@@ -241,6 +237,11 @@ def get_posts(article):
 
 
 def tokenize_and_stem(text):
+    from nltk.stem.snowball import SnowballStemmer
+    import nltk
+    
+    stemmer = SnowballStemmer("english")
+    
     # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
     tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
@@ -252,6 +253,7 @@ def tokenize_and_stem(text):
     return stems
 
 def tokenize_only(text):
+    import nltk
     # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
     tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
@@ -284,6 +286,7 @@ def copy_article_and_comments(a):
 
 
 def create_vectors(article):
+    
     comments = Comment.objects.filter(article=article, num_subchildren=0, reply_to_disqus=None)
     ids = []
     comment_list = []
