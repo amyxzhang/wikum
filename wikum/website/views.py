@@ -77,6 +77,9 @@ def poll_status(request):
     if task.state == 'SUCCESS' or task.state == 'FAILURE':
         request.session['task_id'] = None
 
+    if task.state == 'FAILURE':
+        data = {'status': str(data)}
+
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
     
