@@ -26,6 +26,7 @@ from sklearn.cluster.k_means_ import MiniBatchKMeans
 from sklearn.metrics.pairwise import euclidean_distances
 
 from celery.result import AsyncResult
+from django.views.decorators.csrf import csrf_exempt
 
 
      
@@ -53,7 +54,8 @@ def visualization(request):
     article = Article.objects.filter(url=url)[num]
     return {'article': article,
             'source': article.source}
-    
+
+@csrf_exempt    
 def poll_status(request):
     data = 'Fail'
     if request.is_ajax():
