@@ -9,6 +9,9 @@ app = Celery('website',
              backend="db+mysql://root:koob@localhost/celery",
              broker='amqp://guest@localhost//')
 
+app.conf.CELERY_IGNORE_RESULT = False
+app.conf.CELERY_RESULT_BACKEND = "db+mysql://root:koob@localhost/celery"
+
 # This reads, e.g., CELERY_ACCEPT_CONTENT = ['json'] from settings.py:
 app.config_from_object('django.conf:settings')
 
