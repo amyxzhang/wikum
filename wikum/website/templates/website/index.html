@@ -72,17 +72,16 @@
 					     			console.log(task);
 					     			if (task.count) {
 					      				$('.result').html(task.count + ' comments ingested.');
+					      				PollState(task_id);
+					      				
 					     			} else {
 					     				if (task == 'SUCCESS') {
 					     					var article = $('#articleUrl').val();
 					      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
 					      				} else {
-					      					$('.status').html(task);
+					      					$('.status').html(task.status);
 					      				}
 					     			};
-					     			// create the infinite loop of Ajax calls to check the state
-					     			// of the current task
-					     			PollState(task_id);
 					    		});
 					   		};
 					   		PollState('{{ task_id }}');
