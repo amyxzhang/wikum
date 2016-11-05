@@ -63,7 +63,7 @@ def poll_status(request):
             from tasks import import_article
             task_id = request.POST['task_id']
             task = import_article.AsyncResult(task_id)
-            data = task.result or task.state
+            data = {'result': task.result, 'state': task.state}
         else:
             data = 'No task_id in the request'
     else:
@@ -85,9 +85,7 @@ def import_article(request):
     data = 'Fail'
     if request.is_ajax():
         from tasks import import_article
-        
         url = request.GET['article']
-        
         job = import_article.delay(url)
         
         request.session['task_id'] = job.id

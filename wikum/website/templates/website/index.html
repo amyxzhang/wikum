@@ -46,48 +46,11 @@
      
                 
                 		<div class="progress_container">
-                 			<div class="current-task">
-				   				<h4>{% if task_id %} Task ID: {{ task_id }} {% endif %}</h4>
-				   			</div>
-				   
 					   		<div class="status"></div>
 					   		
-					   		{% if task_id %}
 					   		<div class="result">
 					   		</div>
-					   		{% endif %}
 					  	</div>
-				  
-					 	{% if task_id %}
-					 	<script type="text/javascript">
-					  	$(document).ready(function() {
-					  		$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while!');
-					  		
-					    	var PollState = function(task_id) {
-					    		$.ajax({
-					     			url: "poll_status",
-					     			type: "POST",
-					     			data: "task_id=" + task_id,
-					    		}).done(function(task){
-					     			console.log(task);
-					     			if (task.count) {
-					      				$('.result').html(task.count + ' comments ingested.');
-					      				PollState(task_id);
-					      				
-					     			} else {
-					     				if (task == 'SUCCESS') {
-					     					var article = $('#articleUrl').val();
-					      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
-					      				} else {
-					      					$('.status').html(task.status);
-					      				}
-					     			};
-					    		});
-					   		};
-					   		PollState('{{ task_id }}');
-					  	 });
-						 </script>
-						 {% endif %}
                     </div>
                 </div>
             </div>
@@ -148,14 +111,38 @@
 					data: {
 						'article': article,
 					},
-					success: function(){
-						$.ajax({
-							url: "",
-							context: document.body,
-							success: function(s, x) {
-								$(this).html(s);
-							}
-						});
+					success: function(res){
+						console.log(res);
+						
+						$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while!');
+					  		
+					    	var PollState = function(task_id) {
+					    		$.ajax({
+					     			url: "poll_status",
+					     			type: "POST",
+					     			data: "task_id=" + task_id,
+					    		}).done(function(task){
+					     			console.log(task);
+					     			if (task.state == 'PROGRESS') {
+					      				$('.result').html(task.count + ' comments ingested.');
+					      				PollState(task_id);
+					      				
+					     			} else {
+					     				if (task.state == 'SUCCESS') {
+					     					if (task.result.count == 0) {
+					     						$('.status').html('Sorry, we can\'t import comments for this article because we don\'t have permission from the API.');
+					     					} else {
+						     					var article = $('#articleUrl').val();
+						      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
+						      				}
+					      				} else {
+					      					$('.status').html(task.state);
+					      				}
+					     			};
+					    		});
+					   		};
+					   		PollState('{{ task_id }}');
+						
 					}
 				});
 		    }
