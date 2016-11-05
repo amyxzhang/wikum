@@ -97,8 +97,10 @@ def get_disqus_posts(article, current_task, total_count):
 
 
 def import_reddit_posts(comments, article, reply_to, current_task, total_count):
-
-    reply_list = []
+    
+    if current_task and total_count % 3 == 0:
+        current_task.update_state(state='PROGRESS',
+                                  meta={'count': total_count})
     
     for comment in comments:
         
@@ -132,7 +134,9 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
             html_text = comment.body_html
             html_text = re.sub('<div class="md">', '', html_text)
             html_text = re.sub('</div>', '', html_text)
-
+            
+            total_count += 1
+            
             comment_wikum = Comment.objects.create(article = article,
                                              author = comment_author,
                                              text = html_text,
@@ -150,18 +154,10 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
                                              deleted = comment.banned_by != None,
                                              approved = comment.approved_by != None,
                                              )
-            
-            total_count += 1
-            
-            if current_task and total_count % 3 == 0:
-                current_task.update_state(state='PROGRESS',
-                                          meta={'count': total_count})
-            
             replies = comment.replies
-            reply_list.extend(replies)
+            total_count = import_reddit_posts(replies, article, comment.id, current_task, total_count)
     
-    import_reddit_posts(reply_list, article, comment.id, current_task, total_count)
-
+    return total_count
 
 def import_disqus_posts(result, article):
     count = 0

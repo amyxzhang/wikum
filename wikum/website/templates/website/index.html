@@ -113,9 +113,9 @@
  				if (task.result) {
   					$('.result').html(task.result.count + ' comments ingested.');
   				}
-  				PollState(task_id);
+  				setTimeout(PollState(task_id), 3000);
  			} else if (task.state == 'PENDING') {
- 				PollState(task_id);
+ 				setTimeout(PollState(task_id), 3000);
  			} else {
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
