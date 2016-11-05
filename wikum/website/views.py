@@ -65,14 +65,24 @@ def poll_status(request):
             task = import_article.AsyncResult(task_id)
             data = {'result': task.result, 'state': task.state}
         else:
-            data = 'No task_id in the request'
+            data = {'result': 'No task_id in the request', 'state': 'ERROR'}
     else:
-        data = 'This is not an ajax request'
+        data = {'result': 'This is not an ajax request', 'state': 'ERROR'}
     
     
     
     if task.state == 'SUCCESS' or task.state == 'FAILURE':
         request.session['task_id'] = None
+        if task.state == 'SUCCESS':
+            a = Article.objects.filter(url=request.session['url'])
+            if a.exists():
+                comment_count = a.comment_set.count()
+                if comment_count == 0:
+                    a.delete()
+                    data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
+            
+        request.session['url'] = None
+            
 
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
@@ -86,6 +96,7 @@ def import_article(request):
         job = import_article.delay(url)
         
         request.session['task_id'] = job.id
+        request.session['url'] = url
         data = job.id
     else:
         data = 'This is not an ajax request!'

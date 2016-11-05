@@ -142,7 +142,8 @@
 					},
 					success: function(res){
 						console.log(res);
-						$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while!');
+						$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while as we are rate-limited by APIs.' + 
+						'You can wait or come back later to find the article in the dropdown menu above.');
 					   	PollState(res);
 					}
 				});
