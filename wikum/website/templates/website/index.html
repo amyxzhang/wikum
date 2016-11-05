@@ -110,14 +110,14 @@
 		}).done(function(task){
  			console.log(task);
  			if (task.state == 'PROGRESS') {
-  				$('.result').html(task.count + ' comments ingested.');
+  				$('.result').html(task.result.count + ' comments ingested.');
   				PollState(task_id);
  			} else if (task.state == 'PENDING') {
  				PollState(task_id);
  			} else {
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
-  					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
+  					$('.status').html(task.state + '! <a href="/summary?article=' + article + '">View comments</a>');
   				} else {
   					$('.status').html(task.state);
   				}
