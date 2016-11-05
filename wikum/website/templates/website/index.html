@@ -112,7 +112,8 @@
  			if (task.state == 'PROGRESS') {
   				$('.result').html(task.count + ' comments ingested.');
   				PollState(task_id);
-  				
+ 			} else if (task.state == 'PENDING') {
+ 				PollState(task_id);
  			} else {
  				if (task.state == 'SUCCESS') {
  					if (task.result.count == 0) {
