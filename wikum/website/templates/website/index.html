@@ -116,12 +116,8 @@
  				PollState(task_id);
  			} else {
  				if (task.state == 'SUCCESS') {
- 					if (task.result.count == 0) {
- 						$('.status').html('Sorry, we can\'t import comments for this article because we don\'t have permission from the API.');
- 					} else {
-     					var article = $('#articleUrl').val();
-      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
-      				}
+ 					var article = $('#articleUrl').val();
+  					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
   				} else {
   					$('.status').html(task.state);
   				}
