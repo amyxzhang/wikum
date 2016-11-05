@@ -153,8 +153,9 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
                                              approved = comment.approved_by != None,
                                              )
             replies = comment.replies
-            import_reddit_posts(replies, article, comment.id, current_task, total_count)
-
+            total_count = import_reddit_posts(replies, article, comment.id, current_task, total_count)
+    
+    return total_count
 
 def import_disqus_posts(result, article):
     count = 0
