@@ -74,8 +74,9 @@ def get_disqus_posts(article, current_task, total_count):
     if current_task:
         total_count += count
                     
-        current_task.update_state(state='PROGRESS',
-                                  meta={'count': total_count})
+        if current_task and total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                      meta={'count': total_count})
     
     while result['cursor']['hasNext']:
         next = result['cursor']['next']
@@ -90,15 +91,14 @@ def get_disqus_posts(article, current_task, total_count):
         if current_task:
             total_count += count
             
-            current_task.update_state(state='PROGRESS',
-                                      meta={'count': total_count})
+            if current_task and total_count % 3 == 0:
+                current_task.update_state(state='PROGRESS',
+                                          meta={'count': total_count})
 
 
 def import_reddit_posts(comments, article, reply_to, current_task, total_count):
-    
-    if current_task and total_count % 30 == 0:
-        current_task.update_state(state='PROGRESS',
-                                  meta={'count': total_count})
+
+    reply_list = []
     
     for comment in comments:
         
@@ -132,9 +132,7 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
             html_text = comment.body_html
             html_text = re.sub('<div class="md">', '', html_text)
             html_text = re.sub('</div>', '', html_text)
-            
-            total_count += 1
-            
+
             comment_wikum = Comment.objects.create(article = article,
                                              author = comment_author,
                                              text = html_text,
@@ -152,10 +150,18 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
                                              deleted = comment.banned_by != None,
                                              approved = comment.approved_by != None,
                                              )
+            
+            total_count += 1
+            
+            if current_task and total_count % 3 == 0:
+                current_task.update_state(state='PROGRESS',
+                                          meta={'count': total_count})
+            
             replies = comment.replies
-            total_count = import_reddit_posts(replies, article, comment.id, current_task, total_count)
+            reply_list.extend(replies)
     
-    return total_count
+    import_reddit_posts(replies, article, comment.id, current_task, total_count)
+
 
 def import_disqus_posts(result, article):
     count = 0
