@@ -76,7 +76,7 @@ def poll_status(request):
         if task.state == 'SUCCESS':
             a = Article.objects.filter(url=request.session['url'])
             if a.exists():
-                comment_count = a.comment_set.count()
+                comment_count = a[0].comment_set.count()
                 if comment_count == 0:
                     a.delete()
                     data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
