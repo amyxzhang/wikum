@@ -115,6 +115,7 @@
  			} else if (task.state == 'PENDING') {
  				PollState(task_id);
  			} else {
+ 				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
   					$('.status').html(task.state + '! <a href="/summary?article=' + article + '"><button class="btn btn-success btn-sm">View comments</button></a>');
