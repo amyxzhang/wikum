@@ -101,6 +101,35 @@
 
 {% block scripts %}
 
+<script>
+	var PollState = function(task_id) {
+		$.ajax({
+ 			url: "poll_status",
+ 			type: "POST",
+ 			data: "task_id=" + task_id,
+		}).done(function(task){
+ 			console.log(task);
+ 			if (task.state == 'PROGRESS') {
+  				$('.result').html(task.count + ' comments ingested.');
+  				PollState(task_id);
+  				
+ 			} else {
+ 				if (task.state == 'SUCCESS') {
+ 					if (task.result.count == 0) {
+ 						$('.status').html('Sorry, we can\'t import comments for this article because we don\'t have permission from the API.');
+ 					} else {
+     					var article = $('#articleUrl').val();
+      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
+      				}
+  				} else {
+  					$('.status').html(task.state);
+  				}
+ 			};
+		});
+	};
+	</script>
+
+
     <script>
 		$('#articleUrl').keydown(function(event){ 
 		    var keyCode = (event.keyCode ? event.keyCode : event.which);   
@@ -113,38 +142,11 @@
 					},
 					success: function(res){
 						console.log(res);
-						
 						$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while!');
-					  		
-					    	var PollState = function(task_id) {
-					    		$.ajax({
-					     			url: "poll_status",
-					     			type: "POST",
-					     			data: "task_id=" + task_id,
-					    		}).done(function(task){
-					     			console.log(task);
-					     			if (task.state == 'PROGRESS') {
-					      				$('.result').html(task.count + ' comments ingested.');
-					      				PollState(task_id);
-					      				
-					     			} else {
-					     				if (task.state == 'SUCCESS') {
-					     					if (task.result.count == 0) {
-					     						$('.status').html('Sorry, we can\'t import comments for this article because we don\'t have permission from the API.');
-					     					} else {
-						     					var article = $('#articleUrl').val();
-						      					$('.status').html(task + '! <a href="/summary?article=' + article + '">View comments</a>');
-						      				}
-					      				} else {
-					      					$('.status').html(task.state);
-					      				}
-					     			};
-					    		});
-					   		};
-					   		PollState('{{ task_id }}');
-						
+					   	PollState(res);
 					}
 				});
+				return false;
 		    }
 		});
     </script>
