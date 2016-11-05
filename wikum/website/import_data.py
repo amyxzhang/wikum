@@ -160,7 +160,7 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
             replies = comment.replies
             reply_list.extend(replies)
     
-    import_reddit_posts(replies, article, comment.id, current_task, total_count)
+    import_reddit_posts(reply_list, article, comment.id, current_task, total_count)
 
 
 def import_disqus_posts(result, article):

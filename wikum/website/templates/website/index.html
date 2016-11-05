@@ -110,7 +110,9 @@
 		}).done(function(task){
  			console.log(task);
  			if (task.state == 'PROGRESS') {
-  				$('.result').html(task.result.count + ' comments ingested.');
+ 				if (task.result) {
+  					$('.result').html(task.result.count + ' comments ingested.');
+  				}
   				PollState(task_id);
  			} else if (task.state == 'PENDING') {
  				PollState(task_id);
@@ -120,7 +122,7 @@
  					var article = $('#articleUrl').val();
   					$('.status').html(task.state + '! <a href="/summary?article=' + article + '"><button class="btn btn-success btn-sm">View comments</button></a>');
   				} else {
-  					$('.status').html(task.state);
+  					$('.status').html(task.state + ' - ' + task.result);
   				}
  			};
 		});
