@@ -63,6 +63,9 @@ def poll_status(request):
             from tasks import import_article
             task_id = request.POST['task_id']
             task = import_article.AsyncResult(task_id)
+            
+            print task 
+            
             data = {'result': task.result, 'state': task.state}
         else:
             data = {'result': 'No task_id in the request', 'state': 'ERROR'}
@@ -71,7 +74,7 @@ def poll_status(request):
     
     
     print data
-    print task 
+    
     if task.state == 'SUCCESS' or task.state == 'FAILURE':
         request.session['task_id'] = None
         if task.state == 'SUCCESS':
