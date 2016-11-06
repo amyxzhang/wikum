@@ -65,6 +65,8 @@ def poll_status(request):
             task = import_article.AsyncResult(task_id)
             
             print task 
+            print task.state
+            print task.result
             
             data = {'result': task.result, 'state': task.state}
         else:
