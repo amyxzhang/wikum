@@ -15,9 +15,15 @@ def get_article(url, source, num):
     article = Article.objects.filter(url=url)
     if article.count() == 0:
         if source.source_name == "The Atlantic":
+            
+            url = url.strip().split('?')[0]
+            
             thread_call = THREAD_CALL % (DISQUS_API_KEY, source.disqus_name, url)
             result = urllib2.urlopen(thread_call)
             result = json.load(result)
+            
+            if len(result['response']) > 1 and result['response']['link'] != url:
+                return None
             
             title = result['response'][0]['clean_title']
             link = result['response'][0]['link']

@@ -6,14 +6,23 @@ from website.import_data import get_source, get_article, get_disqus_posts,\
 @shared_task()
 def import_article(url):
     source = get_source(url)    
-    article = get_article(url, source, 0)
-    posts = article.comment_set
-    total_count = 0
-    
-    if posts.count() == 0:
-        if article.source.source_name == "The Atlantic":
-            get_disqus_posts(article, current_task, total_count)
+    if source:
+        article = get_article(url, source, 0)
+        if article:
             
-        elif article.source.source_name == "Reddit":
-            get_reddit_posts(article, current_task, total_count)
-        count_replies(article)
+            posts = article.comment_set
+            total_count = 0
+            
+            if posts.count() == 0:
+                if article.source.source_name == "The Atlantic":
+                    get_disqus_posts(article, current_task, total_count)
+                    
+                elif article.source.source_name == "Reddit":
+                    get_reddit_posts(article, current_task, total_count)
+                count_replies(article)
+        else:
+            current_task.update_state(state='FAILURE', meta={'exc': "Can't find that article in the Disqus API."})
+    else:
+        current_task.update_state(state='FAILURE', meta={'exc': "That source is not supported."})
+        
+        

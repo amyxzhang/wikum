@@ -81,7 +81,8 @@ def poll_status(request):
                     a.delete()
                     data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
                     data['state'] = 'FAILURE'
-            
+        else:
+            data['result'] = task.result.get('exc')
         request.session['url'] = None
             
 
