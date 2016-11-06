@@ -70,7 +70,8 @@ def poll_status(request):
         data = {'result': 'This is not an ajax request', 'state': 'ERROR'}
     
     
-    
+    print data
+    print task 
     if task.state == 'SUCCESS' or task.state == 'FAILURE':
         request.session['task_id'] = None
         if task.state == 'SUCCESS':
@@ -81,10 +82,6 @@ def poll_status(request):
                     a.delete()
                     data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
                     data['state'] = 'FAILURE'
-
-            if task.result.get('exc'):
-                data['result'] = task.result.get('exc')
-                data['state'] = 'FAILURE'
         request.session['url'] = None
             
 
