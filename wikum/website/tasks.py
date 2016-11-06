@@ -21,10 +21,8 @@ def import_article(url):
                     get_reddit_posts(article, current_task, total_count)
                 count_replies(article)
         else:
-            current_task.update_state(state='FAILURE', meta={'exc': "Can't find that article in the Disqus API."})
-            raise Ignore()
+            current_task.update_state(state='SUCCESS', meta={'exc': "Can't find that article in the Disqus API."})
     else:
-        current_task.update_state(state='FAILURE', meta={'exc': "That source is not supported."})
-        raise Ignore()
+        current_task.update_state(state='SUCCESS', meta={'exc': "That source is not supported."})
         
         
