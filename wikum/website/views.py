@@ -64,29 +64,29 @@ def poll_status(request):
             task_id = request.POST['task_id']
             task = import_article.AsyncResult(task_id)
             
-            print task 
-            print task.state
-            print task.result
-            
             data = {'result': task.result, 'state': task.state}
         else:
             data = {'result': 'No task_id in the request', 'state': 'ERROR'}
     else:
         data = {'result': 'This is not an ajax request', 'state': 'ERROR'}
     
-    
-    print data
-    
     if task.state == 'SUCCESS' or task.state == 'FAILURE':
         request.session['task_id'] = None
         if task.state == 'SUCCESS':
-            a = Article.objects.filter(url=request.session['url'])
-            if a.exists():
-                comment_count = a[0].comment_set.count()
-                if comment_count == 0:
-                    a.delete()
-                    data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
-                    data['state'] = 'FAILURE'
+            if task.get() == 'FAILURE-ARTICLE':
+                data['result'] = "Can't find that article in the Disqus API."
+                data['state'] = 'FAILURE'
+            elif task.get() == 'FAILURE-SOURCE':
+                data['result'] = "That source is not supported."
+                data['state'] = 'FAILURE'
+            else:
+                a = Article.objects.filter(url=request.session['url'])
+                if a.exists():
+                    comment_count = a[0].comment_set.count()
+                    if comment_count == 0:
+                        a.delete()
+                        data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
+                        data['state'] = 'FAILURE'
         request.session['url'] = None
             
 
