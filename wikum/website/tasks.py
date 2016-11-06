@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from celery import shared_task, current_task
+from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
     get_reddit_posts, count_replies
 
@@ -9,7 +10,6 @@ def import_article(url):
     if source:
         article = get_article(url, source, 0)
         if article:
-            
             posts = article.comment_set
             total_count = 0
             
@@ -22,7 +22,9 @@ def import_article(url):
                 count_replies(article)
         else:
             current_task.update_state(state='FAILURE', meta={'exc': "Can't find that article in the Disqus API."})
+            raise Ignore()
     else:
         current_task.update_state(state='FAILURE', meta={'exc': "That source is not supported."})
+        raise Ignore()
         
         
