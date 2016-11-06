@@ -22,7 +22,7 @@ def get_article(url, source, num):
             result = urllib2.urlopen(thread_call)
             result = json.load(result)
             
-            if len(result['response']) > 1 and result['response']['link'] != url:
+            if len(result['response']) > 1 and result['response'][0]['link'] != url:
                 return None
             
             title = result['response'][0]['clean_title']
