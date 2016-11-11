@@ -50,12 +50,12 @@ def get_article(url, source, num):
             params = {'action': 'parse', 'prop': 'sections','page': 'Talk:' + wiki_page}
             request = api.APIRequest(site, params)
             result = request.query()
-            id = result['parse']['pageid']
+            id = str(result['parse']['pageid'])
             section_title = None
             if section:
                 for s in result['parse']['sections']:
                     if s['anchor'] == section:
-                        id = id + '#' + s['index']
+                        id = str(id) + '#' + str(s['index'])
                         section_title = s['line']
             title = result['parse']['title']
             if section_title:
