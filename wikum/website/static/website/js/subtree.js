@@ -160,6 +160,8 @@ svg.append('svg:rect')
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
+article_url = str.replace('#','%23', article_url);
+
 var sort = getParameterByName('sort');
 if (!sort) {
 	sort = "likes";
