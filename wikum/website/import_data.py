@@ -30,8 +30,8 @@ def wikipediaUserTalkHook(parser_env, namespace, body):
     return '<a href="http://en.wikipedia.org/wiki/User_talk:%s">%s</a>' % (href, text)
 
 registerInternalLinkHook('*', wikipediaLinkHook)
+registerInternalLinkHook('User talk', wikipediaUserTalkHook)
 registerInternalLinkHook('User', wikipediaUserHook)
-registerInternalLinkHook('User_talk', wikipediaUserTalkHook)
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
@@ -205,10 +205,15 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
     for comment in comments:
         text = ''
         for block in comment['text_blocks']:
-            text += '<P>%s</P>' % parse(block)
+            t = parse(block)
+            if t.strip() != '':
+                text += '<P>%s</P>' % t
        
-        author = comment['author']
-        comment_author = import_wiki_authors([author], article)[0]
+        author = comment.get('author')
+        if author:
+            comment_author = import_wiki_authors([author], article)[0]
+        else:
+            comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
             
         comments = Comment.objects.filter(article=article, author=comment_author,text=text)
         if comments.count() > 0:
