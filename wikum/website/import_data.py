@@ -90,7 +90,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     id = article.disqus_id.split('#')[0]
     text = result['query']['pages'][id]['revisions'][0]['*']
     import wikichatter as wc
-    parsed_text = wc.parse(text)
+    parsed_text = wc.parse(text.encode('ascii','ignore'))
     start_sections = parsed_text['sections']
     
     if len(title) > 1:
@@ -113,7 +113,7 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     for section in sections:
         heading = section.get('heading', None)
         if heading:
-            parsed_text = wc.parse(heading)
+            parsed_text = wc.parse(heading.encode('ascii','ignore'))
             comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
             comment_wikum = Comment.objects.create(article = article,
                                                    author = comment_author,
