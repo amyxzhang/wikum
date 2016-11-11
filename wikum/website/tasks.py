@@ -2,11 +2,11 @@ from __future__ import absolute_import
 from celery import shared_task, current_task
 from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
-    get_reddit_posts, count_replies
+    get_reddit_posts, count_replies, get_wiki_talk_posts
 
 @shared_task()
 def import_article(url):
-    source = get_source(url)    
+    source = get_source(url)
     if source:
         article = get_article(url, source, 0)
         if article:
@@ -19,6 +19,10 @@ def import_article(url):
                     
                 elif article.source.source_name == "Reddit":
                     get_reddit_posts(article, current_task, total_count)
+                    
+                elif article.source.source_name == "Wikipedia Talk Page":
+                    get_wiki_talk_posts(article, current_task, total_count)
+                    
                 count_replies(article)
         else:
             return 'FAILURE-ARTICLE'

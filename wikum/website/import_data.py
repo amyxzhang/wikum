@@ -36,6 +36,32 @@ def get_article(url, source, num):
             link = url
             id = submission.id
             
+        elif source.source_name == "Wikipedia Talk Page":
+            url_parts = url.split('/wiki/Talk:')
+            domain = url_parts[0]
+            wiki_parts = url_parts[1].split('#')
+            wiki_page = wiki_parts[0]
+            section = None
+            if len(url_parts) > 1:
+                section = wiki_parts[1]
+            
+            from wikitools import wiki, api
+            site = wiki.Wiki(domain + '/w/api.php')
+            params = {'action': 'parse', 'prop': 'sections','page': 'Talk:' + wiki_page}
+            request = api.APIRequest(site, params)
+            result = request.query()
+            id = result['parse']['pageid']
+            section_title = None
+            if section:
+                for s in result['parse']['sections']:
+                    if s['anchor'] == section:
+                        id = id + '#' + s['index']
+                        section_title = s['line']
+            title = result['parse']['title']
+            if section_title:
+                title = title + ' - ' + section_title
+            link = url
+            
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
         article = article[num]
@@ -47,8 +73,145 @@ def get_source(url):
         return Source.objects.get(source_name="The Atlantic")
     elif 'reddit.com' in url:
         return Source.objects.get(source_name="Reddit")
+    elif 'wikipedia.org/wiki/Talk' in url:
+        return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
+def get_wiki_talk_posts(article, current_task, total_count):
+    from wikitools import wiki, api
+    domain = article.url.split('/wiki/Talk:')[0]
+    site = wiki.Wiki(domain + '/w/api.php')
+    
+    title = article.title.split(' - ')
+    
+    params = {'action': 'query', 'titles': title[0],'prop': 'revision', 'rvprop': 'content', 'format': 'json'}
+    request = api.APIRequest(site, params)
+    result = request.query()
+    id = article.disqus_id.split('#')[0]
+    text = result['query']['pages'][id]['revisions'][0]['*']
+    import wikichatter as wc
+    parsed_text = wc.parse(text)
+    start_sections = parsed_text['sections']
+    
+    if len(title) > 1:
+        section_title = title[1]
+        sections = parsed_text['sections']
+        for s in sections:
+            heading_title = s['heading']
+            heading_title = re.sub(']','', heading_title)
+            heading_title = re.sub('[','', heading_title)
+            if heading_title == section_title:
+                start_sections = s['subsections']
+                start_comments = s['comments']
+    
+                total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
+    
+    total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
+    
+def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
+    import wikichatter as wc
+    for section in sections:
+        heading = section.get('heading', None)
+        if heading:
+            parsed_text = wc.parse(heading)
+            comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
+            comment_wikum = Comment.objects.create(article = article,
+                                                   author = comment_author,
+                                                   text = parsed_text,
+                                                   reply_to_disqus = reply_to,
+                                                   text_len = len(parsed_text),
+                                                   )
+            total_count += 1
+            
+            if current_task and total_count % 3 == 0:
+                current_task.update_state(state='PROGRESS',
+                                          meta={'count': total_count})
+            
+        else:
+            comment_wikum = reply_to
+        if len(section['comments']) > 0:
+            total_count = import_wiki_talk_posts(section['comments'], article, comment_wikum, current_task, total_count)
+        if len(section['subsections']) > 0:
+            total_count = import_wiki_sessions(section['subsections'], article, comment_wikum, current_task, total_count)
+    return total_count
+    
+def import_wiki_authors(authors, article):
+    authors = '|'.join(authors)
+    
+    from wikitools import wiki, api
+    domain = article.url.split('/wiki/Talk:')[0]
+    site = wiki.Wiki(domain + '/w/api.php')
+    
+    params = {'action': 'query', 'list': 'users', 'ususers': authors, 'usprop': 'blockinfo|groups|editcount|registration|emailable|gender', 'format': 'json'}
+    request = api.APIRequest(site, params)
+    result = request.query()
+    comment_authors = []
+    for user in result['query']['users']:
+        try:
+            author_id = user['userid']
+            comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+            if comment_author.count() > 0:
+                comment_author = comment_author[0]
+            else:
+                comment_author = CommentAuthor.objects.create(username=user['name'], 
+                                                              disqus_id=author_id,
+                                                              joined_at=user['registration'],
+                                                              edit_count=user['editcount'],
+                                                              gender=user['gender'],
+                                                              groups=','.join(user['groups']),
+                                                              is_wikipedia=True
+                                                              )
+        except Exception:
+            comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
+    
+        comment_authors.append(comment_author)
+    return comment_authors
+    
+    
+def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):
+    
+    from wikimarkup import parse, registerInternalLinkHook
+
+    def wikipediaLinkHook(parser_env, namespace, body):
+        # namespace is going to be 'Wikipedia' 
+        (article, pipe, text) = body.partition('|') 
+        href = article.strip().capitalize().replace(' ', '_') 
+        text = (text or article).strip() 
+        return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
+    
+    registerInternalLinkHook('*', wikipediaLinkHook)
+    
+    for comment in comments:
+        text = parse(comment['text_blocks'])
+        time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
+        author = comment['author']
+        comment_author = import_wiki_authors([author], article)
+        
+        cosigners = comment['cosigners']
+        comment_cosigners = import_wiki_authors(cosigners, article)
+            
+        comment_wikum = Comment.objects.create(article = article,
+                                               author = comment_author,
+                                               text = text,
+                                               reply_to_disqus = reply_to,
+                                               text_len = len(text),
+                                               created_at=time,
+                                               )
+        comment_wikum.save()
+        comment_wikum.disqus_id = comment_wikum.id
+        comment_wikum.save()
+        
+        total_count += 1
+        
+        if current_task and total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                      meta={'count': total_count})
+        
+        replies = comment['comments']
+        total_count = import_wiki_talk_posts(replies, article, comment.id, current_task, total_count)
+    
+    return total_count
+        
 
 def get_reddit_posts(article, current_task, total_count):
     r = praw.Reddit(user_agent=USER_AGENT)
@@ -80,7 +243,7 @@ def get_disqus_posts(article, current_task, total_count):
     if current_task:
         total_count += count
                     
-        if current_task and total_count % 3 == 0:
+        if total_count % 3 == 0:
             current_task.update_state(state='PROGRESS',
                                       meta={'count': total_count})
     
@@ -97,7 +260,7 @@ def get_disqus_posts(article, current_task, total_count):
         if current_task:
             total_count += count
             
-            if current_task and total_count % 3 == 0:
+            if total_count % 3 == 0:
                 current_task.update_state(state='PROGRESS',
                                           meta={'count': total_count})
 
