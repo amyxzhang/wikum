@@ -115,12 +115,17 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
         if heading:
             parsed_text = wc.parse(heading.encode('ascii','ignore'))
             comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
-            comment_wikum = Comment.objects.create(article = article,
-                                                   author = comment_author,
-                                                   text = parsed_text,
-                                                   reply_to_disqus = reply_to,
-                                                   text_len = len(parsed_text),
-                                                   )
+            
+            comments = Comment.objects.filter(article=article, author=comment_author, text=parsed_text)
+            if comments.count() > 0:
+                comment_wikum = comments[0]
+            else:
+                comment_wikum = Comment.objects.create(article = article,
+                                                       author = comment_author,
+                                                       text = parsed_text,
+                                                       reply_to_disqus = reply_to,
+                                                       text_len = len(parsed_text),
+                                                       )
             total_count += 1
             
             if current_task and total_count % 3 == 0:
@@ -191,13 +196,17 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
         cosigners = comment['cosigners']
         comment_cosigners = import_wiki_authors(cosigners, article)
             
-        comment_wikum = Comment.objects.create(article = article,
-                                               author = comment_author,
-                                               text = text,
-                                               reply_to_disqus = reply_to,
-                                               text_len = len(text),
-                                               created_at=time,
-                                               )
+        comments = Comment.objects.filter(article=article, author=comment_author,created_at=time)
+        if comments.count() > 0:
+            comment_wikum = comments[0]
+        else:
+            comment_wikum = Comment.objects.create(article = article,
+                                                   author = comment_author,
+                                                   text = text,
+                                                   reply_to_disqus = reply_to,
+                                                   text_len = len(text),
+                                                   created_at=time,
+                                                   )
         for signer in comment_cosigners:
             comment_wikum.cosigners.add(signer)
             
@@ -212,7 +221,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
                                       meta={'count': total_count})
         
         replies = comment['comments']
-        total_count = import_wiki_talk_posts(replies, article, comment.id, current_task, total_count)
+        total_count = import_wiki_talk_posts(replies, article, comment_wikum.disqus_id, current_task, total_count)
     
     return total_count
         
