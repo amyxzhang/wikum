@@ -97,7 +97,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
         section_title = title[1]
         sections = parsed_text['sections']
         for s in sections:
-            heading_title = s['heading']
+            heading_title = s.get('heading','')
             heading_title = re.sub(']','', heading_title)
             heading_title = re.sub('[','', heading_title)
             if heading_title == section_title:
