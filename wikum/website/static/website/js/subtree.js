@@ -160,7 +160,7 @@ svg.append('svg:rect')
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
-article_url = str.replace('#','%23', article_url);
+article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
 if (!sort) {

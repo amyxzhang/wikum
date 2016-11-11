@@ -43,7 +43,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 $(document).ready(function () {
 	
 	var article_url = getParameterByName('article');
-	article_url = str.replace('#','%23', article_url);
+	article_url = article_url.replace('#','%23');
 	var next = parseInt(getParameterByName('next'));
 	if (!next) {
 		next = 0;
