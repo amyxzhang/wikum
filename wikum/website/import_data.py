@@ -186,7 +186,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
         text = parse(comment['text_blocks'])
         time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
         author = comment['author']
-        comment_author = import_wiki_authors([author], article)
+        comment_author = import_wiki_authors([author], article)[0]
         
         cosigners = comment['cosigners']
         comment_cosigners = import_wiki_authors(cosigners, article)
