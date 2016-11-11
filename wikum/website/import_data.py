@@ -88,6 +88,8 @@ def get_wiki_talk_posts(article, current_task, total_count):
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
+    print id
+    print result['query']['pages'][id]
     text = result['query']['pages'][id]['revisions'][0]['*']
     import wikichatter as wc
     parsed_text = wc.parse(text)
