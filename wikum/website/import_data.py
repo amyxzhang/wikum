@@ -188,7 +188,9 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
     registerInternalLinkHook('*', wikipediaLinkHook)
     
     for comment in comments:
-        text = parse(comment['text_blocks'])
+        text = ''
+        for block in comment['text_blocks']:
+            text += '<P>%s</P>' % parse(block)
         time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
         author = comment['author']
         comment_author = import_wiki_authors([author], article)[0]

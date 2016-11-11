@@ -120,6 +120,7 @@
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
+ 					article.replace('#', '%23');
   					$('.status').html(task.state + '! <a href="/summary?article=' + article + '"><button class="btn btn-success btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);

@@ -128,6 +128,7 @@ def summary_page(request):
     posts = get_posts(article)
     
     return {'article': article,
+            'url': re.sub('#', '%23', article.url),
             'source': article.source,
             'num': num,
             }
