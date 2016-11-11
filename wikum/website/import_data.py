@@ -191,30 +191,36 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
         text = ''
         for block in comment['text_blocks']:
             text += '<P>%s</P>' % parse(block)
-        time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
+       
         author = comment['author']
         comment_author = import_wiki_authors([author], article)[0]
-        
-        cosigners = comment['cosigners']
-        comment_cosigners = import_wiki_authors(cosigners, article)
             
-        comments = Comment.objects.filter(article=article, author=comment_author,created_at=time)
+        comments = Comment.objects.filter(article=article, author=comment_author,text=text)
         if comments.count() > 0:
             comment_wikum = comments[0]
         else:
+            time = None
+            if comment.get('time_stamp'):
+                time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
+
+            cosigners = comment['cosigners']
+            comment_cosigners = import_wiki_authors(cosigners, article)
+
             comment_wikum = Comment.objects.create(article = article,
                                                    author = comment_author,
                                                    text = text,
                                                    reply_to_disqus = reply_to,
                                                    text_len = len(text),
-                                                   created_at=time,
                                                    )
-        for signer in comment_cosigners:
-            comment_wikum.cosigners.add(signer)
+            if time:
+                comment_wikum.created_at = time
             
-        comment_wikum.save()
-        comment_wikum.disqus_id = comment_wikum.id
-        comment_wikum.save()
+            comment_wikum.save()
+            comment_wikum.disqus_id = comment_wikum.id
+            comment_wikum.save()
+            
+            for signer in comment_cosigners:
+                comment_wikum.cosigners.add(signer)
         
         total_count += 1
         

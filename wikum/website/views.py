@@ -44,6 +44,9 @@ def index(request):
             'task_id': task_id,
             'articles': a}
     
+    for art in a:
+        art.url = re.sub('#', '%23', art.url)
+    
     return {'page': 'index',
             'articles': a}
 
