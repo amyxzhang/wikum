@@ -6,6 +6,33 @@ import praw
 import datetime
 import re
 
+from wikimarkup import parse, registerInternalLinkHook
+
+def wikipediaLinkHook(parser_env, namespace, body):
+    # namespace is going to be 'Wikipedia' 
+    (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
+    return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
+
+def wikipediaUserHook(parser_env, namespace, body):
+    # namespace is going to be 'Wikipedia' 
+    (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
+    return '<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (href, text)
+
+def wikipediaUserTalkHook(parser_env, namespace, body):
+    # namespace is going to be 'Wikipedia' 
+    (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
+    return '<a href="http://en.wikipedia.org/wiki/User_talk:%s">%s</a>' % (href, text)
+
+registerInternalLinkHook('*', wikipediaLinkHook)
+registerInternalLinkHook('User', wikipediaUserHook)
+registerInternalLinkHook('User_talk', wikipediaUserTalkHook)
+
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
@@ -109,11 +136,10 @@ def get_wiki_talk_posts(article, current_task, total_count):
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
-    import wikichatter as wc
     for section in sections:
         heading = section.get('heading', None)
         if heading:
-            parsed_text = wc.parse(heading.encode('ascii','ignore'))
+            parsed_text = parse(heading)
             comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
             
             comments = Comment.objects.filter(article=article, author=comment_author, text=parsed_text)
@@ -175,17 +201,6 @@ def import_wiki_authors(authors, article):
     
     
 def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):
-    
-    from wikimarkup import parse, registerInternalLinkHook
-
-    def wikipediaLinkHook(parser_env, namespace, body):
-        # namespace is going to be 'Wikipedia' 
-        (article, pipe, text) = body.partition('|') 
-        href = article.strip().capitalize().replace(' ', '_') 
-        text = (text or article).strip() 
-        return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
-    
-    registerInternalLinkHook('*', wikipediaLinkHook)
     
     for comment in comments:
         text = ''
