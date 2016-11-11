@@ -56,6 +56,9 @@ class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
     author = models.ForeignKey('CommentAuthor', null=True)
+    
+    cosigners = models.ManyToManyField('CommentAuthor')
+    
     text = models.TextField()
     disqus_id = models.CharField(max_length=70)
     reply_to_disqus = models.CharField(max_length=70, null=True, blank=True)
@@ -113,6 +116,11 @@ class CommentAuthor(models.Model):
     
     avatar = models.URLField()
     primary = models.BooleanField(default=False)
+    
+    is_wikipedia = models.BooleanField(default=False)
+    edit_count = models.IntegerField(default=0)
+    gender = models.CharField(max_length=15, null=True)
+    groups = models.TextField(null=True)
     
     def __unicode__(self):
         if self.anonymous:

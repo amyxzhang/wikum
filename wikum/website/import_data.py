@@ -153,6 +153,7 @@ def import_wiki_authors(authors, article):
             if comment_author.count() > 0:
                 comment_author = comment_author[0]
             else:
+                joined_at = datetime.datetime.strptime(user['registration'], '%Y-%m-%dT%H:%M:%SZ')
                 comment_author = CommentAuthor.objects.create(username=user['name'], 
                                                               disqus_id=author_id,
                                                               joined_at=user['registration'],
@@ -197,6 +198,9 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
                                                text_len = len(text),
                                                created_at=time,
                                                )
+        for signer in comment_cosigners:
+            comment_wikum.cosigners.add(signer)
+            
         comment_wikum.save()
         comment_wikum.disqus_id = comment_wikum.id
         comment_wikum.save()
