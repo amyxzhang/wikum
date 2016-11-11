@@ -57,7 +57,7 @@ class Comment(models.Model):
     article = models.ForeignKey('Article')
     author = models.ForeignKey('CommentAuthor', null=True)
     
-    cosigners = models.ManyToManyField('CommentAuthor')
+    cosigners = models.ManyToManyField('CommentAuthor', related_name="cosigned_on")
     
     text = models.TextField()
     disqus_id = models.CharField(max_length=70)
