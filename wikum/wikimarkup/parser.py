@@ -1107,7 +1107,7 @@ class BaseParser(object):
             else:
                 space, name = bits[i:i+2]
                 if space and space.strip().lower() in mInternalLinkHooks:
-                    sb.append(mInternalLinkHooks[space](self, space, name))
+                    sb.append(mInternalLinkHooks[space.strip().lower()](self, space, name))
                 elif space and space.startswith(':') and ':' in mInternalLinkHooks:
                     sb.append(mInternalLinkHooks[':'](self, space, name))
                 elif '*' in mInternalLinkHooks:
@@ -1135,7 +1135,7 @@ class BaseParser(object):
             else:
                 space, name = bits[i:i+2]
                 if space and space.strip().lower() in mInternalTemplateHooks:
-                    sb.append(mInternalTemplateHooks[space](self, space, name))
+                    sb.append(mInternalTemplateHooks[space.strip().lower()](self, space, name))
                 elif space and space.startswith('|') and '|' in mInternalTemplateHooks:
                     sb.append(mInternalTemplateHooks['|'](self, space, name))
                 elif '*' in mInternalTemplateHooks:
