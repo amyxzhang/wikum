@@ -447,6 +447,9 @@ def registerInternalLinkHook(tag, function):
     """
     mInternalLinkHooks[tag] = function
 
+def registerInternalTemplateHook(tag, function):
+    mInternalTemplateHooks[tag] = function
+
 class BaseParser(object):
     def __init__(self):
         self.uniq_prefix = u"\x07UNIQ" + unicode(random.randint(1, 1000000000))
