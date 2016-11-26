@@ -6,49 +6,6 @@ import praw
 import datetime
 import re
 
-from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook
-
-def linkHook(parser_env, namespace, body):
-    (article, pipe, text) = body.partition('|') 
-    href = article.strip().capitalize().replace(' ', '_') 
-    text = (text or article).strip() 
-    return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
-
-def userHook(parser_env, namespace, body):
-    (article, pipe, text) = body.partition('|') 
-    href = article.strip().capitalize().replace(' ', '_') 
-    text = (text or article).strip() 
-    return '<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (href, text)
-
-def userTalkHook(parser_env, namespace, body):
-    (article, pipe, text) = body.partition('|') 
-    href = article.strip().capitalize().replace(' ', '_') 
-    text = (text or article).strip() 
-    return '<a href="http://en.wikipedia.org/wiki/User_talk:%s">%s</a>' % (href, text)
-
-def pingTempHook(parser_env, namespace, body): 
-    names = body.split('|') 
-    text = []
-    for name in names:
-        text.append('<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (name, name))
-    return '@' + ', '.join(text)
-
-def quoteHook(parser_env, namespace, body):
-    return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
-
-def paraHook(parser_env, namespace, body):
-    return '<P></P>'
-
-registerInternalLinkHook('*', linkHook)
-registerInternalLinkHook('user talk', userTalkHook)
-registerInternalLinkHook('user', userHook)
-
-registerInternalTemplateHook('u', userHook)
-registerInternalTemplateHook('reply to', userHook)
-registerInternalTemplateHook('ping', pingTempHook)
-registerInternalTemplateHook('tq', quoteHook)
-registerInternalTemplateHook('pb', paraHook)
-
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
@@ -155,7 +112,7 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     for section in sections:
         heading = section.get('heading', None)
         if heading:
-            parsed_text = parse('===' + str(heading) + '===')
+            parsed_text = heading
             comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
             
             comments = Comment.objects.filter(article=article, author=comment_author, text=parsed_text)
@@ -225,7 +182,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
     for comment in comments:
         text = ''
         for block in comment['text_blocks']:
-            t = parse(block)
+            t = block
             if t.strip() != '':
                 text += '<P>%s</P>' % t
        

@@ -28,6 +28,59 @@ from sklearn.metrics.pairwise import euclidean_distances
 from django.views.decorators.csrf import csrf_exempt
 from website.import_data import get_source, get_article
 
+from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook
+
+def linkHook(parser_env, namespace, body):
+    (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
+    return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
+
+def userHook(parser_env, namespace, body):
+    (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
+    return '<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (href, text)
+
+def userTalkHook(parser_env, namespace, body):
+    (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
+    return '<a href="http://en.wikipedia.org/wiki/User_talk:%s">%s</a>' % (href, text)
+
+def pingTempHook(parser_env, namespace, body): 
+    names = body.split('|') 
+    text = []
+    for name in names:
+        text.append('<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (name, name))
+    return '@' + ', '.join(text)
+
+def quoteHook(parser_env, namespace, body):
+    return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
+
+def paraHook(parser_env, namespace, body):
+    return '<P></P>'
+
+def nothingHook(parser_env, namespace, body):
+    return ''
+
+def archiveHook(parser_env, namespace, body):
+    return '<div style="background-color: #ffffff;">%s</>' % body
+
+registerInternalLinkHook('*', linkHook)
+registerInternalLinkHook('user talk', userTalkHook)
+registerInternalLinkHook('user', userHook)
+
+registerInternalTemplateHook('u', userHook)
+registerInternalTemplateHook('reply to', userHook)
+registerInternalTemplateHook('ping', pingTempHook)
+registerInternalTemplateHook('tq', quoteHook)
+registerInternalTemplateHook('pb', paraHook)
+registerInternalTemplateHook('undent', nothingHook)
+registerInternalTemplateHook('archivetop', archiveHook)
+registerInternalTemplateHook('archivebottom', nothingHook)
+
+
 
      
 stemmer = Stemmer("english")
@@ -258,7 +311,11 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
 
-            v1['name'] = post.text
+            if 'https://en.wikipedia.org/wiki/' in article.url:
+                v1['name'] = parse(post.text)
+                v1['wikitext'] = post.text
+            else:
+                v1['name'] = post.text
             
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
             if c1.count() == 0:
