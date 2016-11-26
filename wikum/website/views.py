@@ -61,9 +61,6 @@ def quoteHook(parser_env, namespace, body):
 def paraHook(parser_env, namespace, body):
     return '<P></P>'
 
-def nothingHook(parser_env, namespace, body):
-    return ''
-
 def archiveHook(parser_env, namespace, body):
     return '<p style="background-color: #ffffff;">%s</p>' % body
 
@@ -77,7 +74,6 @@ registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('pb', paraHook)
 registerInternalTemplateHook('archivetop', archiveHook)
-registerInternalTemplateHook('*' , nothingHook)
 
 
      
