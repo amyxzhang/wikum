@@ -503,6 +503,7 @@ class BaseParser(object):
         text = self.parseAllQuotes(text)
         text = self.replaceExternalLinks(text)
         text = self.replaceInternalLinks(text)
+        text = self.replaceInternalTemplates(text)
         text = self.unstrip(text)
         text = self.fixtags(text)
         text = self.doBlockLevels(text, True)
