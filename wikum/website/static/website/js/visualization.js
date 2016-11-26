@@ -9,14 +9,14 @@ var highlight_text = null;
 
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     width = 600 - margin.left - margin.right,
-    barHeight = 35;
+    barHeight = 30;
 
 var i = 0,
     duration = 400,
     root;
 
 var tree = d3.layout.tree()
-    .nodeSize([0, 18]);
+    .nodeSize([0, 15]);
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });

@@ -2134,7 +2134,7 @@ function dragend(d) {
 
 
 	      	if (total > 18) {
-	      		return 18;
+	      		return 15;
 	      	} else if (total < 8) {
 	      		return 8;
 	      	} else {
@@ -2336,7 +2336,7 @@ function update(source) {
 	      	}
 
 	      	if (total > 18) {
-	      		return "scale(1.8)";
+	      		return "scale(1.5)";
 	      	} else if (total < 8) {
 	      		return "scale(0.8)";
 	      	} else {
