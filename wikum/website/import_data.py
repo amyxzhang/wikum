@@ -6,32 +6,40 @@ import praw
 import datetime
 import re
 
-from wikimarkup import parse, registerInternalLinkHook
+from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook
 
 def wikipediaLinkHook(parser_env, namespace, body):
-    # namespace is going to be 'Wikipedia' 
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
 
 def wikipediaUserHook(parser_env, namespace, body):
-    # namespace is going to be 'Wikipedia' 
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (href, text)
 
 def wikipediaUserTalkHook(parser_env, namespace, body):
-    # namespace is going to be 'Wikipedia' 
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/User_talk:%s">%s</a>' % (href, text)
 
+def wikipediaPingTempHook(parser_env, namespace, body): 
+    names = body.split('|') 
+    text = []
+    for name in names:
+        text.append('<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (name, name))
+    return '@' + ', '.join(text)
+
 registerInternalLinkHook('*', wikipediaLinkHook)
 registerInternalLinkHook('User talk', wikipediaUserTalkHook)
 registerInternalLinkHook('User', wikipediaUserHook)
+
+registerInternalTemplateHook('u', wikipediaUserHook)
+registerInternalTemplateHook('reply to', wikipediaUserHook)
+registerInternalTemplateHook('ping', wikipediaPingTempHook)
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
