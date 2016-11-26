@@ -36,16 +36,18 @@ def pingTempHook(parser_env, namespace, body):
 def quoteHook(parser_env, namespace, body):
     return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
 
+def paraHook(parser_env, namespace, body):
+    return '<P></P>'
+
 registerInternalLinkHook('*', linkHook)
-registerInternalLinkHook('User talk', userTalkHook)
-registerInternalLinkHook('User', userHook)
+registerInternalLinkHook('user talk', userTalkHook)
+registerInternalLinkHook('user', userHook)
 
 registerInternalTemplateHook('u', userHook)
-registerInternalTemplateHook('U', userHook)
 registerInternalTemplateHook('reply to', userHook)
 registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('tq', quoteHook)
-
+registerInternalTemplateHook('pb', paraHook)
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
