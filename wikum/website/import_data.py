@@ -8,38 +8,44 @@ import re
 
 from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook
 
-def wikipediaLinkHook(parser_env, namespace, body):
+def linkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
 
-def wikipediaUserHook(parser_env, namespace, body):
+def userHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (href, text)
 
-def wikipediaUserTalkHook(parser_env, namespace, body):
+def userTalkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/User_talk:%s">%s</a>' % (href, text)
 
-def wikipediaPingTempHook(parser_env, namespace, body): 
+def pingTempHook(parser_env, namespace, body): 
     names = body.split('|') 
     text = []
     for name in names:
         text.append('<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (name, name))
     return '@' + ', '.join(text)
 
-registerInternalLinkHook('*', wikipediaLinkHook)
-registerInternalLinkHook('User talk', wikipediaUserTalkHook)
-registerInternalLinkHook('User', wikipediaUserHook)
+def quoteHook(parser_env, namespace, body):
+    return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
 
-registerInternalTemplateHook('u', wikipediaUserHook)
-registerInternalTemplateHook('reply to', wikipediaUserHook)
-registerInternalTemplateHook('ping', wikipediaPingTempHook)
+registerInternalLinkHook('*', linkHook)
+registerInternalLinkHook('User talk', userTalkHook)
+registerInternalLinkHook('User', userHook)
+
+registerInternalTemplateHook('u', userHook)
+registerInternalTemplateHook('U', userHook)
+registerInternalTemplateHook('reply to', userHook)
+registerInternalTemplateHook('ping', pingTempHook)
+registerInternalTemplateHook('tq', quoteHook)
+
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
