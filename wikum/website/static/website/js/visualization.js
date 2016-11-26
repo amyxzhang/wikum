@@ -164,7 +164,7 @@ article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
 if (!sort) {
-	sort = "likes";
+	sort = "id";
 }
 var next = parseInt(getParameterByName('next'));
 if (!next) {
@@ -217,7 +217,9 @@ function make_dropdown() {
 
 	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 
-	if (!sort || sort == "likes") {
+	if (!sort) {
+		text += 'Sort all by - ID';
+	} else if (sort == "likes") {
 		text += 'Sort all by - # Likes';
 	} else if (sort == "replies") {
 		text += 'Sort all by - # Replies';

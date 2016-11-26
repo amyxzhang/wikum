@@ -874,7 +874,9 @@ def viz_data(request):
 
     if filter != '':
         
-        if sort == 'likes':
+        if sort == 'id':
+            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('id')[start:end]
+        elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
         elif sort == "replies":
             posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')[start:end]
@@ -901,7 +903,9 @@ def viz_data(request):
             val['children'].append(val_child['children'][0])
         
     else:
-        if sort == 'likes':
+        if sort == 'id':
+            posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('id')[start:end]
+        elif sort == 'likes':
             posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
         elif sort == "replies":
             posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-num_replies')[start:end]
@@ -1029,7 +1033,9 @@ def subtree_data(request):
     if comment_id:
         posts = Comment.objects.filter(id=comment_id)
     else:
-        if sort == 'likes':
+        if sort == 'id':
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('id')
+        elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
         elif sort == "replies":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')

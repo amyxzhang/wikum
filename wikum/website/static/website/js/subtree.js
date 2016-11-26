@@ -164,7 +164,7 @@ article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
 if (!sort) {
-	sort = "likes";
+	sort = "id";
 }
 var next = parseInt(getParameterByName('next'));
 if (!next) {
