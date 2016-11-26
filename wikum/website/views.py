@@ -65,7 +65,7 @@ def nothingHook(parser_env, namespace, body):
     return ''
 
 def archiveHook(parser_env, namespace, body):
-    return '<div style="background-color: #ffffff;">%s</>' % body
+    return '<p style="background-color: #ffffff;">%s</p>' % body
 
 registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
@@ -76,10 +76,8 @@ registerInternalTemplateHook('reply to', userHook)
 registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('pb', paraHook)
-registerInternalTemplateHook('undent', nothingHook)
 registerInternalTemplateHook('archivetop', archiveHook)
-registerInternalTemplateHook('archivebottom', nothingHook)
-
+registerInternalTemplateHook('*' , nothingHook)
 
 
      

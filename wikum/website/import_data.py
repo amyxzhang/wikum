@@ -180,11 +180,7 @@ def import_wiki_authors(authors, article):
 def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):
     
     for comment in comments:
-        text = ''
-        for block in comment['text_blocks']:
-            t = block
-            if t.strip() != '':
-                text += '<P>%s</P>' % t
+        text = '\n'.join(comment['text_blocks'])
        
         author = comment.get('author')
         if author:
