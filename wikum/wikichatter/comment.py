@@ -5,12 +5,14 @@ from .error import Error
 
 def identify_comments_linear_merge(text_blocks):
     working_comment = Comment()
+    working_indent = None
     comments = [working_comment]
     for block in text_blocks:
-        if working_comment.author is not None:
+        if working_comment.author is not None or working_indent != block.indent:
             working_comment = Comment()
             comments.append(working_comment)
         working_comment.add_text_block(block)
+        working_indent = block.indent
     return _sort_into_hierarchy(comments)
 
 

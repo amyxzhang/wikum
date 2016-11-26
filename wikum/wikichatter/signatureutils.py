@@ -247,6 +247,9 @@ def _node_contains_username(node):
     for link in links:
         if (_node_is_usertalk(link) or _node_is_userpage(link) or _node_is_usercontribs(link)):
             return True
+    if len(links) == 0:
+        if (_node_is_usertalk(node) or _node_is_userpage(node) or _node_is_usercontribs(node)):
+            return True
     return False
 
 
