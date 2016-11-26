@@ -15,7 +15,7 @@ def generate_indentblock_list(wcode):
         if str(line) != '\n':
             local_indent = wiu.find_line_indent(line)
             continues = wiu.has_continuation_indent(line)
-            if local_indent == 0 or local_indent == 1 and not continues:
+            if (local_indent == 0 or local_indent == 1) and not continues:
                 continuation_indent = 0
             elif continues:
                 if old_continuation:
