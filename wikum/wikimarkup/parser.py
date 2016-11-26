@@ -332,7 +332,7 @@ _spacePat = re.compile(ur' ', re.UNICODE)
 _linkPat = re.compile(ur'^(?:([A-Za-z0-9]+):)?([^\|]+)(?:\|([^\n]+?))?\]\](.*)$', re.UNICODE | re.DOTALL)
 _bracketedLinkPat = re.compile(ur'(?:\[((?:mailto:|git://|irc://|https?://|ftp://|/)[^<>\]\[' + u"\x00-\x20\x7f" + ur']*)\s*(.*?)\])', re.UNICODE)
 _internalLinkPat = re.compile(ur'\[\[(?:(:?[^:\]]*?):\s*)?(.*?)\]\]')
-_internalTemplatePat = re.compile(ur'\[\[(?:(:?[^:\]]*?)\|\s*)?(.*?)\]\]')
+_internalTemplatePat = re.compile(ur'\{\{(?:(:?[^:\]]*?)\|\s*)?(.*?)\}\}')
 _protocolPat = re.compile(ur'(\b(?:mailto:|irc://|https?://|ftp://))', re.UNICODE)
 _specialUrlPat = re.compile(ur'^([^<>\]\[' + u"\x00-\x20\x7f" + ur']+)(.*)$', re.UNICODE)
 _protocolsPat = re.compile(ur'^(mailto:|irc://|https?://|ftp://)$', re.UNICODE)
@@ -1121,9 +1121,9 @@ class BaseParser(object):
     
     def replaceInternalTemplates(self, text):
         sb = []
-        # [[x]] -> (None, 'x')
-        # [[type:x]] -> ('type','x')
-        # [[:type:x]] -> (':type','x')
+        # {{x}} -> (None, 'x')
+        # {{type:x}} -> ('type','x')
+        # {{:type:x}} -> (':type','x')
         bits = _internalTemplatePat.split(text)
         l = len(bits)
         i = 0
