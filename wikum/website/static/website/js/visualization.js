@@ -217,7 +217,7 @@ function make_dropdown() {
 
 	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 
-	if (!sort) {
+	if (!sort || sort == "id") {
 		text += 'Sort all by - ID';
 	} else if (sort == "likes") {
 		text += 'Sort all by - # Likes';

@@ -139,7 +139,7 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     for section in sections:
         heading = section.get('heading', None)
         if heading:
-            parsed_text = '<h1>' + str(parse(heading)) + '</h1>'
+            parsed_text = '<h2>' + str(parse(heading)) + '</h2>'
             comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
             
             comments = Comment.objects.filter(article=article, author=comment_author, text=parsed_text)
