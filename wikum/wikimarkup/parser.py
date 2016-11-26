@@ -332,6 +332,7 @@ _spacePat = re.compile(ur' ', re.UNICODE)
 _linkPat = re.compile(ur'^(?:([A-Za-z0-9]+):)?([^\|]+)(?:\|([^\n]+?))?\]\](.*)$', re.UNICODE | re.DOTALL)
 _bracketedLinkPat = re.compile(ur'(?:\[((?:mailto:|git://|irc://|https?://|ftp://|/)[^<>\]\[' + u"\x00-\x20\x7f" + ur']*)\s*(.*?)\])', re.UNICODE)
 _internalLinkPat = re.compile(ur'\[\[(?:(:?[^:\]]*?):\s*)?(.*?)\]\]')
+_internalTemplatePat = re.compile(ur'\[\[(?:(:?[^:\]]*?)\|\s*)?(.*?)\]\]')
 _protocolPat = re.compile(ur'(\b(?:mailto:|irc://|https?://|ftp://))', re.UNICODE)
 _specialUrlPat = re.compile(ur'^([^<>\]\[' + u"\x00-\x20\x7f" + ur']+)(.*)$', re.UNICODE)
 _protocolsPat = re.compile(ur'^(mailto:|irc://|https?://|ftp://)$', re.UNICODE)
@@ -1113,6 +1114,34 @@ class BaseParser(object):
                     sb.append(u'[[%s]]' % bits[i+1])
                 i += 2
         return ''.join(sb)
+    
+    def replaceInternalTemplates(self, text):
+        sb = []
+        # [[x]] -> (None, 'x')
+        # [[type:x]] -> ('type','x')
+        # [[:type:x]] -> (':type','x')
+        bits = _internalTemplatePat.split(text)
+        l = len(bits)
+        i = 0
+        num_links = 0
+        while i < l:
+            if i%3 == 0:
+                sb.append(bits[i])
+                i += 1
+            else:
+                space, name = bits[i:i+2]
+                if space in mInternalTemplateHooks:
+                    sb.append(mInternalTemplateHooks[space](self, space, name))
+                elif space and space.startswith('|') and '|' in mInternalTemplateHooks:
+                    sb.append(mInternalTemplateHooks['|'](self, space, name))
+                elif '*' in mInternalTemplateHooks:
+                    sb.append(mInternalTemplateHooks['*'](self, space, name))
+                elif bits[i]:
+                    sb.append(u'{{%s|%s}}' % (bits[i], bits[i+1]))
+                else:
+                    sb.append(u'{{%s}}' % bits[i+1])
+                i += 2
+        return ''.join(sb)
 
     # TODO: fix this so it actually works
     def replaceFreeExternalLinks(self, text):
@@ -1673,6 +1702,7 @@ class Parser(BaseParser):
         text = self.parseAllQuotes(text)
         text = self.replaceExternalLinks(text)
         text = self.replaceInternalLinks(text)
+        text = self.replaceInternalTemplates(text)
         if not self.show_toc and text.find(u"<!--MWTOC-->") == -1:
             self.show_toc = False
         text = self.formatHeadings(text, True)
@@ -2330,6 +2360,8 @@ def to_unicode(text, charset=None):
 mTagHooks = {}
 # [[internal link]] hooks
 mInternalLinkHooks = {}
+# {{internal template}} hooks
+mInternalTemplateHooks = {}
 
 def safe_name(name=None, remove_slashes=True):
     if name is None:
