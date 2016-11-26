@@ -16,7 +16,7 @@ var i = 0,
     root;
 
 var tree = d3.layout.tree()
-    .nodeSize([0, 15]);
+    .nodeSize([0, 16]);
 
 var diagonal = d3.svg.diagonal()
     .projection(function(d) { return [d.y, d.x]; });
