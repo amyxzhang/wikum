@@ -8,19 +8,25 @@ def generate_indentblock_list(wcode):
     text_blocks = []
     wcode_lines = _divide_wikicode_into_lines(wcode)
     continuation_indent = 0
+    old_continuation = False
     indent = 0
     old_indent = indent
     for line in wcode_lines:
-        local_indent = wiu.find_line_indent(line)
-        continues = wiu.has_continuation_indent(line)
-        if local_indent == 0 and not continues:
-            continuation_indent = 0
-        elif continues:
-            continuation_indent = old_indent + 1
-        if local_indent is not None:
-            indent = local_indent + continuation_indent
-        text_blocks.append(IndentBlock(line, indent))
-        old_indent = indent
+        if str(line) != '\n':
+            local_indent = wiu.find_line_indent(line)
+            continues = wiu.has_continuation_indent(line)
+            if local_indent == 0 or local_indent == 1 and not continues:
+                continuation_indent = 0
+            elif continues:
+                if old_continuation:
+                    continuation_indent = old_indent
+                else:
+                    continuation_indent = old_indent + 1
+            if local_indent is not None:
+                indent = local_indent + continuation_indent
+            text_blocks.append(IndentBlock(line, indent))
+            old_indent = indent
+            old_continuation = continues
     return text_blocks
 
 
