@@ -4,13 +4,14 @@ from .error import Error
 
 
 def identify_comments_linear_merge(text_blocks):
-    working_comment = Comment()
+    working_comment = None
     working_indent = None
-    comments = [working_comment]
+    comments = []
     for block in text_blocks:
-        if working_comment.author is not None or working_indent != block.indent:
-            working_comment = Comment()
-            comments.append(working_comment)
+        if not working_comment or working_comment.author is not None or working_indent != block.indent:
+            if not block.text == '\n':
+                working_comment = Comment()
+                comments.append(working_comment)
         working_comment.add_text_block(block)
         working_indent = block.indent
     return _sort_into_hierarchy(comments)
