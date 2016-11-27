@@ -307,7 +307,10 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 v1['name'] = parse(post.text)
                 v1['wikitext'] = post.text
                 
-                v1['summary'] = parse(post.summary)
+                if post.summary.strip() == '':
+                    v1['summary'] = ''
+                else:
+                    v1['summary'] = parse(post.summary)
                 v1['sumwiki'] = post.summary
             else:
                 v1['name'] = post.text
