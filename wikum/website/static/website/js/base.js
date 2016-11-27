@@ -1140,11 +1140,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 						new_d = {d_id: res.d_id,
 							 name: "",
-							 summary: res.top_summary,
-							 extra_summary: res.bottom_summary,
 							 parent: d.parent,
 							 replace: [d],
 							 tags: [],
+							 summary: res.top_summary,
+							 extra_summary: res.bottom_summary,
 							 author: "",
 							 collapsed: d.parent.collapsed,
 							 replace_node: true,
@@ -1155,6 +1155,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 y: d.y,
 							 y0: d.y0,
 							};
+						
+						if (article_url.indexOf('wikipedia.org') !== -1) {
+							 new_d.sumwiki = res.top_summary_wiki;
+							 new_d.extrasumwiki = res.bottom_summary_wiki;
+						}
 
 						for (var i=0; i<d.parent.children.length; i++) {
 							if (d.parent.children[i] == d) {
@@ -1209,6 +1214,10 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 					d.summary = res.top_summary;
 					d.extra_summary = res.bottom_summary;
+					if (article_url.indexOf('wikipedia.org') !== -1) {
+						 d.sumwiki = res.top_summary_wiki;
+						 d.extrasumwiki = res.bottom_summary_wiki;
+					}
 
 					var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
 					text += `<footer>

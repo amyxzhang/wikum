@@ -588,10 +588,27 @@ def summarize_comments(request):
         
         
         make_vector(new_comment, a)
-        
-        return JsonResponse({'d_id': d_id,
-                             'top_summary': top_summary,
-                             'bottom_summary': bottom_summary})
+        if 'wikipedia.org' in a.url:
+            res = {'d_id': d_id}
+            if top_summary.strip() != '':
+                res['top_summary'] = parse(top_summary)
+            else:
+                res['top_summary'] = ''
+            
+            res['top_summary_wiki'] = top_summary
+            
+            if bottom_summary.strip() != '':
+                res['bottom_summary'] = parse(bottom_summary)
+            else:
+                res['bottom_summary'] = ''
+            
+            res['bottom_summary_wiki'] = bottom_summary
+                
+            return JsonResponse(res)
+        else:
+            return JsonResponse({'d_id': d_id,
+                                 'top_summary': top_summary,
+                                 'bottom_summary': bottom_summary})
         
     except Exception, e:
         print e
