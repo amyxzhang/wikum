@@ -2638,8 +2638,9 @@ function construct_comment(d) {
 			} else {
 				text += `likes)</h6>`;
 			}
+			text += `)`;
 		}
-		text += `)</h6>`;
+		text += `</h6>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
 	}
 
