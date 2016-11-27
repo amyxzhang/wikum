@@ -3,9 +3,12 @@ from celery import shared_task, current_task
 from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
     get_reddit_posts, count_replies, get_wiki_talk_posts
+from django.db import connection
 
 @shared_task()
 def import_article(url):
+    connection.close()
+    
     source = get_source(url)
     if source:
         article = get_article(url, source, 0)
