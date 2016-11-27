@@ -37,7 +37,7 @@ def linkHook(parser_env, namespace, body):
     if not text.startswith('comment_'):
         return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
     else:
-        return body
+        return '[[' + str(body) + ']]'
 
 def userHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
