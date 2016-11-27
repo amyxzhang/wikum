@@ -14,7 +14,7 @@ import pickle
 import praw
 from website.import_data import get_disqus_posts, get_reddit_posts,\
     count_replies
-from website.models import Article, Comment
+from website.models import Article, Comment, History
 
 stemmer = SnowballStemmer("english")
 stop = stopwords.words('english')
