@@ -215,8 +215,8 @@ def summary_data(request):
     else:
         next = int(next)
         
-    start = 5 * next
-    end = (5 * next) + 5
+    start = 25 * next
+    end = (25 * next) + 25
     
     
     if sort == 'id':
