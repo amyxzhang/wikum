@@ -73,7 +73,7 @@ def get_source(url):
         return Source.objects.get(source_name="The Atlantic")
     elif 'reddit.com' in url:
         return Source.objects.get(source_name="Reddit")
-    elif 'wikipedia.org/wiki/Talk' in url:
+    elif 'wikipedia.org/wiki/' in url:
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 

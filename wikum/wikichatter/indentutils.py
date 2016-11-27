@@ -94,7 +94,7 @@ def _find_line_indent(line):
 def _count_indent_in_some_order(line):
     line = line.strip()
     count = 0
-    indent_chars = [':', '*', '#']
+    indent_chars = [':', '#']
     while len(indent_chars) > 0:
         if len(line) > count and line[count] in indent_chars:
             char = line[count]
