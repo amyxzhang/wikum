@@ -164,7 +164,11 @@ article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
 if (!sort) {
-	sort = "id";
+	if (article_url.indexOf('wikipedia.org') !== -1) {
+		sort = "id";
+	} else {
+		sort = "likes";
+	}
 }
 var next = parseInt(getParameterByName('next'));
 if (!next) {
