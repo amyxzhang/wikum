@@ -94,14 +94,19 @@ def _find_line_indent(line):
 def _count_indent_in_some_order(line):
     line = line.strip()
     count = 0
-    indent_chars = [':', '#']
+    count_star = 0
+    indent_chars = [':', '*', '#']
     while len(indent_chars) > 0:
         if len(line) > count and line[count] in indent_chars:
             char = line[count]
             count += _count_leading_char(line[count:], line[count])
+            if char == '*':
+                count_star += count
             indent_chars.remove(char)
         else:
             break
+    if count_star > 0:
+        return count - 1
     return count
 
 
