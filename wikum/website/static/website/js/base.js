@@ -673,12 +673,22 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 
 	} else if (type == "edit_summarize_one") {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
+		
 		if (d.extra_summary != '') {
-			$('#summarize_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+			if (article_url.indexOf('wikipedia.org') !== -1) {
+				$('#summarize_comment_textarea').val(d.sumwiki + '\n----------\n' + d.extrasumwiki);
+			} else {
+				$('#summarize_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+			}
 		} else {
-			$('#summarize_comment_textarea').val(d.summary);
+			if (article_url.indexOf('wikipedia.org') !== -1) {
+				$('#summarize_comment_textarea').val(d.sumwiki);
+			}
+			else {
+				$('#summarize_comment_textarea').val(d.summary);
+			}
 		}
-
+		
 		$('#summarize_comment_text').text('Edit the summary for this comment.');
 	}
 
@@ -759,6 +769,11 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 
 				d.summary = res.top_summary;
 				d.extra_summary = res.bottom_summary;
+				
+				if (article_url.indexOf('wikipedia.org') !== -1) {
+					d.sumwiki = res.top_summary_wiki;
+					d.extrasumwiki = res.bottom_summary_wiki;
+				}
 
 				var text = '<P><strong>Summary:</strong> ' + render_summary_node(d, false) + '</P>';
 
@@ -1064,6 +1079,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 y: lowest_d.y,
 							 y0: lowest_d.y0,
 							};
+							
+					if (article_url.indexOf('wikipedia.org') !== -1) {
+						 new_d.sumwiki = res.top_summary_wiki;
+						 new_d.extrasumwiki = res.bottom_summary_wiki;
+					}
 
 					for (var d=0; d<children.length; d++) {
 						for (var i=0; i<children[d].parent.children.length; i++) {
@@ -2631,12 +2651,14 @@ function construct_comment(d) {
 			if (d.size > 0) {
 				text += ` (${d.size} `;
 				if (d.size == 1) {
-					text += `like)</h6>`;
+					text += `like)`;
 				} else {
-					text += `likes)</h6>`;
+					text += `likes)`;
 				}
 			}
 		}
+		
+		text += `</h6>`;
 
 		text += render_summary_node(d, false);
 	} else {
