@@ -53,9 +53,18 @@ $(document).ready(function () {
 		num = 0;
 	}
 	
+	var sort = parseInt(getParameterByName('sort'));
+	if (!sort) {
+		if (article_url.indexOf('wikipedia.org') !== -1) {
+			sort = "id";
+		} else {
+			sort = "likes";
+		}
+	}
+	
 	$.ajax({ 
 	    type: 'GET', 
-	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num, 
+	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num + '&sort=' + sort, 
 	    dataType: 'json',
 	    success: function (data) { 
 	    	
@@ -68,7 +77,7 @@ $(document).ready(function () {
         	if (data.posts.children.length < 5) {
         		$('#link_next').html('<BR><P>End of discussion</P>');
         	} else {
-        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
+        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '&num=' + num + '&sort=' + sort + '">See Next Page of Discussions &gt;&gt;</a></P>');
 			}
 	    }
 	    

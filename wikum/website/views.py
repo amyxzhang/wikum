@@ -205,6 +205,7 @@ def summary4(request):
 def summary_data(request):
     url = request.GET['article']
     num = int(request.GET.get('num', 0))
+    sort = request.GET.get('sort', 'id')
     
     a = Article.objects.filter(url=url)[num]
     
@@ -217,7 +218,11 @@ def summary_data(request):
     start = 5 * next
     end = (5 * next) + 5
     
-    posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
+    
+    if sort == 'id':
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('id')[start:end]
+    else:
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
     
     
     val2 = {}
