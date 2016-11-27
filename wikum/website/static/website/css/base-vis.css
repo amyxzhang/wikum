@@ -373,7 +373,8 @@ rect.selection {
 		.comment_box footer a {
 			padding: .5em;
 			color: var(--link-color);
-			font-weight: 600;
+			font-weight: 500;
+			font-size: 13px;
 			display: inline-block;
 		}
 

@@ -2597,23 +2597,26 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (d.replace_node) {
-			text += `<h6 title="ID: ${d.d_id}">Summary`;
+			text += `<h6 align="right" title="ID: ${d.d_id}">Summary`;
 			text += ` Node</h1>`;
 		} else {
-			text += `<h6 title="ID: ${d.d_id}">Summary`;
+			text += `<h6 align="right" title="ID: ${d.d_id}">Summary`;
 			text += ` of Comment by <strong>`;
 
 			highlight_authors = $('#highlight_authors').text().split(',');
 
 			if (highlight_authors.indexOf(d.author) > -1) {
-				text += `<span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
+				text += `<span style="background-color: pink;">${d.author}</span></strong>`;
 			} else {
-				text += `${d.author}</strong> (${d.size} `;
+				text += `${d.author}</strong>`;
 			}
-			if (d.size == 1) {
-				text += `like)</h6>`;
-			} else {
-				text += `likes)</h6>`;
+			if (d.size > 0) {
+				text += ` (${d.size} `;
+				if (d.size == 1) {
+					text += `like)</h6>`;
+				} else {
+					text += `likes)</h6>`;
+				}
 			}
 		}
 
@@ -2623,15 +2626,18 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong> (${d.size} `;
+			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong>`;
 		} else {
-			text += `<h6 title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong> (${d.size} `;
+			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong>`;
 		}
 
-		if (d.size == 1) {
-			text += `like`;
-		} else {
-			text += `likes`;
+		if (d.size > 0) {
+			text += ` (${d.size} `;
+			if (d.size == 1) {
+				text += `like)</h6>`;
+			} else {
+				text += `likes)</h6>`;
+			}
 		}
 		text += `)</h6>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
