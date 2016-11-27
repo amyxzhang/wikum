@@ -32,9 +32,9 @@ from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplate
 
 def linkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
+    href = article.strip().capitalize().replace(' ', '_') 
+    text = (text or article).strip() 
     if not text.startswith('comment_'):
-        href = article.strip().capitalize().replace(' ', '_') 
-        text = (text or article).strip() 
         return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
     else:
         return body
@@ -309,7 +309,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 
                 v1['summary'] = parse(post.summary)
                 v1['sumwiki'] = post.summary
-                
             else:
                 v1['name'] = post.text
                 v1['summary'] = post.summary
