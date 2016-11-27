@@ -32,9 +32,12 @@ from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplate
 
 def linkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
-    href = article.strip().capitalize().replace(' ', '_') 
-    text = (text or article).strip() 
-    return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
+    if not text.startswith('comment_'):
+        href = article.strip().capitalize().replace(' ', '_') 
+        text = (text or article).strip() 
+        return '<a href="http://en.wikipedia.org/wiki/%s">%s</a>' % (href, text)
+    else:
+        return body
 
 def userHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
@@ -58,11 +61,8 @@ def pingTempHook(parser_env, namespace, body):
 def quoteHook(parser_env, namespace, body):
     return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
 
-def paraHook(parser_env, namespace, body):
-    return '<P></P>'
-
 def archiveHook(parser_env, namespace, body):
-    return '<p style="background-color: #ffffff;">%s</p>' % body
+    return 'Archived: <p style="background-color: #ffffff;">%s</p>' % body
 
 registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
@@ -72,7 +72,6 @@ registerInternalTemplateHook('u', userHook)
 registerInternalTemplateHook('reply to', userHook)
 registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('tq', quoteHook)
-registerInternalTemplateHook('pb', paraHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 
 
