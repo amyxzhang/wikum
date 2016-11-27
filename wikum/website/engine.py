@@ -122,7 +122,7 @@ def create_vectors(article):
     
 def make_vector(comment, article):
     
-    if article.vectorizer == None:
+    if not article.vectorizer:
         create_vectors(article)
     
     vectorizer = pickle.loads(article.vectorizer)
