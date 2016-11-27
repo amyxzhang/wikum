@@ -299,7 +299,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
-                  'extra_summary': post.extra_summary,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
 
@@ -311,10 +310,20 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     v1['summary'] = ''
                 else:
                     v1['summary'] = parse(post.summary)
+                
                 v1['sumwiki'] = post.summary
+                    
+                if post.extra_summary.strip() == '':
+                    v1['extra_summary'] = ''
+                else:
+                    v1['summary'] = parse(post.extra_summary)
+                
+                v1['extrasumwiki'] = post.extra_summary
+                
             else:
                 v1['name'] = post.text
                 v1['summary'] = post.summary
+                v1['extra_summary'] = post.extra_summary
                 
             
             

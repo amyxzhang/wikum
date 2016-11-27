@@ -923,9 +923,18 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			}
 
 			if (d.extra_summary != '') {
-				$('#summarize_multiple_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+				if (article_url.indexOf('wikipedia.org') !== -1) {
+					$('#summarize_multiple_comment_textarea').val(d.sumwiki + '\n----------\n' + d.extrasumwiki);
+				} else {
+					$('#summarize_multiple_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+				}
 			} else {
-				$('#summarize_multiple_comment_textarea').val(d.summary);
+				if (article_url.indexOf('wikipedia.org') !== -1) {
+					$('#summarize_multiple_comment_textarea').val(d.sumwiki);
+				}
+				else {
+					$('#summarize_multiple_comment_textarea').val(d.summary);
+				}
 			}
 
 			$('#summarize_multiple_comment_text').text('Edit the summary for this entire subtree of comments.');
