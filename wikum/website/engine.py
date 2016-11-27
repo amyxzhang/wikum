@@ -122,6 +122,9 @@ def create_vectors(article):
     
 def make_vector(comment, article):
     
+    if article.vectorizer == None:
+        create_vectors(article)
+    
     vectorizer = pickle.loads(article.vectorizer)
     
     summary = comment.summary
