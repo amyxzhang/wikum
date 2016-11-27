@@ -911,8 +911,8 @@ def viz_data(request):
     else:
         next = int(next)
         
-    start = 10 * next
-    end = (10 * next) + 10
+    start = 25 * next
+    end = (25 * next) + 25
     
     num = int(request.GET.get('num', 0))
     
