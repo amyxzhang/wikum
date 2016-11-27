@@ -299,7 +299,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'parent': parent.id if parent else None,
                   'author': author,
                   'replace_node': post.is_replacement,
-                  'summary': post.summary,
                   'collapsed': is_collapsed,
                   'extra_summary': post.extra_summary,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()]
@@ -308,8 +307,15 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 v1['name'] = parse(post.text)
                 v1['wikitext'] = post.text
+                
+                v1['summary'] = parse(post.summary)
+                v1['sumwiki'] = post.summary
+                
             else:
                 v1['name'] = post.text
+                v1['summary'] = post.summary
+                
+            
             
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
             if c1.count() == 0:
