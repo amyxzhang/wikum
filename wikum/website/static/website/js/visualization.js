@@ -237,8 +237,19 @@ function make_dropdown() {
 	url = "/visualization?article=" + article_url + '&sort=';
 	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
 
-	next_sub = next + 1;
-	text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
 
+	count = 0;
+	for (var i=0;i<nodes_all.length;i++) {
+		if (nodes_all[i].depth == 1) {
+			count += 1;
+		}
+	}
+	if (count == 30) {
+		next_sub = next + 1;
+		text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
+	}
+	
 	$('#node_sort').html(text);
+
+	
 }
