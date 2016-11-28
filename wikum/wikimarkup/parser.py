@@ -1369,7 +1369,7 @@ class BaseParser(object):
             i += 1
         return i
 
-    def openList(self, char, mLastSection):
+    def openList(self, char, mLastSection, prev_char):
         """
         These next three functions open, continue, and close the list
         element appropriate to the prefix character passed into them.
@@ -1377,7 +1377,7 @@ class BaseParser(object):
         result = self.closeParagraph(mLastSection)
     
         mDTopen = False
-        if char == u'*':
+        if char == u'*' and prev_char != u'*':
             result += u'<ul><li>'
         elif char == u'#':
             result += u'<ol><li>'
@@ -1590,7 +1590,10 @@ class BaseParser(object):
 
                 while prefixLength > commonPrefixLength:
                     char = pref[commonPrefixLength:commonPrefixLength+1]
-                    tmpOutput, tmpMDTOpen = self.openList(char, mLastSection)
+                    prev_char = None
+                    if commonPrefixLength > 0:
+                        prev_char = pref[commonPrefixLength-1:commonPrefixLength]
+                    tmpOutput, tmpMDTOpen = self.openList(char, mLastSection, prev_char)
                     if tmpMDTOpen:
                         mDTopen = True
                     output.append(tmpOutput)
