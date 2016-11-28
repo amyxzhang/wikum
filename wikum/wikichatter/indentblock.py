@@ -20,6 +20,7 @@ def generate_indentblock_list(wcode):
             if (local_indent == 0 or local_indent == 1) and not continues:
                 if old_continuation and not old_contains_sig:
                     continuation_indent = old_indent
+                    continues = True
                 else:
                     continuation_indent = 0
             elif continues:
