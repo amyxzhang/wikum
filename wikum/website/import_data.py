@@ -105,7 +105,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
             heading_title = s.get('heading','')
             heading_title = re.sub(r'\]','', heading_title)
             heading_title = re.sub(r'\[','', heading_title)
-            if heading_title == str(section_title):
+            if heading_title.strip() == str(section_title).strip():
                 start_sections = s['subsections']
                 start_comments = s['comments']
     
