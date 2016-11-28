@@ -130,6 +130,8 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
                 comment_wikum.disqus_id = comment_wikum.id
                 comment_wikum.save()
                 
+            disqus_id = comment_wikum.disqus_id
+                
             total_count += 1
             
             if current_task and total_count % 3 == 0:
@@ -137,11 +139,11 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
                                           meta={'count': total_count})
             
         else:
-            comment_wikum = reply_to
+            disqus_id = reply_to
         if len(section['comments']) > 0:
-            total_count = import_wiki_talk_posts(section['comments'], article, comment_wikum.disqus_id, current_task, total_count)
+            total_count = import_wiki_talk_posts(section['comments'], article, disqus_id, current_task, total_count)
         if len(section['subsections']) > 0:
-            total_count = import_wiki_sessions(section['subsections'], article, comment_wikum.disqus_id, current_task, total_count)
+            total_count = import_wiki_sessions(section['subsections'], article, disqus_id, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
