@@ -37,9 +37,10 @@ def get_article(url, source, num):
             id = submission.id
             
         elif source.source_name == "Wikipedia Talk Page":
-            url_parts = url.split('/wiki/Talk:')
+            url_parts = url.split('/wiki/')
             domain = url_parts[0]
-            wiki_parts = url_parts[1].split('#')
+            wiki_sub = url_parts[1].split(':')
+            wiki_parts = wiki_sub[1].split('#')
             wiki_page = wiki_parts[0]
             section = None
             if len(url_parts) > 1:
@@ -47,7 +48,7 @@ def get_article(url, source, num):
             
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            params = {'action': 'parse', 'prop': 'sections','page': 'Talk:' + wiki_page}
+            params = {'action': 'parse', 'prop': 'sections','page': str(wiki_sub[0]) + ':' + str(wiki_page)}
             request = api.APIRequest(site, params)
             result = request.query()
             id = str(result['parse']['pageid'])
@@ -79,7 +80,7 @@ def get_source(url):
 
 def get_wiki_talk_posts(article, current_task, total_count):
     from wikitools import wiki, api
-    domain = article.url.split('/wiki/Talk:')[0]
+    domain = article.url.split('/wiki/')[0]
     site = wiki.Wiki(domain + '/w/api.php')
     
     title = article.title.split(' - ')
