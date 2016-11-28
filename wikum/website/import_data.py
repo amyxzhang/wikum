@@ -49,8 +49,12 @@ def get_article(url, source, num):
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
             params = {'action': 'parse', 'prop': 'sections','page': str(wiki_sub[0]) + ':' + str(wiki_page)}
-            request = api.APIRequest(site, params)
-            result = request.query()
+            print params
+            try:
+                request = api.APIRequest(site, params)
+                result = request.query()
+            except Exception:
+                print 'Here - article'
             id = str(result['parse']['pageid'])
             section_title = None
             if section:
@@ -87,8 +91,11 @@ def get_wiki_talk_posts(article, current_task, total_count):
     
     params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json'}
     print params
-    request = api.APIRequest(site, params)
-    result = request.query()
+    try:
+        request = api.APIRequest(site, params)
+        result = request.query()
+    except Exception:
+        print 'here get revisions'
     id = article.disqus_id.split('#')[0]
     text = result['query']['pages'][id]['revisions'][0]['*']
     import wikichatter as wc
@@ -156,7 +163,8 @@ def import_wiki_authors(authors, article):
     
     try:
         params = {'action': 'query', 'list': 'users', 'ususers': authors_list, 'usprop': 'blockinfo|groups|editcount|registration|emailable|gender', 'format': 'json'}
-    
+        print params
+        
         request = api.APIRequest(site, params)
         result = request.query()
         comment_authors = []
@@ -181,6 +189,7 @@ def import_wiki_authors(authors, article):
             comment_authors.append(comment_author)
             
     except Exception:
+        print 'here authors'
         for author in authors:
             comment_author = CommentAuthor.objects.create(username=author, is_wikipedia=True)
             comment_authors.append(comment_author)
