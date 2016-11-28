@@ -163,42 +163,33 @@ def import_wiki_authors(authors, article):
     authors_list = '|'.join(authors)
     
     from wikitools import wiki, api
-    domain = article.url.split('/wiki/Talk:')[0]
+    domain = article.url.split('/wiki/')[0]
     site = wiki.Wiki(domain + '/w/api.php')
-    
-    try:
-        params = {'action': 'query', 'list': 'users', 'ususers': authors_list, 'usprop': 'blockinfo|groups|editcount|registration|emailable|gender', 'format': 'json'}
-        print params
+    params = {'action': 'query', 'list': 'users', 'ususers': authors_list, 'usprop': 'blockinfo|groups|editcount|registration|emailable|gender', 'format': 'json'}
+
+    request = api.APIRequest(site, params)
+    result = request.query()
+    comment_authors = []
+    for user in result['query']['users']:
+        try:
+            author_id = user['userid']
+            comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+            if comment_author.count() > 0:
+                comment_author = comment_author[0]
+            else:
+                joined_at = datetime.datetime.strptime(user['registration'], '%Y-%m-%dT%H:%M:%SZ')
+                comment_author = CommentAuthor.objects.create(username=user['name'], 
+                                                              disqus_id=author_id,
+                                                              joined_at=user['registration'],
+                                                              edit_count=user['editcount'],
+                                                              gender=user['gender'],
+                                                              groups=','.join(user['groups']),
+                                                              is_wikipedia=True
+                                                              )
+        except Exception:
+            comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
+        comment_authors.append(comment_author)
         
-        request = api.APIRequest(site, params)
-        result = request.query()
-        comment_authors = []
-        for user in result['query']['users']:
-            try:
-                author_id = user['userid']
-                comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
-                if comment_author.count() > 0:
-                    comment_author = comment_author[0]
-                else:
-                    joined_at = datetime.datetime.strptime(user['registration'], '%Y-%m-%dT%H:%M:%SZ')
-                    comment_author = CommentAuthor.objects.create(username=user['name'], 
-                                                                  disqus_id=author_id,
-                                                                  joined_at=user['registration'],
-                                                                  edit_count=user['editcount'],
-                                                                  gender=user['gender'],
-                                                                  groups=','.join(user['groups']),
-                                                                  is_wikipedia=True
-                                                                  )
-            except Exception:
-                comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
-            comment_authors.append(comment_author)
-            
-    except Exception:
-        print 'here authors'
-        for author in authors:
-            comment_author = CommentAuthor.objects.create(username=author, is_wikipedia=True)
-            comment_authors.append(comment_author)
-            
     return comment_authors
     
     
