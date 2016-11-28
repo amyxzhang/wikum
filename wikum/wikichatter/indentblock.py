@@ -22,7 +22,11 @@ def generate_indentblock_list(wcode):
                     continuation_indent = old_indent
                     continues = True
                 else:
-                    continuation_indent = 0
+                    if local_indent == 1 and str(line)[0] == ':' and old_continuation:
+                        continuation_indent = old_indent
+                        continues = True
+                    else:
+                        continuation_indent = 0
             elif continues:
                 if old_continuation:
                     continuation_indent = old_indent
