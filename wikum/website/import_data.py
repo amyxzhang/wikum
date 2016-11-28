@@ -154,6 +154,7 @@ def import_wiki_authors(authors, article):
     site = wiki.Wiki(domain + '/w/api.php')
     
     params = {'action': 'query', 'list': 'users', 'ususers': authors, 'usprop': 'blockinfo|groups|editcount|registration|emailable|gender', 'format': 'json'}
+    print params
     request = api.APIRequest(site, params)
     result = request.query()
     comment_authors = []
