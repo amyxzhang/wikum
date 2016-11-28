@@ -1,6 +1,7 @@
 from . import indentutils as wiu
 from . import signatureutils as su
 import mwparserfromhell as mwp
+import re
 
 
 # Unclean code
@@ -8,15 +9,19 @@ def generate_indentblock_list(wcode):
     text_blocks = []
     wcode_lines = _divide_wikicode_into_lines(wcode)
     continuation_indent = 0
-    old_continuation = False
     indent = 0
     old_indent = indent
+    old_continuation = False
+    old_contains_sig = False
     for line in wcode_lines:
         if str(line) != '\n':
             local_indent = wiu.find_line_indent(line)
             continues = wiu.has_continuation_indent(line)
             if (local_indent == 0 or local_indent == 1) and not continues:
-                continuation_indent = 0
+                if old_continuation and not old_contains_sig:
+                    continuation_indent = old_indent
+                else:
+                    continuation_indent = 0
             elif continues:
                 if old_continuation:
                     continuation_indent = old_indent
@@ -27,7 +32,33 @@ def generate_indentblock_list(wcode):
             text_blocks.append(IndentBlock(line, indent))
             old_indent = indent
             old_continuation = continues
+            old_contains_sig = _contains_user_sig(line)
+                
     return text_blocks
+
+def _contains_user_sig(str):
+    if (_is_usertalk(str) or _is_userpage(str) or _is_usercontribs(str)):
+        return True
+    return False
+
+
+def _is_usertalk(str):
+    return _matches_regex(str, su.USER_TALK_RE)
+
+
+def _is_userpage(str):
+    return _matches_regex(str, su.USER_RE)
+
+
+def _is_usercontribs(str):
+    return _matches_regex(str, su.USER_CONTRIBS_RE)
+
+
+def _matches_regex(node, regex):
+    text = str(node)
+    return re.search(regex, text) is not None
+
+
 
 
 def _divide_wikicode_into_lines(wcode):

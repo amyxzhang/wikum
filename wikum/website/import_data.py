@@ -114,34 +114,35 @@ def get_wiki_talk_posts(article, current_task, total_count):
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
     for section in sections:
         heading = section.get('heading', None)
-        if heading:
-            parsed_text = heading
-            comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
-            
-            comments = Comment.objects.filter(article=article, author=comment_author, text=parsed_text)
-            if comments.count() > 0:
-                comment_wikum = comments[0]
-            else:
-                comment_wikum = Comment.objects.create(article = article,
-                                                       author = comment_author,
-                                                       text = parsed_text,
-                                                       reply_to_disqus = reply_to,
-                                                       text_len = len(parsed_text),
-                                                       )
-                comment_wikum.save()
-                comment_wikum.disqus_id = comment_wikum.id
-                comment_wikum.save()
-                
-            disqus_id = comment_wikum.disqus_id
-                
-            total_count += 1
-            
-            if current_task and total_count % 3 == 0:
-                current_task.update_state(state='PROGRESS',
-                                          meta={'count': total_count})
-            
-        else:
-            disqus_id = reply_to
+#         if heading:
+#             parsed_text = heading
+#             comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
+#             
+#             comments = Comment.objects.filter(article=article, author=comment_author, text=parsed_text)
+#             if comments.count() > 0:
+#                 comment_wikum = comments[0]
+#             else:
+#                 comment_wikum = Comment.objects.create(article = article,
+#                                                        author = comment_author,
+#                                                        text = parsed_text,
+#                                                        reply_to_disqus = reply_to,
+#                                                        text_len = len(parsed_text),
+#                                                        )
+#                 comment_wikum.save()
+#                 comment_wikum.disqus_id = comment_wikum.id
+#                 comment_wikum.save()
+#                 
+#             disqus_id = comment_wikum.disqus_id
+#                 
+#             total_count += 1
+#             
+#             if current_task and total_count % 3 == 0:
+#                 current_task.update_state(state='PROGRESS',
+#                                           meta={'count': total_count})
+#             
+#         else:
+        disqus_id = reply_to
+        
         if len(section['comments']) > 0:
             total_count = import_wiki_talk_posts(section['comments'], article, disqus_id, current_task, total_count)
         if len(section['subsections']) > 0:
