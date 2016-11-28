@@ -83,15 +83,15 @@ summarizer = Summarizer(stemmer)
 def index(request):
     a = Article.objects.all().select_related()
     
+    for art in a:
+        art.url = re.sub('#', '%23', art.url)
+    
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']
         
         return {'page': 'index',
             'task_id': task_id,
             'articles': a}
-    
-    for art in a:
-        art.url = re.sub('#', '%23', art.url)
     
     return {'page': 'index',
             'articles': a}
