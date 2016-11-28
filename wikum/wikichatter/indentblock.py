@@ -5,7 +5,6 @@ import mwparserfromhell as mwp
 
 # Unclean code
 def generate_indentblock_list(wcode):
-    print 'generate indent block list'
     text_blocks = []
     wcode_lines = _divide_wikicode_into_lines(wcode)
     continuation_indent = 0

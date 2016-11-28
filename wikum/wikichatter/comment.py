@@ -4,7 +4,6 @@ from .error import Error
 
 
 def identify_comments_linear_merge(text_blocks):
-    print 'linear merge'
     working_comment = None
     comments = []
     for block in text_blocks:

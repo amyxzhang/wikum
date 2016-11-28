@@ -49,12 +49,9 @@ def get_article(url, source, num):
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
             params = {'action': 'parse', 'prop': 'sections','page': str(wiki_sub[0]) + ':' + str(wiki_page)}
-            print params
-            try:
-                request = api.APIRequest(site, params)
-                result = request.query()
-            except Exception:
-                print 'Here - article'
+            request = api.APIRequest(site, params)
+            result = request.query()
+
             id = str(result['parse']['pageid'])
             section_title = None
             if section:
@@ -90,19 +87,16 @@ def get_wiki_talk_posts(article, current_task, total_count):
     title = article.title.split(' - ')
     
     params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json'}
-    print params
-    try:
-        request = api.APIRequest(site, params)
-        result = request.query()
-    except Exception:
-        print 'here get revisions'
+    request = api.APIRequest(site, params)
+    result = request.query()
     id = article.disqus_id.split('#')[0]
     text = result['query']['pages'][id]['revisions'][0]['*']
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
     
-    print 'parsed_wikichatter'
     start_sections = parsed_text['sections']
+    
+    found = False
     
     if len(title) > 1:
         section_title = title[1]
@@ -112,16 +106,16 @@ def get_wiki_talk_posts(article, current_task, total_count):
             heading_title = re.sub(r'\]','', heading_title)
             heading_title = re.sub(r'\[','', heading_title)
             if heading_title == str(section_title):
-                print 'found section'
                 start_sections = s['subsections']
                 start_comments = s['comments']
     
                 total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
+                found = True
     
-    total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
+    if not found:
+        total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
-    print 'import wiki sessions'
     for section in sections:
         heading = section.get('heading', None)
         if heading:
@@ -159,7 +153,6 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
-    print 'import authors'
     authors_list = '|'.join(authors)
     
     from wikitools import wiki, api
@@ -193,9 +186,7 @@ def import_wiki_authors(authors, article):
     return comment_authors
     
     
-def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):
-    print 'import wiki talk post'
-    
+def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):    
     for comment in comments:
         text = '\n'.join(comment['text_blocks'])
        
