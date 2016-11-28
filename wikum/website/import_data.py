@@ -40,7 +40,7 @@ def get_article(url, source, num):
             url_parts = url.split('/wiki/')
             domain = url_parts[0]
             wiki_sub = url_parts[1].split(':')
-            wiki_parts = wiki_sub[1].split('#')
+            wiki_parts = ':'.join(wiki_sub[1:]).split('#')
             wiki_page = wiki_parts[0]
             section = None
             if len(url_parts) > 1:
