@@ -96,8 +96,6 @@ def get_wiki_talk_posts(article, current_task, total_count):
     
     start_sections = parsed_text['sections']
     
-    found = False
-    
     if len(title) > 1:
         section_title = title[1]
         sections = parsed_text['sections']
@@ -110,10 +108,8 @@ def get_wiki_talk_posts(article, current_task, total_count):
                 start_comments = s['comments']
     
                 total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
-                found = True
     
-    if not found:
-        total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
+    total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
     for section in sections:
