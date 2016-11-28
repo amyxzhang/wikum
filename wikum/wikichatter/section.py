@@ -38,6 +38,7 @@ class Section(object):
         self._subsections.append(subsection)
 
     def extract_comments(self, extractor):
+        print 'extract comments'
         self.comments = extractor(self._wikicode)
         for s in self._subsections:
                 s.extract_comments(extractor)

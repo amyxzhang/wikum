@@ -100,6 +100,8 @@ def get_wiki_talk_posts(article, current_task, total_count):
     text = result['query']['pages'][id]['revisions'][0]['*']
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
+    
+    print 'parsed_wikichatter'
     start_sections = parsed_text['sections']
     
     if len(title) > 1:
@@ -110,6 +112,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
             heading_title = re.sub(r'\]','', heading_title)
             heading_title = re.sub(r'\[','', heading_title)
             if heading_title == str(section_title):
+                print 'found section'
                 start_sections = s['subsections']
                 start_comments = s['comments']
     
@@ -118,6 +121,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
+    print 'import wiki sessions'
     for section in sections:
         heading = section.get('heading', None)
         if heading:
@@ -155,6 +159,7 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
+    print 'import authors'
     authors_list = '|'.join(authors)
     
     from wikitools import wiki, api
@@ -198,6 +203,7 @@ def import_wiki_authors(authors, article):
     
     
 def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):
+    print 'import wiki talk post'
     
     for comment in comments:
         text = '\n'.join(comment['text_blocks'])
