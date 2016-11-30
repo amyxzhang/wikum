@@ -51,7 +51,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                 text += '</div></div></div><div class="gallerytext"><p>'
                 inner_text = '|'.join(res[1:]).strip()
                 text += parse(inner_text)
-                text += '</p></div></div></li>'
+                text += '</p></div></li>'
                 start_text += text
     else:
         start_text = '<ul class="gallery mw-gallery-packed">'
@@ -82,7 +82,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                 text += '</div></div></div><div class="gallerytext"><p>'
                 inner_text = '|'.join(res[1:]).strip()
                 text += parse(inner_text)
-                text += '</p></div></div></li>'
+                text += '</p></div></li>'
                 start_text += text
     start_text += '</ul>'
     return start_text
