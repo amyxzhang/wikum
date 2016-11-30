@@ -19,6 +19,7 @@ from website.import_data import get_source, get_article
 from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook, registerTagHook
 import urllib
 from wikitools import wiki, api
+from lxml.html.builder import BODY
 
 def galleryTagHook(parser_env, body, attributes={}):
     start_text = ''
@@ -104,6 +105,24 @@ def userHook(parser_env, namespace, body):
     text = (text or article).strip() 
     return '<a href="http://en.wikipedia.org/wiki/User:%s">%s</a>' % (href, text)
 
+def fileHook(parser_env, namespace, body):
+    (file_name, pipe, size) = body.partition('|') 
+    
+    site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
+    params = {'action': 'query', 'titles': 'File:' + file_name,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlwidth': size}
+    request = api.APIRequest(site, params)
+    result = request.query()
+    try:
+        url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
+        desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
+        width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
+        height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+    except:
+        continue
+    text = '<a href="%s" class="image">' % desc_url
+    text += '<img alt="%s" src="%s" width="%s" height="%s"></a>' % (file_name, url, width, height)
+    return text
+
 def userTalkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
@@ -134,9 +153,16 @@ def quoteBoxHook(parser_env, namespace, body):
             print 'here'
             return '<p style="background-color: #ffffff;">%s</p>' % quote
 
+def highlightHook(parser_env, namespace, body):
+    text = '<span style="margin-right: 0.4em; padding: 3px 4px 2px; background-color: yellow; border: 1px; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;; box-shadow: 0.1em 0.1em 0.25em rgba(0,0,0,0.75); -moz-box-shadow: 2px 2px 4px #A0A080; -webkit-box-shadow: 2px 2px 4px #A0A080; box-shadow: 2px 2px 4px #A0A080;">'
+    text += body
+    text += '</span>'
+    return text
+
 registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
+registerInternalLinkHook('file', fileHook)
 
 registerInternalTemplateHook('u', userHook)
 registerInternalTemplateHook('reply to', userHook)
@@ -146,6 +172,7 @@ registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
+registerInternalTemplateHook('highlight round', highlightHook)
 
 
 
