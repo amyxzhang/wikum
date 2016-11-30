@@ -28,7 +28,70 @@ from sklearn.metrics.pairwise import euclidean_distances
 from django.views.decorators.csrf import csrf_exempt
 from website.import_data import get_source, get_article
 
-from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook
+from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook, registerTagHook
+import urllib
+from wikitools import wiki, api
+
+def galleryTagHook(parser_env, body, attributes={}):
+    start_text = ''
+    if attributes.get('mode', None) != 'packed':
+        start_text = '<ul class="gallery mw-gallery-traditional">'
+        files = body.split('File:')
+        for file in files:
+            if file.strip() != '':
+                res = file.split('|')
+                filename = res[0].strip()
+                
+                site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
+                params = {'action': 'query', 'titles': filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlwidth': 120}
+                request = api.APIRequest(site, params)
+                result = request.query()
+                url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
+                desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
+                width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
+                height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+                
+                text = '<li class="gallerybox" style="width: 155px"><div style="width: 155px">'
+                text += '<div class="thumb" style="width: 150px;"><div style="margin:37px auto;">'
+                
+                text += '<a href="%s" class="image"><img src="%s" width="%s" height="%s"></a>' % (desc_url, url,
+                                                                                                  width,
+                                                                                                  height)
+                text += '</div></div></div><div class="gallerytext"><p>'
+                text += res[1].strip()
+                text += '</p></div></div></li>'
+                start_text += text
+    else:
+        start_text = '<ul class="gallery mw-gallery-packed">'
+        files = body.split('File:')
+        for file in files:
+            if file.strip() != '':
+                res = file.split('|')
+                filename = res[0].strip()
+                
+                site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
+                params = {'action': 'query', 'titles': filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlheight': 131}
+                request = api.APIRequest(site, params)
+                result = request.query()
+                url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
+                desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
+                width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
+                height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+                
+                text = '<li class="gallerybox" style="width: %spx"><div style="width: %spx">' % (float(int(width)) + 1.496, float(int(width)) + 1.496)
+                text += '<div class="thumb" style="width: %spx;"><div style="margin:0px auto;">' % (float(int(width)) + 0.496)
+                
+                text += '<a href="%s" class="image"><img src="%s" width="%s" height="%s"></a>' % (desc_url, url,
+                                                                                                  width,
+                                                                                                  height)
+                text += '</div></div></div><div class="gallerytext"><p>'
+                text += res[1].strip()
+                text += '</p></div></div></li>'
+                start_text += text
+    start_text += '</ul>'
+    return start_text
+            
+registerTagHook('gallery', galleryTagHook)
 
 def linkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
@@ -64,15 +127,26 @@ def quoteHook(parser_env, namespace, body):
 def archiveHook(parser_env, namespace, body):
     return 'Archived: <p style="background-color: #ffffff;">%s</p>' % body
 
+def quoteBoxHook(parser_env, namespace, body):
+    res = body.partition('|')
+    for item in res:
+        i = item.split('=')
+        if i[0].strip().lower() == 'quote':
+            quote = i[1].strip()
+            return '<p style="background-color: #ffffff;">%s</p>' % quote
+
 registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
 
 registerInternalTemplateHook('u', userHook)
 registerInternalTemplateHook('reply to', userHook)
+registerInternalTemplateHook('replyto', userHook)
+registerInternalTemplateHook('re', userHook)
 registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('archivetop', archiveHook)
+registerInternalTemplateHook('quote box', quoteBoxHook)
 
 
      
