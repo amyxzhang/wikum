@@ -124,9 +124,11 @@ def archiveHook(parser_env, namespace, body):
     return 'Archived: <p style="background-color: #ffffff;">%s</p>' % body
 
 def quoteBoxHook(parser_env, namespace, body):
+    print body
     res = body.partition('|')
     for item in res:
         i = item.split('=')
+        print i
         if i[0].strip().lower() == 'quote':
             quote = i[1].strip()
             return '<p style="background-color: #ffffff;">%s</p>' % quote
