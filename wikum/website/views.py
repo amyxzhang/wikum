@@ -118,7 +118,7 @@ def fileHook(parser_env, namespace, body):
         width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
         height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
     except:
-        continue
+        return file_name
     text = '<a href="%s" class="image">' % desc_url
     text += '<img alt="%s" src="%s" width="%s" height="%s"></a>' % (file_name, url, width, height)
     return text
