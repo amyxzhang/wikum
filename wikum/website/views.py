@@ -5,8 +5,6 @@ from django.http import JsonResponse
 
 from engine import *
 
-from sklearn.cluster import KMeans
-
 from django.http import HttpResponse
 from annoying.decorators import render_to
 from django.http.response import HttpResponseBadRequest
@@ -14,8 +12,6 @@ import random
 import numpy as np
 import pickle
 from math import floor
-from sklearn.cluster.k_means_ import MiniBatchKMeans
-from sklearn.metrics.pairwise import euclidean_distances
 
 from django.views.decorators.csrf import csrf_exempt
 from website.import_data import get_source, get_article
@@ -1127,6 +1123,11 @@ def viz_data(request):
     return JsonResponse(val)
     
 def cluster_data(request):
+    
+    #from sklearn.cluster import KMeans
+    from sklearn.cluster.k_means_ import MiniBatchKMeans
+    from sklearn.metrics.pairwise import euclidean_distances
+    
     article_url = request.GET['article']
     cluster_size = int(request.GET.get('size'))
     num = int(request.GET.get('num', 0))
