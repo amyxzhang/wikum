@@ -5,14 +5,6 @@ from django.http import JsonResponse
 
 from engine import *
 
-from sumy.nlp.stemmers import Stemmer
-from sumy.utils import get_stop_words
-from sumy.parsers.html import HtmlParser
-from sumy.nlp.tokenizers import Tokenizer
-#from sumy.summarizers.lsa import LsaSummarizer as Summarizer
-#from sumy.summarizers.text_rank import TextRankSummarizer as Summarizer
-from sumy.summarizers.lex_rank import LexRankSummarizer as Summarizer
-
 from sklearn.cluster import KMeans
 
 from django.http import HttpResponse
@@ -151,9 +143,6 @@ registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 
 
-     
-stemmer = Stemmer("english")
-summarizer = Summarizer(stemmer)
 
 @render_to('website/index.html')
 def index(request):
@@ -858,6 +847,17 @@ def move_comments(request):
            
            
 def auto_summarize_comment(request):
+    
+    from sumy.nlp.stemmers import Stemmer
+    #from sumy.utils import get_stop_words
+    from sumy.parsers.html import HtmlParser
+    from sumy.nlp.tokenizers import Tokenizer
+    #from sumy.summarizers.lsa import LsaSummarizer as Summarizer
+    #from sumy.summarizers.text_rank import TextRankSummarizer as Summarizer
+    from sumy.summarizers.lex_rank import LexRankSummarizer as Summarizer
+         
+    stemmer = Stemmer("english")
+    summarizer = Summarizer(stemmer)
     
     comment_ids = request.POST.getlist('d_ids[]')
     
