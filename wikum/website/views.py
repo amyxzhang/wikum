@@ -70,9 +70,11 @@ def galleryTagHook(parser_env, body, attributes={}):
                 filename = res[0].strip()
                 
                 site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
+                print filename
                 params = {'action': 'query', 'titles': filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlheight': 131}
                 request = api.APIRequest(site, params)
                 result = request.query()
+                print result['query']['pages'].values()[0]
                 url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
                 desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
                 width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
