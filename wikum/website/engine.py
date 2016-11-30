@@ -7,7 +7,6 @@ from random import randint
 
 import re
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
 from website.import_data import get_disqus_posts, get_reddit_posts,\
@@ -94,6 +93,8 @@ def copy_article_and_comments(a):
 
 
 def create_vectors(article):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    
     comments = Comment.objects.filter(article=article, num_subchildren=0, reply_to_disqus=None)
     ids = []
     comment_list = []
