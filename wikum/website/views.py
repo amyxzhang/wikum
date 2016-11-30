@@ -127,7 +127,7 @@ def quoteBoxHook(parser_env, namespace, body):
     res = body.split('\n')
     for item in res:
         i = item.split('=')
-        quote_head = re.sub('|', '', i[0]).strip().lower()
+        quote_head = re.sub('\|', '', i[0]).strip().lower()
         print quote_head
         if quote_head == 'quote':
             quote = i[1].strip()
