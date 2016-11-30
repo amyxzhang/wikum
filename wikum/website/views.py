@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from annoying.decorators import render_to
 from django.http.response import HttpResponseBadRequest
 import random
-import numpy as np
+
 import pickle
 from math import floor
 
@@ -1127,6 +1127,7 @@ def cluster_data(request):
     #from sklearn.cluster import KMeans
     from sklearn.cluster.k_means_ import MiniBatchKMeans
     from sklearn.metrics.pairwise import euclidean_distances
+    import numpy as np
     
     article_url = request.GET['article']
     cluster_size = int(request.GET.get('size'))
