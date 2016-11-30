@@ -49,7 +49,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                                                                                                   width,
                                                                                                   height)
                 text += '</div></div></div><div class="gallerytext"><p>'
-                text += res[1].strip()
+                text += '|'.join(res[1:]).strip()
                 text += '</p></div></div></li>'
                 start_text += text
     else:
@@ -79,7 +79,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                                                                                                   width,
                                                                                                   height)
                 text += '</div></div></div><div class="gallerytext"><p>'
-                text += res[1].strip()
+                text += '|'.join(res[1:]).strip()
                 text += '</p></div></div></li>'
                 start_text += text
     start_text += '</ul>'
