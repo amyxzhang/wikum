@@ -5,19 +5,14 @@ import datetime
 from django.core.paginator import Paginator
 from random import randint
 
-from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
 import re
-import nltk
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 import praw
 from website.import_data import get_disqus_posts, get_reddit_posts,\
     count_replies
 from website.models import Article, Comment, History, Tag
-
-stemmer = SnowballStemmer("english")
-stop = stopwords.words('english')
 
 def random_with_N_digits(n):
     range_start = 10**(n-1)
@@ -51,6 +46,10 @@ def get_posts(article):
 
 
 def tokenize_and_stem(text):
+    import nltk
+    from nltk.stem.snowball import SnowballStemmer
+    stemmer = SnowballStemmer("english")
+    
     # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
     tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
@@ -62,6 +61,7 @@ def tokenize_and_stem(text):
     return stems
 
 def tokenize_only(text):
+    import nltk
     # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
     tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
