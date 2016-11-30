@@ -125,7 +125,7 @@ def archiveHook(parser_env, namespace, body):
 
 def quoteBoxHook(parser_env, namespace, body):
     print body
-    res = body.partition('|')
+    res = body.split('\n')
     for item in res:
         i = item.split('=')
         print i
