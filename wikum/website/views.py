@@ -39,14 +39,14 @@ def galleryTagHook(parser_env, body, attributes={}):
     start_text = ''
     if attributes.get('mode', None) != 'packed':
         start_text = '<ul class="gallery mw-gallery-traditional">'
-        files = body.split('File:')
+        files = body.split('\n')
         for file in files:
             if file.strip() != '':
                 res = file.split('|')
                 filename = res[0].strip()
                 
                 site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
-                params = {'action': 'query', 'titles': 'File:' + filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlwidth': gal_width-35}
+                params = {'action': 'query', 'titles': filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlwidth': gal_width-35}
                 request = api.APIRequest(site, params)
                 result = request.query()
                 try:
@@ -71,13 +71,16 @@ def galleryTagHook(parser_env, body, attributes={}):
                                                                                                   width,
                                                                                                   height)
                 text += '</div></div></div><div class="gallerytext"><p>'
-                inner_text = '|'.join(res[1:]).strip()
+                if res[1] == 'thumb':
+                    inner_text = '|'.join(res[2:]).strip()
+                else:
+                    inner_text = '|'.join(res[1:]).strip()
                 text += parse(inner_text)
                 text += '</p></div></li>'
                 start_text += text
     else:
         start_text = '<ul class="gallery mw-gallery-packed">'
-        files = body.split('File:')
+        files = body.split('\n')
         for file in files:
             if file.strip() != '':
                 res = file.split('|')
@@ -85,7 +88,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                 
                 site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
                 
-                params = {'action': 'query', 'titles': 'File:' + filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlheight': 131}
+                params = {'action': 'query', 'titles': filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlheight': 131}
                 request = api.APIRequest(site, params)
                 result = request.query()
                 try:
@@ -102,7 +105,10 @@ def galleryTagHook(parser_env, body, attributes={}):
                                                                                                   width,
                                                                                                   height)
                 text += '</div></div></div><div class="gallerytext"><p>'
-                inner_text = '|'.join(res[1:]).strip()
+                if res[1] == 'thumb':
+                    inner_text = '|'.join(res[2:]).strip()
+                else:
+                    inner_text = '|'.join(res[1:]).strip()
                 text += parse(inner_text)
                 text += '</p></div></li>'
                 start_text += text
@@ -180,6 +186,13 @@ def highlightHook(parser_env, namespace, body):
     text += '</span>'
     return text
 
+def cotHook(parser_env, namespace, body):
+    text = '<div style="background: #CCFFCC; font-size:87%; padding:0.2em 0.3em; text-align:center;">'
+    text += body
+    text += '</div>'
+    
+    
+
 registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
@@ -194,6 +207,7 @@ registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)
+registerInternalTemplateHook('cot', cotHook)
 
 
 
