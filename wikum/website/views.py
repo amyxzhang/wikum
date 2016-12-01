@@ -188,7 +188,7 @@ def highlightHook(parser_env, namespace, body):
 
 def cotHook(parser_env, namespace, body):
     text = '<div style="background: #CCFFCC; font-size:87%; padding:0.2em 0.3em; text-align:center;">'
-    text += body
+    text += parse(body)
     text += '</div>'
     return text
     
@@ -199,6 +199,7 @@ registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
 registerInternalLinkHook('file', fileHook)
 
+registerInternalTemplateHook('cot', cotHook)
 registerInternalTemplateHook('u', userHook)
 registerInternalTemplateHook('reply to', userHook)
 registerInternalTemplateHook('replyto', userHook)
@@ -208,7 +209,7 @@ registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)
-registerInternalTemplateHook('cot', cotHook)
+
 
 
 
