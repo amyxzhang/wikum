@@ -447,8 +447,11 @@ def registerInternalLinkHook(tag, function):
     """
     mInternalLinkHooks[tag] = function
 
-def registerInternalTemplateHook(tag, function):
-    mInternalTemplateHooks[tag] = function
+def registerInternalTemplateHookP1(tag, function):
+    mInternalTemplateHooksP1[tag] = function
+    
+def registerInternalTemplateHookP2(tag, function):
+    mInternalTemplateHooksP2[tag] = function
 
 class BaseParser(object):
     def __init__(self):
@@ -1119,11 +1122,16 @@ class BaseParser(object):
                 i += 2
         return ''.join(sb)
     
-    def replaceInternalTemplates(self, text):
+    def replaceInternalTemplates(self, text, phase='P1'):
         sb = []
         # {{x}} -> (None, 'x')
         # {{type:x}} -> ('type','x')
         # {{:type:x}} -> (':type','x')
+        if phase == 'P1':
+            mInternalTemplateHooks = mInternalTemplateHooksP1
+        else:
+            mInternalTemplateHooks = mInternalTemplateHooksP2
+            
         bits = _internalTemplatePat.split(text)
         l = len(bits)
         i = 0
@@ -1709,7 +1717,8 @@ class Parser(BaseParser):
         text = self.parseAllQuotes(text)
         text = self.replaceExternalLinks(text)
         text = self.replaceInternalLinks(text)
-        text = self.replaceInternalTemplates(text)
+        text = self.replaceInternalTemplates(text, phase='P1')
+        text = self.replaceInternalTemplates(text, phase='P2')
         if not self.show_toc and text.find(u"<!--MWTOC-->") == -1:
             self.show_toc = False
         text = self.formatHeadings(text, True)
@@ -2368,7 +2377,8 @@ mTagHooks = {}
 # [[internal link]] hooks
 mInternalLinkHooks = {}
 # {{internal template}} hooks
-mInternalTemplateHooks = {}
+mInternalTemplateHooksP1 = {}
+mInternalTemplateHooksP2 = {}
 
 def safe_name(name=None, remove_slashes=True):
     if name is None:
