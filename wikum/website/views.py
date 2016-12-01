@@ -22,8 +22,19 @@ from wikitools import wiki, api
 from lxml.html.builder import BODY
 
 def galleryTagHook(parser_env, body, attributes={}):
-    gal_width = int(attributes.get('widths', 155))
-    def_image = int(attributes.get('heights', 120))
+    widths = attributes.get('widths')
+    if widths:
+        widths = re.sub('px', '', widths)
+        gal_width = int(widths)
+    else:
+        gal_width = 155
+        
+    heights = attributes.get('heights')
+    if heights:
+        heights = re.sub('px', '', heights)
+        def_image = int(heights)
+    else:
+        def_image = 120
     
     start_text = ''
     if attributes.get('mode', None) != 'packed':
