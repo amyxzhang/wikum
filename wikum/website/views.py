@@ -190,6 +190,7 @@ def cotHook(parser_env, namespace, body):
     text = '<div style="background: #CCFFCC; font-size:87%; padding:0.2em 0.3em; text-align:center;">'
     text += body
     text += '</div>'
+    return text
     
     
 
