@@ -28,5 +28,5 @@ def get_revision():
 
 __build__ = get_revision()
 
-from parser import parse, parselite, registerTagHook, registerInternalLinkHook, registerInternalTemplateHook
+from parser import parse, parselite, registerTagHook, registerInternalLinkHook, registerInternalTemplateHookP1, registerInternalTemplateHookP2
 
