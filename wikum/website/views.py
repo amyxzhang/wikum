@@ -22,6 +22,9 @@ from wikitools import wiki, api
 from lxml.html.builder import BODY
 
 def galleryTagHook(parser_env, body, attributes={}):
+    gal_width = attributes.get('widths', 155)
+    def_image = attributes.get('heights', 120)
+    
     start_text = ''
     if attributes.get('mode', None) != 'packed':
         start_text = '<ul class="gallery mw-gallery-traditional">'
@@ -32,7 +35,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                 filename = res[0].strip()
                 
                 site = wiki.Wiki('https://en.wikipedia.org/w/api.php')
-                params = {'action': 'query', 'titles': 'File:' + filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlwidth': 120}
+                params = {'action': 'query', 'titles': 'File:' + filename,'prop': 'imageinfo', 'iiprop': 'url|thumbmime', 'iiurlwidth': gal_width-35}
                 request = api.APIRequest(site, params)
                 result = request.query()
                 try:
@@ -43,8 +46,15 @@ def galleryTagHook(parser_env, body, attributes={}):
                 except:
                     continue
                 
-                text = '<li class="gallerybox" style="width: 155px"><div style="width: 155px">'
-                text += '<div class="thumb" style="width: 150px;"><div style="margin:37px auto;">'
+                ratio = float(float(width)/float(height))
+                
+                if height > def_image:
+                    height = def_image
+                    width = ratio * def_image
+                
+                
+                text = '<li class="gallerybox" style="width: %spx"><div style="width: %spx">' % (gal_width, gal_width)
+                text += '<div class="thumb" style="width: %spx;"><div style="margin:%spx auto;">' % (gal_width-5, float(gal_width-height)/2.0)
                 
                 text += '<a href="%s" class="image"><img src="%s" width="%s" height="%s"></a>' % (desc_url, url,
                                                                                                   width,
