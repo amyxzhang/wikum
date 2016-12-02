@@ -1135,6 +1135,7 @@ class BaseParser(object):
                     sb.append(func(self, space, name))
                 i += 1
             full_text = ''.join(sb)
+        return full_text
 
     # TODO: fix this so it actually works
     def replaceFreeExternalLinks(self, text):
