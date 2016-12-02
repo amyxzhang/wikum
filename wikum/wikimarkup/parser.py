@@ -448,7 +448,7 @@ def registerInternalLinkHook(tag, function):
     mInternalLinkHooks[tag] = function
 
 def registerInternalTemplateHook(tag, function):
-    mInternalTemplateHooks[tag] = function
+    mInternalTemplateHooks.append((tag, function))
 
 class BaseParser(object):
     def __init__(self):
