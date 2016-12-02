@@ -1122,7 +1122,7 @@ class BaseParser(object):
     def replaceInternalTemplates(self, text):
         full_text = text
         for space, func in mInternalTemplateHooks:
-            regex = re.compile(ur'\{\{\s*?' + space + '\s*?\|(.*?)\}\}',re.UNICODE | re.DOTALL | re.MULTILINE, re.IGNORECASE)
+            regex = re.compile(ur'\{\{\s*?' + space + '\s*?\|(.*?)\}\}',re.UNICODE | re.DOTALL | re.MULTILINE | re.IGNORECASE)
             sb = []
             bits = regex.split(full_text)
             l = len(bits)
