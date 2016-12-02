@@ -712,33 +712,4 @@ form.modal-content {
 	filter: drop-shadow(0 5px 15px rgba(0,0,0,.5));
 }
 
-ul.gallery {
-    margin: 2px;
-    padding: 2px;
-    display: block;
-}
-
-li.gallerybox {
-    vertical-align: top;
-    display: -moz-inline-box;
-    display: inline-block;
-}
-
-div.thumb {
-    text-align: center;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    margin: 2px;
-}
-
-div.gallerytext {
-    overflow: hidden;
-    font-size: 94%;
-    padding: 2px 4px;
-    word-wrap: break-word;
-}
-
-ul.mw-gallery-packed-hover, ul.mw-gallery-packed-overlay, ul.mw-gallery-packed {
-    text-align: center;
-}
 

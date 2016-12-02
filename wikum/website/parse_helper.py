@@ -217,7 +217,13 @@ def cotHook(parser_env, namespace, body):
     text += body
     text += '</div>'
     return text
-    
+
+def colorHook(parser_env, namespace, body):
+    (color, pipe, text) = body.partition('|') 
+    return '<span style="color: %s">%s</span>' % (color, text)
+
+def passThroughHook(parser_env, namespace, body):
+    return body
     
 
 registerInternalLinkHook('*', linkHook)
@@ -230,10 +236,12 @@ registerInternalTemplateHook('reply to', userHook)
 registerInternalTemplateHook('replyto', userHook)
 registerInternalTemplateHook('u', userHook)
 registerInternalTemplateHook('re', userHook)
+registerInternalTemplateHook('color', colorHook)
 registerInternalTemplateHook('cot', cotHook)
 registerInternalTemplateHook('tq', quoteHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)
+registerInternalTemplateHook('rfc top', passThroughHook)
 
 
