@@ -139,6 +139,8 @@ blockquote {
 .node_header {
 	font-weight: bold;
 	color: #000000;
+	padding-right: 10px;
+	float: right;
 }
 
 .summary_node {
