@@ -16,7 +16,7 @@ from math import floor
 from django.views.decorators.csrf import csrf_exempt
 from website.import_data import get_source, get_article
 
-from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHookP1, registerInternalTemplateHookP2, registerTagHook
+from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook, registerTagHook
 import urllib
 from wikitools import wiki, api
 from lxml.html.builder import BODY
@@ -199,17 +199,16 @@ registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
 registerInternalLinkHook('file', fileHook)
 
-registerInternalTemplateHookP1('ping', pingTempHook)
-registerInternalTemplateHookP1('reply to', userHook)
-registerInternalTemplateHookP1('replyto', userHook)
-registerInternalTemplateHookP1('u', userHook)
-registerInternalTemplateHookP2('re', userHook)
-
-registerInternalTemplateHookP2('cot', cotHook)
-registerInternalTemplateHookP2('tq', quoteHook)
-registerInternalTemplateHookP2('archivetop', archiveHook)
-registerInternalTemplateHookP2('quote box', quoteBoxHook)
-registerInternalTemplateHookP2('highlight round', highlightHook)
+registerInternalTemplateHook('ping', pingTempHook)
+registerInternalTemplateHook('reply to', userHook)
+registerInternalTemplateHook('replyto', userHook)
+registerInternalTemplateHook('u', userHook)
+registerInternalTemplateHook('re', userHook)
+registerInternalTemplateHook('cot', cotHook)
+registerInternalTemplateHook('tq', quoteHook)
+registerInternalTemplateHook('archivetop', archiveHook)
+registerInternalTemplateHook('quote box', quoteBoxHook)
+registerInternalTemplateHook('highlight round', highlightHook)
 
 
 

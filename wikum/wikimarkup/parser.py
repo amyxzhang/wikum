@@ -447,11 +447,8 @@ def registerInternalLinkHook(tag, function):
     """
     mInternalLinkHooks[tag] = function
 
-def registerInternalTemplateHookP1(tag, function):
-    mInternalTemplateHooksP1[tag] = function
-    
-def registerInternalTemplateHookP2(tag, function):
-    mInternalTemplateHooksP2[tag] = function
+def registerInternalTemplateHook(tag, function):
+    mInternalTemplateHooks[tag] = function
 
 class BaseParser(object):
     def __init__(self):
@@ -1122,38 +1119,22 @@ class BaseParser(object):
                 i += 2
         return ''.join(sb)
     
-    def replaceInternalTemplates(self, text, phase='P1'):
-        sb = []
-        # {{x}} -> (None, 'x')
-        # {{type:x}} -> ('type','x')
-        # {{:type:x}} -> (':type','x')
-        if phase == 'P1':
-            mInternalTemplateHooks = mInternalTemplateHooksP1
-        else:
-            mInternalTemplateHooks = mInternalTemplateHooksP2
-            
-        bits = _internalTemplatePat.split(text)
-        l = len(bits)
-        i = 0
-        num_links = 0
-        while i < l:
-            if i%3 == 0:
-                sb.append(bits[i])
-                i += 1
-            else:
-                space, name = bits[i:i+2]
-                if space and space.strip().lower() in mInternalTemplateHooks:
-                    sb.append(mInternalTemplateHooks[space.strip().lower()](self, space, name))
-                elif space and space.startswith('|') and '|' in mInternalTemplateHooks:
-                    sb.append(mInternalTemplateHooks['|'](self, space, name))
-                elif '*' in mInternalTemplateHooks:
-                    sb.append(mInternalTemplateHooks['*'](self, space, name))
-                elif bits[i]:
-                    sb.append(u'{{%s|%s}}' % (bits[i], bits[i+1]))
+    def replaceInternalTemplates(self, text):
+        full_text = text
+        for space, func in mInternalTemplateHooks:
+            regex = re.compile(ur'\{\{' + space + '\|(.*?)\}\}',re.UNICODE | re.DOTALL | re.MULTILINE)
+            sb = []
+            bits = regex.split(full_text)
+            l = len(bits)
+            i = 0
+            while i < l:
+                if i%2 == 0:
+                    sb.append(bits[i])
                 else:
-                    sb.append(u'{{%s}}' % bits[i+1])
-                i += 2
-        return ''.join(sb)
+                    name = bits[i]
+                    sb.append(func(self, space, name))
+                i += 1
+            full_text = ''.join(sb)
 
     # TODO: fix this so it actually works
     def replaceFreeExternalLinks(self, text):
@@ -1717,8 +1698,7 @@ class Parser(BaseParser):
         text = self.parseAllQuotes(text)
         text = self.replaceExternalLinks(text)
         text = self.replaceInternalLinks(text)
-        text = self.replaceInternalTemplates(text, phase='P1')
-        text = self.replaceInternalTemplates(text, phase='P2')
+        text = self.replaceInternalTemplates(text)
         if not self.show_toc and text.find(u"<!--MWTOC-->") == -1:
             self.show_toc = False
         text = self.formatHeadings(text, True)
@@ -2377,8 +2357,7 @@ mTagHooks = {}
 # [[internal link]] hooks
 mInternalLinkHooks = {}
 # {{internal template}} hooks
-mInternalTemplateHooksP1 = {}
-mInternalTemplateHooksP2 = {}
+mInternalTemplateHooks = []
 
 def safe_name(name=None, remove_slashes=True):
     if name is None:
