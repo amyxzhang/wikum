@@ -302,6 +302,9 @@ textarea {
 	max-height: calc(100vh - 200px);
 	margin: 200px 15px 15px 600px;
 	overflow: auto;
+}
+
+#box a {
 	word-break: break-all;
 }
 
