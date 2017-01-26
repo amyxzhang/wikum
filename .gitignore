@@ -1,5 +1,2 @@
 .DS_Store
-wikum/celery.pyc
-wikum/settings.pyc
-wikum/__init__.pyc
-
+*.pyc 
