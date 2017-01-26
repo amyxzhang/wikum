@@ -2330,7 +2330,6 @@ function update(source) {
       	});
 
   var nodeEnter = node.enter().append("g")
-  	  .attr("id", "")
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .style("opacity", 1e-6);
@@ -3180,37 +3179,7 @@ function stroke(d) {
 	if (d.article) {
 		return "#000000";
 	}
-	if (d.summary) {
-
-	}
  }
-
-
-/*
-// Add outer circle.
-circles.append("circle")
-       .attr("cx", function (d) { return d.cx; })
-       .attr("cy", function (d) { return d.cy; })
-       .attr("r", function (d) { return d.radius; })
-       .style("fill", "red");
-// Add inner circle.
-circles.append("circle")
-       .attr("cx", function (d) { return d.cx; })
-       .attr("cy", function (d) { return d.cy; })
-       .attr("r", function (d) { return d.inner_radius; })
-       .style("fill", "yellow");
-
-
-  var svg = d3.select("#hook").append("svg").attr("id", "d3svg")
-    .attr("width", 120)
-    .attr("height", 120);
-
-  var defs = svg.append("defs")
-  var pattern = svg.append("pattern")
-		.attr({ id:"hash4_4", width:"8", height:"8", patternUnits:"userSpaceOnUse", patternTransform:"rotate(-45)"})
-	.append("rect")
-		.attr({ width:"4", height:"8", transform:"translate(0,0)", fill:"#88AAEE" });
-*/
 
 var svg = d3.select("body").append("svg").attr("id", "d3svg");
 
