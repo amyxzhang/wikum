@@ -108,7 +108,7 @@ function check_button_checkbox() {
 
             // Inject the icon if applicable
             if ($button.find('.state-icon').length == 0) {
-                $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+                $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
             }
         }
         init();
@@ -2330,6 +2330,7 @@ function update(source) {
       	});
 
   var nodeEnter = node.enter().append("g")
+  	  .attr("id", "")
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .style("opacity", 1e-6);
@@ -3179,7 +3180,79 @@ function stroke(d) {
 	if (d.article) {
 		return "#000000";
 	}
+	if (d.summary) {
+
+	}
  }
+
+
+/*
+// Add outer circle.
+circles.append("circle")
+       .attr("cx", function (d) { return d.cx; })
+       .attr("cy", function (d) { return d.cy; })
+       .attr("r", function (d) { return d.radius; })
+       .style("fill", "red");
+// Add inner circle.
+circles.append("circle")
+       .attr("cx", function (d) { return d.cx; })
+       .attr("cy", function (d) { return d.cy; })
+       .attr("r", function (d) { return d.inner_radius; })
+       .style("fill", "yellow");
+
+
+  var svg = d3.select("#hook").append("svg").attr("id", "d3svg")
+    .attr("width", 120)
+    .attr("height", 120);
+
+  var defs = svg.append("defs")
+  var pattern = svg.append("pattern")
+		.attr({ id:"hash4_4", width:"8", height:"8", patternUnits:"userSpaceOnUse", patternTransform:"rotate(-45)"})
+	.append("rect")
+		.attr({ width:"4", height:"8", transform:"translate(0,0)", fill:"#88AAEE" });
+*/
+
+var svg = d3.select("body").append("svg").attr("id", "d3svg");
+
+var gradientblue = svg.append("svg:defs")
+    .append("svg:linearGradient")
+    .attr("id", "gradientblue")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "100%")
+    .attr("spreadMethod", "pad");
+
+// Define the gradient colors
+gradientblue.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#1F637A")
+    .attr("stop-opacity", 1);
+
+gradientblue.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#ffffff")
+    .attr("stop-opacity", 1);
+
+ var gradientorange = svg.append("svg:defs")
+    .append("svg:linearGradient")
+    .attr("id", "gradientorange")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "100%")
+    .attr("spreadMethod", "pad");
+
+// Define the gradient colors
+gradientorange.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#B35900")
+    .attr("stop-opacity", 1);
+
+gradientorange.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#ffffff")
+    .attr("stop-opacity", 1);
 
 function color(d) {
 
@@ -3196,7 +3269,14 @@ function color(d) {
 	}
 
 	if (d.collapsed) {
+		if (d.summary) {
+			return "url(#gradientorange)";
+		}
 		return "#f8c899";
+	}
+
+	if (d.summary) {
+		return "url(#gradientblue)";
 	}
 
 	return "#a1c5d1";
