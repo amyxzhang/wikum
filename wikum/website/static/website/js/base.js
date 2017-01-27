@@ -108,7 +108,7 @@ function check_button_checkbox() {
 
             // Inject the icon if applicable
             if ($button.find('.state-icon').length == 0) {
-                $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+                $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
             }
         }
         init();
@@ -3181,6 +3181,48 @@ function stroke(d) {
 	}
  }
 
+var svg = d3.select("body").append("svg").attr("id", "d3svg");
+
+var gradientblue = svg.append("svg:defs")
+    .append("svg:linearGradient")
+    .attr("id", "gradientblue")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "100%")
+    .attr("spreadMethod", "pad");
+
+// Define the gradient colors
+gradientblue.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#1F637A")
+    .attr("stop-opacity", 1);
+
+gradientblue.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#ffffff")
+    .attr("stop-opacity", 1);
+
+ var gradientorange = svg.append("svg:defs")
+    .append("svg:linearGradient")
+    .attr("id", "gradientorange")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "100%")
+    .attr("spreadMethod", "pad");
+
+// Define the gradient colors
+gradientorange.append("svg:stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "#B35900")
+    .attr("stop-opacity", 1);
+
+gradientorange.append("svg:stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#ffffff")
+    .attr("stop-opacity", 1);
+
 function color(d) {
 
 	if (d.parent_node) {
@@ -3196,7 +3238,14 @@ function color(d) {
 	}
 
 	if (d.collapsed) {
+		if (d.summary) {
+			return "url(#gradientorange)";
+		}
 		return "#f8c899";
+	}
+
+	if (d.summary) {
+		return "url(#gradientblue)";
 	}
 
 	return "#a1c5d1";
