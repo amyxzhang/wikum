@@ -2831,6 +2831,8 @@ function show_parent(id) {
 function show_text(d) {
 	if (d && d != 'clicked') {
 		clear_box_top();
+		parent = d.parent;
+	    	var summary = !!(parent.summary != '' || parent.extra_summary != '');
 		if (d.article) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
@@ -2840,8 +2842,15 @@ function show_text(d) {
 
 			var text = `<article class="comment_box ${summaryClass} ${collapsed}" id="comment_${d.id}">`;
 
-			if (d.depth > 1) {
-				text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
+			if (d.depth > 1
+                	) {
+			    if (!summary) {
+			        text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
+			    }
+			    else
+			    {
+			        text += '<a onclick="show_parent(' + d.id + ');">Show parent summary</a><BR>';
+			    }
 			}
 
 			text += construct_comment(d);
@@ -2886,7 +2895,14 @@ function show_text(d) {
 			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
-				text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
+			    if (!summary)
+			    {
+			        text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
+			    }
+			    else {
+			        text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent summary</a><BR>';
+			    }
+			    
 			}
 
 			text += construct_comment(objs[i]);
