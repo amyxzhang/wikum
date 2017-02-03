@@ -407,6 +407,7 @@ rect.selection {
 		--background: hsl(30, 100%, 86%);
 	}
 
+
 .collapsed {
 	background-color: hsl(50, 100%, 95%);
 	border-color: hsl(40, 100%, 75%);
@@ -416,6 +417,22 @@ rect.selection {
 	.collapsed footer {
 		--background: hsl(45, 100%, 83%);
 	}
+
+.collapsed.summary{
+  	box-shadow:
+    inset 4px -2px 10px 1px hsla(30, 100%, 40%, .8);
+	position: relative;
+}
+
+.summary{
+  	box-shadow:
+    inset 4px -2px 10px 1px hsla(195, 59%, 25%, .8);
+	position: relative;
+}
+
+.highlighted.summary{
+	border: 1.8px #000000 solid;
+}
 
 .highlighted {
 	border: 1px #000000 solid;
