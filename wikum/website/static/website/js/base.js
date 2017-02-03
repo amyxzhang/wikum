@@ -669,7 +669,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
 
 		$('#summarize_comment_text').text('Summarize this comment.');
-		$('#summarize_comment_textarea').val("");
+		$('#summarize_comment_textarea').val(""); 
 
 	} else if (type == "edit_summarize_one") {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
@@ -841,6 +841,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 			var depth = Math.min(objs[i].depth - min_level, 3);
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
+
 
 			text += `<div id="sum_box_${objs[i].id}" class="summarize_comment_comment ${summaryClass} level${depth}">
 			<p>ID: ${objs[i].d_id} |`;
@@ -2292,6 +2293,7 @@ function check_clicked_node(d, clicked_ids) {
 }
 
 function update(source) {
+  
 
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
   var nodes = tree.nodes(root);
@@ -2627,6 +2629,8 @@ function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
 
+
+
 function construct_comment(d) {
 	var text = "";
 	var summary = !!(d.summary != '' || d.extra_summary != '');
@@ -2681,7 +2685,7 @@ function construct_comment(d) {
 		}
 		text += `</h6>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
-	}
+			}
 
 	text += '</div>';
 
@@ -2724,6 +2728,7 @@ function construct_comment(d) {
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
+			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#option_show_unimportant" data-type="show_unimportant" data-id="' + d.id + '">Show Hidden Comments</a>';
 		} else if (!d.replace_node) {
 			if (!(d.parent && d.parent.replace_node)) {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
@@ -2776,8 +2781,10 @@ function get_subtree_box(text, d, level) {
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = d.children[i].replace_node? "summary_box" : "";
 			var collapsed = d.children[i].collapsed && !d.children[i].replace_node? "collapsed" : "";
+			var summary = d.children[i].summary && !d.children[i].replace_node? "summary" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed}" id="comment_${d.children[i].id}">`;
+
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary}" id="comment_${d.children[i].id}">`;
 
 			text +=  construct_comment(d.children[i]);
 			text += '</article>';
@@ -2837,8 +2844,9 @@ function show_text(d) {
 		} else {
 			var summaryClass = d.replace_node? "summary_box" : "";
 			var collapsed = d.collapsed && !d.replace_node? "collapsed" : "";
+			var summary = d.summary && !d.replace_node? "summary" : "";
 
-			var text = `<article class="comment_box ${summaryClass} ${collapsed}" id="comment_${d.id}">`;
+			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summary}" id="comment_${d.id}">`;
 
 			if (d.depth > 1) {
 				text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
@@ -2882,8 +2890,9 @@ function show_text(d) {
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
 			var collapsed = objs[i].collapsed && !objs[i].replace_node? "collapsed" : "";
+			var summary = objs[i].summary && !objs[i].replace_node? "summary" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed}" id="comment_${objs[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
 				text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
