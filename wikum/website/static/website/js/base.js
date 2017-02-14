@@ -2839,7 +2839,6 @@ function show_text(d) {
 	if (d && d != 'clicked') {
 		clear_box_top();
 		parent = d.parent;
-	    	var summary = !!(parent.summary != '' || parent.extra_summary != '');
 		if (d.article) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
