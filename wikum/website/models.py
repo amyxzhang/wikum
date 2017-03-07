@@ -14,6 +14,17 @@ class Source(models.Model):
         return self.source_name
 
 class Article(models.Model):
+    EDIT_ACCESS = 1
+    COMMENT_ACCESS = 2
+    VIEW_ACCESS = 3
+    PRIVATE_ACCESS = 4
+    ACCESS_MODES = (
+        (EDIT_ACCESS, 'Edit'),
+        (COMMENT_ACCESS, 'Comment'),
+        (VIEW_ACCESS, 'View'),
+        (PRIVATE_ACCESS, 'Private'),
+    )
+    
     id = models.AutoField(primary_key=True)
     disqus_id = models.CharField(max_length=15, null=True, blank=True)
     created_at = models.DateTimeField(null=True)
@@ -23,8 +34,9 @@ class Article(models.Model):
     
     num = models.IntegerField(default=0)
     highlight_authors = models.TextField()
-    
     vectorizer = models.BinaryField()
+    
+    access_mode = models.IntegerField(choices=ACCESS_MODES, default=EDIT_ACCESS) 
 
     def __unicode__(self):
         return self.title
