@@ -3019,16 +3019,20 @@ function set_expand_position(d) {
 
 function showdiv(d) {
 	if (!isMouseDown) {
+		//Dark Orange Summary Nodes:
 		if (d.replace_node) {
 			clearTimeout(timer);
 
 			text = '';
+
 			if (comment_id != d.d_id) {
 				if (text != '') {
 					text += '<BR>';
 				}
 				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
 				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+				text += '<BR><a>Show Deleted</a>';
+
 			}
 			if (text != '') {
 				$('#expand').html(text);
@@ -3079,10 +3083,12 @@ function showdiv(d) {
 						text += '<BR>';
 					}
 					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num +'">See Isolated Subtree</a>';
+	
 
 				}
 			}
 			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+			text += '<BR><a>Show Deleted</a>';
 
 			if (text != '') {
 				$('#expand').html(text);
@@ -3124,6 +3130,7 @@ function hide_replace_nodes(id) {
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+		/*not here*/
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -3149,6 +3156,7 @@ function show_replace_nodes(id) {
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+		/*not here*/
 	}
 	if (text != '') {
 		$('#expand').html(text);
