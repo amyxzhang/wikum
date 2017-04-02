@@ -2962,6 +2962,10 @@ function unextra_highlight_node(id) {
 }
 
 function construct_box_top(objs) {
+	
+	if ($.trim($('#access_mode').text()) != "Edit Access") {
+		return;
+	}
 
 	var parent_node = null;
 
