@@ -22,8 +22,9 @@ except IOError:
     print "Unable to open configuration file!"
 
 
-_ENV_FILE_PATH = '/opt/wikum/env'
-_DEBUG_FILE_PATH = '/opt/wikum/debug'
+DISQUS_API_KEY = 'NrTAM2uOLLfr1HUr4HIYlsbepZLcyhORNg7fDwnxaU9caJLLyTyz6ENjI3bpVCNA';
+_ENV_FILE_PATH = 'C:\Users\Jane Im\Documents\wikum\wikum\opt\wikum\env'
+_DEBUG_FILE_PATH = 'C:\Users\Jane Im\Documents\wikum\wikum\opt\wikum\debug'
 
 def _get_env():
     f = open(_ENV_FILE_PATH)
@@ -33,8 +34,12 @@ def _get_env():
         env = env[:-1]
     
     f.close()
-    return env
-ENV = _get_env() 
+    print env
+    return env[1:len(env)-2]
+ENV = _get_env()
+
+print ENV
+
 
 def _get_debug():
     f = open(_DEBUG_FILE_PATH)
@@ -134,6 +139,7 @@ DATABASES = {
     }
 }
 
+print DATABASES;
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

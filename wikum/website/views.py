@@ -24,6 +24,8 @@ import parse_helper
 
 @render_to('website/index.html')
 def index(request):
+    print "request"
+    print request
     a = Article.objects.all().select_related()
     
     for art in a:
