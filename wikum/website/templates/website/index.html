@@ -12,48 +12,84 @@
         <div class="intro-body">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                    	<BR>
-                    	<BR>
-                        <h1 class="brand-heading">Wikum</h1>
-                        
-                        
-                        <p class="intro-text">Summarize long comment threads.
-                        
-                        	<br>
-                        	<p>
-                        		<a href="/summary?article=http://www.theatlantic.com/magazine/archive/2012/07/why-women-still-cant-have-it-all/309020/&num=0">Sandbox: Why Women Still Can't Have it All - The Atlantic</a>
-                        	</p>
-                        	
-                        		<strong>Completed Summaries</strong>
-									<BR>
-                        			<a href="/summary?article=http://www.theatlantic.com/magazine/archive/2012/07/why-women-still-cant-have-it-all/309020/&num=2">Why Women Still Can't Have it All - the Atlantic</a>
-                        		<BR>
-                        			<a href="/summary?article=https://www.reddit.com/r/explainlikeimfive/comments/459boe/eli5_why_is_todays_announcement_of_the_discovery/&num=2">ELI5: Why is Today's Announcement of the Discovery of Gravitational Waves Important, and What are the Ramifications?</a>
-                        		<BR>
-                        			<a href="/summary?article=https://lists.csail.mit.edu/mailman/private/csail-related/2013-January.txt&num=2">csail-related: Holiday Greetings from MIT</a>
-                        	<BR>
-                        		<BR>
-                        	<div class="dropdown">
-							  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							    View an existing discussion
-							    <span class="caret"></span>
-							  </button>
-							  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-							  	
-							  	{% for a in articles %}
-							    	<li><a href="/summary?article={{ a.url }}&num={{ a.num }}">{{a.source.source_name}}: {{ a.title }}</a></li>
-								{% endfor %}
-							  </ul>
-							</div>
-                        </P>
-                        
+                    <div class="col-md-12 col-md-offset-0">
+                    
                     	<P>
+                    		<BR>
+                    			<BR>
+                    		<h3>Summarize long comment threads.</h3>
+		           
+		          
+                    		<a href="/account/login" class="btn btn-default btn-lg">Login</a> <a href="/account/signup" class="btn btn-default btn-lg">Sign Up</a> <a class="btn btn-default btn-lg">+ Create new Wikum</a>
+                    		
+                    		
+                    		
+                    		<BR>
+                    		<BR>
+                    		<div>
+                    		
+                    		
+                    		<ul id="post-list-table">
+								<a href="/summary?article=http://www.theatlantic.com/magazine/archive/2012/07/why-women-still-cant-have-it-all/309020/&num=0">
+									<li class="row-item">
+							  			<progress value="11" max="100"></progress>
+											<span class="blurb ellipsis">
+												Sandbox
+											</span>
+				
+										</li>
+								</a>
+
+						
+                        	
+                        	
+							  	{% for a in articles %}
+							  	<a href="/summary?article={{ a.url }}&num={{ a.num }}">
+								
+							  		<li class="row-item">
+							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
+							  			
+							  				<div class="blurb">
+							  					
+							  					<span class="percent">
+								  					<strong>
+								  						{{ a.percent_complete }}%
+								  					</strong>
+								  				</span>
+								  				<span class="source">
+								  					{{a.source.source_name}}
+								  				</span>
+												<span class="ellipsis">
+													 {{ a.title }}
+												</span>
+												<span class="right-side">
+													<span class="comment_num">
+								  						{{ a.comment_num }}
+								  					</span>
+								  					<span class="summary_num">
+								  						{{ a.summary_num }}
+								  					</span>
+								  				</span>
+												
+												
+											</div>
+				
+										</li>
+									</a>
+								{% endfor %}
+							 
+							 	</ul>
+							 </div>
+                    		
+                    		
+                    		<!--
 						   <form>
 						  <div class="form-group">
-						    <input type="url" class="form-control" id="articleUrl" placeholder="Or import a new discussion by pasting an Atlantic article url, Reddit page url, or Wikipedia Talk page section url here.">
+						    <input type="url" class="form-control" id="articleUrl" placeholder="Import a new discussion by pasting an Atlantic article url, Reddit page url, or Wikipedia Talk page section url here.">
+						 
 						  </div>
 						  </form>
+						   -->
 						</p>
 						  
 					  	<div id="message" style="display: block; height:40px;">
@@ -72,6 +108,17 @@
         </div>
     </header>
 
+	<section id="discussions">
+		 <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+				<br>
+                        	
+		</div>
+		</div>
+		
+	</section>
+
+
     <!-- About Section -->
     <section id="about" class="container content-section text-center">
         <div class="row">
@@ -89,7 +136,6 @@ a large population of readers or editors to work in small doses to refine out th
 single summary, our workflow produces a <i>summary tree</i> that enables a reader to explore distinct subtopics at multiple levels 
 of detail based on their interests.
 </P>
-									<br>
 									<br>
 										
 							

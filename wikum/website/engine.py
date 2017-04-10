@@ -145,5 +145,73 @@ def make_vector(comment, article):
     comment.save()
     
     
+def word_count(s):
+    if not s:
+        return 0
+    return str.strip().split('\s+').length;
+
+
+def count_article(art):
+    posts = Comment.objects.filter(article=art, reply_to_disqus=None, hidden=False)
+        
+    val2 = {}
+    from website.views import recurse_viz
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, art, False)
+    
+    num_words_all = count_all_words(val2)
+    num_words_still = count_unsummarized_words(val2)
+    
+    print num_words_all
+    print num_words_still
+
+    if num_words_all >= 250:
+        num_words_all = num_words_all - 250;
+        num_words_still = num_words_still - 250;
+    else:
+        half = num_words_all/2;
+        num_words_all = num_words_all - half;
+        num_words_still = num_words_still - half;
+
+    value = round((1 - (num_words_still/num_words_all)) * 100)
+    if value > 100:
+        value = 100
+    art.value = value
+
+def count_all_words(info):
+    count = 0
+        
+    if info.get('replace_node'):
+        if info.get('replace'):
+            count += count_all_words(info['replace'])
+
+        if info.get('children'):
+            count += count_all_words(info['children'])
+    else:
+        if info.get('children'):
+            count += count_all_words(info['children'])
+
+    if not info.get('article') and not info.get('parent_node'):
+        count += word_count(info['name'])
+        
+    return count
+    
+def count_unsummarized_words(info):
+    
+    count = 0
+        
+    if info['replace_node']:
+        count += word_count(info['summary'])
+        count += word_count(info['extra_summary'])
+    else:
+        if info['children']:
+            count += count_unsummarized_words(info['children'])
+
+    if not info.get('article') and not info.get('parent_node'):
+        if info.get('summary') != '':
+            count += word_count(info['summary'])
+            count += word_count(info['extra_summary'])
+        else:
+            count += word_count(info['name'])
+    return count
     
     
