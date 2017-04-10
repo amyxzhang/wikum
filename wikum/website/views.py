@@ -20,7 +20,8 @@ import urllib
 
 from wikimarkup import parse
 import parse_helper
-
+import math
+import json
 
 @render_to('website/index.html')
 def index(request):
@@ -28,16 +29,15 @@ def index(request):
     
     for art in a:
         art.url = re.sub('#', '%23', art.url)
+
+    resp = {'page': 'index',
+            'articles': a}
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']
-        
-        return {'page': 'index',
-            'task_id': task_id,
-            'articles': a}
-    
-    return {'page': 'index',
-            'articles': a}
+        resp['task_id'] = task_id
+
+    return resp
 
 @render_to('website/visualization.html')
 def visualization(request):

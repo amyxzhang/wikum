@@ -67,9 +67,10 @@
                 </button>
                 
                     {% if page == 'index' %}
+                    <span style="text-transform: lowercase;">
                         <a class="navbar-brand page-scroll" href="#page-top">
-		                    <span class="light">Wikum</span>
-		                </a>
+		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 700;letter-spacing: 1px;font-size: 50px;">Wikum</span>
+		                </a>  </span>
                     {% else %}
                     	<a class="navbar-brand page-scroll" href="/">
 		                    <span class="light">Wikum</span>
@@ -100,8 +101,9 @@
                         	<a class="page-scroll" href="/#contact">Contact</a>
                         {% endif %}
                     </li>
-                    <li class="dropdown">
+                    
                     	{% if user.is_authenticated %}
+                    	<li class="dropdown">
                     		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
                     		<ul class="dropdown-menu">
                     			<li><a href="/account/password/reset/">Change Password</a></li>
@@ -109,7 +111,12 @@
                     			<li><a href="/account/delete">Delete Account</a></li>
                     		</ul>
                     	{% else %}
+                    	<li>
                     		<a href="/account/login">Login</a>
+                    		</li>
+                    		<li>
+                    		<a href="/account/signup">Sign Up</a>
+                    		</li>
                     	{% endif %}
                     </li>
                 </ul>

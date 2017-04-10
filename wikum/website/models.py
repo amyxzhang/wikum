@@ -37,6 +37,10 @@ class Article(models.Model):
     vectorizer = models.BinaryField()
     
     access_mode = models.IntegerField(choices=ACCESS_MODES, default=EDIT_ACCESS) 
+    
+    percent_complete = models.IntegerField(default=0)
+    comment_num = models.IntegerField(default=0)
+    summary_num = models.IntegerField(default=0)
 
     def __unicode__(self):
         return self.title
