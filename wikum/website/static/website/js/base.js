@@ -1967,37 +1967,39 @@ function make_filter() {
 }
 
 function make_highlight() {
-	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
-	$('#node_highlight').html(text);
+   text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
+   $('#node_highlight').html(text);
 
-	$('#inputHighlight').keyup(function (e) {
-	 	$('#box').unhighlight();
-	  	for (var i=1; i<nodes_all.length; i++) {
-				d3.select("#node_" + nodes_all[i].id)
-						.style("fill", color);
-		}
+   $('#inputHighlight').keyup(function (e) {
+       $('#box').unhighlight();
+        for (var i=1; i<nodes_all.length; i++) {
+            d3.select("#node_" + nodes_all[i].id)
+                  .style("fill", color);
+      }
 
 		$('#count_result').text('0 comments highlighted');
 
 
-	  	highlight_text = $('#inputHighlight').val();
-	  	count = 0;
-	  	if (highlight_text.length > 0) {
-	  		var pattern = new RegExp('\\b' + highlight_text.toLowerCase() + '\\b');
-		  	for (var i=1; i<nodes_all.length; i++) {
-		  		text = nodes_all[i].name;
-		  		if (pattern.test(text.toLowerCase())) {
-		  			d3.select("#node_" + nodes_all[i].id)
-						.style("fill","#ffd700");
-					count += 1;
-		  		}
-		  	}
-		  	$('#box').highlight(highlight_text, { wordsOnly: true });
-
-			$('#count_result').text(count + ' comments highlighted');
-
+        highlight_text = $('#inputHighlight').val();
+        count = 0;
+        if (highlight_text.length > 0) {
+           var pattern = new RegExp('\\b' + highlight_text.toLowerCase() + '\\b');
+           for (var i=1; i<nodes_all.length; i++) {
+              text = nodes_all[i].name;
+              if (pattern.test(text.toLowerCase())) {
+                 d3.select("#node_" + nodes_all[i].id)
+                  .style("fill","#ffd700");
+               count += 1;
+              }
+           }
+		   $('#box').highlight(highlight_text, { wordsOnly: true });
+		   
+		   $('#count_result').text(count + ' comments highlighted');
+         
+		}else{
+		   $('#count_result').text('');
 		}
-	});
+   });
 }
 
 function getParameterByName(name, url) {
