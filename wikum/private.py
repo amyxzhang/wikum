@@ -1,5 +1,5 @@
 MYSQL_PROD = {
-    'NAME' : 'wikumdb',
+    'NAME' : 'wikumnewdb',
     'USER' : 'root',
     'PASSWORD' : 'Scott605',
     'HOST' : '',
