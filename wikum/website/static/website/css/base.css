@@ -63,7 +63,7 @@ footer p {
 .source {
 	position: relative;
 	top: -6px;
-	width: 100px;
+	width: 130px;
 	display: inline-block;
 	margin-right: 20px;
 }
@@ -101,7 +101,7 @@ progress::-ms-fill { background: var(--bar-background); }
 .ellipsis {
     display: inline-block;
     white-space: nowrap;
-    width: 750px;
+    width: 720px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
