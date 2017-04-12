@@ -172,7 +172,11 @@ def count_article(art):
         num_words_all = num_words_all - half;
         num_words_still = num_words_still - half;
 
-    value = round(((1.0 - float(float(num_words_still)/float(num_words_all))) * 100.0))
+    if num_words_all != 0:
+        value = round(((1.0 - float(float(num_words_still)/float(num_words_all))) * 100.0))
+    else:
+        value = 0
+        
     if value > 100:
         value = 100
     return value
