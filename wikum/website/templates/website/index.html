@@ -243,17 +243,20 @@ of detail based on their interests.
  			console.log(task);
  			if (task.state == 'PROGRESS') {
  				if (task.result) {
-  					$('.result').html(task.result.count + ' comments ingested.');
-  				}
+  					$('.result').html('Status: ' + task.result.count + ' comments ingested.');
+	  			} else{
+	  				$('.result').html('Status: In progress...');
+	  			}
   				setTimeout(PollState(task_id), 3000);
  			} else if (task.state == 'PENDING') {
+ 				$('.result').html('Status: Pending...');
  				setTimeout(PollState(task_id), 3000);
  			} else {
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
  					article = article.replace('#', '%23');
-  					$('.status').html(task.state + '! <a href="/summary?article=' + article + '"><button class="btn btn-success btn-sm">View comments</button></a>');
+  					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
   				}
