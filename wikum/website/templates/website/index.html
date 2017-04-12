@@ -17,15 +17,18 @@
                     	<P>
                     		<BR>
                     			<BR>
-                    		<h3>Summarize long comment threads.</h3>
-		           
-		          
-                    		<a href="/account/login" class="btn btn-default btn-lg">Login</a> 
-                    		<a href="/account/signup" class="btn btn-default btn-lg">Sign Up</a> 
-                    		<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
-                    		
-                    		
-                    		
+                    				
+                    				<h3>Summarize long comment threads.</h3>
+                    				
+                    				{% if user.is_authenticated %}
+                    					<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
+                    				{% else %}
+			                    		<a href="/account/login" class="btn btn-default btn-lg">Login</a> 
+			                    		<a href="/account/signup" class="btn btn-default btn-lg">Sign Up</a> 
+			                    		<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
+			                    	
+			                    	{% endif %}
+
                     		<BR>
                     		<BR>
                     		<div>
