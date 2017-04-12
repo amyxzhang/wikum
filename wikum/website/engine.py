@@ -202,20 +202,15 @@ def count_all_words(count, info):
     return count
     
 def count_unsummarized_words(count, info):
-        
-    if info.get('replace_node'):
-        count += word_count(info['summary'])
-        count += word_count(info['extra_summary'])
-    elif info.get('children'):
-            for item in info['children']:
-                count = count_unsummarized_words(count, item)
-
+    if info.get('children'):
+        for item in info['children']:
+            count = count_unsummarized_words(count, item)
 
     if info.get('summary'):
         count += word_count(info['summary'])
         count += word_count(info['extra_summary'])
     elif info.get('name'):
-            count += word_count(info['name'])
+        count += word_count(info['name'])
 
     return count
     
