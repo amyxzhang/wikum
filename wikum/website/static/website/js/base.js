@@ -1996,7 +1996,7 @@ function make_highlight() {
 
 			$('#count_result').text(count + ' comments highlighted');
 
-		}else{
+		} else {
 			$('#count_result').text('');
 		}
 	});
