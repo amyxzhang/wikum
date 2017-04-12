@@ -26,6 +26,8 @@ def import_article(url):
                 elif article.source.source_name == "Wikipedia Talk Page":
                     get_wiki_talk_posts(article, current_task, total_count)
                     
+                article.comment_num = article.comment_set.count()
+                article.save()
                 count_replies(article)
         else:
             return 'FAILURE-ARTICLE'

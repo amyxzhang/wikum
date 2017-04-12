@@ -343,6 +343,10 @@ def summarize_comment(request):
         h.comments.add(c)
         recurse_up_post(c)
         
+        a.summary_num = a.summary_num + 1
+        a.percent_complete = count_article(a)
+        
+        a.save()
         
         if 'wikipedia.org' in a.url:
             res = {}
@@ -441,6 +445,11 @@ def summarize_selected(request):
         recurse_down_num_subtree(new_comment)
         
         make_vector(new_comment, a)
+        
+        a.summary_num = a.summary_num + 1
+        a.percent_complete = count_article(a)
+        
+        a.save()
         
         
         if 'wikipedia.org' in a.url:
@@ -576,6 +585,12 @@ def summarize_comments(request):
         
         
         make_vector(new_comment, a)
+        
+        a.summary_num = a.summary_num + 1
+        a.percent_complete = count_article(a)
+        
+        a.save()
+        
         if 'wikipedia.org' in a.url:
             res = {'d_id': d_id}
             if top_summary.strip() != '':
@@ -677,6 +692,12 @@ def hide_comments(request):
                 parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     recurse_up_post(parent[0])
+            
+            a.comment_num = a.comment_num - affected
+            a.percent_complete = count_article(a)
+        
+            a.save()
+            
             
         return JsonResponse({})
     except Exception, e:
@@ -846,6 +867,12 @@ def hide_comment(request):
             parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
             if parent.count() > 0:
                 recurse_up_post(parent[0])
+                
+            
+            a.comment_num = a.comment_num - 1
+            a.percent_complete = count_article(a)
+        
+            a.save()
             
         return JsonResponse({})
     except Exception, e:
@@ -890,6 +917,11 @@ def hide_replies(request):
             recurse_up_post(c)
             
             ids = [reply.id for reply in replies]
+            
+            a.comment_num = a.comment_num - affected
+            a.percent_complete = count_article(a)
+        
+            a.save()
             
             return JsonResponse({'ids': ids})
         else:
