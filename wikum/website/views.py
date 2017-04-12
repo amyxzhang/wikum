@@ -25,7 +25,7 @@ import json
 
 @render_to('website/index.html')
 def index(request):
-    a = Article.objects.all().select_related()
+    a = Article.objects.all().order_by('-percent_complete').select_related()
     
     for art in a:
         art.url = re.sub('#', '%23', art.url)

@@ -148,7 +148,7 @@ def make_vector(comment, article):
 def word_count(s):
     if not s:
         return 0
-    return str.strip().split('\s+').length;
+    return len(s.strip().split('\s+'))
 
 
 def count_article(art):
@@ -175,23 +175,28 @@ def count_article(art):
     value = round((1 - (num_words_still/num_words_all)) * 100)
     if value > 100:
         value = 100
-    art.value = value
+    return value
+    
 
 def count_all_words(info):
     count = 0
         
     if info.get('replace_node'):
         if info.get('replace'):
-            count += count_all_words(info['replace'])
+            for item in info['replace']:
+                count += count_all_words(item)
 
         if info.get('children'):
-            count += count_all_words(info['children'])
+            for item in info['children']:
+                count += count_all_words(item)
     else:
         if info.get('children'):
-            count += count_all_words(info['children'])
+            for item in info['children']:
+                count += count_all_words(item)
 
     if not info.get('article') and not info.get('parent_node'):
-        count += word_count(info['name'])
+        if info.get('name'):
+            count += word_count(info['name'])
         
     return count
     
@@ -199,19 +204,21 @@ def count_unsummarized_words(info):
     
     count = 0
         
-    if info['replace_node']:
+    if info.get('replace_node'):
         count += word_count(info['summary'])
         count += word_count(info['extra_summary'])
     else:
-        if info['children']:
-            count += count_unsummarized_words(info['children'])
+        if info.get('children'):
+            for item in info['children']:
+                count += count_unsummarized_words(item)
 
     if not info.get('article') and not info.get('parent_node'):
-        if info.get('summary') != '':
+        if info.get('summary'):
             count += word_count(info['summary'])
             count += word_count(info['extra_summary'])
         else:
-            count += word_count(info['name'])
+            if info.get('name'):
+                count += word_count(info['name'])
     return count
     
     

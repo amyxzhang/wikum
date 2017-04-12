@@ -30,19 +30,31 @@
                     		
                     		
                     		<ul id="post-list-table">
-								<a href="/summary?article=http://www.theatlantic.com/magazine/archive/2012/07/why-women-still-cant-have-it-all/309020/&num=0">
-									<li class="row-item">
-							  			<progress value="11" max="100"></progress>
-											<span class="blurb ellipsis">
-												Sandbox
-											</span>
-				
+                    			<li class="first-row-item">
+                    				<div class="first-blurb">
+							  					<span class="percent">
+								  					<strong>
+								  						% Done
+								  					</strong>
+								  				</span>
+								  				<span class="source">
+								  					Source
+								  				</span>
+												<span class="ellipsis">
+													 Discussion Title
+												</span>
+												<span class="right-side">
+													<span class="comment_num" style="position: relative; left: -30px">
+								  						Comments
+								  					</span>
+								  					<span class="summary_num">
+								  						Summaries
+								  					</span>
+								  				</span>
+											</div>
 										</li>
-								</a>
-
-						
-                        	
-                        	
+								
+                    				
 							  	{% for a in articles %}
 							  	<a href="/summary?article={{ a.url }}&num={{ a.num }}">
 								

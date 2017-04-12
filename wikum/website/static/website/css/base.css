@@ -8,24 +8,48 @@ footer p {
 	color: #000000;
 }
 
+.first-row-item {
+	text-align: left;
+	background: white;
+    padding: 0px;
+    vertical-align: middle;
+    cursor: default;
+    height: 30px;
+    margin: 8px;
+    border: #ffffff 1px solid;
+}
+
+.first-blurb {
+	position: relative;
+    padding-left: 20px;
+    width: 100%;
+    display: inline-block;
+	top: 15px; 
+	font-size:10px; 
+	text-transform: uppercase; 
+	font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
 .percent {
 	position: relative;
 	top: -6px;
 	display: inline-block;
-	width: 30px;
+	width: 60px;
 	margin-right: 20px;
 }
 
 .summary_num {
 	display: inline-block;
-	width: 30px;
+	width: 40px;
 	padding-left: 10px;
+	padding-right: 20px;
 }
 
 .comment_num {
 	display: inline-block;
-	width: 30px;
+	width: 40px;
 	padding-right: 10px;
+	text-align: right;
 }
 
 
@@ -33,7 +57,7 @@ footer p {
 	float: right;
 	position: relative;
 	display: inline-block;
-	width: 80px;
+	width: 120px;
 }
 
 .source {
