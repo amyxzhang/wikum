@@ -25,13 +25,20 @@ import json
 
 @render_to('website/index.html')
 def index(request):
-    a = Article.objects.all().order_by('-percent_complete').select_related()
+    
+    sort = request.GET.get('sort')
+    
+    if not sort:
+        sort = '-percent_complete'
+    
+    a = Article.objects.all().order_by(sort).select_related()
     
     for art in a:
         art.url = re.sub('#', '%23', art.url)
 
     resp = {'page': 'index',
-            'articles': a}
+            'articles': a,
+            'sort': sort}
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']

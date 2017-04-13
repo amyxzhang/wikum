@@ -38,22 +38,72 @@
                     			<li class="first-row-item">
                     				<div class="first-blurb">
 							  					<span class="percent">
-								  					<strong>
-								  						% Done
-								  					</strong>
+								  					
+								  						{% if sort == "-percent_complete" %}
+								  							<strong>
+								  								<a href="\?sort=percent_complete">% Done</a>
+								  							</strong>
+								  						{% elif sort == "percent_complete" %}
+								  							<strong>
+								  								<a href="\?sort=-percent_complete">% Done</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-percent_complete">% Done</a>
+								  						{% endif %}
+								  					
 								  				</span>
 								  				<span class="source">
-								  					Source
+								  					{% if sort == "source" %}
+								  						<strong>
+								  							<a href="\?sort=-source">Source</a>
+								  						</strong>
+								  					{% elif sort == "-source" %}
+								  						<strong>
+								  							<a href="\?sort=source">Source</a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="\?sort=source">Source</a>
+								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
-													 Discussion Title
+													{% if sort == "title" %}
+														<strong>
+													 		<a href="\?sort=-title">Discussion Title</a>
+													 	</strong>
+													{% elif sort == "-title" %}
+														<strong> 
+															<a href="\?sort=title">Discussion Title</a>
+														</strong>
+													{% else %}
+													 	<a href="\?sort=title">Discussion Title</a>
+													{% endif %}
 												</span>
 												<span class="right-side">
 													<span class="comment_num" style="position: relative; left: -30px">
-								  						Comments
+														{% if sort == "-comment_num" %}
+															<strong>
+								  								<a href="\?sort=comment_num">Comments</a>
+								  							</strong>
+								  						{% elif sort == "comment_num" %}
+								  							<strong>
+								  								<a href="\?sort=-comment_num">Comments</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-comment_num">Comments</a>
+								  						{% endif %}
 								  					</span>
 								  					<span class="summary_num">
-								  						Summaries
+								  						{% if sort == "-summary_num" %}
+								  							<strong>
+								  								<a href="\?sort=summary_num">Summaries</a>
+								  							</strong>
+								  						{% elif sort == "summary_num" %}
+								  							<strong>
+								  								<a href="\?sort=summary_num">Summaries</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-summary_num">Summaries</a>
+								  						{% endif %}
 								  					</span>
 								  				</span>
 											</div>
@@ -69,22 +119,45 @@
 							  				<div class="blurb">
 							  					
 							  					<span class="percent">
-								  					<strong>
-								  						{{ a.percent_complete }}%
-								  					</strong>
+							  						
+							  						{% if sort == "percent_complete" or sort == "-percent_complete" %}
+									  					<strong>
+									  						{{ a.percent_complete }}%
+									  					</strong>
+									  				{% else %}
+									  						{{ a.percent_complete }}%
+									  				{% endif %}
 								  				</span>
 								  				<span class="source">
-								  					{{a.source.source_name}}
+								  					{% if sort == "source" or sort == "-source" %}
+								  						<strong>
+								  							{{a.source.source_name}}
+								  						</strong>
+								  					{% else %}
+								  						{{a.source.source_name}}
+								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
-													 {{ a.title }}
+													{{ a.title }}
 												</span>
 												<span class="right-side">
 													<span class="comment_num">
-								  						{{ a.comment_num }}
+														{% if sort == "comment_num" or sort == "-comment_num" %}
+															<strong>
+								  								{{ a.comment_num }}
+								  							</strong>
+								  						{% else %}
+								  							{{ a.comment_num }}
+								  						{% endif %}
 								  					</span>
 								  					<span class="summary_num">
-								  						{{ a.summary_num }}
+								  						{% if sort == "summary_num" or sort == "-summary_num" %}
+															<strong>
+								  								{{ a.summary_num }}
+								  							</strong>
+								  						{% else %}
+								  							{{ a.summary_num }}
+								  						{% endif %}
 								  					</span>
 								  				</span>
 												
