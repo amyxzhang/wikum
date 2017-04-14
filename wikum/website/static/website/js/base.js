@@ -778,10 +778,11 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				var text = '<P><strong>Summary:</strong> ' + render_summary_node(d, false) + '</P>';
 
 				if (evt.data.type == "summarize_one") {
+					text += '<P><a onclick="toggle_original(' + evt.data.id + ');">View Original Comment</a> | ';
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
-						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + evt.data.id + '">Edit Comment Summary</a> | ';
+						text += '<a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + evt.data.id + '">Edit Comment Summary</a> | ';
+						text += '<a onclick="post_delete_comment_summary('+ evt.data.id +');">Delete Comment Summary</a></P>';
 					}
-					text += '<a onclick="toggle_original(' + evt.data.id + ');">View Original Comment</a></p>';
 					text += '<div id="orig_' + evt.data.id + '" style="display: none;">' + d.name + '</div>';
 				}
 
@@ -1267,6 +1268,41 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 	});
 });
+
+function post_delete_comment_summary(id){
+	d = nodes_all[id-1];
+	if (!d.replace_node) {
+		var article_id = $('#article_id').text();
+		var csrf = $('#csrf').text();
+		var data = {csrfmiddlewaretoken: csrf,
+			comment: '',
+			article: article_id,
+			id: d.d_id};
+		$.ajax({
+				type: 'POST',
+				url: '/delete_comment_summary',
+				data: data,
+				success: function() {
+					delete_comment_summary(id);
+					success_noty();
+					make_progress_bar();
+				},
+				error: function() {
+					error_noty();
+				}
+		});
+	}
+}
+
+function delete_comment_summary(id){
+	d = nodes_all[id-1];
+	d.summary = "";
+
+	d3.select("#node_" + d.id).style("fill", color);
+	$('#comment_'+id).removeClass("summary")
+	$('#comment_'+id).empty();
+	$('#comment_'+id).append(construct_comment(d));
+}
 
 function post_delete_summary_node(id) {
 	d = nodes_all[id-1];
@@ -2716,10 +2752,11 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (!d.replace_node) {
+			text += '<P><a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
-				text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
+				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a></P>';
 			}
-			text += '<a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
