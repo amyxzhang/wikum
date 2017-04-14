@@ -101,7 +101,7 @@ progress::-ms-fill { background: var(--bar-background); }
 .ellipsis {
     display: inline-block;
     white-space: nowrap;
-    width: 720px;
+    width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
