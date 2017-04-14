@@ -775,17 +775,12 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					d.extrasumwiki = res.bottom_summary_wiki;
 				}
 
-				var text = '<P><strong>Summary:</strong> ' + render_summary_node(d, false) + '</P>';
-
-				if (evt.data.type == "summarize_one") {
-					if ($.trim($('#access_mode').text()) == "Edit Access") {
-						text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + evt.data.id + '">Edit Comment Summary</a> | ';
-					}
-					text += '<a onclick="toggle_original(' + evt.data.id + ');">View Original Comment</a></p>';
-					text += '<div id="orig_' + evt.data.id + '" style="display: none;">' + d.name + '</div>';
-				}
-
-				$('#comment_text_' + evt.data.id).html(text);
+				var text = construct_comment(d);
+				$('#comment_' + evt.data.id).empty();
+				$('#comment_' + evt.data.id).html(text);
+				
+				d3.select("#node_" + d.id).style("fill",color);
+				$('#comment_' + evt.data.id).addClass("summary");
 
 				highlight_box(evt.data.id);
 				make_progress_bar();
