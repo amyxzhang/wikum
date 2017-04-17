@@ -855,6 +855,9 @@ def delete_comment_summary(request):
                                        action='delete_comment_summary',
                                        explanation=explain)
             h.comments.add(comment)
+            
+            article.percent_complete = count_article(article)
+            
         return JsonResponse({})
 
     except Exception, e:
