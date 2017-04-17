@@ -321,7 +321,6 @@ def summarize_comment(request):
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         summary = request.POST['comment']
-        
         top_summary, bottom_summary = get_summary(summary)
         
         req_user = request.user if request.user.is_authenticated() else None
@@ -837,7 +836,31 @@ def tag_comment(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
-            
+
+def delete_comment_summary(request):
+    try:
+        article_id = request.POST['article']
+        article = Article.objects.get(id=article_id)
+        comment_id = request.POST['id']
+        explain = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
+
+        comment = Comment.objects.get(id=comment_id)
+        if not comment.is_replacement:
+            comment.summary = ""
+            comment.save()
+            recurse_up_post(comment)
+            h = History.objects.create(user=req_user,
+                                       article=article,
+                                       action='delete_comment_summary',
+                                       explanation=explain)
+            h.comments.add(comment)
+        return JsonResponse({})
+
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 def hide_comment(request):
     try:
         article_id = request.POST['article']
@@ -847,9 +870,8 @@ def hide_comment(request):
         req_user = request.user if request.user.is_authenticated() else None
         
         comment = Comment.objects.get(id=id)
-        
         if comment.is_replacement:
-            
+        
             recurse_down_post(comment)
             
             delete_node(comment.id)
@@ -867,7 +889,6 @@ def hide_comment(request):
                                        article=a,
                                        action='hide_comment',
                                        explanation=explain)
-            
             c = Comment.objects.get(id=id)
             h.comments.add(c)
             
