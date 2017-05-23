@@ -3072,14 +3072,10 @@ function set_expand_position(d) {
 
 function showdiv(d) {
 	if (!isMouseDown) {
-		//Dark Orange Summary Nodes:
 		if (d.replace_node) {
 			clearTimeout(timer);
 
 			text = '';
-
-
-
 			if (comment_id != d.d_id) {
 				if (text != '') {
 					text += '<BR>';
@@ -3094,7 +3090,6 @@ function showdiv(d) {
 				}
 
 			}
-
 
 			if (text != '') {
 				$('#expand').html(text);
@@ -3124,7 +3119,6 @@ function showdiv(d) {
 					}
 				}
 			}
-
 
 			if (one_depth) {
 				text = '';
@@ -3379,7 +3373,7 @@ function color(d) {
 		if (d.summary) {
 			return "url(#gradientorange)";
 		}
-
+		
 		if (d.hiddennode) {
 			return "#990000";
 		}
