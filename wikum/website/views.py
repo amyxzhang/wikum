@@ -20,24 +20,31 @@ import urllib
 
 from wikimarkup import parse
 import parse_helper
-
+import math
+import json
 
 @render_to('website/index.html')
 def index(request):
-    a = Article.objects.all().select_related()
+    
+    sort = request.GET.get('sort')
+    
+    if not sort:
+        sort = '-percent_complete'
+    
+    a = Article.objects.all().order_by(sort).select_related()
     
     for art in a:
         art.url = re.sub('#', '%23', art.url)
+
+    resp = {'page': 'index',
+            'articles': a,
+            'sort': sort}
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']
-        
-        return {'page': 'index',
-            'task_id': task_id,
-            'articles': a}
-    
-    return {'page': 'index',
-            'articles': a}
+        resp['task_id'] = task_id
+
+    return resp
 
 @render_to('website/visualization.html')
 def visualization(request):
@@ -314,7 +321,6 @@ def summarize_comment(request):
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         summary = request.POST['comment']
-        
         top_summary, bottom_summary = get_summary(summary)
         
         req_user = request.user if request.user.is_authenticated() else None
@@ -343,6 +349,10 @@ def summarize_comment(request):
         h.comments.add(c)
         recurse_up_post(c)
         
+        a.summary_num = a.summary_num + 1
+        a.percent_complete = count_article(a)
+        
+        a.save()
         
         if 'wikipedia.org' in a.url:
             res = {}
@@ -441,6 +451,11 @@ def summarize_selected(request):
         recurse_down_num_subtree(new_comment)
         
         make_vector(new_comment, a)
+        
+        a.summary_num = a.summary_num + 1
+        a.percent_complete = count_article(a)
+        
+        a.save()
         
         
         if 'wikipedia.org' in a.url:
@@ -576,6 +591,12 @@ def summarize_comments(request):
         
         
         make_vector(new_comment, a)
+        
+        a.summary_num = a.summary_num + 1
+        a.percent_complete = count_article(a)
+        
+        a.save()
+        
         if 'wikipedia.org' in a.url:
             res = {'d_id': d_id}
             if top_summary.strip() != '':
@@ -677,6 +698,12 @@ def hide_comments(request):
                 parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     recurse_up_post(parent[0])
+            
+            a.comment_num = a.comment_num - affected
+            a.percent_complete = count_article(a)
+        
+            a.save()
+            
             
         return JsonResponse({})
     except Exception, e:
@@ -809,7 +836,34 @@ def tag_comment(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
+
+def delete_comment_summary(request):
+    try:
+        article_id = request.POST['article']
+        article = Article.objects.get(id=article_id)
+        comment_id = request.POST['id']
+        explain = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
+
+        comment = Comment.objects.get(id=comment_id)
+        if not comment.is_replacement:
+            comment.summary = ""
+            comment.save()
+            recurse_up_post(comment)
+            h = History.objects.create(user=req_user,
+                                       article=article,
+                                       action='delete_comment_summary',
+                                       explanation=explain)
+            h.comments.add(comment)
             
+            article.percent_complete = count_article(article)
+            
+        return JsonResponse({})
+
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 def hide_comment(request):
     try:
         article_id = request.POST['article']
@@ -819,9 +873,8 @@ def hide_comment(request):
         req_user = request.user if request.user.is_authenticated() else None
         
         comment = Comment.objects.get(id=id)
-        
         if comment.is_replacement:
-            
+        
             recurse_down_post(comment)
             
             delete_node(comment.id)
@@ -839,13 +892,18 @@ def hide_comment(request):
                                        article=a,
                                        action='hide_comment',
                                        explanation=explain)
-            
             c = Comment.objects.get(id=id)
             h.comments.add(c)
             
             parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
             if parent.count() > 0:
                 recurse_up_post(parent[0])
+                
+            
+            a.comment_num = a.comment_num - 1
+            a.percent_complete = count_article(a)
+        
+            a.save()
             
         return JsonResponse({})
     except Exception, e:
@@ -890,6 +948,11 @@ def hide_replies(request):
             recurse_up_post(c)
             
             ids = [reply.id for reply in replies]
+            
+            a.comment_num = a.comment_num - affected
+            a.percent_complete = count_article(a)
+        
+            a.save()
             
             return JsonResponse({'ids': ids})
         else:

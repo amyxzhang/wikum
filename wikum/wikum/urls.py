@@ -46,6 +46,8 @@ urlpatterns = [
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
     
+    url(r'^delete_comment_summary','website.views.delete_comment_summary'),
+
     url(r'^tag_comments','website.views.tag_comments'),
     url(r'^tag_comment','website.views.tag_comment'),
     

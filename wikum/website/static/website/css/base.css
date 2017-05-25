@@ -3,6 +3,146 @@ footer p {
 	font-size: 10px;
 }
 
+
+.progress-bar {
+	color: #000000;
+}
+
+.first-row-item {
+	text-align: left;
+	background: white;
+    padding: 0px;
+    vertical-align: middle;
+    cursor: default;
+    height: 30px;
+    margin: 8px;
+    border: #ffffff 1px solid;
+}
+
+.first-blurb {
+	position: relative;
+    padding-left: 20px;
+    width: 100%;
+    display: inline-block;
+	top: 15px; 
+	font-size:10px; 
+	text-transform: uppercase; 
+	font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.percent {
+	position: relative;
+	top: -6px;
+	display: inline-block;
+	width: 60px;
+	margin-right: 20px;
+}
+
+.summary_num {
+	display: inline-block;
+	width: 40px;
+	padding-left: 10px;
+	padding-right: 20px;
+}
+
+.comment_num {
+	display: inline-block;
+	width: 40px;
+	padding-right: 10px;
+	text-align: right;
+}
+
+
+.right-side {
+	float: right;
+	position: relative;
+	display: inline-block;
+	width: 120px;
+}
+
+.source {
+	position: relative;
+	top: -6px;
+	width: 130px;
+	display: inline-block;
+	margin-right: 20px;
+}
+
+.blurb {
+	position: relative;
+	top: -28px;
+	padding-left: 20px;
+	width: 100%;
+	display: inline-block;
+}
+
+progress {
+	width: 100%;
+
+	height: 28px;
+	border: none;
+	background: #fafafa;
+    --bar-background: #d9f8ec;
+}
+
+progress::-webkit-progress-bar { background: inherit; }
+progress::-webkit-progress-value { background: var(--bar-background); }
+progress::-moz-progress-bar { background: var(--bar-background); }
+progress::-ms-fill { background: var(--bar-background); }
+
+.navbar-toggle {
+	border: 1px solid #ffffff;
+}
+
+.navbar .fa {
+	color: #ffffff;
+}
+
+.ellipsis {
+    display: inline-block;
+    white-space: nowrap;
+    width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+#post-list-table {
+	list-style-type: none;
+}
+
+#post-list-table .row-item{
+	background: white;
+	text-align: left;
+	padding: 0px;
+    vertical-align: middle;
+    
+	cursor: default;
+	height: 30px;
+	margin: 8px;
+	border: #ffffff 1px solid;
+}
+
+#post-list-table .row-item:hover {
+	cursor: hand;
+	cursor: pointer;
+	border: #42dca3 1px solid;
+}
+
+#post-list-table .row-item.selected {
+	border: #42dca3 1px solid;
+}
+
+#post-list-table {
+	padding: 0px;
+}
+
+#post-list-table a {
+	text-decoration: none;
+	color: #000000;
+}
+
+
 .dropdown-menu {
   left: 50%;
   right: auto;

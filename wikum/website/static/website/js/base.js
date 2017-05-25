@@ -787,16 +787,12 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 					d.extrasumwiki = res.bottom_summary_wiki;
 				}
 
-				var text = '<P><strong>Summary:</strong> ' + render_summary_node(d, false) + '</P>';
-
-				if (evt.data.type == "summarize_one") {
-					text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + evt.data.id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + evt.data.id + '">Edit Comment Summary</a>';
-
-					text += ' | <a onclick="toggle_original(' + evt.data.id + ');">View Original Comment</a></p>';
-					text += '<div id="orig_' + evt.data.id + '" style="display: none;">' + d.name + '</div>';
-				}
-
-				$('#comment_text_' + evt.data.id).html(text);
+				var text = construct_comment(d);
+				$('#comment_' + evt.data.id).empty();
+				$('#comment_' + evt.data.id).html(text);
+				
+				d3.select("#node_" + d.id).style("fill",color);
+				$('#comment_' + evt.data.id).addClass("summary");
 
 				highlight_box(evt.data.id);
 				make_progress_bar();
@@ -1139,10 +1135,13 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					$('#summarize_multiple_modal_box').modal('toggle');
 
 					var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
-					text += `<footer>
-						<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
-						<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary Node</a>
-					</footer>`;
+					
+					if ($.trim($('#access_mode').text()) == "Edit Access") {
+						text += `<footer>
+							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
+							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary Node</a>
+						</footer>`;
+					}
 
 					for (var i=0; i<children.length; i++) {
 						if (children[i] == lowest_d) {
@@ -1253,10 +1252,13 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 
 					var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
-					text += `<footer>
-						<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-						<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
-					</footer>`;
+					
+					if ($.trim($('#access_mode').text()) == "Edit Access") {
+						text += `<footer>
+							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
+							<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
+						</footer>`;
+					}
 
 					$('#comment_' + d.id).html(text);
 
@@ -1272,6 +1274,41 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 	});
 });
+
+function post_delete_comment_summary(id){
+	d = nodes_all[id-1];
+	if (!d.replace_node) {
+		var article_id = $('#article_id').text();
+		var csrf = $('#csrf').text();
+		var data = {csrfmiddlewaretoken: csrf,
+			comment: '',
+			article: article_id,
+			id: d.d_id};
+		$.ajax({
+				type: 'POST',
+				url: '/delete_comment_summary',
+				data: data,
+				success: function() {
+					delete_comment_summary(id);
+					success_noty();
+					make_progress_bar();
+				},
+				error: function() {
+					error_noty();
+				}
+		});
+	}
+}
+
+function delete_comment_summary(id){
+	d = nodes_all[id-1];
+	d.summary = "";
+
+	d3.select("#node_" + d.id).style("fill", color);
+	$('#comment_'+id).removeClass("summary")
+	$('#comment_'+id).empty();
+	$('#comment_'+id).append(construct_comment(d));
+}
 
 function post_delete_summary_node(id) {
 	d = nodes_all[id-1];
@@ -2001,6 +2038,8 @@ function make_highlight() {
 
 			$('#count_result').text(count + ' comments highlighted');
 
+		} else {
+			$('#count_result').text('');
 		}
 	});
 }
@@ -2743,8 +2782,11 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (!d.replace_node) {
-			text += '<P><a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a>';
-			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a></p>';
+			text += '<P><a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
+			if ($.trim($('#access_mode').text()) == "Edit Access") {
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
+				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a></P>';
+			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
@@ -2878,6 +2920,7 @@ function show_parent(id) {
 function show_text(d) {
 	if (d && d != 'clicked') {
 		clear_box_top();
+		parent = d.parent;
 		if (d.article) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
@@ -2889,8 +2932,15 @@ function show_text(d) {
 
 			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.id}">`;
 
-			if (d.depth > 1) {
-				text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
+			if (d.depth > 1
+                	) {
+			    if (!summary) {
+			        text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
+			    }
+			    else
+			    {
+			        text += '<a onclick="show_parent(' + d.id + ');">Show parent summary</a><BR>';
+			    }
 			}
 
 			text += construct_comment(d);
@@ -2937,7 +2987,14 @@ function show_text(d) {
 			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
-				text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
+			    if (!summary)
+			    {
+			        text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
+			    }
+			    else {
+			        text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent summary</a><BR>';
+			    }
+			    
 			}
 
 			text += construct_comment(objs[i]);
@@ -2976,6 +3033,10 @@ function unextra_highlight_node(id) {
 }
 
 function construct_box_top(objs) {
+	
+	if ($.trim($('#access_mode').text()) != "Edit Access") {
+		return;
+	}
 
 	var parent_node = null;
 
