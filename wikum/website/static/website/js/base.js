@@ -153,6 +153,10 @@ $("#hide_modal_box").draggable({
     handle: ".modal-title"
 });
 
+$("#unhide_comment").draggable({
+    handle: ".modal-title"
+});
+
 $("#summarize_modal_box").draggable({
     handle: ".modal-title"
 });
@@ -425,6 +429,14 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 	});
 });
+
+$("#unhide_comment").on('show.bs.modal', function(e) {
+	var id = $(e.relatedTarget).data('id');
+	var type = $(e.relatedTarget).data('type');
+	d = nodes_all[id-1];
+
+	d.hiddennode = false;
+})
 
 
 $('#hide_modal_box').on('show.bs.modal', function(e) {
@@ -2664,6 +2676,7 @@ function expand_node(id) {
   return null;
 }
 
+
 function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
@@ -2704,7 +2717,28 @@ function construct_comment(d) {
 		text += `</h6>`;
 
 		text += render_summary_node(d, false);
-	} else {
+	} else if (d.hiddennode) {
+		highlight_authors = $('#highlight_authors').text().split(',');
+
+		if (highlight_authors.indexOf(d.author) > -1) {
+			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong><span style="background-color: pink;">${d.author}</span></strong>`;
+		} else {
+			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong>${d.author}</strong>`;
+		}
+
+		if (d.size > 0) {
+			text += ` (${d.size} `;
+			if (d.size == 1) {
+				text += `like)</h6>`;
+			} else {
+				text += `likes)</h6>`;
+			}
+		}
+		text += `</h6>`;
+		text += '<span class="original_comment">' + d.name + '</span>';
+	}
+
+	  else {
 
 		highlight_authors = $('#highlight_authors').text().split(',');
 
@@ -2802,6 +2836,7 @@ function construct_comment(d) {
 	
 			text += '</footer>';
 		}
+
 	}
 
 	return text;
@@ -2828,9 +2863,10 @@ function get_subtree_box(text, d, level) {
 			var summaryClass = d.children[i].replace_node? "summary_box" : "";
 			var collapsed = d.children[i].collapsed && !d.children[i].replace_node? "collapsed" : "";
 			var summary = d.children[i].summary && !d.children[i].replace_node? "summary" : "";
+			var hiddennode = d.children[i].hiddennode && !d.children[i].replace_node? "hiddennode" : "";
 
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary}" id="comment_${d.children[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.children[i].id}">`;
 
 			text +=  construct_comment(d.children[i]);
 			text += '</article>';
@@ -2892,8 +2928,9 @@ function show_text(d) {
 			var summaryClass = d.replace_node? "summary_box" : "";
 			var collapsed = d.collapsed && !d.replace_node? "collapsed" : "";
 			var summary = d.summary && !d.replace_node? "summary" : "";
+			var hiddennode = d.hiddennode && !d.replace_node? "hiddennode" : "";
 
-			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summary}" id="comment_${d.id}">`;
+			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.id}">`;
 
 			if (d.depth > 1
                 	) {
@@ -2945,8 +2982,9 @@ function show_text(d) {
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
 			var collapsed = objs[i].collapsed && !objs[i].replace_node? "collapsed" : "";
 			var summary = objs[i].summary && !objs[i].replace_node? "summary" : "";
+			var hiddennode = objs[i].hiddennode && !objs[i].replace_node? "hiddennode" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary}" id="comment_${objs[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
 			    if (!summary)
@@ -3046,7 +3084,7 @@ function construct_box_top(objs) {
 
 	if (accepted && count > 1 && !parent_node.replace_node) {
 		 var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a> | ';
-		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Mark Selected Unimportant</a> | ';
+		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a> | ';
 		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
 
 
@@ -3094,7 +3132,15 @@ function showdiv(d) {
 				}
 				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
 				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+				if (d.hid.length > 0) {
+					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
+				}				
+				if (d.hashidden) {
+					text += '<BR><a onclick="hide_hidden(' + d.id + ')"> Rehide hidden </a>';
+				}
+
 			}
+
 			if (text != '') {
 				$('#expand').html(text);
 				$('#expand').show();
@@ -3124,7 +3170,6 @@ function showdiv(d) {
 				}
 			}
 
-
 			if (one_depth) {
 				text = '';
 			} else {
@@ -3134,6 +3179,7 @@ function showdiv(d) {
 					text = '';
 				}
 			}
+
 			if (d.article) {
 				if (window.location.href.indexOf('/subtree') > -1) {
 					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '">See Entire Discussion</a>';
@@ -3144,10 +3190,18 @@ function showdiv(d) {
 						text += '<BR>';
 					}
 					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num +'">See Isolated Subtree</a>';
+				
 
 				}
 			}
 			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+
+			if (d.hid.length > 0) {
+					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' hidden </a>';
+				}
+			if (d.hashidden) {
+					text += '<BR><a onclick="hide_hidden(' + d.id + ')"> Rehide hidden </a>';
+				}
 
 			if (text != '') {
 				$('#expand').html(text);
@@ -3214,6 +3268,7 @@ function show_replace_nodes(id) {
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -3221,6 +3276,59 @@ function show_replace_nodes(id) {
 		$('#expand').html("");
 	}
 }
+
+
+function show_hidden(id) {
+	d = nodes_all[id-1];
+	d.hashidden = false;
+	d.hidconstant = d.hid.length;
+
+	$($('#expand').children()[$('#expand').children().length-1]).attr("onclick","hide_hidden("+id+")");
+	$($('#expand').children()[$('#expand').children().length-1]).text('Rehide hidden');
+	
+
+	if (d.hid.length>0) {
+
+		if (!d.children) {
+			d.children = [];
+		}
+		for (var i=0; i<d.hid.length; i++) {
+			d.hid[i].hiddennode = true;
+			d.children.push(d.hid[i]);
+		}
+		d.hid = [];
+		d.hashidden = true;
+		update(d);
+	}
+}
+
+function hide_hidden(id) {
+	d = nodes_all[id-1];
+	newchildren = [];
+
+	$($('#expand').children()[$('#expand').children().length-1]).attr("onclick","show_hidden("+id+")");
+	$($('#expand').children()[$('#expand').children().length-1]).text('Show ' + d.hidconstant + ' hidden');
+	
+
+	for (var i=0; i<d.children.length; i++) {
+		
+		if (d.children[i].hiddennode) {
+			d.children[i].hiddennode = false;
+			d.hid.push(d.children[i]);
+		}	
+		else {
+			newchildren.push(d.children[i]);
+		}
+	}
+
+	d.children = newchildren;
+
+	if (d.hashidden) {
+		d.hashidden = false;
+		update(d);
+	}
+}
+
 
 function hidediv(d) {
 	if (!isMouseDown && d3.select(this).classed("clicked")) {
@@ -3315,11 +3423,20 @@ function color(d) {
 		if (d.summary) {
 			return "url(#gradientorange)";
 		}
+		
+		if (d.hiddennode) {
+			return "#990000";
+		}
 		return "#f8c899";
 	}
 
 	if (d.summary) {
 		return "url(#gradientblue)";
+	}
+
+
+	if (d.hiddennode) {
+		return "#990000";
 	}
 
 	return "#a1c5d1";
