@@ -12,50 +12,172 @@
         <div class="intro-body">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
-                        <h1 class="brand-heading">Wikum</h1>
-                        
-                        
-                        <p class="intro-text">Summarize long comment threads.
-                        	<br>
-                        	
-                        	<div class="dropdown">
-							  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-							    View an existing discussion
-							    <span class="caret"></span>
-							  </button>
-							  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-							  	
-							  	{% for a in articles %}
-							    	<li><a href="/summary?article={{ a.url }}&num={{ a.num }}">{{a.source.source_name}}: {{ a.title }}</a></li>
-								{% endfor %}
-							  </ul>
-							</div>
-                        </P>
-                        
+                    <div class="col-md-12 col-md-offset-0">
+                    
                     	<P>
-						   <form>
-						  <div class="form-group">
-						    <input type="url" class="form-control" id="articleUrl" placeholder="Or import a new discussion by pasting an Atlantic article url or Reddit page here.">
-						  </div>
-						  </form>
+                    		<BR>
+                    			<BR>
+                    				
+                    				<h3>Summarize long comment threads.</h3>
+                    				
+                    				{% if user.is_authenticated %}
+                    					<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
+                    				{% else %}
+			                    		<a href="/account/login" class="btn btn-default btn-lg">Login</a> 
+			                    		<a href="/account/signup" class="btn btn-default btn-lg">Sign Up</a> 
+			                    		<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
+			                    	
+			                    	{% endif %}
+
+                    		<BR>
+                    		<BR>
+                    		<div>
+                    		
+                    		
+                    		<ul id="post-list-table">
+                    			<li class="first-row-item">
+                    				<div class="first-blurb">
+							  					<span class="percent">
+								  					
+								  						{% if sort == "-percent_complete" %}
+								  							<strong>
+								  								<a href="\?sort=percent_complete">% Done</a>
+								  							</strong>
+								  						{% elif sort == "percent_complete" %}
+								  							<strong>
+								  								<a href="\?sort=-percent_complete">% Done</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-percent_complete">% Done</a>
+								  						{% endif %}
+								  					
+								  				</span>
+								  				<span class="source">
+								  					{% if sort == "source" %}
+								  						<strong>
+								  							<a href="\?sort=-source">Source</a>
+								  						</strong>
+								  					{% elif sort == "-source" %}
+								  						<strong>
+								  							<a href="\?sort=source">Source</a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="\?sort=source">Source</a>
+								  					{% endif %}
+								  				</span>
+												<span class="ellipsis">
+													{% if sort == "title" %}
+														<strong>
+													 		<a href="\?sort=-title">Discussion</a>
+													 	</strong>
+													{% elif sort == "-title" %}
+														<strong> 
+															<a href="\?sort=title">Discussion</a>
+														</strong>
+													{% else %}
+													 	<a href="\?sort=title">Discussion</a>
+													{% endif %}
+												</span>
+												<span class="right-side">
+													<span class="comment_num" style="position: relative; left: -30px">
+														{% if sort == "-comment_num" %}
+															<strong>
+								  								<a href="\?sort=comment_num">Comments</a>
+								  							</strong>
+								  						{% elif sort == "comment_num" %}
+								  							<strong>
+								  								<a href="\?sort=-comment_num">Comments</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-comment_num">Comments</a>
+								  						{% endif %}
+								  					</span>
+								  					<span class="summary_num">
+								  						{% if sort == "-summary_num" %}
+								  							<strong>
+								  								<a href="\?sort=summary_num">Summaries</a>
+								  							</strong>
+								  						{% elif sort == "summary_num" %}
+								  							<strong>
+								  								<a href="\?sort=summary_num">Summaries</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-summary_num">Summaries</a>
+								  						{% endif %}
+								  					</span>
+								  				</span>
+											</div>
+										</li>
+								
+                    				
+							  	{% for a in articles %}
+							  	<a href="/summary?article={{ a.url }}&num={{ a.num }}">
+								
+							  		<li class="row-item">
+							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
+							  			
+							  				<div class="blurb">
+							  					
+							  					<span class="percent">
+							  						
+							  						{% if sort == "percent_complete" or sort == "-percent_complete" %}
+									  					<strong>
+									  						{{ a.percent_complete }}%
+									  					</strong>
+									  				{% else %}
+									  						{{ a.percent_complete }}%
+									  				{% endif %}
+								  				</span>
+								  				<span class="source">
+								  					{% if sort == "source" or sort == "-source" %}
+								  						<strong>
+								  							{{a.source.source_name}}
+								  						</strong>
+								  					{% else %}
+								  						{{a.source.source_name}}
+								  					{% endif %}
+								  				</span>
+												<span class="ellipsis">
+													{{ a.title }}
+												</span>
+												<span class="right-side">
+													<span class="comment_num">
+														{% if sort == "comment_num" or sort == "-comment_num" %}
+															<strong>
+								  								{{ a.comment_num }}
+								  							</strong>
+								  						{% else %}
+								  							{{ a.comment_num }}
+								  						{% endif %}
+								  					</span>
+								  					<span class="summary_num">
+								  						{% if sort == "summary_num" or sort == "-summary_num" %}
+															<strong>
+								  								{{ a.summary_num }}
+								  							</strong>
+								  						{% else %}
+								  							{{ a.summary_num }}
+								  						{% endif %}
+								  					</span>
+								  				</span>
+												
+												
+											</div>
+				
+										</li>
+									</a>
+								{% endfor %}
+							 
+							 	</ul>
+							 </div>
+               
 						</p>
-						  
-					  	<div id="message" style="display: block; height:40px;">
-					  	</div>
-     
-                
-                		<div class="progress_container">
-					   		<div class="status"></div>
-					   		
-					   		<div class="result">
-					   		</div>
-					  	</div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
+
 
     <!-- About Section -->
     <section id="about" class="container content-section text-center">
@@ -64,6 +186,26 @@
                 <h2>About Wikum</h2>
                 <p>Wikum is a tool for summarizing and exploring long comment threads.
                 </p>
+                
+				<h4>Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization</h4>
+<P>
+Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to 
+group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest.
+In this article, we describe a workflow called <i>recursive summarization</i>, implemented in our <i>Wikum</i> prototype, that enables 
+a large population of readers or editors to work in small doses to refine out the main points of the discussion.  More than just a 
+single summary, our workflow produces a <i>summary tree</i> that enables a reader to explore distinct subtopics at multiple levels 
+of detail based on their interests.
+</P>
+									<br>
+										
+							
+											Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization. 
+											Amy X. Zhang, Lea Verou, David Karger.
+											<i>CSCW '17</i>. 
+											<br>
+									[<a href="http://people.csail.mit.edu/axz/papers/wikum.pdf">pdf</a>][<a href="http://people.csail.mit.edu/axz/wikum">slides and talk</a>]
+                
+                
             </div>
         </div>
     </section>
@@ -73,11 +215,31 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
                 <h2>Contact Us</h2>
-                <p><a href="mailto:axz@mit.edu">axz@mit.edu</a>
-                </p>
                 
-                <p><a href="mailto:karger@mit.edu">karger@mit.edu</a>
-                </p>
+       
+					<a href="http://people.csail.mit.edu/axz">
+					<img src="/static/website/img/amy.jpg" class="img-circle" width="150">
+					</a>
+					<br>
+						<a href="https://twitter.com/amyxzh"><img src="/static/website/img/twitter.png" width="35">@amyxzh</a>
+					<br>
+						<a href="mailto:axz@mit.edu">
+							axz@mit.edu
+						</a>
+					
+			<BR><BR>
+					<a href="http://people.csail.mit.edu/karger">
+					<img src="/static/website/img/karger.png" class="img-circle" width="150">
+					</a>
+					<br>
+						<a href="https://twitter.com/karger"><img src="/static/website/img/twitter.png" width="35">@karger</a>
+					<br>
+						<a href="mailto:karger@mit.edu">
+							karger@mit.edu
+						</a>
+					
+			<BR><BR>
+                
                 
                 <ul class="list-inline banner-social-buttons">
                     <!--<li>
@@ -95,6 +257,52 @@
             </div>
         </div>
     </section>
+    
+    
+<!-- Modal -->
+<div id="createWikumModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Import a Discussion</h4>
+      </div>
+      <div class="modal-body">
+      	
+      	Import a new discussion by pasting an Atlantic article url, Reddit page url, or Wikipedia Talk page section url here.
+		  	
+        
+		   <form>
+		  <div class="form-group">
+		  	
+		    <input type="url" class="form-control" id="articleUrl" placeholder="">
+		 	<BR>
+		 	<button type="button" class="btn btn-default" id="submiturl">Submit</button>
+		 
+		  </div>
+		  </form>
+		  
+	  	<div id="message" style="display: block; height:40px;">
+	  	</div>
+ 
+            
+          <div class="progress_container" style="display: block; height: 70px;">
+	   		<div class="status" style="display: block; height: 30px;">
+	   			
+	   		</div>
+	   		
+	   		<div class="result" style="display: block; height: 30px;">
+	   		</div>
+	  	</div>
+        
+        
+      </div>
+    </div>
+
+  </div>
+</div>
 
 {% endblock %}
 
@@ -111,17 +319,20 @@
  			console.log(task);
  			if (task.state == 'PROGRESS') {
  				if (task.result) {
-  					$('.result').html(task.result.count + ' comments ingested.');
-  				}
+  					$('.result').html('Status: ' + task.result.count + ' comments ingested.');
+	  			} else{
+	  				$('.result').html('Status: In progress...');
+	  			}
   				setTimeout(PollState(task_id), 3000);
  			} else if (task.state == 'PENDING') {
+ 				$('.result').html('Status: Pending...');
  				setTimeout(PollState(task_id), 3000);
  			} else {
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
  					article = article.replace('#', '%23');
-  					$('.status').html(task.state + '! <a href="/summary?article=' + article + '"><button class="btn btn-success btn-sm">View comments</button></a>');
+  					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
   				}
@@ -132,27 +343,39 @@
 
 
     <script>
+    
+    	function submiturl() {
+    		var article = $('#articleUrl').val();
+			$.ajax({
+				url: "import_article",
+				data: {
+					'article': article,
+				},
+				success: function(res){
+					console.log(res);
+					$('.status').text('');
+					$('.result').text('');
+					$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while as we are rate-limited by APIs.' + 
+					' You can wait or come back later to find the article on the main page.');
+				   	PollState(res);
+				}
+			});
+    	}
+    
+    	$('#submiturl').click(function(event) {
+    		submiturl();
+    		return false;
+    	});
+    
 		$('#articleUrl').keydown(function(event){ 
 		    var keyCode = (event.keyCode ? event.keyCode : event.which);   
 		    if (keyCode == 13) {
-		    	var article = $('#articleUrl').val();
-				$.ajax({
-					url: "import_article",
-					data: {
-						'article': article,
-					},
-					success: function(res){
-						console.log(res);
-						$('.status').text('');
-						$('.result').text('');
-						$('#message').text('Wikum is now importing all the comments in the discussion. This may take a while as we are rate-limited by APIs.' + 
-						' You can wait or come back later to find the article in the dropdown menu above.');
-					   	PollState(res);
-					}
-				});
+		    	submiturl();
 				return false;
 		    }
 		});
+		
+		
     </script>
 
 
