@@ -430,6 +430,40 @@ rect.selection {
 	position: relative;
 }
 
+.hiddennode{
+	background-color: hsl(0, 59%, 95%);
+	border: 1px #990000 solid;
+	margin-bottom: 10px;
+	padding: 1.2em;
+	padding-bottom: .2em;
+	--link-color: #990000;
+}
+	.hiddennode h1 {
+		font-size: 100%;
+		margin-bottom: 10px;
+	}
+
+		.hiddennode footer{
+			padding: 0;
+			margin: -.2em -1.2em;
+			background: var(--background);
+			--background: hsl(0, 59%, 90%);
+			white-space: normal;
+		}
+
+		.hiddennode footer a {
+			padding: .5em;
+			color: var(--link-color);
+			font-weight: 500;
+			font-size: 13px;
+			display: inline-block;
+		}
+
+		.hiddennode footer a:hover {
+			color: hsla(0,0%,100%,.9);
+			background: var(--link-color);
+		}
+
 .highlighted.summary{
 	border: 1.8px #000000 solid;
 }
