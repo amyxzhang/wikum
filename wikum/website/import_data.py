@@ -49,7 +49,7 @@ def get_article(url, source, num):
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
             page = urllib2.unquote(str(wiki_sub[0]) + ':' + str(wiki_page))
-            params = {'action': 'parse', 'prop': 'sections','page': page }
+            params = {'action': 'parse', 'prop': 'sections','page': page ,'redirects':'yes' }
             request = api.APIRequest(site, params)
             result = request.query()
 
@@ -86,7 +86,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     
     title = article.title.split(' - ')
     
-    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json'}
+    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
