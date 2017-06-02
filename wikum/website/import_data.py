@@ -43,12 +43,13 @@ def get_article(url, source, num):
             wiki_parts = ':'.join(wiki_sub[1:]).split('#')
             wiki_page = wiki_parts[0]
             section = None
-            if len(url_parts) > 1:
+            if len(wiki_parts) > 1:
                 section = wiki_parts[1]
             
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            params = {'action': 'parse', 'prop': 'sections','page': str(wiki_sub[0]) + ':' + str(wiki_page)}
+            page = urllib2.unquote(str(wiki_sub[0]) + ':' + str(wiki_page))
+            params = {'action': 'parse', 'prop': 'sections','page': page ,'redirects':'yes' }
             request = api.APIRequest(site, params)
             result = request.query()
 
@@ -85,7 +86,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     
     title = article.title.split(' - ')
     
-    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json'}
+    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
@@ -201,7 +202,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
             if comment.get('time_stamp'):
                 time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
 
-            cosigners = comment['cosigners']
+            cosigners = [sign['author'] for sign in comment['cosigners']]
             comment_cosigners = import_wiki_authors(cosigners, article)
 
             comment_wikum = Comment.objects.create(article = article,
