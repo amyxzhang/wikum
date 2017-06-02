@@ -48,7 +48,8 @@ def get_article(url, source, num):
             
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            params = {'action': 'parse', 'prop': 'sections','page': str(wiki_sub[0]) + ':' + str(wiki_page)}
+            page = urllib2.unquote(str(wiki_sub[0]) + ':' + str(wiki_page))
+            params = {'action': 'parse', 'prop': 'sections','page': page }
             request = api.APIRequest(site, params)
             result = request.query()
 
@@ -201,7 +202,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
             if comment.get('time_stamp'):
                 time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
 
-            cosigners = comment['cosigners']
+            cosigners = [sign['author'] for sign in comment['cosigners']]
             comment_cosigners = import_wiki_authors(cosigners, article)
 
             comment_wikum = Comment.objects.create(article = article,
