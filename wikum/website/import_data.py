@@ -43,7 +43,7 @@ def get_article(url, source, num):
             wiki_parts = ':'.join(wiki_sub[1:]).split('#')
             wiki_page = wiki_parts[0]
             section = None
-            if len(url_parts) > 1:
+            if len(wiki_parts) > 1:
                 section = wiki_parts[1]
             
             from wikitools import wiki, api
