@@ -90,7 +90,24 @@ def get_wiki_talk_posts(article, current_task, total_count):
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
-    text = result['query']['pages'][id]['revisions'][0]['*']
+
+    #Helper function for getting rid of div templates and rfc template that is within text.
+    #Needed to prevent a whole RfC being ingested as one comment.
+    def strip_template(text):
+        div_start_match = [(m.start(0), m.end(0)) for m in re.finditer('<div class=.*?>', text)]
+        for match in div_start_match:
+            text = text[:match[0]] + text[match[1]:]
+        div_end_match = [(m.start(0), m.end(0)) for m in re.finditer('</div>', text)]
+        for match in div_end_match:
+            text = text[:match[0]] + text[match[1]:]
+
+        rfc_template = re.compile('<!-- Template:rfc.*?-->', re.DOTALL)
+        rfc_template_match = [(m.start(0), m.end(0)) for m in rfc_template.finditer(text)]
+        for match in rfc_template_match:
+            text = text[:match[0]] + text[match[1]:]
+        return text.strip()
+
+    text = strip_template(result['query']['pages'][id]['revisions'][0]['*'])
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
     
@@ -200,7 +217,9 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
         else:
             time = None
             if comment.get('time_stamp'):
-                time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
+                # exists cases where 'Jul' is written instead of 'July'
+                #TODO(Jane): Make this a more general solution to cover other cases
+                time = datetime.datetime.strptime(comment['time_stamp'].replace('Jul ', 'July '),'%H:%M, %d %B %Y (%Z)')
 
             cosigners = [sign['author'] for sign in comment['cosigners']]
             comment_cosigners = import_wiki_authors(cosigners, article)
