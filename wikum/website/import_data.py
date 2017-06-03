@@ -63,7 +63,7 @@ def get_article(url, source, num):
             title = result['parse']['title']
             if section_title:
                 title = title + ' - ' + section_title
-            link = url
+            link = urllib2.unquote(url)
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
         article = article[num]

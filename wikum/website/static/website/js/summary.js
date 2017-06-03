@@ -2,7 +2,6 @@
 
 
 function display_comments(discuss_info_list, level, total_summary_text, auto_hide) {
-	
 	for (var i=0; i< discuss_info_list.length; i++) {
 		info = discuss_info_list[i];
 		
@@ -43,7 +42,8 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 $(document).ready(function () {
 	
 	var article_url = getParameterByName('article');
-	article_url = article_url = article_url.replace('#','%23').replace('&', '%26');
+	article_url = encodeURI(article_url).replace(/%5B/g, '[').replace(/%5D/g, ']');
+	article_url = article_url.replace('#','%23').replace('&', '%26')
 	var next = parseInt(getParameterByName('next'));
 	if (!next) {
 		next = 0;
@@ -69,9 +69,7 @@ $(document).ready(function () {
 	    success: function (data) { 
 	    	
 	    	unpack_posts(data.posts.children);
-
 			summary_text = display_comments(data.posts.children, 0, '');
-			
         	$('#summary').html(summary_text);
         	
         	if (data.posts.children.length < 5) {
