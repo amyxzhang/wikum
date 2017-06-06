@@ -24,12 +24,13 @@ class Section(object):
     def _load_section_info(self):
         wiki_headings = [h for h in self._wikicode.filter_headings()]
 
-        if len(wiki_headings) > 1:
-            raise TooManyHeadingsError(wiki_headings)
         if len(wiki_headings) == 0:
             self.heading = None
             self.level = EPI_LEVEL
         else:
+            # Before TooManyHeadingsError was raised when there were more than 1 heading,
+            # however in Wikum's case it's okay because the code in 'import_data.py'
+            # makes sure the right section is being parsed.
             self.heading = str(wiki_headings[0].title)
             self.level = wiki_headings[0].level
         self.text = self._get_section_text_from_wikicode(self._wikicode)

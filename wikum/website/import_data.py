@@ -54,17 +54,22 @@ def get_article(url, source, num):
             result = request.query()
 
             id = str(result['parse']['pageid'])
+
             section_title = None
+            section_index = None
+
             if section:
                 for s in result['parse']['sections']:
                     if s['anchor'] == section:
                         id = str(id) + '#' + str(s['index'])
                         section_title = s['line']
+                        section_index = s['index']
             title = result['parse']['title']
             if section_title:
                 title = title + ' - ' + section_title
             link = urllib2.unquote(url)
-        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
+
+        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
     else:
         article = article[num]
         
@@ -79,54 +84,55 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
+
 def get_wiki_talk_posts(article, current_task, total_count):
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
     site = wiki.Wiki(domain + '/w/api.php')
-    
     title = article.title.split(' - ')
-    
-    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
+    # "section_index" is the index number of the section within the page.
+    # There are some cases when wikicode does not parse a section as a section when given a "whole page".
+    # To prevent this, we first grab only the section(not the entire page) using "section_index" and parse it.
+    section_index = article.section_index
+
+    params = {'action': 'query', 'titles': title[0], 'rvsection':section_index, 'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
 
-    #Helper function for getting rid of div templates and rfc template that is within text.
-    #Needed to prevent a whole RfC being ingested as one comment.
-    def strip_template(text):
-        div_start_match = [(m.start(0), m.end(0)) for m in re.finditer('<div class=.*?>', text)]
-        for match in div_start_match:
-            text = text[:match[0]] + text[match[1]:]
-        div_end_match = [(m.start(0), m.end(0)) for m in re.finditer('</div>', text)]
-        for match in div_end_match:
-            text = text[:match[0]] + text[match[1]:]
-
-        rfc_template = re.compile('<!-- Template:rfc.*?-->', re.DOTALL)
-        rfc_template_match = [(m.start(0), m.end(0)) for m in rfc_template.finditer(text)]
-        for match in rfc_template_match:
-            text = text[:match[0]] + text[match[1]:]
-        return text.strip()
-
-    text = strip_template(result['query']['pages'][id]['revisions'][0]['*'])
+    text = result['query']['pages'][id]['revisions'][0]['*']
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
     
-    start_sections = parsed_text['sections']
-    
+    #start_sections = parsed_text['sections']
     if len(title) > 1:
-        section_title = title[1]
+        section_title = title[1].encode('ascii','ignore')
         sections = parsed_text['sections']
-        for s in sections:
-            heading_title = s.get('heading','')
-            heading_title = re.sub(r'\]','', heading_title)
-            heading_title = re.sub(r'\[','', heading_title)
-            heading_title = re.sub('<[^<]+?>', '', heading_title)
-            if heading_title.strip() == str(section_title).strip():
-                start_sections = s['subsections']
-                start_comments = s['comments']
-    
-                total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
-    
+
+        #TODO(Jane): Need to differentiate the case when the outer section still needs to be included
+        #Helper function especially needed in cases when RfCs exist as a "subsection" of a section
+        def recur_find_section(sections, section_title, total_count):
+            for s in sections:
+                heading_title = s.get('heading','')
+                heading_title = re.sub(r'\]','', heading_title)
+                heading_title = re.sub(r'\[','', heading_title)
+                heading_title = re.sub('<[^<]+?>', '', heading_title)
+                if heading_title.strip() == str(section_title).strip():
+                    start_sections = s['subsections']
+                    start_comments = s['comments']
+                    total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
+                    return total_count, start_sections
+                else:
+                    total_count, start_sections  = recur_find_section(s['subsections'], section_title, total_count)
+                    if len(start_sections) > 0:
+                        return total_count, start_sections
+            return total_count, []
+
+        total_count, start_sections = recur_find_section(sections, section_title, total_count)
+
+    else:
+        start_sections = parsed_text['sections']
+
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
@@ -168,6 +174,7 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
+
     authors_list = '|'.join(authors)
     
     from wikitools import wiki, api
@@ -204,7 +211,6 @@ def import_wiki_authors(authors, article):
 def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):    
     for comment in comments:
         text = '\n'.join(comment['text_blocks'])
-       
         author = comment.get('author')
         if author:
             comment_author = import_wiki_authors([author], article)[0]
