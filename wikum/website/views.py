@@ -16,7 +16,7 @@ from math import floor
 from django.views.decorators.csrf import csrf_exempt
 from website.import_data import get_source, get_article
 
-import urllib
+import urllib2
 
 from wikimarkup import parse
 import parse_helper
@@ -153,7 +153,7 @@ def summary4(request):
     return summary_page(request)
     
 def summary_data(request):
-    url = request.GET['article']
+    url = urllib2.unquote(request.GET['article'])
     num = int(request.GET.get('num', 0))
     sort = request.GET.get('sort', 'id')
     

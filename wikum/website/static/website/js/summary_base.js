@@ -247,12 +247,13 @@ function split_text(text, summary_text, d_id) {
 			summary_text += '<div id="hidden_' + d_id + '" class="hidden_node" style="display: none; margin-top: 15px;"><P>';
 			hidden = true;
 		} else {
+
 			var pattern = /\[quote\]/g;
 			part = part.replace(pattern, '<blockquote>');
 			var pattern = /\[endquote\]/g;
 			part = part.replace(pattern, '</blockquote>');
-			
-			if (part.indexOf('[[') > -1) {
+
+			if (part.indexOf('[[') > -1 && part.indexOf(']]') > -1) {
 				var comment = part.match(/\[\[(.*)\]\]/);
 				var link = comment[1];
 				part = part.replace(/\[\[(.*)\]\]/g, "");
@@ -404,7 +405,7 @@ function display_comment(info, d_id) {
 		text += '\n<BR><a>...</a><BR>\n';
 		text += extra_text;
 	}
-	
+
 	summary_text = split_text(text, summary_text, d_id);
 
 	summary_text += '</P>';
