@@ -85,6 +85,7 @@ def get_source(url):
     return None
 
 
+
 def get_wiki_talk_posts(article, current_task, total_count):
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
@@ -104,37 +105,24 @@ def get_wiki_talk_posts(article, current_task, total_count):
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
     
-    #start_sections = parsed_text['sections']
+    start_sections = parsed_text['sections']
     if len(title) > 1:
         section_title = title[1].encode('ascii','ignore')
         sections = parsed_text['sections']
+        for s in sections:
+            heading_title = s.get('heading', '')
+            heading_title = re.sub(r'\]', '', heading_title)
+            heading_title = re.sub(r'\[', '', heading_title)
+            heading_title = re.sub('<[^<]+?>', '', heading_title)
+            if heading_title.strip() == str(section_title).strip():
+                start_sections = s['subsections']
+                start_comments = s['comments']
 
-        #TODO(Jane): Need to differentiate the case when the outer section still needs to be included
-        #Helper function especially needed in cases when RfCs exist as a "subsection" of a section
-        def recur_find_section(sections, section_title, total_count):
-            for s in sections:
-                heading_title = s.get('heading','')
-                heading_title = re.sub(r'\]','', heading_title)
-                heading_title = re.sub(r'\[','', heading_title)
-                heading_title = re.sub('<[^<]+?>', '', heading_title)
-                if heading_title.strip() == str(section_title).strip():
-                    start_sections = s['subsections']
-                    start_comments = s['comments']
-                    total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
-                    return total_count, start_sections
-                else:
-                    total_count, start_sections  = recur_find_section(s['subsections'], section_title, total_count)
-                    if len(start_sections) > 0:
-                        return total_count, start_sections
-            return total_count, []
-
-        total_count, start_sections = recur_find_section(sections, section_title, total_count)
-
-    else:
-        start_sections = parsed_text['sections']
+                total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
 
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
-    
+
+
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
     for section in sections:
         heading = section.get('heading', None)
