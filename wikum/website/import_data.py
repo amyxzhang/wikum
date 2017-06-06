@@ -84,6 +84,26 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
+#helper function to erase <div ..>...</div> in order to prevent a RfC section being ingested as just one blob of comment
+#For example, <div class="boilerplate" style="background-color: #EDEAFF; padding: 0px 10px 0px 10px; border: 1px solid #8779DD;"></div>
+#that surround the whole comments prevents a RfC from being parsed properly.
+def strip_div(text):
+    div_start = re.compile('<div.*?>', re.DOTALL)
+    div_end = re.compile('</div>', re.DOTALL)
+
+    for target in [div_start, div_end]:
+        match = [(m.start(0), m.end(0)) for m in target.finditer(text)]
+        filtered_text = None
+        if len(match) > 0:
+            filtered_text = text[:match[0][0]]
+            for idx in range(len(match) - 1):
+                start = match[idx][1]
+                end = match[idx + 1][0]
+                filtered_text += text[start:end]
+            filtered_text += text[match[-1][1]:]
+        if filtered_text:
+            text = filtered_text
+    return text
 
 
 def get_wiki_talk_posts(article, current_task, total_count):
@@ -101,7 +121,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     result = request.query()
     id = article.disqus_id.split('#')[0]
 
-    text = result['query']['pages'][id]['revisions'][0]['*']
+    text = strip_div(result['query']['pages'][id]['revisions'][0]['*'])
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
     
