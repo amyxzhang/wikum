@@ -51,7 +51,7 @@ def get_article(url, source, num):
             
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            page = urllib2.unquote(str(wiki_sub[0]) + ':' + str(wiki_page))
+            page = urllib2.unquote(str(wiki_sub[0]) + ':' + wiki_page.encode('ascii', 'ignore'))
             params = {'action': 'parse', 'prop': 'sections','page': page ,'redirects':'yes' }
             request = api.APIRequest(site, params)
             result = request.query()
@@ -68,9 +68,10 @@ def get_article(url, source, num):
                         section_index = s['index']
             title = result['parse']['title']
             if section_title:
-                title = title + ' - ' + section_title
-            link = url
+
+            link = urllib2.unquote(url)
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
+
     else:
         article = article[num]
         
@@ -206,7 +207,14 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
-    authors_list = '|'.join(authors)
+    found_authors = []
+    anonymous_exist = False
+    for author in authors:
+        if author:
+            found_authors.append(author)
+        else:
+            anonymous_exist = True
+    authors_list = '|'.join(found_authors)
     
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
@@ -235,7 +243,10 @@ def import_wiki_authors(authors, article):
         except Exception:
             comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
         comment_authors.append(comment_author)
-        
+
+    if anonymous_exist:
+        comment_authors.append(CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True))
+
     return comment_authors
     
     
