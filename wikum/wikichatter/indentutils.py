@@ -100,7 +100,7 @@ def _count_indent_in_some_order(line):
         if len(line) > count and line[count] in indent_chars:
             char = line[count]
             count += _count_leading_char(line[count:], line[count])
-            if char == '*':
+            if char == '*' or char =='#':
                 count_star += count
             indent_chars.remove(char)
         else:
