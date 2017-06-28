@@ -1128,10 +1128,14 @@ class BaseParser(object):
             l = len(bits)
             i = 0
             while i < l:
+                bit = None
                 if i%2 == 0:
                     sb.append(bits[i])
+                    bit = bits[i]
                 else:
                     name = bits[i]
+                    bit = func(self, space, name)
+                if bit:
                     sb.append(func(self, space, name))
                 i += 1
             full_text = ''.join(sb)
