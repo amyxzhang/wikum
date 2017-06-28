@@ -151,7 +151,14 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
-    authors_list = '|'.join(authors)
+    found_authors = []
+    anonymous_exist = False
+    for author in authors:
+        if author:
+            found_authors.append(author)
+        else:
+            anonymous_exist = True
+    authors_list = '|'.join(found_authors)
     
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
@@ -180,7 +187,10 @@ def import_wiki_authors(authors, article):
         except Exception:
             comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
         comment_authors.append(comment_author)
-        
+
+    if anonymous_exist:
+        comment_authors.append(CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True))
+
     return comment_authors
     
     
