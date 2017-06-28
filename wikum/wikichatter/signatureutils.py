@@ -188,7 +188,9 @@ def _extract_rightmost_user(wcode):
     func_picker.extend([(l[0], l[1], _extract_usercontribs_user) for l in uc_locs])
 
     if len(func_picker) == 0:
-        raise NoUsernameError(text)
+        # able to return None because Wikum's code handles it in import_data.py
+        # raise NoUsernameError(text)
+        return None
     (start, end, extractor) = max(func_picker, key=lambda e: e[1])
     user = extractor(text[start:end])
     return user
