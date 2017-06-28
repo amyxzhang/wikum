@@ -1301,9 +1301,9 @@ class BaseParser(object):
         
             if close == u'/>':
                 # empty element tag, <tag />
-                content = None
+                content = ''
                 text = inside
-                tail = None
+                tail = ''
             else:
                 if element == u'!--':
                     end = _endCommentPat
