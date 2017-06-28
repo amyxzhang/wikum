@@ -1136,7 +1136,7 @@ class BaseParser(object):
                     name = bits[i]
                     bit = func(self, space, name)
                 if bit:
-                    sb.append(func(self, space, name))
+                    sb.append(bit)
                 i += 1
             full_text = ''.join(sb)
         return full_text
