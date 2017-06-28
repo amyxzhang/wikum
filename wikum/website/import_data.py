@@ -55,16 +55,19 @@ def get_article(url, source, num):
 
             id = str(result['parse']['pageid'])
             section_title = None
+            section_index = None
+
             if section:
                 for s in result['parse']['sections']:
                     if s['anchor'] == section:
                         id = str(id) + '#' + str(s['index'])
                         section_title = s['line']
+                        section_index = s['index']
             title = result['parse']['title']
             if section_title:
                 title = title + ' - ' + section_title
             link = url
-        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
+        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
     else:
         article = article[num]
         
@@ -85,8 +88,12 @@ def get_wiki_talk_posts(article, current_task, total_count):
     site = wiki.Wiki(domain + '/w/api.php')
     
     title = article.title.split(' - ')
-    
-    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
+    # "section_index" is the index number of the section within the page.
+    # There are some cases when wikicode does not parse a section as a section when given a "whole page".
+    # To prevent this, we first grab only the section(not the entire page) using "section_index" and parse it.
+    section_index = article.section_index
+
+    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes', 'rvsection':section_index}
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
@@ -97,7 +104,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     start_sections = parsed_text['sections']
     
     if len(title) > 1:
-        section_title = title[1]
+        section_title = title[1].encode('ascii','ignore')
         sections = parsed_text['sections']
         for s in sections:
             heading_title = s.get('heading','')
