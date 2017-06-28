@@ -92,7 +92,7 @@ class Comment(models.Model):
     reports = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     
-    created_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(null=True, blank=True)
     edited = models.BooleanField(default=False)
     spam = models.BooleanField(default=False)
     highlighted = models.BooleanField(default=False)
