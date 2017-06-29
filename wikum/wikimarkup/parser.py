@@ -1130,7 +1130,6 @@ class BaseParser(object):
             while i < l:
                 bit = None
                 if i%2 == 0:
-                    sb.append(bits[i])
                     bit = bits[i]
                 else:
                     name = bits[i]
