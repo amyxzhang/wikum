@@ -3277,6 +3277,15 @@ function show_replace_nodes(id) {
 	}
 }
 
+function recurse_mark_hiddennode(d) {
+	d.hiddennode = true
+	if (d.children && d.hiddennode) {
+		for (var i=0; i<d.children.length; i++) {
+			d.children[i].hiddennode = true;
+			recurse_mark_hiddennode(d.children[i]);
+		}
+	}
+}
 
 function show_hidden(id) {
 	d = nodes_all[id-1];
@@ -3293,7 +3302,7 @@ function show_hidden(id) {
 			d.children = [];
 		}
 		for (var i=0; i<d.hid.length; i++) {
-			d.hid[i].hiddennode = true;
+			recurse_mark_hiddennode(d.hid[i]);
 			d.children.push(d.hid[i]);
 		}
 		d.hid = [];
