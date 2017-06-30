@@ -51,7 +51,7 @@ def get_article(url, source, num):
             
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            page = urllib2.unquote(str(wiki_sub[0]) + ':' + str(wiki_page))
+            page = urllib2.unquote(str(wiki_sub[0]) + ':' + wiki_page.encode('ascii', 'ignore'))
             params = {'action': 'parse', 'prop': 'sections','page': page ,'redirects':'yes' }
             request = api.APIRequest(site, params)
             result = request.query()
@@ -69,8 +69,10 @@ def get_article(url, source, num):
             title = result['parse']['title']
             if section_title:
                 title = title + ' - ' + section_title
-            link = url
+
+            link = urllib2.unquote(url)
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
+
     else:
         article = article[num]
         
