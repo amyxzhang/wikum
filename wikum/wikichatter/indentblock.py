@@ -37,9 +37,14 @@ def generate_indentblock_list(wcode):
             text_blocks.append(IndentBlock(line, indent))
             old_indent = indent
             old_continuation = continues
-            old_contains_sig = _contains_user_sig(line)
+            old_contains_sig = _contains_user_sig(line) and _contains_timestamp(line)
                 
     return text_blocks
+
+
+def _contains_timestamp(str):
+    return _matches_regex(str, su.TIMESTAMP_RE)
+
 
 def _contains_user_sig(str):
     if (_is_usertalk(str) or _is_userpage(str) or _is_usercontribs(str)):
