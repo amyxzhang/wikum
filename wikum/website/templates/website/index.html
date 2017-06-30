@@ -331,7 +331,7 @@ of detail based on their interests.
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
- 					article = article.replace('#', '%23');
+ 					article = article.replace('#', '%23').replace('&', '%26');
   					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
