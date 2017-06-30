@@ -87,6 +87,31 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
+def clean_wiki_text(text):
+    # case 1
+    text = text.replace("\n#", "\n*")
+    # case 2
+    start = re.compile('<(div|small|span|font).*?>', re.DOTALL)
+    end = re.compile('</(div|small|span|font).*?>', re.DOTALL)
+    template = re.compile('<!--.*?-->', re.DOTALL)
+    for target in [start, end, template]:
+        text = re.sub(target, '', text)
+    # case 3
+    text = text.replace("(UTC)}}", "(UTC)}}\n")
+    # case 4
+    text =  text.replace("&nbsp;", " ")
+    #<span style=\"border:1px solid #329691;background:#228B22;\">'''[[User:Viridiscalculus|<font color=\"#FFCD00\">&nbsp;V</font>]][[User talk:Viridiscalculus|<font style=\"color:#FFCD00\">C&nbsp;</font>]]'''</span> 01:25, 4 January 2012 (UTC)
+    # case 5
+    text = text.replace("\n----\n|}", "")
+    text = text.replace("\n  | title = \n  | title_bg = #C3C3C3\n  | title_fnt = #000\n ", "")
+    text = text.replace("{| class=\"navbox collapsible collapsed\" style=\"text-align: left; border: 0px; margin-top: 0.2em;\"\n|-\n! style=\"background-color: #ddffdd;\" | ", "");
+    text = text.replace("\n|-\n|", "")
+    #case 6
+    unicode_re = re.compile(ur'[\u0000-\uFFFF]+', re.UNICODE)
+    text = re.sub(unicode_re, '', text)
+
+    return text.strip()
+
 def get_wiki_talk_posts(article, current_task, total_count):
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
@@ -123,7 +148,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
             section_title = title[1].encode('ascii', 'ignore')
             params = {'action': 'query', 'titles': title[0], 'prop': 'revisions', 'rvprop': 'content', 'format': 'json', 'redirects': 'yes'}
             result = api.APIRequest(site, params).query()
-            whole_text = result['query']['pages'][id]['revisions'][0]['*']
+            whole_text = clean_wiki_text(result['query']['pages'][id]['revisions'][0]['*'])
 
             import wikichatter as wc
             parsed_whole_text = wc.parse(whole_text.encode('ascii','ignore'))
@@ -153,6 +178,8 @@ def get_wiki_talk_posts(article, current_task, total_count):
     # Example: https://en.wikipedia.org/wiki/Talk:Alexz_Johnson#Lead_image
     if not re.search(_CLOSE_COMMENT_RE, text):
         text = find_outer_section(title, text, id)
+
+    text = clean_wiki_text(text)
 
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
