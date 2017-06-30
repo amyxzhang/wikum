@@ -252,7 +252,7 @@ function split_text(text, summary_text, d_id) {
 			var pattern = /\[endquote\]/g;
 			part = part.replace(pattern, '</blockquote>');
 			
-			if (part.indexOf('[[') > -1) {
+			if (part.indexOf('[[') > -1 && part.indexOf(']]') > -1) {
 				var comment = part.match(/\[\[(.*)\]\]/);
 				var link = comment[1];
 				part = part.replace(/\[\[(.*)\]\]/g, "");

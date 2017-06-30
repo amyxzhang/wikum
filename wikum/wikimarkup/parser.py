@@ -1128,11 +1128,14 @@ class BaseParser(object):
             l = len(bits)
             i = 0
             while i < l:
+                bit = None
                 if i%2 == 0:
-                    sb.append(bits[i])
+                    bit = bits[i]
                 else:
                     name = bits[i]
-                    sb.append(func(self, space, name))
+                    bit = func(self, space, name)
+                if bit:
+                    sb.append(bit)
                 i += 1
             full_text = ''.join(sb)
         return full_text
@@ -1297,9 +1300,9 @@ class BaseParser(object):
         
             if close == u'/>':
                 # empty element tag, <tag />
-                content = None
+                content = ''
                 text = inside
-                tail = None
+                tail = ''
             else:
                 if element == u'!--':
                     end = _endCommentPat
