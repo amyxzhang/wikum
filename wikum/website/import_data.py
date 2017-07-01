@@ -88,6 +88,11 @@ def get_source(url):
     return None
 
 def clean_wiki_text(text):
+    #case 1
+    #example: \n:*::Certainly https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json&section=7
+    mixed_indent_re = "(?P<before>\n:)\*(?P<after>:+)"
+    text = re.sub(mixed_indent_re, "\g<before>\g<after>",text)
+
     # case 2
     start = re.compile('<(div|small).*?>', re.DOTALL)
     end = re.compile('</(div|small).*?>', re.DOTALL)
