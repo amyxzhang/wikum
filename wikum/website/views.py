@@ -130,7 +130,7 @@ def summary_page(request):
     article.url = re.sub('#', '%23', article.url)
 
     return {'article': article,
-            'url': re.sub('#', '%23', article.url),
+            'url': article.url,
             'source': article.source,
             'num': num,
             }
