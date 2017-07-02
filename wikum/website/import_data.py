@@ -134,6 +134,10 @@ def clean_wiki_text(text):
     #case 8
     text = re.sub(_WHITESPACE_USER_RE, "\g<user>", text)
 
+    #case 9
+    #example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
+    text = text.replace("(UTC\n", "(UTC)\n")
+
     return text.strip()
 
 def get_wiki_talk_posts(article, current_task, total_count):
