@@ -5,6 +5,7 @@ import json
 import praw
 import datetime
 import re
+import wikichatter.signatureutils as su
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
@@ -13,6 +14,11 @@ COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&th
 
 _CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
 _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
+
+_WRONG_OUTDENT_TEMP = ":+{{outdent.*?}}"
+
+_WHITESPACE_USER_RE = re.compile(r"(\n)?(?P<user>\[\[\W*user.*?" +"(" +  r'|'.join(su._TIMESTAMPS) + '))', re.I)
+
 
 def get_article(url, source, num):
     article = Article.objects.filter(url=url)
@@ -118,6 +124,15 @@ def clean_wiki_text(text):
     # case 6
     unicode_re = re.compile('\\\\u[0-9a-z]{4}', re.UNICODE | re.IGNORECASE)
     text = re.sub(unicode_re, '', text)
+
+    #case 7
+    """
+    Editors tend to put ':' infront of {{outdent}} for visualization but this breaks parsing properly.
+    """
+    text = re.sub(_WRONG_OUTDENT_TEMP, "{{outdent}}\n", text)
+
+    #case 8
+    text = re.sub(_WHITESPACE_USER_RE, "\g<user>", text)
 
     return text.strip()
 
