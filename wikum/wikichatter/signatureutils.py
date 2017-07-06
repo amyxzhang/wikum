@@ -19,11 +19,11 @@ class NoSignature(SignatureUtilsError):
     pass
 
 # 01:52, 20 September 2013 (UTC)
-_TIMESTAMP_RE_0 = r"[0-9]{2}:[0-9]{2}(,)? [0-9]{1,2} [^\W\d]+ [0-9]{4}( \(UTC\))?"
+_TIMESTAMP_RE_0 = r"[0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}( \(UTC\))?"
 # 18:45 Mar 10, 2003 (UTC)
-_TIMESTAMP_RE_1 = r"[0-9]{2}:[0-9]{2}(,)? [^\W\d]+ [0-9]{1,2}(,)? [0-9]{4}( \(UTC\))?"
+_TIMESTAMP_RE_1 = r"[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}( \(UTC\))?"
 # 01:54:53, 2005-09-08 (UTC)
-_TIMESTAMP_RE_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2}(,)? [0-9]{4}-[0-9]{2}-[0-9]{2}( \(UTC\))?"
+_TIMESTAMP_RE_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}( \(UTC\))?"
 
 _TIMESTAMPS = [_TIMESTAMP_RE_0, _TIMESTAMP_RE_1, _TIMESTAMP_RE_2]
 TIMESTAMP_RE = re.compile(r'|'.join(_TIMESTAMPS))
@@ -222,10 +222,10 @@ def _extract_usercontribs_user(text):
 
 def _extract_timestamp_from_sig_code(sig_code):
     text = str(sig_code)
-    result = re.findall(TIMESTAMP_RE, text)
-    if len(result) == 0:
+    result = re.search(TIMESTAMP_RE, text)
+    if not result:
         raise NoTimestampError(text)
-    return result[0]
+    return result.group(0)
 
 
 def _clean_extracted_username(raw_username):

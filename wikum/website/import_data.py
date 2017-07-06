@@ -19,6 +19,8 @@ _WRONG_OUTDENT_TEMP = ":+{{outdent.*?}}"
 
 _WHITESPACE_USER_RE = re.compile(r"(\n)?(?P<user>\[\[\W*user.*?" +"(" +  r'|'.join(su._TIMESTAMPS) + '))', re.I)
 
+#
+_PRECEDING_COMMENT_RE = "<.*?>(<.*?>)? Preceding \[\[Wikipedia:Signatures\|unsigned\]\] comment added by (?P<user>(\[\[User:.*?\]\]|\[\[Special:.*?\]\])) (?P<user_talk>\(\[\[User talk:.*?(\[\[Special:.*?\]\])?\]\]\)) (?P<time>(" +  r'|'.join(su._TIMESTAMPS) + ")?)<.*?>(<.*?>)?(<!--.*?-->)*"
 
 def get_article(url, source, num):
     article = Article.objects.filter(url=url)
@@ -93,7 +95,8 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
-def clean_wiki_text(text):
+
+def _clean_wiki_text(text):
     #case 1
     #example: \n:*::Certainly https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json&section=7
     mixed_indent_re = "(?P<before>\n:)\*(?P<after>:+)"
@@ -138,6 +141,9 @@ def clean_wiki_text(text):
     #example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
     text = text.replace("(UTC\n", "(UTC)\n")
 
+    #case 10
+    text = re.sub(_PRECEDING_COMMENT_RE, '\g<user> \g<user_talk> \g<time>', text)
+
     return text.strip()
 
 def get_wiki_talk_posts(article, current_task, total_count):
@@ -176,7 +182,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
             section_title = title[1].encode('ascii', 'ignore')
             params = {'action': 'query', 'titles': title[0], 'prop': 'revisions', 'rvprop': 'content', 'format': 'json', 'redirects': 'yes'}
             result = api.APIRequest(site, params).query()
-            whole_text = clean_wiki_text(result['query']['pages'][id]['revisions'][0]['*'])
+            whole_text = _clean_wiki_text(result['query']['pages'][id]['revisions'][0]['*'])
             # whole_text = result['query']['pages'][id]['revisions'][0]['*']
 
             import wikichatter as wc
@@ -208,7 +214,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
     if not re.search(_CLOSE_COMMENT_RE, text):
         text = find_outer_section(title, text, id)
 
-    text = clean_wiki_text(text)
+    text = _clean_wiki_text(text)
 
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
