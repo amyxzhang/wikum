@@ -18,13 +18,13 @@ class NoTimestampError(SignatureUtilsError):
 class NoSignature(SignatureUtilsError):
     pass
 
-
 # 01:52, 20 September 2013 (UTC)
-_TIMESTAMP_RE_0 = r"[0-9]{2}:[0-9]{2}, [0-9]{1,2} [^\W\d]+ [0-9]{4} \(UTC\)"
+_TIMESTAMP_RE_0 = r"[0-9]{2}:[0-9]{2}(,)? [0-9]{1,2} [^\W\d]+ [0-9]{4}( \(UTC\))?"
 # 18:45 Mar 10, 2003 (UTC)
-_TIMESTAMP_RE_1 = r"[0-9]{2}:[0-9]{2} [^\W\d]+ [0-9]{1,2}, [0-9]{4} \(UTC\)"
+_TIMESTAMP_RE_1 = r"[0-9]{2}:[0-9]{2}(,)? [^\W\d]+ [0-9]{1,2}(,)? [0-9]{4}( \(UTC\))?"
 # 01:54:53, 2005-09-08 (UTC)
-_TIMESTAMP_RE_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2}, [0-9]{4}-[0-9]{2}-[0-9]{2} \(UTC\)"
+_TIMESTAMP_RE_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2}(,)? [0-9]{4}-[0-9]{2}-[0-9]{2}( \(UTC\))?"
+
 _TIMESTAMPS = [_TIMESTAMP_RE_0, _TIMESTAMP_RE_1, _TIMESTAMP_RE_2]
 TIMESTAMP_RE = re.compile(r'|'.join(_TIMESTAMPS))
 
