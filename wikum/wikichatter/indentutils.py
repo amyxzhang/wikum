@@ -2,7 +2,7 @@ import mwparserfromhell as mwp
 import time
 import re
 
-_INDENT_TEMPLATE_RE = re.compile(r'|'.join(["out(dent)?", "un(in)?dent", "od"]))
+_INDENT_TEMPLATE_RE = re.compile(r'|'.join(["out(dent)?", "un(in)?dent", "od", "anchor\|Lbelow"]), re.I)
 
 # Unclean code
 def extract_indent_blocks(wikicode):
