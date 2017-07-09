@@ -15,13 +15,6 @@ COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&th
 _CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
 _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
 
-_WRONG_OUTDENT_TEMP = ":+{{outdent.*?}}"
-
-_WHITESPACE_USER_RE = re.compile(r"(\n)?(?P<user>\[\[\W*user.*?" +"(" +  r'|'.join(su._TIMESTAMPS) + '))', re.I)
-
-#
-_PRECEDING_COMMENT_RE = "<.*?>(<.*?>)? Preceding \[\[Wikipedia:Signatures\|unsigned\]\] comment added by (?P<user>(\[\[User:.*?\]\]|\[\[Special:.*?\]\])) (?P<user_talk>\(\[\[User talk:.*?(\[\[Special:.*?\]\])?\]\]\)) (?P<time>(" +  r'|'.join(su._TIMESTAMPS) + ")?)<.*?>(<.*?>)?(<!--.*?-->)*"
-
 def get_article(url, source, num):
     article = Article.objects.filter(url=url)
     if article.count() == 0:
@@ -97,26 +90,45 @@ def get_source(url):
 
 
 def _clean_wiki_text(text):
+    _user_re = "(\(?\[\[\W*user\W*:(.*?)\|[^\]]+\]\]\)?)"
+    _user_talk_re = "(\(?\[\[\W*user[_ ]talk\W*:(.*?)\|[^\]]+\]\]\)?)"
+    _user_contribs_re = "(\(?\[\[\W*Special:Contributions/(.*?)\|[^\]]+\]\]\)?)"
+
     #case 1
+    whitespace_between_user_time_re = re.compile(r"((?P<user>("+ '|'.join([_user_re, _user_talk_re, _user_contribs_re ]) +"))( |\n)*(?P<time>("+r'|'.join(su._TIMESTAMPS)+")))", re.I)
+    text = re.sub( whitespace_between_user_time_re, '\g<user> \g<time>', text)
+
+    #case 2
+    #get rid of user name's italics
+    #especially needed when the signature doesn't have timestamp: https://en.wikipedia.org/wiki/Wikipedia_talk:What_Wikipedia_is_not/Archive_49#RfC:_amendment_to_WP:NOTREPOSITORY
+    italics_user_re = re.compile(r"''(?P<user>\(?\[\[\W*(user\W*:|user[_ ]talk\W*:|Special:Contributions/)(.*?)\|[^\]]+\]\]\)?)''", re.I)
+    text = re.sub(italics_user_re, '\g<user>', text)
+
+    #case 3
+    #correct wrong timestamp
+    _timestamp_with_bracket = r"(?P<time>([0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}|[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}|[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}))( )*<.*?>( )*\(UTC\)"
+    text = re.sub(_timestamp_with_bracket, "\g<time> (UTC)", text)
+
+    #case 4
     #example: \n:*::Certainly https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json&section=7
     mixed_indent_re = "(?P<before>\n:)\*(?P<after>:+)"
     text = re.sub(mixed_indent_re, "\g<before>\g<after>",text)
 
-    # case 2
+    # case 6
     start = re.compile('<(div|small).*?>', re.DOTALL)
     end = re.compile('</(div|small).*?>', re.DOTALL)
     template = re.compile('<!--.*?-->', re.DOTALL)
     for target in [start, end, template]:
         text = re.sub(target, '', text)
 
-    # case 3
+    # case 7
     text = text.replace("(UTC)}}", "(UTC)}}\n")
 
-    # case 4
+    # case 8
     text = text.replace("&nbsp;", " ")
     # <span style=\"border:1px solid #329691;background:#228B22;\">'''[[User:Viridiscalculus|<font color=\"#FFCD00\">&nbsp;V</font>]][[User talk:Viridiscalculus|<font style=\"color:#FFCD00\">C&nbsp;</font>]]'''</span> 01:25, 4 January 2012 (UTC)
 
-    # case 5
+    # case 9
     text = text.replace("\n----\n|}", "")
     text = text.replace("\n  | title = \n  | title_bg = #C3C3C3\n  | title_fnt = #000\n ", "")
     text = text.replace(
@@ -124,25 +136,27 @@ def _clean_wiki_text(text):
         "");
     text = text.replace("\n|-\n|", "")
 
-    # case 6
+    # case 10
     unicode_re = re.compile('\\\\u[0-9a-z]{4}', re.UNICODE | re.IGNORECASE)
     text = re.sub(unicode_re, '', text)
 
-    #case 7
+    #case 11
     """
     Editors tend to put ':' infront of {{outdent}} for visualization but this breaks parsing properly.
     """
-    text = re.sub(_WRONG_OUTDENT_TEMP, "{{outdent}}\n", text)
+    # example url : https://en.wikipedia.org/wiki/Talk:No%C3%ABl_Coward/Archive_2#RfC:_Should_an_Infobox_be_added_to_the_page.3F
+    #:{{od}} causes to break the whole capitalization is important
+    _wrong_outdent_temp = re.compile(":+( )*{{(outdent|od|unindent).*?}}", re.I)
+    text = re.sub(_wrong_outdent_temp, "{{outdent}}\n", text)
 
-    #case 8
-    text = re.sub(_WHITESPACE_USER_RE, "\g<user>", text)
+    #case 12
+    _whitespace_user_re = re.compile(r"(\n)?(?P<user>\[\[\W*user.*?" + "(" + r'|'.join(su._TIMESTAMPS) + '))', re.I)
+    text = re.sub(_whitespace_user_re, "\g<user>", text)
 
-    #case 9
+    #case 13
     #example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
     text = text.replace("(UTC\n", "(UTC)\n")
 
-    #case 10
-    text = re.sub(_PRECEDING_COMMENT_RE, '\g<user> \g<user_talk> \g<time>', text)
 
     return text.strip()
 
