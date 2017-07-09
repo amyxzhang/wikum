@@ -93,21 +93,30 @@ def _clean_wiki_text(text):
     _user_re = "(\(?\[\[\W*user\W*:(.*?)\|[^\]]+\]\]\)?)"
     _user_talk_re = "(\(?\[\[\W*user[_ ]talk\W*:(.*?)\|[^\]]+\]\]\)?)"
     _user_contribs_re = "(\(?\[\[\W*Special:Contributions/(.*?)\|[^\]]+\]\]\)?)"
+    # need to divide (UTC) from time
+    # 01:52, 20 September 2013
+    _timestamp_re_0 = r"[0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}"
+    # 18:45 Mar 10, 2003
+    _timestamp_re_1 = r"[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}"
+    # 01:54:53, 2005-09-08
+    _timestamp_re_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}"
+    _timestamps = [_timestamp_re_1, _timestamp_re_1, _timestamp_re_2]
 
-    #case 1
-    whitespace_between_user_time_re = re.compile(r"((?P<user>("+ '|'.join([_user_re, _user_talk_re, _user_contribs_re ]) +"))( |\n)*(?P<time>("+r'|'.join(su._TIMESTAMPS)+")))", re.I)
-    text = re.sub( whitespace_between_user_time_re, '\g<user> \g<time>', text)
+    # case 13
+    # example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
+    text = text.replace("(UTC\n", "(UTC)\n")
 
-    #case 2
-    #get rid of user name's italics
-    #especially needed when the signature doesn't have timestamp: https://en.wikipedia.org/wiki/Wikipedia_talk:What_Wikipedia_is_not/Archive_49#RfC:_amendment_to_WP:NOTREPOSITORY
-    italics_user_re = re.compile(r"''(?P<user>\(?\[\[\W*(user\W*:|user[_ ]talk\W*:|Special:Contributions/)(.*?)\|[^\]]+\]\]\)?)''", re.I)
+    # case 2
+    # get rid of user name's italics
+    # especially needed when the signature doesn't have timestamp: https://en.wikipedia.org/wiki/Wikipedia_talk:What_Wikipedia_is_not/Archive_49#RfC:_amendment_to_WP:NOTREPOSITORY
+    italics_user_re = re.compile(
+        r"''(?P<user>\(?\[\[\W*(user\W*:|user[_ ]talk\W*:|Special:Contributions/)(.*?)\|[^\]]+\]\]\)?)''", re.I)
     text = re.sub(italics_user_re, '\g<user>', text)
 
-    #case 3
-    #correct wrong timestamp
-    _timestamp_with_bracket = r"(?P<time>([0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}|[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}|[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}))( )*<.*?>( )*\(UTC\)"
-    text = re.sub(_timestamp_with_bracket, "\g<time> (UTC)", text)
+    wrong_sig_re = re.compile(r"((\n)*(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))( |\n|<.*?>)*"
+                                                "(?P<time>(" + r'|'.join(_timestamps) + "))( |\n)*(\(UTC\))?)", re.I)
+    text = re.sub(wrong_sig_re, '\g<user> \g<time> (UTC)', text)
+
 
     #case 4
     #example: \n:*::Certainly https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json&section=7
@@ -148,14 +157,6 @@ def _clean_wiki_text(text):
     #:{{od}} causes to break the whole capitalization is important
     _wrong_outdent_temp = re.compile(":+( )*{{(outdent|od|unindent).*?}}", re.I)
     text = re.sub(_wrong_outdent_temp, "{{outdent}}\n", text)
-
-    #case 12
-    _whitespace_user_re = re.compile(r"(\n)?(?P<user>\[\[\W*user.*?" + "(" + r'|'.join(su._TIMESTAMPS) + '))', re.I)
-    text = re.sub(_whitespace_user_re, "\g<user>", text)
-
-    #case 13
-    #example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
-    text = text.replace("(UTC\n", "(UTC)\n")
 
 
     return text.strip()
