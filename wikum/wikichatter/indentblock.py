@@ -3,7 +3,6 @@ from . import signatureutils as su
 import mwparserfromhell as mwp
 import re
 
-_FILE_PAT = re.compile(ur'\[\[File:.*?\]\]')
 
 # Unclean code
 def generate_indentblock_list(wcode):
@@ -26,7 +25,8 @@ def generate_indentblock_list(wcode):
                     if local_indent == 1 and str(line)[0] == ':' and old_continuation:
                         continuation_indent = old_indent
                         continues = True
-                    elif re.search(_FILE_PAT, str(line)):
+                    #need to ignore file format and table format
+                    elif re.match(re.compile(ur'({{.*}}|<.*?>.*</.*?>)|\[\[File:.*?\]\]', re.DOTALL|re.I), str(line)):
                         local_indent = old_indent
                         continues = True
                     else:
