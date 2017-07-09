@@ -1,7 +1,7 @@
 from . import signatureutils as su
 from . import indentutils as wiu
 from .error import Error
-
+import re
 
 def identify_comments_linear_merge(text_blocks):
     working_comment = None
@@ -79,7 +79,9 @@ class Comment(object):
 
     @property
     def level(self):
-        levels = [b.indent for b in self._text_blocks if str(b.text).strip() != '']
+        # need to ignore file format and table format
+        levels = [b.indent for b in self._text_blocks if
+                  str(b.text).strip() != '' and not re.match(re.compile(ur'({{.*}}|<.*?>.*</.*?>)|\[\[File:.*?\]\]', re.DOTALL|re.I), str(b.text).strip())]
         if len(levels) > 0:
             return min(levels)
         return 0
