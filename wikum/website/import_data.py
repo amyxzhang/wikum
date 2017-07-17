@@ -88,8 +88,7 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
-
-def _clean_wiki_text(text):
+def _correct_sig(text):
     _user_re = "(\(?\[\[\W*user\W*:(.*?)\|[^\]]+\]\]\)?)"
     _user_talk_re = "(\(?\[\[\W*user[_ ]talk\W*:(.*?)\|[^\]]+\]\]\)?)"
     _user_contribs_re = "(\(?\[\[\W*Special:Contributions/(.*?)\|[^\]]+\]\]\)?)"
@@ -100,9 +99,9 @@ def _clean_wiki_text(text):
     _timestamp_re_1 = r"[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}"
     # 01:54:53, 2005-09-08
     _timestamp_re_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}"
-    _timestamps = [_timestamp_re_1, _timestamp_re_1, _timestamp_re_2]
+    _timestamps = [_timestamp_re_0, _timestamp_re_1, _timestamp_re_2]
 
-    # case 13
+    # case 1
     # example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
     text = text.replace("(UTC\n", "(UTC)\n")
 
@@ -110,34 +109,37 @@ def _clean_wiki_text(text):
     # get rid of user name's italics
     # especially needed when the signature doesn't have timestamp: https://en.wikipedia.org/wiki/Wikipedia_talk:What_Wikipedia_is_not/Archive_49#RfC:_amendment_to_WP:NOTREPOSITORY
     italics_user_re = re.compile(
-        r"''(?P<user>\(?\[\[\W*(user\W*:|user[_ ]talk\W*:|Special:Contributions/)(.*?)\|[^\]]+\]\]\)?)''", re.I)
+        r"'+<.*?>(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))<.*?>'+", re.I)
     text = re.sub(italics_user_re, '\g<user>', text)
 
-    wrong_sig_re = re.compile(r"((\n)*(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))( |\n|<.*?>)*"
-                                                "(?P<time>(" + r'|'.join(_timestamps) + "))( |\n)*(\(UTC\))?)", re.I)
+    wrong_sig_re = re.compile(
+        r"((\n)*(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))( |\n|<.*?>)*"
+                                                                                       "(?P<time>(" + r'|'.join(
+            _timestamps) + "))( |\n)*(\(UTC\))?)", re.I)
     text = re.sub(wrong_sig_re, '\g<user> \g<time> (UTC)', text)
+    text = text.replace("(UTC)}}", "(UTC)}}\n")
+    return text
 
-
-    #case 4
+def _clean_wiki_text(text):
+    # case 1: correct wrong signature formats
+    text = _correct_sig(text)
+    # case 2
     #example: \n:*::Certainly https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json&section=7
     mixed_indent_re = "(?P<before>\n:)\*(?P<after>:+)"
     text = re.sub(mixed_indent_re, "\g<before>\g<after>",text)
 
-    # case 6
+    # case 3
     start = re.compile('<(div|small).*?>', re.DOTALL)
     end = re.compile('</(div|small).*?>', re.DOTALL)
     template = re.compile('<!--.*?-->', re.DOTALL)
     for target in [start, end, template]:
         text = re.sub(target, '', text)
 
-    # case 7
-    text = text.replace("(UTC)}}", "(UTC)}}\n")
-
-    # case 8
+    # case 4
     text = text.replace("&nbsp;", " ")
     # <span style=\"border:1px solid #329691;background:#228B22;\">'''[[User:Viridiscalculus|<font color=\"#FFCD00\">&nbsp;V</font>]][[User talk:Viridiscalculus|<font style=\"color:#FFCD00\">C&nbsp;</font>]]'''</span> 01:25, 4 January 2012 (UTC)
 
-    # case 9
+    # case 5
     text = text.replace("\n----\n|}", "")
     text = text.replace("\n  | title = \n  | title_bg = #C3C3C3\n  | title_fnt = #000\n ", "")
     text = text.replace(
@@ -145,11 +147,11 @@ def _clean_wiki_text(text):
         "");
     text = text.replace("\n|-\n|", "")
 
-    # case 10
+    # case 6
     unicode_re = re.compile('\\\\u[0-9a-z]{4}', re.UNICODE | re.IGNORECASE)
     text = re.sub(unicode_re, '', text)
 
-    #case 11
+    #case 7
     """
     Editors tend to put ':' infront of {{outdent}} for visualization but this breaks parsing properly.
     """
@@ -157,8 +159,6 @@ def _clean_wiki_text(text):
     #:{{od}} causes to break the whole capitalization is important
     _wrong_outdent_temp = re.compile(":+( )*{{(outdent|od|unindent).*?}}", re.I)
     text = re.sub(_wrong_outdent_temp, "{{outdent}}\n", text)
-
-
     return text.strip()
 
 def get_wiki_talk_posts(article, current_task, total_count):
