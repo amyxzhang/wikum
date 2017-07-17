@@ -199,9 +199,14 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
             comment_wikum = comments[0]
         else:
             time = None
-            if comment.get('time_stamp'):
-                time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
-
+            timestamp = comment.get('time_stamp')
+            if timestamp:
+                formats = ['%H:%M, %d %B %Y (%Z)', '%H:%M, %d %b %Y (%Z)', '%H:%M %b %d, %Y (%Z)']
+                for date_format in formats:
+                    try:
+                        time = datetime.datetime.strptime(timestamp, date_format)
+                    except ValueError:
+                        pass
             cosigners = [sign['author'] for sign in comment['cosigners']]
             comment_cosigners = import_wiki_authors(cosigners, article)
 
