@@ -88,11 +88,12 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
-def _correct_sig(text):
+def _correct_signature_before_parse(text):
     _user_re = "(\(?\[\[\W*user\W*:(.*?)\|[^\]]+\]\]\)?)"
     _user_talk_re = "(\(?\[\[\W*user[_ ]talk\W*:(.*?)\|[^\]]+\]\]\)?)"
     _user_contribs_re = "(\(?\[\[\W*Special:Contributions/(.*?)\|[^\]]+\]\]\)?)"
-    # need to divide (UTC) from time
+
+    # different format from the ones in signatureutils.py. need to divide (UTC) from time
     # 01:52, 20 September 2013
     _timestamp_re_0 = r"[0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}"
     # 18:45 Mar 10, 2003
@@ -105,26 +106,27 @@ def _correct_sig(text):
     # example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
     text = text.replace("(UTC\n", "(UTC)\n")
 
-    # case 2
-    # get rid of user name's italics
+    # case 2: get rid of user name's italics
     # especially needed when the signature doesn't have timestamp: https://en.wikipedia.org/wiki/Wikipedia_talk:What_Wikipedia_is_not/Archive_49#RfC:_amendment_to_WP:NOTREPOSITORY
-    italics_user_re = re.compile(
-        r"'+<.*?>(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))<.*?>'+", re.I)
+    italics_user_re = re.compile(r"'+<.*?>(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))<.*?>'+", re.I)
     text = re.sub(italics_user_re, '\g<user>', text)
 
+    # case 3: when there are space(s) or new line(s) between user name and time or time and (UTC)
     wrong_sig_re = re.compile(
         r"((\n)*(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))( |\n|<.*?>)*"
-                                                                                       "(?P<time>(" + r'|'.join(
-            _timestamps) + "))( |\n)*(\(UTC\))?)", re.I)
+                                                                                       "(?P<time>(" + r'|'.join(_timestamps) + "))( |\n)*(\(UTC\))?)", re.I)
     text = re.sub(wrong_sig_re, '\g<user> \g<time> (UTC)', text)
+
+    # case 4
     text = text.replace("(UTC)}}", "(UTC)}}\n")
     return text
 
 def _clean_wiki_text(text):
     # case 1: correct wrong signature formats
-    text = _correct_sig(text)
-    # case 2
-    #example: \n:*::Certainly https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json&section=7
+    text = _correct_signature_before_parse(text)
+
+    # case 2 : when ":" and "*" are mixed together, such as in "\n:*::"
+    # example: https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json
     mixed_indent_re = "(?P<before>\n:)\*(?P<after>:+)"
     text = re.sub(mixed_indent_re, "\g<before>\g<after>",text)
 
@@ -135,30 +137,18 @@ def _clean_wiki_text(text):
     for target in [start, end, template]:
         text = re.sub(target, '', text)
 
-    # case 4
+    # case 4: "&nbsp;" breaks parsing
+    # example: <span style=\"border:1px solid #329691;background:#228B22;\">'''[[User:Viridiscalculus|<font color=\"#FFCD00\">&nbsp;V</font>]][[User talk:Viridiscalculus|<font style=\"color:#FFCD00\">C&nbsp;</font>]]'''</span> 01:25, 4 January 2012 (UTC)
     text = text.replace("&nbsp;", " ")
-    # <span style=\"border:1px solid #329691;background:#228B22;\">'''[[User:Viridiscalculus|<font color=\"#FFCD00\">&nbsp;V</font>]][[User talk:Viridiscalculus|<font style=\"color:#FFCD00\">C&nbsp;</font>]]'''</span> 01:25, 4 January 2012 (UTC)
 
     # case 5
-    text = text.replace("\n----\n|}", "")
-    text = text.replace("\n  | title = \n  | title_bg = #C3C3C3\n  | title_fnt = #000\n ", "")
-    text = text.replace(
-        "{| class=\"navbox collapsible collapsed\" style=\"text-align: left; border: 0px; margin-top: 0.2em;\"\n|-\n! style=\"background-color: #ddffdd;\" | ",
-        "");
-    text = text.replace("\n|-\n|", "")
-
-    # case 6
     unicode_re = re.compile('\\\\u[0-9a-z]{4}', re.UNICODE | re.IGNORECASE)
     text = re.sub(unicode_re, '', text)
 
-    #case 7
-    """
-    Editors tend to put ':' infront of {{outdent}} for visualization but this breaks parsing properly.
-    """
+    # case 6: Editors tend to put ':' infront of {{outdent}} for visualization but this breaks parsing properly.
     # example url : https://en.wikipedia.org/wiki/Talk:No%C3%ABl_Coward/Archive_2#RfC:_Should_an_Infobox_be_added_to_the_page.3F
-    #:{{od}} causes to break the whole capitalization is important
-    _wrong_outdent_temp = re.compile(":+( )*{{(outdent|od|unindent).*?}}", re.I)
-    text = re.sub(_wrong_outdent_temp, "{{outdent}}\n", text)
+    wrong_outdent_temp = re.compile(":+( )*{{(outdent|od|unindent).*?}}", re.I)
+    text = re.sub(wrong_outdent_temp, "{{outdent}}\n", text)
     return text.strip()
 
 def get_wiki_talk_posts(article, current_task, total_count):
