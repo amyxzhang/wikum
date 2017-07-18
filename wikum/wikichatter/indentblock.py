@@ -45,9 +45,11 @@ def generate_indentblock_list(wcode):
 
     return text_blocks
 
+  
 def _contains_timestamp(str):
     return _matches_regex(str, su.TIMESTAMP_RE)
 
+  
 def _contains_user_sig(str):
     if (_is_usertalk(str) or _is_userpage(str) or _is_usercontribs(str)):
         return True

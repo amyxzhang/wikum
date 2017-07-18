@@ -36,6 +36,7 @@ def index(request):
     for art in a:
         art.url = re.sub('#', '%23', art.url)
         art.url = re.sub('&', '%26', art.url)
+
     resp = {'page': 'index',
             'articles': a,
             'sort': sort}
