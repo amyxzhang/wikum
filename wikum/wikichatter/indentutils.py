@@ -2,7 +2,7 @@ import mwparserfromhell as mwp
 import time
 import re
 
-_INDENT_TEMPLATE_RE = re.compile(r'|'.join(["out(dent)?", "un(in)?dent", "od", "anchor\|Lbelow"]), re.I)
+_OUTDENT_TEMPLATE_RE = re.compile(r'|'.join(["out(dent)?", "un(in)?dent", "od", "anchor\|Lbelow"]), re.I)
 
 # Unclean code
 def extract_indent_blocks(wikicode):
@@ -124,7 +124,7 @@ def has_continuation_indent(wikicode):
     if len(wikicode.nodes) > 0:
         start_node = wikicode.nodes[0]
         if type(start_node) is mwp.nodes.template.Template:
-            return re.search(_INDENT_TEMPLATE_RE, str(start_node).lower())
+            return re.search(_OUTDENT_TEMPLATE_RE, str(start_node).lower())
         if type(start_node) is mwp.nodes.template.Text:
             return "outdent" in str(start_node).lower() or "undent" in str(start_node).lower()
     return False
