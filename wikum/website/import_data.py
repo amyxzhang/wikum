@@ -73,7 +73,6 @@ def get_article(url, source, num):
 
             link = urllib2.unquote(url)
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
-
     else:
         article = article[num]
         
