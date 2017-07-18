@@ -1,7 +1,7 @@
 import re
 import mwparserfromhell as mwp
 from .error import Error
-
+import logging
 
 class SignatureUtilsError(Error):
     pass
@@ -188,8 +188,13 @@ def _extract_rightmost_user(wcode):
     func_picker.extend([(l[0], l[1], _extract_usercontribs_user) for l in uc_locs])
 
     if len(func_picker) == 0:
-        # able to return None because Wikum's code handles it in import_data.py
-        # raise NoUsernameError(text)
+        # Able to return None because Wikum's code handles it in import_data.py
+        # Throwing error prevents whole parsing, therefore print log statement instead.
+        logging.basicConfig(level=logging.INFO,
+                           format='[ %(asctime)s %(levelname)-8s ]\n%(message)s',
+                           datefmt='%a, %d %b %Y %H:%M:%S')
+        logging.warning("Did not find user name in comment. This could be due to problem in parsing."
+                        "\n============== Comment with no user name ==============\n" + text)
         return None
     (start, end, extractor) = max(func_picker, key=lambda e: e[1])
     user = extractor(text[start:end])
