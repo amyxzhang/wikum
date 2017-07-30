@@ -5,11 +5,15 @@ import json
 import praw
 import datetime
 import re
+import wikichatter.signatureutils as su
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
 COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&thread=%s'
+
+_CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
+_CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
 
 def get_article(url, source, num):
     article = Article.objects.filter(url=url)
@@ -55,16 +59,20 @@ def get_article(url, source, num):
 
             id = str(result['parse']['pageid'])
             section_title = None
+            section_index = None
+
             if section:
                 for s in result['parse']['sections']:
                     if s['anchor'] == section:
                         id = str(id) + '#' + str(s['index'])
                         section_title = s['line']
+                        section_index = s['index']
             title = result['parse']['title']
             if section_title:
                 title = title + ' - ' + section_title
+
             link = urllib2.unquote(url)
-        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
+        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
     else:
         article = article[num]
         
@@ -79,37 +87,152 @@ def get_source(url):
         return Source.objects.get(source_name="Wikipedia Talk Page")
     return None
 
+def _correct_signature_before_parse(text):
+    _user_re = "(\(?\[\[\W*user\W*:(.*?)\|[^\]]+\]\]\)?)"
+    _user_talk_re = "(\(?\[\[\W*user[_ ]talk\W*:(.*?)\|[^\]]+\]\]\)?)"
+    _user_contribs_re = "(\(?\[\[\W*Special:Contributions/(.*?)\|[^\]]+\]\]\)?)"
+
+    # different format from the ones in signatureutils.py. need to divide (UTC) from time
+    # 01:52, 20 September 2013
+    _timestamp_re_0 = r"[0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}"
+    # 18:45 Mar 10, 2003
+    _timestamp_re_1 = r"[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}"
+    # 01:54:53, 2005-09-08
+    _timestamp_re_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}"
+    _timestamps = [_timestamp_re_0, _timestamp_re_1, _timestamp_re_2]
+
+    # case 1
+    # example url: https://en.wikipedia.org/wiki/Talk:Race_and_genetics#RFC
+    text = text.replace("(UTC\n", "(UTC)\n")
+
+    # case 2: get rid of user name's italics
+    # especially needed when the signature doesn't have timestamp: https://en.wikipedia.org/wiki/Wikipedia_talk:What_Wikipedia_is_not/Archive_49#RfC:_amendment_to_WP:NOTREPOSITORY
+    italics_user_re = re.compile(r"'+<.*?>(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))<.*?>'+", re.I)
+    text = re.sub(italics_user_re, '\g<user>', text)
+
+    # case 3: when there are space(s) or new line(s) between user name and time or time and (UTC)
+    wrong_sig_re = re.compile(
+        r"((\n)*(?P<user>(" + '|'.join([_user_re, _user_talk_re, _user_contribs_re]) + "))( |\n|<.*?>)*"
+                                                                                       "(?P<time>(" + r'|'.join(_timestamps) + "))( |\n)*(\(UTC\))?)", re.I)
+    text = re.sub(wrong_sig_re, '\g<user> \g<time> (UTC)', text)
+
+    # case 4
+    text = text.replace("(UTC)}}", "(UTC)}}\n")
+    return text
+
+def _clean_wiki_text(text):
+    # case 1: correct wrong signature formats
+    text = _correct_signature_before_parse(text)
+
+    # case 2 : when ":" and "*" are mixed together, such as in "\n:*::"
+    # example: https://en.wikipedia.org/w/api.php?action=query&titles=Talk:God_the_Son&prop=revisions&rvprop=content&format=json
+    mixed_indent_re = "(?P<before>\n:)\*(?P<after>:+)"
+    text = re.sub(mixed_indent_re, "\g<before>\g<after>",text)
+
+    # case 3
+    start = re.compile('<(div|small).*?>', re.DOTALL)
+    end = re.compile('</(div|small).*?>', re.DOTALL)
+    template = re.compile('<!--.*?-->', re.DOTALL)
+    for target in [start, end, template]:
+        text = re.sub(target, '', text)
+
+    # case 4: "&nbsp;" breaks parsing
+    # example: <span style=\"border:1px solid #329691;background:#228B22;\">'''[[User:Viridiscalculus|<font color=\"#FFCD00\">&nbsp;V</font>]][[User talk:Viridiscalculus|<font style=\"color:#FFCD00\">C&nbsp;</font>]]'''</span> 01:25, 4 January 2012 (UTC)
+    text = text.replace("&nbsp;", " ")
+
+    # case 5
+    unicode_re = re.compile('\\\\u[0-9a-z]{4}', re.UNICODE | re.IGNORECASE)
+    text = re.sub(unicode_re, '', text)
+
+    # case 6: Editors tend to put ':' infront of {{outdent}} for visualization but this breaks parsing properly.
+    # example url : https://en.wikipedia.org/wiki/Talk:No%C3%ABl_Coward/Archive_2#RfC:_Should_an_Infobox_be_added_to_the_page.3F
+    wrong_outdent_temp = re.compile(":+( )*{{(outdent|od|unindent).*?}}", re.I)
+    text = re.sub(wrong_outdent_temp, "{{outdent}}\n", text)
+    return text.strip()
+
 def get_wiki_talk_posts(article, current_task, total_count):
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
     site = wiki.Wiki(domain + '/w/api.php')
     
     title = article.title.split(' - ')
-    
+    # "section_index" is the index number of the section within the page.
+    # There are some cases when wikicode does not parse a section as a section when given a "whole page".
+    # To prevent this, we first grab only the section(not the entire page) using "section_index" and parse it.
+    section_index = article.section_index
+
     params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
+    if section_index:
+        params['rvsection'] = section_index
+
     request = api.APIRequest(site, params)
     result = request.query()
     id = article.disqus_id.split('#')[0]
     text = result['query']['pages'][id]['revisions'][0]['*']
+
+    def get_section(sections, section_title):
+        for s in sections:
+            heading_title = s.get('heading', '')
+            heading_title = re.sub(r'\]', '', heading_title)
+            heading_title = re.sub(r'\[', '', heading_title)
+            heading_title = re.sub('<[^<]+?>', '', heading_title)
+            if heading_title.strip() == str(section_title).strip():
+                return s
+
+    def find_outer_section(title, text, id):
+        # Check if closing comment is in here, if not look for the outer section.
+        # If there is an outer section, choose it only if it has a closing statement,
+        if len(title)>1:
+            section_title = title[1].encode('ascii', 'ignore')
+            params = {'action': 'query', 'titles': title[0], 'prop': 'revisions', 'rvprop': 'content', 'format': 'json', 'redirects': 'yes'}
+            result = api.APIRequest(site, params).query()
+            whole_text = _clean_wiki_text(result['query']['pages'][id]['revisions'][0]['*'])
+            # whole_text = result['query']['pages'][id]['revisions'][0]['*']
+
+            import wikichatter as wc
+            parsed_whole_text = wc.parse(whole_text.encode('ascii','ignore'))
+            sections = parsed_whole_text['sections']
+
+            for outer_section in sections:
+                found_subection = get_section(outer_section['subsections'], section_title)
+                if found_subection:
+                    outer_comments = outer_section['comments']
+                    for comment in outer_comments:
+                        comment_text = '\n'.join(comment['text_blocks'])
+                        if re.search(_CLOSE_COMMENT_RE, comment_text):
+                            params = {'action': 'parse', 'prop': 'sections', 'page': title[0], 'redirects': 'yes'}
+                            result = api.APIRequest(site, params).query()
+                            for s in result['parse']['sections']:
+                                if s['line'] == outer_section.get('heading').strip():
+                                    section_index = s['index']
+                                    params = {'action': 'query', 'titles': title[0], 'prop': 'revisions',
+                                               'rvprop': 'content', 'rvsection': section_index, 'format': 'json',
+                                              'redirects': 'yes'}
+                                    result = api.APIRequest(site, params).query()
+                                    final_section_text = result['query']['pages'][id]['revisions'][0]['*']
+                                    return final_section_text
+        return text
+
+    # If there isn't a closing statement, it means that the RfC could exist as a subsection of another section, with the closing statement in the parent section.
+    # Example: https://en.wikipedia.org/wiki/Talk:Alexz_Johnson#Lead_image
+    if not re.search(_CLOSE_COMMENT_RE, text):
+        text = find_outer_section(title, text, id)
+
+    text = _clean_wiki_text(text)
+
     import wikichatter as wc
     parsed_text = wc.parse(text.encode('ascii','ignore'))
     
     start_sections = parsed_text['sections']
-    
     if len(title) > 1:
-        section_title = title[1]
+        section_title = title[1].encode('ascii','ignore')
         sections = parsed_text['sections']
-        for s in sections:
-            heading_title = s.get('heading','')
-            heading_title = re.sub(r'\]','', heading_title)
-            heading_title = re.sub(r'\[','', heading_title)
-            heading_title = re.sub('<[^<]+?>', '', heading_title)
-            if heading_title.strip() == str(section_title).strip():
-                start_sections = s['subsections']
-                start_comments = s['comments']
-    
-                total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
-    
+        found_section = get_section(sections, section_title)
+        if found_section:
+            start_sections = found_section['subsections']
+            start_comments = found_section['comments']
+            total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
+
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
@@ -151,7 +274,14 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
-    authors_list = '|'.join(authors)
+    found_authors = []
+    anonymous_exist = False
+    for author in authors:
+        if author:
+            found_authors.append(author)
+        else:
+            anonymous_exist = True
+    authors_list = '|'.join(found_authors)
     
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
@@ -180,7 +310,10 @@ def import_wiki_authors(authors, article):
         except Exception:
             comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
         comment_authors.append(comment_author)
-        
+
+    if anonymous_exist:
+        comment_authors.append(CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True))
+
     return comment_authors
     
     

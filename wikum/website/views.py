@@ -126,6 +126,7 @@ def summary_page(request):
     article = get_article(url, source, num)
     
     posts = get_posts(article)
+
     article.url = re.sub('&', '%26', article.url)
     article.url = re.sub('#', '%23', article.url)
 

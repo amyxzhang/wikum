@@ -25,6 +25,10 @@ def generate_indentblock_list(wcode):
                     if local_indent == 1 and str(line)[0] == ':' and old_continuation:
                         continuation_indent = old_indent
                         continues = True
+                    #need to ignore file format and table format
+                    elif re.match(re.compile(ur'({{.*}}|<.*?>.*</.*?>)|\[\[File:.*?\]\]', re.DOTALL|re.I), str(line)):
+                        local_indent = old_indent
+                        continues = True
                     else:
                         continuation_indent = 0
             elif continues:
@@ -38,14 +42,14 @@ def generate_indentblock_list(wcode):
             old_indent = indent
             old_continuation = continues
             old_contains_sig = _contains_user_sig(line) and _contains_timestamp(line)
-                
+
     return text_blocks
 
-
+  
 def _contains_timestamp(str):
     return _matches_regex(str, su.TIMESTAMP_RE)
 
-
+  
 def _contains_user_sig(str):
     if (_is_usertalk(str) or _is_userpage(str) or _is_usercontribs(str)):
         return True
@@ -67,8 +71,6 @@ def _is_usercontribs(str):
 def _matches_regex(node, regex):
     text = str(node)
     return re.search(regex, text) is not None
-
-
 
 
 def _divide_wikicode_into_lines(wcode):

@@ -18,13 +18,13 @@ class NoTimestampError(SignatureUtilsError):
 class NoSignature(SignatureUtilsError):
     pass
 
-
 # 01:52, 20 September 2013 (UTC)
-_TIMESTAMP_RE_0 = r"[0-9]{2}:[0-9]{2}, [0-9]{1,2} [^\W\d]+ [0-9]{4} \(UTC\)"
+_TIMESTAMP_RE_0 = r"[0-9]{2}:[0-9]{2},? [0-9]{1,2} [^\W\d]+ [0-9]{4}( \(UTC\))?"
 # 18:45 Mar 10, 2003 (UTC)
-_TIMESTAMP_RE_1 = r"[0-9]{2}:[0-9]{2} [^\W\d]+ [0-9]{1,2}, [0-9]{4} \(UTC\)"
+_TIMESTAMP_RE_1 = r"[0-9]{2}:[0-9]{2},? [^\W\d]+ [0-9]{1,2},? [0-9]{4}( \(UTC\))?"
 # 01:54:53, 2005-09-08 (UTC)
-_TIMESTAMP_RE_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2}, [0-9]{4}-[0-9]{2}-[0-9]{2} \(UTC\)"
+_TIMESTAMP_RE_2 = r"[0-9]{2}:[0-9]{2}:[0-9]{2},? [0-9]{4}-[0-9]{2}-[0-9]{2}( \(UTC\))?"
+
 _TIMESTAMPS = [_TIMESTAMP_RE_0, _TIMESTAMP_RE_1, _TIMESTAMP_RE_2]
 TIMESTAMP_RE = re.compile(r'|'.join(_TIMESTAMPS))
 
@@ -44,6 +44,12 @@ def extract_signatures(wcode):
     """
     nodes = wcode.nodes
     signature_list = []
+
+    # check and add signatures that only contain user names, without timestamps
+    user_without_timestamp = _extract_user_without_timestamp(wcode)
+    if user_without_timestamp:
+        signature_list.append({'user': user_without_timestamp, 'timestamp': None})
+
     signature_loc = _find_signatures_in_nodes(nodes)
     for (start, end) in signature_loc:
         sig_code = mwp.wikicode.Wikicode(nodes[start:end + 1])
@@ -188,7 +194,9 @@ def _extract_rightmost_user(wcode):
     func_picker.extend([(l[0], l[1], _extract_usercontribs_user) for l in uc_locs])
 
     if len(func_picker) == 0:
-        raise NoUsernameError(text)
+        # able to return None because Wikum's code handles it in import_data.py
+        # raise NoUsernameError(text)
+        return None
     (start, end, extractor) = max(func_picker, key=lambda e: e[1])
     user = extractor(text[start:end])
     return user
@@ -220,10 +228,10 @@ def _extract_usercontribs_user(text):
 
 def _extract_timestamp_from_sig_code(sig_code):
     text = str(sig_code)
-    result = re.findall(TIMESTAMP_RE, text)
-    if len(result) == 0:
+    result = re.search(TIMESTAMP_RE, text)
+    if not result:
         raise NoTimestampError(text)
-    return result[0]
+    return result.group(0)
 
 
 def _clean_extracted_username(raw_username):
@@ -285,3 +293,24 @@ def _find_usercontribs_location(text):
 def _find_regex_locations(regex, text):
     regex_iter = regex.finditer(text)
     return [m.span() for m in regex_iter]
+
+
+def _extract_user_without_timestamp(node):
+    """
+    Grabs signatures without timestamps, with only user names.
+    There are special templates to find
+    """
+    user_without_timestamp_re = re.compile(r"(?P<user>\(?\[\[\W*user\W*:(.*?)\|[^\]]+\]\]\)?)( has made \[\[Wikipedia:Single-purpose account\|few or no other edits\]\] outside this topic)?(</.*?>)*\n", re.I)
+    user_talk_without_timestamp_re = re.compile(
+        r"(?P<user_talk>\(?\[\[\W*user[_ ]talk\W*:(.*?)\|[^\]]+\]\]\)?)( )*(</.*?>)*\n", re.I)
+    user_contribs_without_timestamp_re = re.compile(
+        r"(?P<user_contribs>\(?\[\[\W*Special:Contributions/(.*?)\|[^\]]+\]\]\)?)( )*(</.*?>)*\n", re.I)
+    user_without_timestamp_patterns = {'user': user_without_timestamp_re, 'user_talk': user_talk_without_timestamp_re,
+                                       'user_contribs': user_contribs_without_timestamp_re}
+    text = str(node)
+    for name, pattern in user_without_timestamp_patterns.items():
+        match = re.search(pattern, text)
+        if match:
+            user = _extract_rightmost_user(match.group(name))
+            if user:
+                return user
