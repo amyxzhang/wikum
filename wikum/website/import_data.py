@@ -51,7 +51,7 @@ def get_article(url, source, num):
             
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            page = urllib2.unquote(str(wiki_sub[0]) + ':' + str(wiki_page))
+            page = urllib2.unquote(str(wiki_sub[0]) + ':' + wiki_page.encode('ascii', 'ignore'))
             params = {'action': 'parse', 'prop': 'sections','page': page ,'redirects':'yes' }
             request = api.APIRequest(site, params)
             result = request.query()
@@ -69,8 +69,9 @@ def get_article(url, source, num):
             title = result['parse']['title']
             if section_title:
                 title = title + ' - ' + section_title
-            link = url
-        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, section_index=section_index)
+
+            link = urllib2.unquote(url)
+        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
         article = article[num]
         
@@ -206,7 +207,14 @@ def import_wiki_sessions(sections, article, reply_to, current_task, total_count)
     return total_count
     
 def import_wiki_authors(authors, article):
-    authors_list = '|'.join(authors)
+    found_authors = []
+    anonymous_exist = False
+    for author in authors:
+        if author:
+            found_authors.append(author)
+        else:
+            anonymous_exist = True
+    authors_list = '|'.join(found_authors)
     
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
@@ -235,7 +243,10 @@ def import_wiki_authors(authors, article):
         except Exception:
             comment_author = CommentAuthor.objects.create(username=user['name'], is_wikipedia=True)
         comment_authors.append(comment_author)
-        
+
+    if anonymous_exist:
+        comment_authors.append(CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True))
+
     return comment_authors
     
     
@@ -254,9 +265,14 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
             comment_wikum = comments[0]
         else:
             time = None
-            if comment.get('time_stamp'):
-                time = datetime.datetime.strptime(comment['time_stamp'], '%H:%M, %d %B %Y (%Z)')
-
+            timestamp = comment.get('time_stamp')
+            if timestamp:
+                formats = ['%H:%M, %d %B %Y (%Z)', '%H:%M, %d %b %Y (%Z)', '%H:%M %b %d, %Y (%Z)']
+                for date_format in formats:
+                    try:
+                        time = datetime.datetime.strptime(timestamp, date_format)
+                    except ValueError:
+                        pass
             cosigners = [sign['author'] for sign in comment['cosigners']]
             comment_cosigners = import_wiki_authors(cosigners, article)
 
