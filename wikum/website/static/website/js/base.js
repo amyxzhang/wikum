@@ -2786,7 +2786,7 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (!d.replace_node) {
-		    text += "<P>"
+		    text += '<P>'
             text += '<a onclick="evaluate_comment_summary(' + d.id +',' + true + ')"><img id="summary_likes_' + d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a> <span id="summary_like_num_'+ d.id +'">' +d.summary_likes + '</span> '
             text += '<a onclick="evaluate_comment_summary(' + d.id +',' + false + ')"><img id="summary_dislikes_' + d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a> <span id="summary_dislike_num_'+ d.id +'">' +d.summary_dislikes + '</span> '
 			text += '<a onclick="toggle_meta_comments(' + d.id + ');">Comments about summary</a> | ';
@@ -2809,8 +2809,8 @@ function construct_comment(d) {
 
 			}
 			text += '<div id="meta_comments_' + d.id + '" style="display: none;" class="meta_comments">' + '</div>';
-			text += '</footer>'
-		}
+			text += '</footer>';
+
 		}
 	}
 
