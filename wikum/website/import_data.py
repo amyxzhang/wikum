@@ -1,4 +1,4 @@
-from website.models import Article, Source, CommentAuthor, Comment, History, Tag
+from website.models import Article, Source, CommentAuthor, Comment, History, Tag, MetaComment
 from wikum.settings import DISQUS_API_KEY
 import urllib2
 import json

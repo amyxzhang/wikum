@@ -171,6 +171,10 @@ h1 > a {
 }
 */
 
+.thumbs{
+    height: 16px;
+}
+
 ul.gallery {
     margin: 2px;
     padding: 2px;

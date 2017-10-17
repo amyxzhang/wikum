@@ -1087,6 +1087,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 x0: lowest_d.x0,
 							 y: lowest_d.y,
 							 y0: lowest_d.y0,
+							 summary_likes: res.summary_likes,
+							 summary_dislikes: res.summary_dislikes
 							};
 							
 					if (article_url.indexOf('wikipedia.org') !== -1) {
@@ -1186,6 +1188,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 x0: d.x0,
 							 y: d.y,
 							 y0: d.y0,
+							 summary_likes: res.summary_likes,
+							 summary_dislikes: res.summary_dislikes
 							};
 						
 						if (article_url.indexOf('wikipedia.org') !== -1) {
@@ -2782,6 +2786,10 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (!d.replace_node) {
+		    text += "<P>"
+            text += '<a onclick="evaluate_comment_summary(' + d.id +',' + true + ')"><img id="summary_likes_' + d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a> <span id="summary_like_num_'+ d.id +'">' +d.summary_likes + '</span> '
+            text += '<a onclick="evaluate_comment_summary(' + d.id +',' + false + ')"><img id="summary_dislikes_' + d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a> <span id="summary_dislike_num_'+ d.id +'">' +d.summary_dislikes + '</span> '
+			text += '<a onclick="toggle_meta_comments(' + d.id + ');">Comments about summary</a> | ';
 			text += '<P><a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
@@ -2789,13 +2797,20 @@ function construct_comment(d) {
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
+		    text += '<footer>'
+            text += '<a onclick="evaluate_comment_summary(' + d.id + ',' + true + ')"><img id="summary_likes_' + d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a> <span id="summary_like_num_'+ d.id +'">' +d.summary_likes + '</span> '
+            text += '<a onclick="evaluate_comment_summary(' + d.id + ',' + false +')"><img id="summary_dislikes_' + d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a> <span id="summary_dislike_num_'+ d.id +'"s>' +d.summary_dislikes + '</span> '
+		    text += '<a onclick="toggle_meta_comments(' + d.id + ');">Comments about summary</a> | ';
+
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
-				text += `<footer>
-					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
+					text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
-					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
-				</footer>`;
+					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>`
+
 			}
+			text += '<div id="meta_comments_' + d.id + '" style="display: none;" class="meta_comments">' + '</div>';
+			text += '</footer>'
+		}
 		}
 	}
 
@@ -3564,3 +3579,33 @@ $(".summary-editor").on("input", function(evt) {
 
 	this.setCustomValidity(isValid? "" : "Summary is too long");
 })
+
+
+function evaluate_comment_summary(id, like) {
+    d = nodes_all[id-1];
+    var csrf = $('#csrf').text();
+    var data = {csrfmiddlewaretoken: csrf,
+                like: like,
+                id: d.d_id};
+
+    $.ajax({
+            type: 'POST',
+            url: '/evaluate_comment_summary',
+            data: data,
+            success: function() {
+                if(like){
+                    $("#summary_like_num_"+id).text(parseInt($("#summary_like_num_"+id).text()) + 1)
+                    nodes_all[id-1].summary_likes += 1
+                }else{
+                    $("#summary_dislike_num_"+id).text(parseInt($("#summary_dislike_num_"+id).text()) + 1)
+                    nodes_all[id-1].summary_dislikes += 1
+                }
+            },
+            error: function() {
+                error_noty();
+            }
+
+
+    })
+
+}

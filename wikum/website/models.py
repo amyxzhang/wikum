@@ -114,9 +114,22 @@ class Comment(models.Model):
     
     tags = models.ManyToManyField(Tag)
 
+    summary_likes = models.IntegerField(default=0)
+    summary_dislikes = models.IntegerField(default=0)
+
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)
-    
+
+class MetaComment(models.Model):
+    id = models.AutoField(primary_key=True)
+    article = models.ForeignKey('Article')
+    comment = models.ForeignKey('Comment')
+    user = models.ForeignKey(User, null=True)
+    datetime = models.DateTimeField(auto_now=True)
+    text = models.TextField()
+
+    def __unicode__(self):
+        return 'Comment about summary by %s on comment of %s' % (self.user, self.article.title)
     
 class CommentAuthor(models.Model):
     username = models.TextField(null=True)

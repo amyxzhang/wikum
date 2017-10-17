@@ -257,7 +257,9 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
-                  'tags': [(tag.text, tag.color) for tag in post.tags.all()]
+                  'tags': [(tag.text, tag.color) for tag in post.tags.all()],
+                  'summary_likes': post.summary_likes,
+                  'summary_dislikes': post.summary_dislikes
                   }
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
@@ -307,6 +309,8 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 num_subtree_children += num_subchildren
         else:
             v1 = json.loads(post.json_flatten)
+            v1['summary_likes'] = post.summary_likes
+            v1['summary_dislikes'] = post.summary_dislikes
         
         if post.hidden:
             hid_children.append(v1)
@@ -372,11 +376,16 @@ def summarize_comment(request):
                 res['bottom_summary'] = ''
             
             res['bottom_summary_wiki'] = bottom_summary
+            res['summary_likes'] = c.summary_likes
+            res['summary_dislikes'] = c.summary_dislikes
                 
             return JsonResponse(res)
         else:
             return JsonResponse({'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary})
+                                 'bottom_summary': bottom_summary,
+                                 'summary_likes': c.summary_likes,
+                                 'summary_dislikes': c.summary_dislikes
+                                 })
         
         
     except Exception, e:
@@ -476,12 +485,18 @@ def summarize_selected(request):
                 res['bottom_summary'] = ''
             
             res['bottom_summary_wiki'] = bottom_summary
+
+            res['summary_likes'] = new_comment.summary_likes,
+            res['summary_dislikes'] = new_comment.summary_dislikes
                 
             return JsonResponse(res)
         else:
             return JsonResponse({'d_id': new_comment.id,
                                  'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary})
+                                 'bottom_summary': bottom_summary,
+                                 'summary_likes': new_comment.summary_likes,
+                                 'summary_dislikes': new_comment.summary_dislikes
+                                 })
         
     except Exception, e:
         print e
@@ -615,12 +630,17 @@ def summarize_comments(request):
                 res['bottom_summary'] = ''
             
             res['bottom_summary_wiki'] = bottom_summary
+            res['summary_likes'] = new_comment.summary_likes,
+            res['summary_dislikes'] = new_comment.summary_dislikes
                 
             return JsonResponse(res)
         else:
             return JsonResponse({'d_id': d_id,
                                  'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary})
+                                 'bottom_summary': bottom_summary,
+                                 'summary_likes': new_comment.summary_likes,
+                                 'summary_dislikes': new_comment.summary_dislikes
+                                 })
         
     except Exception, e:
         print e
@@ -1305,6 +1325,26 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
 
     else:
         return parent_dict['children'][0]
+
+
+def evaluate_comment_summary(request):
+    try:
+        comment_id = request.POST['id']
+        like = request.POST['like']
+        comment = Comment.objects.get(id=comment_id)
+
+        if like == "true":
+            comment.summary_likes += 1
+        else:
+            comment.summary_dislikes += 1
+        recurse_up_post(comment)
+        comment.save()
+
+        return JsonResponse({})
+
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
     
                 
         

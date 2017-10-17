@@ -407,6 +407,25 @@ rect.selection {
 		--background: hsl(30, 100%, 86%);
 	}
 
+	.summary_box footer a{
+		--background: hsl(30, 100%, 86%);
+	    font-size: 13px;
+  	}
+
+  	summary_box .meta_comments{
+  	    margin-bottom: 10px;
+        padding: 8px;
+        background: var(--background);
+        --background: hsl(30, 100%, 95%);
+        border: 1px hsl(30, 100%, 86%) solid;
+        --link-color: hsl(30, 100%, 86%);
+        font-size: 13px;
+ 	}
+
+ 	.summary_box .meta_comment_user{
+ 	    color: hsl(30, 100%, 60%);
+    }
+
 
 .collapsed {
 	background-color: hsl(50, 100%, 95%);
@@ -768,3 +787,28 @@ form.modal-content {
 }
 
 
+.meta_comments{
+    margin-bottom: 10px;
+    padding: 8px;
+    background: var(--background);
+ 	--background: hsl(195, 59%, 90%);
+ 	border: 1px hsl(195, 59%, 85%) solid;
+ 	--link-color: hsl(195, 59%, 60%);
+}
+
+.meta_comment_textarea{
+    font-size: 12px;
+    min-height: 40px;
+    width: 70%;
+    margin-right: 10px;
+ 	height: 40px;
+ 	resize: vertical;
+}
+
+.meta_comment_user{
+    color: #07c;
+}
+
+.meta_comment_date{
+    color: #9199a1;
+}
