@@ -387,6 +387,24 @@ rect.selection {
 			background: var(--link-color);
 		}
 
+		.comment_box .meta_comments{
+            margin-bottom: 10px;
+            padding: 12px;
+            background: var(--background);
+            --background: hsl(195, 59%, 90%);
+            --link-color: hsl(195, 59%, 60%);
+        }
+
+        .comment_box .meta_comment_user{
+            color: #07c;
+        }
+
+        .comment_box .user_evaluated{
+            display:inline-block;
+            background: var(--link-color);
+        }
+
+
 .summarize_comment_comment {
 	font-size: 12px;
 	display: block;
@@ -412,18 +430,26 @@ rect.selection {
 	    font-size: 13px;
   	}
 
-  	summary_box .meta_comments{
-  	    margin-bottom: 10px;
-        padding: 8px;
-        background: var(--background);
-        --background: hsl(30, 100%, 95%);
-        border: 1px hsl(30, 100%, 86%) solid;
-        --link-color: hsl(30, 100%, 86%);
-        font-size: 13px;
+  	.summary_box .meta_comments{
+  	    padding-left: 16px;
+        padding-right:16px;
+        background var(--background);
+        --background:  hsl(30, 100%, 95%);
+        --link-color: hsla(37, 93%, 58%, 0.71);
+        font: 13px;
+ 	}
+
+ 	.summary_box .meta_comment{
+ 	    font-size: 13px;
  	}
 
  	.summary_box .meta_comment_user{
  	    color: hsl(30, 100%, 60%);
+    }
+
+    .summary_box .user_evaluated{
+        background var(--background);
+        --background:hsl(30, 100%, 60%);
     }
 
 
@@ -787,14 +813,6 @@ form.modal-content {
 }
 
 
-.meta_comments{
-    margin-bottom: 10px;
-    padding: 8px;
-    background: var(--background);
- 	--background: hsl(195, 59%, 90%);
- 	border: 1px hsl(195, 59%, 85%) solid;
- 	--link-color: hsl(195, 59%, 60%);
-}
 
 .meta_comment_textarea{
     font-size: 12px;
@@ -803,10 +821,6 @@ form.modal-content {
     margin-right: 10px;
  	height: 40px;
  	resize: vertical;
-}
-
-.meta_comment_user{
-    color: #07c;
 }
 
 .meta_comment_date{
