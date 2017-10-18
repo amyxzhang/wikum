@@ -53,7 +53,7 @@ class Article(models.Model):
 class History(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
-    action = models.CharField(max_length=15)
+    action = models.CharField(max_length=100)
     user = models.ForeignKey(User, null=True)
     datetime = models.DateTimeField(auto_now=True)
     comments = models.ManyToManyField('Comment')
@@ -114,9 +114,6 @@ class Comment(models.Model):
     
     tags = models.ManyToManyField(Tag)
 
-    summary_likes = models.IntegerField(default=0)
-    summary_dislikes = models.IntegerField(default=0)
-
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)
 
@@ -161,4 +158,19 @@ class CommentAuthor(models.Model):
             return self.real_name
         else:
             return self.username
-    
+
+class SummaryLike(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User)
+    comment = models.ForeignKey('Comment')
+    article = models.ForeignKey('Article')
+    def __unicode__(self):
+        return 'Like on summary of comment by' % (self.user.username)
+
+class SummaryDislike(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User)
+    comment = models.ForeignKey('Comment')
+    article = models.ForeignKey('Article')
+    def __unicode__(self):
+        return 'Dislike on summary of comment by' % (self.user.username)
