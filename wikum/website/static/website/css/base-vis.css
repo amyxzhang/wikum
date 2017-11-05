@@ -826,3 +826,7 @@ form.modal-content {
 .meta_comment_date{
     color: #9199a1;
 }
+
+.thumbs{
+    height: 16px;
+}
