@@ -250,26 +250,15 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     author = post.author.username
             else:
                 author = ""
-
-
+                
             v1 = {'size': post.points,
                   'd_id': post.id,
                   'parent': parent.id if parent else None,
                   'author': author,
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
-                  'tags': [(tag.text, tag.color) for tag in post.tags.all()],
+                  'tags': [(tag.text, tag.color) for tag in post.tags.all()]
                   }
-
-            # get ids of summary likers, dislikers if there is a summary
-            summary_likes = SummaryLike.objects.filter(comment=post)
-            summary_dislikes = SummaryDislike.objects.filter(comment=post)
-            v1['summary_likes'] = summary_likes.count()
-            v1['summary_dislikes'] = summary_dislikes.count()
-            v1['summary_likers'] = [like.user.username for like in summary_likes]
-            v1['summary_dislikers'] = [dislike.user.username for dislike in summary_dislikes]
-
-
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 v1['name'] = parse(post.text)
@@ -351,8 +340,9 @@ def summarize_comment(request):
         else :
             action = 'sum_comment'
             explanation = 'initial summary'
+            
 
-        h = History.objects.create(user=req_user,
+        h = History.objects.create(user=req_user, 
                                    article=a,
                                    action=action,
                                    from_str=from_summary,
@@ -382,12 +372,11 @@ def summarize_comment(request):
                 res['bottom_summary'] = ''
             
             res['bottom_summary_wiki'] = bottom_summary
-
+                
             return JsonResponse(res)
         else:
             return JsonResponse({'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary,
-                                 })
+                                 'bottom_summary': bottom_summary})
         
         
     except Exception, e:
@@ -492,8 +481,7 @@ def summarize_selected(request):
         else:
             return JsonResponse({'d_id': new_comment.id,
                                  'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary,
-                                 })
+                                 'bottom_summary': bottom_summary})
         
     except Exception, e:
         print e
@@ -584,7 +572,7 @@ def summarize_comments(request):
             c.summary = top_summary
             c.extra_summary=bottom_summary
             c.save()
-            recurse_up_post(c)
+            
             h = History.objects.create(user=req_user, 
                            article=a,
                            action='edit_sum_nodes',
@@ -632,8 +620,7 @@ def summarize_comments(request):
         else:
             return JsonResponse({'d_id': d_id,
                                  'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary,
-                                 })
+                                 'bottom_summary': bottom_summary})
         
     except Exception, e:
         print e
@@ -864,12 +851,6 @@ def delete_comment_summary(request):
         comment = Comment.objects.get(id=comment_id)
         if not comment.is_replacement:
             comment.summary = ""
-            summary_likes = SummaryLike.objects.filter(comment=comment)
-            for like in summary_likes:
-                like.delete()
-            summary_dislikes = SummaryDislike.objects.filter(comment=comment)
-            for dislike in summary_dislikes:
-                dislike.delete()
             comment.save()
             recurse_up_post(comment)
             h = History.objects.create(user=req_user,
@@ -1271,9 +1252,6 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['tags'] = [(tag.text, tag.color) for tag in parent.tags.all()]
             
         parent_dict['name'] = parent.text
-
-        parent_dict['summary'] = post.summary
-        parent_dict['extra_summary'] = post.extra_summary
         
         new_dict = {}
         
@@ -1316,9 +1294,6 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
         parent_dict['extra_summary'] = parent.extra_summary
             
         parent_dict['name'] = parent.text
-
-        parent_dict['summary'] = post.summary
-        parent_dict['extra_summary'] = post.extra_summary
         
         new_dict = {}
         
@@ -1330,87 +1305,11 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
 
     else:
         return parent_dict['children'][0]
-
-
-def evaluate_comment_summary(request):
-    try:
-        req_user = request.user if request.user.is_authenticated() else None
-        like = request.POST['like']
-        comment = Comment.objects.get(id=request.POST['comment_id'])
-        article = Article.objects.get(id=request.POST['article_id'])
-        
-        user_registered = False
-        undo_opposite = False
-        action = "new vote"
-        if req_user is not None:
-            user_registered = True
-            try:
-                previous_like = SummaryLike.objects.get(user=req_user, comment=comment, article=article)
-            except SummaryLike.DoesNotExist:
-                previous_like = None
-            try:
-                previous_dislike = SummaryDislike.objects.get(user=req_user, comment=comment, article=article)
-            except SummaryDislike.DoesNotExist:
-                previous_dislike = None
-
-
-            if like == "true":
-                if previous_like is not None:
-                    previous_like.delete()
-                    action = "undo"
-                else:
-                    if previous_dislike is not None:
-                        previous_dislike.delete()
-                        undo_opposite = True
-                    SummaryLike.objects.create(user=req_user, comment=comment, article=article)
-
-            else:
-                if previous_dislike is not None:
-                    previous_dislike.delete()
-                    action = "undo"
-
-                else:
-                    if previous_like is not None:
-                        previous_like.delete()
-                        undo_opposite = True
-                    SummaryDislike.objects.create(user=req_user, comment=comment, article=article)
-        recurse_up_post(comment)
-        return JsonResponse({"action":action, "undo_opposite":undo_opposite, "user_registered":user_registered})
-
-    except Exception, e:
-        print e
-        return HttpResponseBadRequest()
     
-
-def add_meta_comments(request):
-    try:
-        comment_id = request.POST['id']
-        meta_comments = MetaComment.objects.filter(comment_id=comment_id)
-        res = []
-        for mc in meta_comments:
-            res.append({"time":mc.datetime, "text":mc.text, "user":mc.user.username if mc.user is not None else None})
-
-        return JsonResponse({"meta_comments":res})
-
-    except Exception, e:
-        print e
-        return HttpResponseBadRequest()
+                
         
         
         
     
-def submit_meta_comment(request):
-    try:
-        req_user = request.user if request.user.is_authenticated() else None
-        evaluation = request.POST['evaluation']
-        article_id = request.POST['article']
-        comment_id = request.POST['comment']
-        time = request.POST['time']
-
-        MetaComment.objects.create(text=evaluation, article_id=article_id, comment_id=comment_id, user=req_user, datetime=time)
-
-        return JsonResponse({"user": req_user.username if req_user is not None else None})
-    except Exception, e:
-        print e
-        return HttpResponseBadRequest()
+                
     
