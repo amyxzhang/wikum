@@ -796,6 +796,9 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 
 				highlight_box(evt.data.id);
 				make_progress_bar();
+
+				//initialize likes, dislikes of summary
+				initialize_likes(d);
 			},
 			error: function() {
 				error_noty();
@@ -962,6 +965,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			}
 
 			$('#summarize_multiple_comment_text').text('Edit the summary for this entire subtree of comments.');
+
+			//initialize likes, dislikes
+			initialize_likes(d);
 		}
 	}
 
@@ -1087,6 +1093,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 x0: lowest_d.x0,
 							 y: lowest_d.y,
 							 y0: lowest_d.y0,
+							 summary_likes: 0,
+							 summary_dislikes: 0,
+							 summary_likers: [],
+							 summary_dislikers: []
+
 							};
 							
 					if (article_url.indexOf('wikipedia.org') !== -1) {
@@ -1135,13 +1146,23 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					$('#summarize_multiple_modal_box').modal('toggle');
 
 					var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
-					
+                    text += '<footer>'
+					text += viz_user_selected(new_d, "like")
+                    text += '<a onclick="evaluate_comment_summary(' + new_d.id +',' + true + ')"><img id="summary_likes_' + new_d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a></span>'
+                    text += ' <span id="summary_like_num_'+ new_d.id +'">' + new_d.summary_likes + '</span> '
+                    text += viz_user_selected(new_d, "dislike")
+                    text += '<a onclick="evaluate_comment_summary(' + new_d.id +',' + false + ')"><img id="summary_dislikes_' + new_d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a></span>'
+                    text += ' <span id="summary_dislike_num_'+ new_d.id +'"s>' + new_d.summary_dislikes + '</span> '
+                    text += '<a onclick="toggle_meta_comments(' + new_d.id + ');">Comments about summary</a> | ';
+
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
-						text += `<footer>
-							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
+						text += `<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary Node</a>
-						</footer>`;
+							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${new_d.id}">Tag Summary</a>`;
 					}
+					text += '<div id="meta_comments_' + new_d.id + '" style="display: none;" class="meta_comments">' + '</div>';
+			        text += '</footer>';
+			        console.log(text)
 
 					for (var i=0; i<children.length; i++) {
 						if (children[i] == lowest_d) {
@@ -1154,6 +1175,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 					clear_box_top();
 					make_progress_bar();
+
+					//initialize the evaluation
+					initialize_likes(d);
 				}
 			});
 		} else if (evt.data.type == "summarize" || evt.data.type == "edit_summarize") {
@@ -1186,6 +1210,10 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 x0: d.x0,
 							 y: d.y,
 							 y0: d.y0,
+							 summary_likes: 0,
+							 summary_dislikes: 0,
+							 summary_likers: [],
+							 summary_dislikers: []
 							};
 						
 						if (article_url.indexOf('wikipedia.org') !== -1) {
@@ -1252,19 +1280,33 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 
 					var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
-					
+                    text += '<footer>'
+					text += viz_user_selected(d, "like")
+                    text += '<a onclick="evaluate_comment_summary(' + d.id +',' + true + ')"><img id="summary_likes_' + d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a></span>'
+                    text += ' <span id="summary_like_num_'+ d.id +'">' + d.summary_likes + '</span> '
+                    text += viz_user_selected(d, "dislike")
+                    text += '<a onclick="evaluate_comment_summary(' + d.id +',' + false + ')"><img id="summary_dislikes_' + d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a></span>'
+                    text += ' <span id="summary_dislike_num_'+ d.id +'"s>' + d.summary_dislikes + '</span> '
+                    text += '<a onclick="toggle_meta_comments(' + d.id + ');">Comments about summary</a> | ';
+
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
-						text += `<footer>
-							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
+						text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
-						</footer>`;
+							<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>`;
 					}
+
+					text += '<div id="meta_comments_' + d.id + '" style="display: none;" class="meta_comments">' + '</div>';
+			        text += '</footer>';
+			        console.log(text)
 
 					$('#comment_' + d.id).html(text);
 
 					highlight_box(d.id);
 					success_noty();
 					make_progress_bar();
+
+					//initialize likes, dislikes
+				    initialize_likes(d);
 				},
 				error: function() {
 					error_noty();
@@ -1292,6 +1334,7 @@ function post_delete_comment_summary(id){
 					delete_comment_summary(id);
 					success_noty();
 					make_progress_bar();
+
 				},
 				error: function() {
 					error_noty();
@@ -2678,7 +2721,9 @@ function expand_node(id) {
 
 
 function toggle_original(id) {
+    $('#meta_comments_' + id).toggle(false);
 	$('#orig_' + id).toggle();
+
 }
 
 
@@ -2780,23 +2825,59 @@ function construct_comment(d) {
 		text += '<div id="tags_' + d.id + '"></div><BR>';
 	}
 
+
 	if (summary) {
+	    if($("#username").length > 0){
+		    var logged_user = $("#username").text();
+		    if(d.summary_likers.indexOf(logged_user) > -1){
+		        console.log("like is lightened")
+		        $("#summary_likes_" + d.id).addClass("user_evaluated")
+		        console.log($("#summary_likes_" + d.id))
+		    }
+		    if(d.summary_dislikers.indexOf(logged_user) > -1){
+		        $("#summary_dislikes_" + d.id).addClass("user_evaluated")
+		    }
+
+		}
+
 		if (!d.replace_node) {
-			text += '<P><a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
+		    text += '<P>'
+            text += viz_user_selected(d, "like")
+		    text += '<a onclick="evaluate_comment_summary(' + d.id +',' + true + ')"><img id="summary_likes_' + d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a></span>'
+            text += ' <span id="summary_like_num_'+ d.id +'"> ' +d.summary_likes + '</span> '
+            text += viz_user_selected(d, "dislike")
+            text += '<a onclick="evaluate_comment_summary(' + d.id +',' + false + ')"><img id="summary_dislikes_' + d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a></span>'
+            text += ' <span id="summary_dislike_num_'+ d.id +'"> ' +d.summary_dislikes + '</span> '
+			text += '<a onclick="toggle_meta_comments(' + d.id + ');">Comments about summary</a> | ';
+			text += '<a onclick="toggle_original(' + d.id + ');">View Original</a> | ';
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
 				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a></P>';
 			}
+            text += '<div id="meta_comments_' + d.id + '" style="display: none;" class="meta_comments">' + '</div>';
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
+		    text += '<footer>'
+		    text += viz_user_selected(d, "like")
+		    text += '<a onclick="evaluate_comment_summary(' + d.id +',' + true + ')"><img id="summary_likes_' + d.id + '" src="/static/website/img/thumb_up.png"/ class="thumbs"></a></span>'
+            text += ' <span id="summary_like_num_'+ d.id +'">' +d.summary_likes + '</span> '
+            text += viz_user_selected(d, "dislike")
+            text += '<a onclick="evaluate_comment_summary(' + d.id +',' + false + ')"><img id="summary_dislikes_' + d.id + '" src="/static/website/img/thumb_down.png"/ class="thumbs"></a></span>'
+            text += ' <span id="summary_dislike_num_'+ d.id +'"s>' +d.summary_dislikes + '</span> '
+		    text += '<a onclick="toggle_meta_comments(' + d.id + ');">Comments about summary</a> | ';
+
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
-				text += `<footer>
-					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
+					text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
-					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
-				</footer>`;
+					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>`
+
 			}
+			text += '<div id="meta_comments_' + d.id + '" style="display: none;" class="meta_comments">' + '</div>';
+			text += '</footer>';
+
 		}
+
+
 	}
 
 	if ($.trim($('#access_mode').text()) == "Edit Access") {
@@ -2838,6 +2919,9 @@ function construct_comment(d) {
 		}
 
 	}
+
+	// add meta comments to be shown when the page is loaded
+	add_meta_comments(d.id)
 
 	return text;
 }
@@ -3564,3 +3648,183 @@ $(".summary-editor").on("input", function(evt) {
 
 	this.setCustomValidity(isValid? "" : "Summary is too long");
 })
+
+
+function evaluate_comment_summary(id, like) {
+    d = nodes_all[id-1];
+    var csrf = $('#csrf').text();
+    var article_id = $('#article_id').text();
+    var data = {csrfmiddlewaretoken: csrf,
+                like: like,
+                comment_id: d.d_id,
+                article_id: article_id};
+
+    $.ajax({
+            type: 'POST',
+            url: '/evaluate_comment_summary',
+            data: data,
+            success: function(res) {
+                action = res.action
+                undo_opposite = res.undo_opposite
+                action = res.action
+                user_registered = res.user_registered
+
+                username = $("#username").text()
+                user_like_index = d.summary_likers.indexOf(username)
+                user_dislike_index = d.summary_dislikers.indexOf(username)
+
+                if (user_registered){
+                    if(like){
+                        if(action == "new vote"){
+                            nodes_all[id-1].summary_likes += 1
+                            nodes_all[id-1].summary_likers.push(username)
+                            $("#like_highlight_" + id).addClass("user_evaluated")
+                            if(undo_opposite){
+                                nodes_all[id-1].summary_dislikes = (nodes_all[id-1].summary_dislikes == 0 ? 0 : nodes_all[id-1].summary_dislikes-1)
+                                nodes_all[id-1].summary_dislikers.splice(user_dislike_index,1)
+                                $("#dislike_highlight_" + id).removeClass("user_evaluated")
+                            }
+                        }else{
+                            nodes_all[id-1].summary_likes = (nodes_all[id-1].summary_likes == 0 ? 0 : nodes_all[id-1].summary_likes-1)
+                            nodes_all[id-1].summary_likers.splice(user_like_index,1)
+                            $("#like_highlight_" + id).removeClass("user_evaluated")
+                        }
+
+                    }else{
+                        if(action == "new vote"){
+                            nodes_all[id-1].summary_dislikes += 1
+                            nodes_all[id-1].summary_dislikers.push(username)
+                            $("#dislike_highlight_" + id).addClass("user_evaluated")
+                            if(undo_opposite){
+                                nodes_all[id-1].summary_likes = (nodes_all[id-1].summary_likes == 0 ? 0 : nodes_all[id-1].summary_likes-1)
+                                nodes_all[id-1].summary_likers.splice(user_like_index,1)
+                                $("#like_highlight_" + id).removeClass("user_evaluated")
+                            }
+                        }else{
+                            nodes_all[id-1].summary_dislikes = (nodes_all[id-1].summary_dislikes == 0 ? 0 : nodes_all[id-1].summary_dislikes-1)
+                            nodes_all[id-1].summary_dislikers.splice(user_dislike_index,1)
+                            $("#dislike_highlight_" + id).removeClass("user_evaluated")
+                        }
+                    }
+
+                    $("#summary_dislike_num_"+id).text(nodes_all[id-1].summary_dislikes)
+                    $("#summary_like_num_"+id).text(nodes_all[id-1].summary_likes)
+
+                }
+
+            },
+            error: function() {
+                error_noty();
+            }
+
+
+    })
+
+}
+
+function add_meta_comments(id) {
+  //call the meta comments
+    var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: nodes_all[id-1].d_id};
+
+	$.ajax({
+		type: 'POST',
+		url: '/add_meta_comments',
+		data: data,
+		success: function(res) {
+		    var text = ""
+		    meta_comments = res.meta_comments
+			for (var i=0; i<meta_comments.length; i++) {
+			    time = new Date(meta_comments[i].time)
+			    time = time.toString().split("(")[0]
+
+                text += '<P class="meta_comment">'
+                text += meta_comments[i].text + " - "
+                text += '<span class="meta_comment_user">' + meta_comments[i].user + '</span>'
+                text += '<span class="meta_comment_date">' + ' ' + time + '</span>'
+                text += '<a class="btn-xs" >reply</a>'
+                text += '<a class="btn-xs" >delete</a>'
+                text += '</P>'
+			}
+			text += '<form method="POST" action="/submit_summary_evaluation">'
+			text += '<input type="hidden" name="csrfmiddlewaretoken" value="' + $('#csrf').text() + '">';
+			text += '<input type="text" class="meta_comment_textarea" id="meta_comment_textarea_' + id + '" autofocus> '
+			text += '<input id="comment_evaluate_btn_' + id + '" type="submit" value="submit" class="btn btn-default">'
+			text += '</form>'
+			$('#meta_comments_' + id).html(text)
+		}
+	});
+
+}
+
+function toggle_meta_comments(id) {
+    //show the meta comments and textbox for submitting
+    $('#orig_' + id).toggle(false);
+    $('#meta_comments_' + id).toggle();
+
+    //enable submitting
+    $('#meta_comments_' + id + " form").submit(function(evt) {
+		evt.preventDefault();
+		var evaluation = $('#meta_comment_textarea_' + id).val().trim();
+		var article_id = $('#article_id').text();
+		var csrf = $('#csrf').text();
+		var data = {csrfmiddlewaretoken: csrf,
+			        evaluation: evaluation,
+			        article: article_id};
+
+		data.comment = nodes_all[id-1].d_id;
+		data.time = Date()
+
+		$.ajax({
+			type: 'POST',
+			url: '/submit_meta_comment',
+			data: data,
+			success: function(res) {
+				success_noty();
+                $('#meta_comment_textarea_' + id).val("")
+
+                //update so the last one will be visually added
+                var text = '<P class="meta_comment">'
+                text += evaluation + " - "
+                text += '<span class="meta_comment_user">' + res.user + '</span>'
+                text += '<span class="meta_comment_date">' + ' ' + data.time.split("(")[0] + '</span>'
+                text += '<a class="btn-xs" >reply</a>'
+                text += '<a class="btn-xs" >delete</a>'
+                text += '</P>'
+                $('#meta_comments_' + id + " form").before(text)
+
+			}
+			,
+			error: function() {
+				error_noty();
+			}
+		});
+	});
+}
+
+
+function viz_user_selected(d, like){
+    text = '<span id="' + like + '_highlight_' + d.id + '"' //like_highlight_
+    if($("#username").length > 0){
+        var logged_user = $("#username").text();
+        if((like == "like" && d.summary_likers.indexOf(logged_user) > -1) || (like == "dislike" && d.summary_dislikers.indexOf(logged_user) > -1)){
+            console.log("like is lightened")
+            text += ' class="user_evaluated" '
+        }
+    }
+	text += ">"
+	return text
+}
+
+function initialize_likes(d){
+    d.summary_likes = 0
+    d.summary_dislikes = 0
+    d.summary_likers = []
+    d.summary_dislikers = []
+    $("#like_highlight_" + d.id).removeClass("user_evaluated")
+    $("#dislike_highlight_" + d.id).removeClass("user_evaluated")
+    $("#summary_like_num_"+d.id).text(0)
+    $("#summary_dislike_num_"+d.id).text(0)
+
+}

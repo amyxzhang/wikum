@@ -58,4 +58,8 @@ urlpatterns = [
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
+
+    url(r'^evaluate_comment_summary', 'website.views.evaluate_comment_summary'),
+    url(r'add_meta_comments', 'website.views.add_meta_comments'),
+    url(r'submit_meta_comment', 'website.views.submit_meta_comment')
 ]
