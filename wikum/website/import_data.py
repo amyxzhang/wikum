@@ -5,6 +5,7 @@ import json
 import praw
 import datetime
 import re
+import requests
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
@@ -356,6 +357,47 @@ def get_disqus_posts(article, current_task, total_count):
             if total_count % 3 == 0:
                 current_task.update_state(state='PROGRESS',
                                           meta={'count': total_count})
+
+
+def get_decide_proposal_posts(article, current_task, total_count):
+
+
+    r = requests.post('https://decide.madrid.es/graphql', data = {'query': '{ proposal(id: "'+str(15290)+'") { id cached_votes_up comments_count confidence_score description external_url geozone { id name } hot_score public_author { id username } public_created_at retired_at retired_explanation retired_reason summary tags(first:10) { edges { node { id name } } } title video_url }}'})
+    print r r.content
+
+
+    
+    comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
+            
+    result = urllib2.urlopen(comment_call)
+    result = json.load(result)
+    
+    count = import_disqus_posts(result, article)
+    
+    if current_task:
+        total_count += count
+                    
+        if total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                      meta={'count': total_count})
+    
+    while result['cursor']['hasNext']:
+        next = result['cursor']['next']
+        comment_call_cursor = '%s&cursor=%s' % (comment_call, next)
+        
+        
+        result = urllib2.urlopen(comment_call_cursor)
+        result = json.load(result)
+        
+        count = import_disqus_posts(result, article)
+        
+        if current_task:
+            total_count += count
+            
+            if total_count % 3 == 0:
+                current_task.update_state(state='PROGRESS',
+                                          meta={'count': total_count})
+
 
 
 def import_reddit_posts(comments, article, reply_to, current_task, total_count):
