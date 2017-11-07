@@ -551,7 +551,7 @@ def import_decide_proposal_posts(result, article):
                                                           )
             
             parent = article.disqus_id
-            if 'ancestry' in response:
+            if not response['ancestry'] is None:
                 parent = response['ancestry'].split('/')[-1]
 
             comment = Comment.objects.create(article = article,
