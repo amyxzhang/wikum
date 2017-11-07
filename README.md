@@ -12,7 +12,7 @@ Large-scale discussions between many participants abound on the internet today, 
 This repository contains:
 
 
-1. The instructions for how locally run Wikum.
+1. The instructions for how locally install and run Wikum.
 
 
 
