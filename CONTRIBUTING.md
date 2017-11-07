@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to Wikum! :heart_eyes: :heart: 
 
-[Wikum](http://wikum.csail.mit.edu/) is a tool to help people to explore distinct conversations at multiple levels of detail based on their interests.
+[Wikum](http://wikum.csail.mit.edu/) is a tool to help people to explore distinct conversations at multiple levels.
 
 This documents is a set of guidelines for contributing to Wikum on GitHub, and details our expectations for contributors, our workflow, and how we communicate. This guide is meant to make it easy for you to get involved!
 
