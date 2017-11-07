@@ -77,9 +77,10 @@ def get_article(url, source, num):
         elif source.source_name == "Decide Proposal":
             url_parts = url.split('/proposals/')
             id = url_parts[1].split('-')[0]
-            title = url_parts[1]
+            #title = url_parts[1]
             link = urllib2.unquote(url)         
-            print 'aaaa'   
+            title = json.load(requests.post('https://decide.madrid.es/graphql', data = {'query': '{ proposal(id: "'+str(id)+'") { title }}'}))['data']['proposal']['title']
+            print 'aaaa ' + str(title)
 
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
