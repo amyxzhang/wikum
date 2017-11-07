@@ -85,7 +85,7 @@ Then visit [http://localhost:8000/](http://localhost:8000/)
 ## Usage
 
 Once you have Wikum locally installed you can start developing. 
-Follow this link to find a [video](spec.md) description of the Wikum project.
+Follow this link to find a [video](#usage) description of the Wikum project.
 
 
 ## Maintainers
