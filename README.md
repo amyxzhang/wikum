@@ -4,7 +4,7 @@
 
 > A tool for summarizing and exploring long comment threads.
 
-Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest. In this repository, we document the Wikum tool that enables a large population of readers or editors to produce a summary tree that enables a reader to explore distinct subtopics at multiple levels of detail based on their interests.
+Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest. In this repository, we document the [Wikum tool](http://wikum.csail.mit.edu) that enables a large population of readers or editors to produce a summary tree that enables a reader to explore distinct subtopics at multiple levels of detail based on their interests.
 
 
 
