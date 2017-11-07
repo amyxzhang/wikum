@@ -101,8 +101,6 @@ def get_source(url):
 def get_wiki_talk_posts(article, current_task, total_count):
 
     print 'holaaaaa ' 
-    print str(article)
-    print str(current_task)
     print str(total_count)
     
     from wikitools import wiki, api
