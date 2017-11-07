@@ -78,6 +78,10 @@ After this you should create the tables for the database:
 ```sh
 $ python manage.py syncdb
 ```
+
+Then visit [http://localhost:8000/](http://localhost:8000/)
+
+
 ## Usage
 
 Once you have Wikum locally installed you can start developing. 
