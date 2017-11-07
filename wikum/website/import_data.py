@@ -347,6 +347,7 @@ def get_decide_proposal_posts(article, current_task, total_count):
           
     r = requests.post('https://decide.madrid.es/graphql', data = {'query': decide_comment_call})
     result = json.load(str(r.content))
+    print result
 
     count = import_decide_proposal_posts(result, article)
     
