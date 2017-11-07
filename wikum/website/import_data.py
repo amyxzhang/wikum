@@ -80,7 +80,6 @@ def get_article(url, source, num):
             #title = url_parts[1]
             link = urllib2.unquote(url)         
             title = json.load(requests.post('https://decide.madrid.es/graphql', data = {'query': '{ proposal(id: "'+str(id)+'") { title }}'}))['data']['proposal']['title']
-            print 'aaaa ' + str(title)
 
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
@@ -341,6 +340,8 @@ def get_disqus_posts(article, current_task, total_count):
             
     result = urllib2.urlopen(comment_call)
     result = json.load(result)
+
+    print 'aaaa' + str(result)
     
     count = import_disqus_posts(result, article)
     
