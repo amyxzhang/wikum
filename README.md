@@ -58,7 +58,7 @@ $ sudo mysql
 Create a file named private.py in order to set the configuration to connect to your local database, Note that you should replace the myUser and myPassword with the ones you've just created:
 
 ```sh
-echo "MYSQL_PROD = {
+$ echo "MYSQL_PROD = {
     'NAME' : 'wikum',
     'USER' : 'myUser',
     'PASSWORD' : 'myPassword',
@@ -71,10 +71,12 @@ DISQUS_API_KEY = ''
 " > private.py
 ```
 
+In order to follow the correct Django configuration you should create a strong secret key (add a long string to the SECRET_KEY variable).
+
 After this you should create the tables for the database:
 
 ```sh
-python manage.py syncdb
+$ python manage.py syncdb
 ```
 ## Usage
 
