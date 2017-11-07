@@ -88,6 +88,8 @@ def get_source(url):
         return Source.objects.get(source_name="Reddit")
     elif 'wikipedia.org/wiki/' in url:
         return Source.objects.get(source_name="Wikipedia Talk Page")
+    elif 'decide.madrid.es/proposals' in url:
+        return Source.objects.get(source_name="Decide Proposal")
     return None
 
 def get_wiki_talk_posts(article, current_task, total_count):
