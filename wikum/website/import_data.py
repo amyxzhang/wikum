@@ -72,6 +72,14 @@ def get_article(url, source, num):
                 title = title + ' - ' + section_title
 
             link = urllib2.unquote(url)
+
+
+        elif source.source_name == "Decide Proposal":
+            url_parts = url.split('/proposals/')
+            id = url_parts[1].split('-')[0]
+            title = url_parts[1]
+            link = urllib2.unquote(url)            
+
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
         article = article[num]
