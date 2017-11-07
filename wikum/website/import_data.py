@@ -344,7 +344,9 @@ def count_replies(article):
 
 def get_decide_proposal_posts(article, current_task, total_count):
     decide_comment_call = DECIDE_CALL % (article.disqus_id, '')
-            
+          
+    print str(decide_comment_call)
+
     result = urllib2.urlopen(decide_comment_call)
     result = json.load(result)
 

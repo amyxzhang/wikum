@@ -9,11 +9,7 @@ from django.db import connection
 def import_article(url):
     connection.close()
     
-    print 'starting tasks'
-
     source = get_source(url)
-
-    print 'the source is ' + str(source)
 
     if source:
         article = get_article(url, source, 0)
