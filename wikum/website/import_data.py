@@ -532,7 +532,7 @@ def import_disqus_posts(result, article):
 
 def import_decide_proposal_posts(result, article):
     count = 0
-    for r in result['data']['comments']['edges']:
+    for r in result['data']['proposal']['comments']['edges']:
         response = r['node'] 
         comment_id = response['id']
         comment = Comment.objects.filter(disqus_id=comment_id, article=article)
