@@ -41,7 +41,7 @@ Follow this link to find a [video](#usage) description of the Wikum project.
 
 ## Contribute
 
-Before you get started, please review our [contributor guidelines](/CONTRIBUTING.md), if you agree with all of te terms and contitions then feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
+Before you get started, please review our [contributor guidelines](/CONTRIBUTING.md), if you agree with all of the terms and conditions then feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
 
 
 If you'll be working on a coding issue, follow the [coding setup](/coding_setup.md) instructions to get a local version of the project up and running.
