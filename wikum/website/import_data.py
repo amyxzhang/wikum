@@ -311,7 +311,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
             comment_wikum.save()
             comment_wikum.disqus_id = comment_wikum.id
             comment_wikum.save()
-            
+             
             for signer in comment_cosigners:
                 comment_wikum.cosigners.add(signer)
         
