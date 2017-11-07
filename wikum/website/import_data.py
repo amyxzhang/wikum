@@ -562,7 +562,7 @@ def import_decide_proposal_posts(result, article):
                                              text_len = len(response['body']),
                                              likes = response['cached_votes_up'],
                                              dislikes = response['cached_votes_down'],
-                                             created_at = datetime.datetime.strptime(response['public_created_at'], '%Y-%m-%d %H:%M:%S')
+                                             created_at = datetime.datetime.strptime(response['public_created_at'].split(' +')[0], '%Y-%m-%d %H:%M:%S')
                                              )
         
     return count
