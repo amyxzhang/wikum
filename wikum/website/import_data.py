@@ -6,7 +6,6 @@ import praw
 import datetime
 import re
 
-
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
@@ -18,8 +17,7 @@ _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE
 def get_article(url, source, num):
     article = Article.objects.filter(url=url)
     if article.count() == 0:
-
-       if source.source_name == "The Atlantic":
+        if source.source_name == "The Atlantic":
             
             url = url.strip().split('?')[0]
             
