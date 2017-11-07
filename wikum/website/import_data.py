@@ -363,10 +363,10 @@ def get_decide_proposal_posts(article, current_task, total_count):
 
 
     r = requests.post('https://decide.madrid.es/graphql', data = {'query': '{ proposal(id: "'+str(15290)+'") { id cached_votes_up comments_count confidence_score description external_url geozone { id name } hot_score public_author { id username } public_created_at retired_at retired_explanation retired_reason summary tags(first:10) { edges { node { id name } } } title video_url }}'})
-    print r r.content
+    print r.content
 
 
-    
+
     comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
             
     result = urllib2.urlopen(comment_call)
