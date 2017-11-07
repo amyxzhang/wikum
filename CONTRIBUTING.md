@@ -1,4 +1,4 @@
-# Contributing to Squadbox
+# Contributing to WIKUM
 
 Thank you for your interest in contributing to Wikum! :heart_eyes: :heart: 
 
