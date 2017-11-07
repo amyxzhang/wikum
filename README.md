@@ -1,5 +1,5 @@
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/haystack/wikum)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/haystack/wikum) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # WIKUM
 
@@ -48,4 +48,4 @@ If you'll be working on a coding issue, follow the [coding setup](/coding_setup.
 
 ## License
 
-[MIT](LICENSE) 
+[MIT](/CONTRIBUTING.md) 
