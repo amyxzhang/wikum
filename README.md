@@ -35,7 +35,7 @@ This project uses [python](http://nodejs.org), [pip](https://pip.pypa.io/en/stab
 Inside the project do:
 
 ```sh
-$ cd src/
+$ cd wikum/
 $ virtualenv wikum
 $ mkdir /opt/wikum
 $ echo "true" > /opt/wikum/debug
