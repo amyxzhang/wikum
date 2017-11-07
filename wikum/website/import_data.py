@@ -12,6 +12,8 @@ USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
 COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&thread=%s'
 
+DECIDE_CALL = '{ proposal(id: %s) { id cached_votes_up comments_count confidence_score description external_url geozone { id name } hot_score public_author { id username } public_created_at retired_at retired_explanation retired_reason summary tags(first: 10) { edges { node { id name } } } comments(first: 50, after: "%s") { pageInfo { hasNextPage endCursor } edges { node { public_author { id username } body ancestry } } } title video_url } }'
+
 _CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
 _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
 
@@ -98,11 +100,11 @@ def get_source(url):
         return Source.objects.get(source_name="Decide Proposal")
     return None
 
+
+
 def get_wiki_talk_posts(article, current_task, total_count):
 
-    print 'holaaaaa ' 
-    print str(total_count)
-    
+   
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
     site = wiki.Wiki(domain + '/w/api.php')
@@ -183,100 +185,6 @@ def get_wiki_talk_posts(article, current_task, total_count):
             total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
 
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
-
-
-
-
-
-
-
-
-
-
-def get_decide_proposal_posts(article, current_task, total_count):
-    from wikitools import wiki, api
-    domain = article.url.split('/wiki/')[0]
-    site = wiki.Wiki(domain + '/w/api.php')
-    
-    title = article.title.split(' - ')
-    # "section_index" is the index number of the section within the page.
-    # There are some cases when wikicode does not parse a section as a section when given a "whole page".
-    # To prevent this, we first grab only the section(not the entire page) using "section_index" and parse it.
-    section_index = article.section_index
-
-    params = {'action': 'query', 'titles': title[0],'prop': 'revisions', 'rvprop': 'content', 'format': 'json','redirects':'yes'}
-    if section_index:
-        params['rvsection'] = section_index
-
-    request = api.APIRequest(site, params)
-    result = request.query()
-    id = article.disqus_id.split('#')[0]
-    text = result['query']['pages'][id]['revisions'][0]['*']
-
-    def get_section(sections, section_title):
-        for s in sections:
-            heading_title = s.get('heading', '')
-            heading_title = re.sub(r'\]', '', heading_title)
-            heading_title = re.sub(r'\[', '', heading_title)
-            heading_title = re.sub('<[^<]+?>', '', heading_title)
-            if heading_title.strip() == str(section_title).strip():
-                return s
-
-    def find_outer_section(title, text, id):
-        # Check if closing comment is in here, if not look for the outer section.
-        # If there is an outer section, choose it only if it has a closing statement,
-        if len(title)>1:
-            section_title = title[1].encode('ascii', 'ignore')
-            params = {'action': 'query', 'titles': title[0], 'prop': 'revisions', 'rvprop': 'content', 'format': 'json', 'redirects': 'yes'}
-            result = api.APIRequest(site, params).query()
-            whole_text = result['query']['pages'][id]['revisions'][0]['*']
-
-            import wikichatter as wc
-            parsed_whole_text = wc.parse(whole_text.encode('ascii','ignore'))
-            sections = parsed_whole_text['sections']
-
-            for outer_section in sections:
-                found_subection = get_section(outer_section['subsections'], section_title)
-                if found_subection:
-                    outer_comments = outer_section['comments']
-                    for comment in outer_comments:
-                        comment_text = '\n'.join(comment['text_blocks'])
-                        if re.search(_CLOSE_COMMENT_RE, comment_text):
-                            params = {'action': 'parse', 'prop': 'sections', 'page': title[0], 'redirects': 'yes'}
-                            result = api.APIRequest(site, params).query()
-                            for s in result['parse']['sections']:
-                                if s['line'] == outer_section.get('heading').strip():
-                                    section_index = s['index']
-                                    params = {'action': 'query', 'titles': title[0], 'prop': 'revisions',
-                                               'rvprop': 'content', 'rvsection': section_index, 'format': 'json',
-                                              'redirects': 'yes'}
-                                    result = api.APIRequest(site, params).query()
-                                    final_section_text = result['query']['pages'][id]['revisions'][0]['*']
-                                    return final_section_text
-        return text
-
-    # If there isn't a closing statement, it means that the RfC could exist as a subsection of another section, with the closing statement in the parent section.
-    # Example: https://en.wikipedia.org/wiki/Talk:Alexz_Johnson#Lead_image
-    if not re.search(_CLOSE_COMMENT_RE, text):
-        text = find_outer_section(title, text, id)
-
-    import wikichatter as wc
-    parsed_text = wc.parse(text.encode('ascii','ignore'))
-    
-    start_sections = parsed_text['sections']
-    if len(title) > 1:
-        section_title = title[1].encode('ascii','ignore')
-        sections = parsed_text['sections']
-        found_section = get_section(sections, section_title)
-        if found_section:
-            start_sections = found_section['subsections']
-            start_comments = found_section['comments']
-            total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
-
-    total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
-
-
-
 
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
@@ -435,18 +343,52 @@ def count_replies(article):
 
 
 def get_disqus_posts(article, current_task, total_count):
+    decide_comment_call = DECIDE_CALL % (article.disqus_id, '')
+            
+    result = urllib2.urlopen(decide_comment_call)
+    result = json.load(result)
+
+    count = import_decide_proposal_posts(result, article)
+    
+    ### current_task?
+    if current_task:
+        total_count += count
+        
+        ### why (total_count % 3 == 0) ?            
+        if total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                      meta={'count': total_count})
+    
+    while result['data']['proposal']['comments']['pageInfo']['endCursor']:
+        next = result['data']['proposal']['comments']['pageInfo']['endCursor']
+        decide_comment_call_cursor = decide_comment_call = DECIDE_CALL % (article.disqus_id, next)
+        
+        result = urllib2.urlopen(decide_comment_call_cursor)
+        result = json.load(result)
+        
+        count = import_decide_proposal_posts(result, article)
+        
+        if current_task:
+            total_count += count
+            
+            if total_count % 3 == 0:
+                current_task.update_state(state='PROGRESS',
+                                          meta={'count': total_count})
+
+
+def get_disqus_posts(article, current_task, total_count):
     comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
             
     result = urllib2.urlopen(comment_call)
     result = json.load(result)
 
-    print 'aaaa' + str(result)
-    
     count = import_disqus_posts(result, article)
     
+    ### current_task?
     if current_task:
         total_count += count
-                    
+        
+        ### why (total_count % 3 == 0) ?            
         if total_count % 3 == 0:
             current_task.update_state(state='PROGRESS',
                                       meta={'count': total_count})
@@ -580,6 +522,43 @@ def import_disqus_posts(result, article):
                                              flagged = response['isFlagged'],
                                              deleted = response['isDeleted'],
                                              approved = response['isApproved']
+                                             )
+        
+    return count
+
+def import_decide_proposal_posts(result, article):
+    count = 0
+    for r in result['data']['comments']['edges']:
+        response = r['node'] 
+        comment_id = response['id']
+        comment = Comment.objects.filter(disqus_id=comment_id, article=article)
+        
+        if comment.count() == 0:
+            
+            count += 1
+            
+            author_id = response['public_author']['id']
+                
+            comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+            if comment_author.count() > 0:
+                comment_author = comment_author[0]
+            else:                    
+                comment_author,_ = CommentAuthor.objects.get_or_create(username = response['public_author']['username']
+                                                          )
+            
+            parent = article.disqus_id
+            if 'ancestry' in response:
+                parent = response['ancestry'].split('/')[-1]
+
+            comment = Comment.objects.create(article = article,
+                                             author = comment_author,
+                                             text = response['body'],
+                                             disqus_id = response['id'],
+                                             reply_to_disqus = parent,
+                                             text_len = len(response['body']),
+                                             likes = response['cached_votes_up'],
+                                             dislikes = response['cached_votes_down'],
+                                             created_at = datetime.datetime.strptime(response['public_created_at'], '%Y-%m-%d %H:%M:%S')
                                              )
         
     return count
