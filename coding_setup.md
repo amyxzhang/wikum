@@ -21,19 +21,19 @@ sudo apt-get install build-essential python-dev python-mysqldb libmysqlclient-de
 
 ```sh
 
-$ sudo easy_install pip,
+$ sudo easy_install pip
 $ sudo pip install virtualenv
 $ pip install mysql-python
 $ pip install -r requirements.txt
 
 ```
 
-Create a virtualenv for this project: 
+* Create a virtualenv for this project: 
 ```sh
 virtualenv wikum
 ```
 
-Make sure your virtualenv is activated: 
+* Make sure your virtualenv is activated: 
 ```sh
 source wikum/bin/activate
 ```
