@@ -26,9 +26,9 @@ $ sudo mysql
 
 13. Inside private.py, paste this to connect to the remote database, then `:wq`: 
 	```
-	MYSQL_DEV = {
+	MYSQL_LOCAL = {
 	    'NAME' : 'wikum',
-	    'USER' : admin,
+	    'USER' : 'admin',
 	    'PASSWORD' : 'somepassword',
 	    'HOST' : 'localhost',  
 	}
