@@ -1,38 +1,99 @@
-# wikum
+# WIKUM
 
-## Local install
 
-1. git clone https://github.com/amyxzhang/wikum.git
-2. `cd wikum/wikum`
-2. Install pip and [virtualenv](https://virtualenv.pypa.io/en/latest/)
-3. `virtualenv wikum`
-4. `source wikum/bin/activate` Your prompt should change and have `(wikum)` in front of it.
-5. `pip install -r requirements.txt` If you get an error about MySQL, open a new tab and run `brew install mysql`, then try again. If that errors too, run `brew update` first.
-6. `mkdir /opt/wikum`
-7. `echo "true" > /opt/wikum/debug`
-8. `echo "dev" > /opt/wikum/env`
-9. `touch private.py`
-10. `vim private.py`
-11. Install MySQL server
-12. Create a database
 
-```mysql
-$ sudo mysql
-> CREATE USER 'admin'@'localhost' IDENTIFIED BY 'somepassword';
-> CREATE DATABASE wikum;
-> USE wikum;
-> GRANT ALL PRIVILEGES ON wikum.* TO 'admin'@'localhost';
+> A tool for summarizing and exploring long comment threads.
+
+Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest. In this repository, we document the [Wikum tool](http://wikum.csail.mit.edu) that enables a large population of readers or editors to produce a summary tree that enables a reader to explore distinct subtopics at multiple levels of detail based on their interests.
+
+
+
+
+This repository contains:
+
+
+1. The instructions for how locally install and run Wikum.
+
+
+
+## Table of Contents
+
+- [Background](#background)
+- [Installation](#install)
+- [Usage](#usage)
+- [Contribute](#contribute)
+- [License](#license)
+
+## Background
+
+
+## Install
+
+This project uses [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
+
+
+Inside the project do:
+
+```sh
+$ cd wikum/
+$ virtualenv wikum
+$ mkdir /opt/wikum
+$ echo "true" > /dev/wikum/debug
+$ echo "dev" > /dev/wikum/env
+
 ```
 
-13. Inside private.py, paste this to connect to the remote database, then `:wq`: 
-	```
-	MYSQL_LOCAL = {
-	    'NAME' : 'wikum',
-	    'USER' : 'admin',
-	    'PASSWORD' : 'somepassword',
-	    'HOST' : 'localhost',  
-	}
-	```
-	
+Now, you should create a local database:
 
-14. `python manage.py runserver`
+```sh
+$ sudo mysql
+> CREATE USER 'myUser'@'localhost' IDENTIFIED BY 'myPassword';
+> CREATE DATABASE wikum;
+> USE wikum;
+> GRANT ALL PRIVILEGES ON wikum.* TO 'myUser'@'localhost';
+
+```
+
+Input this on-line command in order to create a file named **private.py**, this file will set the configuration for connecting your local database. 
+*Note that you should replace 'myUser' and 'myPassword' with the ones you've just created*.
+
+```sh
+$ echo "MYSQL_PROD = {
+        'NAME' : 'wikum',
+        'USER' : 'myUser',
+        'PASSWORD' : 'myPassword',
+        'HOST' : 'localhost',  
+    }
+
+    SECRET_KEY = ''
+    DISQUS_API_KEY = ''
+
+    " > private.py
+```
+
+In order to follow the correct Django configuration you should create a strong secret key (assign a long string to the SECRET_KEY variable).
+
+After this you should create the tables for the database:
+
+```sh
+$ python manage.py syncdb
+```
+
+Then visit [http://localhost:8000/](http://localhost:8000/)
+
+
+## Usage
+
+Once you have Wikum locally installed you can start developing. 
+Follow this link to find a [video](#usage) description of the Wikum project.
+
+
+## Maintainers
+
+[@Amyxzhang](https://github.com/amyxzhang).
+
+## Contribute
+
+Feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
+
+
