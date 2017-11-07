@@ -29,7 +29,7 @@ This repository contains:
 
 ## Install
 
-This project uses [python](http://nodejs.org), [pip](https://pip.pypa.io/en/stable/installing/), [MySQL](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
+This project uses [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
 
 
 Inside the project do:
@@ -38,8 +38,8 @@ Inside the project do:
 $ cd wikum/
 $ virtualenv wikum
 $ mkdir /opt/wikum
-$ echo "true" > /opt/wikum/debug
-$ echo "prod" > /opt/wikum/env
+$ echo "true" > /dev/wikum/debug
+$ echo "dev" > /dev/wikum/env
 
 ```
 
@@ -94,9 +94,5 @@ Follow this link to find a [video](spec.md) description of the Wikum project.
 
 ## Contribute
 
-Feel free to dive in! [Open an issue](https://github.com/RichardLitt/standard-readme/issues/new) or submit PRs.
-
-Standard Readme follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
-
-## License
+Feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
 
