@@ -78,7 +78,8 @@ def get_article(url, source, num):
             url_parts = url.split('/proposals/')
             id = url_parts[1].split('-')[0]
             title = url_parts[1]
-            link = urllib2.unquote(url)            
+            link = urllib2.unquote(url)         
+            print 'aaaa'   
 
         article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
     else:
