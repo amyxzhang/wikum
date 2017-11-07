@@ -19,9 +19,7 @@ def get_article(url, source, num):
     article = Article.objects.filter(url=url)
     if article.count() == 0:
 
-        print 'ptest ' + str(source.source_name)
-
-        if source.source_name == "The Atlantic":
+       if source.source_name == "The Atlantic":
             
             url = url.strip().split('?')[0]
             
