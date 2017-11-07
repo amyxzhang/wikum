@@ -71,7 +71,7 @@ $ echo "MYSQL_PROD = {
     " > private.py
 ```
 
-In order to follow the correct Django configuration you should create a strong secret key (add a long string to the SECRET_KEY variable).
+In order to follow the correct Django configuration you should create a strong secret key (assign a long string to the SECRET_KEY variable).
 
 After this you should create the tables for the database:
 
