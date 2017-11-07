@@ -54,7 +54,8 @@ $ sudo mysql
 
 ```
 
-Input this on-line command in order to create a file named **private.py**, this file will set the configuration for connecting your local database. Note that you should replace the 'myUser' and 'myPassword' with the ones you've just created:
+Input this on-line command in order to create a file named **private.py**, this file will set the configuration for connecting your local database. 
+*Note that you should replace 'myUser' and 'myPassword' with the ones you've just created*:
 
 ```sh
 $ echo "MYSQL_PROD = {
