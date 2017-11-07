@@ -14,6 +14,10 @@ COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&th
 
 DECIDE_CALL = '{ proposal(id: %s) { id cached_votes_up comments_count confidence_score description external_url geozone { id name } hot_score public_author { id username } public_created_at retired_at retired_explanation retired_reason summary tags(first: 10) { edges { node { id name } } } comments(first: 50, after: "%s") { pageInfo { hasNextPage endCursor } edges { node { public_author { id username } body ancestry } } } title video_url } }'
 
+
+    
+
+
 _CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
 _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
 
@@ -345,10 +349,8 @@ def count_replies(article):
 def get_decide_proposal_posts(article, current_task, total_count):
     decide_comment_call = DECIDE_CALL % (article.disqus_id, '')
           
-    print str(decide_comment_call)
-
-    result = urllib2.urlopen(decide_comment_call)
-    result = json.load(result)
+    r = requests.post('https://decide.madrid.es/graphql', data = {'query': decide_comment_call})
+    result = json.load(result.content)
 
     count = import_decide_proposal_posts(result, article)
     
@@ -364,9 +366,11 @@ def get_decide_proposal_posts(article, current_task, total_count):
     while result['data']['proposal']['comments']['pageInfo']['endCursor']:
         next = result['data']['proposal']['comments']['pageInfo']['endCursor']
         decide_comment_call_cursor = decide_comment_call = DECIDE_CALL % (article.disqus_id, next)
+
+
         
-        result = urllib2.urlopen(decide_comment_call_cursor)
-        result = json.load(result)
+        r = requests.post('https://decide.madrid.es/graphql', data = {'query': decide_comment_call_cursor})
+        result = json.load(result.content)
         
         count = import_decide_proposal_posts(result, article)
         
