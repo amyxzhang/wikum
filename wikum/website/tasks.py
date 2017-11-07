@@ -10,6 +10,9 @@ def import_article(url):
     connection.close()
     
     source = get_source(url)
+
+    print source
+
     if source:
         article = get_article(url, source, 0)
         if article:
