@@ -1,7 +1,5 @@
 # WIKUM
 
-
-
 > A tool for summarizing and exploring long comment threads.
 
 Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest. In this repository, we document the [Wikum tool](http://wikum.csail.mit.edu) that enables a large population of readers or editors to produce a summary tree that enables a reader to explore distinct subtopics at multiple levels of detail based on their interests.
@@ -29,7 +27,7 @@ This repository contains:
 
 ## Install
 
-This project uses [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
+This project uses [python2.7](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
 
 
 Inside the project do:
@@ -94,6 +92,5 @@ Follow this link to find a [video](#usage) description of the Wikum project.
 
 ## Contribute
 
-Feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
-
+Before you get started, please review our [contributor guidelines](/CONTRIBUTING.md), after that feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
 
