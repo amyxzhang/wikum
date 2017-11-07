@@ -342,7 +342,7 @@ def count_replies(article):
             c.save()
 
 
-def get_disqus_posts(article, current_task, total_count):
+def get_decide_proposal_posts(article, current_task, total_count):
     decide_comment_call = DECIDE_CALL % (article.disqus_id, '')
             
     result = urllib2.urlopen(decide_comment_call)
