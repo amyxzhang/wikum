@@ -1,6 +1,9 @@
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/haystack/wikum)
+
 # WIKUM
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 > A tool for summarizing and exploring long comment threads.
 
@@ -44,3 +47,5 @@ Before you get started, please review our [contributor guidelines](/CONTRIBUTING
 If you'll be working on a coding issue, follow the [coding setup](/coding_setup.md)instructions to get a local version of the project up and running.
 
 ## License
+
+[MIT](LICENSE) 
