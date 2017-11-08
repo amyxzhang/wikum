@@ -29,10 +29,11 @@
 			                    	
 			                    	{% endif %}
 
+
+						{% if articles %}
                     		<BR>
                     		<BR>
                     		<div>
-                    		
                     		
                     		<ul id="post-list-table">
                     			<li class="first-row-item">
@@ -63,6 +64,19 @@
 								  						</strong>
 								  					{% else %}
 								  						<a href="\?sort=source">Source</a>
+								  					{% endif %}
+								  				</span>
+								  				<span class="owner">
+								  					{% if sort == "owner" %}
+								  						<strong>
+								  							<a href="\?sort=-owner">Owner</a>
+								  						</strong>
+								  					{% elif sort == "-owner" %}
+								  						<strong>
+								  							<a href="\?sort=owner">Owner</a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="\?sort=owner">Owner</a>
 								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
@@ -137,6 +151,23 @@
 								  						{{a.source.source_name}}
 								  					{% endif %}
 								  				</span>
+								  				<span class="owner">
+								  					{% if sort == "owner" or sort == "-owner" %}
+								  						<strong>
+								  							{% if a.owner == user %}
+								  								me
+								  							{% else %}
+								  								{{a.owner}}
+								  							{% endif %}
+								  						</strong>
+								  					{% else %}
+								  						{% if a.owner == user %}
+								  								me
+								  							{% else %}
+								  								{{a.owner}}
+								  							{% endif %}
+								  					{% endif %}
+								  				</span>
 												<span class="ellipsis">
 													{{ a.title }}
 												</span>
@@ -170,6 +201,8 @@
 							 
 							 	</ul>
 							 </div>
+							 
+							 {% endif %}
                
 						</p>
                     </div>

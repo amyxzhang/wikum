@@ -22,16 +22,21 @@ from wikimarkup import parse
 import parse_helper
 import math
 import json
+from django.db.models import Q
 
 @render_to('website/index.html')
 def index(request):
-    
+    user = request.user
     sort = request.GET.get('sort')
-    
-    if not sort:
-        sort = '-percent_complete'
-    
-    a = Article.objects.all().order_by(sort).select_related()
+
+    if not sort and user:
+        a_1 = list(Article.objects.filter(owner=user).order_by('-percent_complete').select_related())
+        a_2 = list(Article.objects.filter(~Q(owner=user)).order_by('-percent_complete').select_related())
+        a = a_1 + a_2
+    else:
+        if not sort:
+            sort = '-percent_complete'
+        a = Article.objects.all().order_by(sort).select_related()
     
     for art in a:
         art.url = re.sub('#', '%23', art.url)
@@ -39,6 +44,7 @@ def index(request):
 
     resp = {'page': 'index',
             'articles': a,
+            'user': user,
             'sort': sort}
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
@@ -49,10 +55,12 @@ def index(request):
 
 @render_to('website/visualization.html')
 def visualization(request):
+    user = request.user
     url = request.GET['article']
     num = int(request.GET.get('num', 0))
     article = Article.objects.filter(url=url)[num]
     return {'article': article,
+            'user': user,
             'source': article.source}
 
 @csrf_exempt    
