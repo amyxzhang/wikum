@@ -14,8 +14,10 @@ COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&th
 _CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
 _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
 
-def get_article(url, source, num):
-    article = Article.objects.filter(url=url)
+def get_article(url, user, source, num):
+    
+    article = Article.objects.filter(url=url, owner=user)
+    
     if article.count() == 0:
         if source.source_name == "The Atlantic":
             
@@ -71,7 +73,8 @@ def get_article(url, source, num):
                 title = title + ' - ' + section_title
 
             link = urllib2.unquote(url)
-        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
+
+        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, owner=user)
     else:
         article = article[num]
         

@@ -23,6 +23,7 @@ import parse_helper
 import math
 import json
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 @render_to('website/index.html')
 def index(request):
@@ -56,9 +57,14 @@ def index(request):
 @render_to('website/visualization.html')
 def visualization(request):
     user = request.user
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     url = request.GET['article']
     num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url)[num]
+    article = Article.objects.filter(url=url, owner=owner)[num]
     return {'article': article,
             'user': user,
             'source': article.source}
@@ -88,7 +94,7 @@ def poll_status(request):
                 data['result'] = "That source is not supported."
                 data['state'] = 'FAILURE'
             else:
-                a = Article.objects.filter(url=request.session['url'])
+                a = Article.objects.filter(url=request.session['url'], owner=request.session['owner'])
                 if a.exists():
                     comment_count = a[0].comment_set.count()
                     if comment_count == 0:
@@ -103,14 +109,19 @@ def poll_status(request):
     
 
 def import_article(request):
+    user = request.user
+    if user.is_anonymous():
+        user = None
+        
     data = 'Fail'
     if request.is_ajax():
         from tasks import import_article
         url = request.GET['article']
-        job = import_article.delay(url)
+        job = import_article.delay(url, user)
         
         request.session['task_id'] = job.id
         request.session['url'] = url
+        request.session['owner'] = user
         data = job.id
     else:
         data = 'This is not an ajax request!'
@@ -121,6 +132,11 @@ def import_article(request):
 
     
 def summary_page(request):
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     url = request.GET['article']
     next = request.GET.get('next')
     num = int(request.GET.get('num', 0))
@@ -130,8 +146,9 @@ def summary_page(request):
     else:
         next = int(next)
         
-    source = get_source(url)    
-    article = get_article(url, source, num)
+    source = get_source(url) 
+        
+    article = get_article(url, owner, source, num)
     
     posts = get_posts(article)
     article.url = re.sub('&', '%26', article.url)
@@ -165,10 +182,18 @@ def summary4(request):
     
 def summary_data(request):
     url = urllib2.unquote(request.GET['article'])
+    
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+        
     num = int(request.GET.get('num', 0))
     sort = request.GET.get('sort', 'id')
     
-    a = Article.objects.filter(url=url)[num]
+    
+    a = Article.objects.filter(url=url, owner=owner)[num]
     
     next = request.GET.get('next')
     if not next:
@@ -195,18 +220,28 @@ def summary_data(request):
 @render_to('website/subtree.html')
 def subtree(request):
     url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url)[num]
+    article = Article.objects.filter(url=url, owner=owner)[num]
     return {'article': article,
             'source': article.source}
 
 @render_to('website/cluster.html')
 def cluster(request):
     url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url)[num]
+    article = Article.objects.filter(url=url, owner=owner)[num]
     
     return {'article': article,
             'source': article.source}
@@ -987,9 +1022,14 @@ def history(request):
     
 def tags(request):
     article_url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     
@@ -1008,6 +1048,11 @@ def determine_is_collapsed(post, article):
 
 def viz_data(request):
     article_url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     sort = request.GET.get('sort')
     next = request.GET.get('next')
     filter = request.GET.get('filter', '')
@@ -1022,7 +1067,7 @@ def viz_data(request):
     
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -1086,10 +1131,17 @@ def cluster_data(request):
     import numpy as np
     
     article_url = request.GET['article']
+    
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    
     cluster_size = int(request.GET.get('size'))
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -1177,12 +1229,17 @@ def subtree_data(request):
     article_url = request.GET['article']
     sort = request.GET.get('sort', None)
     next = request.GET.get('next', None)
+    owner = request.GET.get('owner', None)
+    if owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     
     comment_id = request.GET.get('comment_id', None)
     
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
 
     least = 2
     most = 6

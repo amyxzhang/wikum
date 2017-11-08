@@ -6,12 +6,12 @@ from website.import_data import get_source, get_article, get_disqus_posts,\
 from django.db import connection
 
 @shared_task()
-def import_article(url):
+def import_article(url, user):
     connection.close()
     
     source = get_source(url)
     if source:
-        article = get_article(url, source, 0)
+        article = get_article(url, user, source, 0)
         if article:
             posts = article.comment_set
             total_count = 0

@@ -8,6 +8,7 @@ delete_summary_node_ids = [];
 current_summarize_d_id = [];
 
 var article_url = getParameterByName('article');
+var owner = getParameterByName('owner');
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
@@ -309,7 +310,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  prefetch: {
-	  	url:'/tags?article=' + article_url + '&num=' + num,
+	  	url:'/tags?article=' + article_url + '&num=' + num + '&owner=' + owner,
 	  	cache: false,
 	  }
 	});
@@ -1985,7 +1986,7 @@ function make_filter() {
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  prefetch: {
-	  	url:'/tags?article=' + article_url + '&num=' + num,
+	  	url:'/tags?article=' + article_url + '&num=' + num + '&owner=' + owner,
 	  	cache: false,
 	  }
 	});
@@ -2003,7 +2004,7 @@ function make_filter() {
 	$('#inputFilter').keypress(function(e) {
 	    if(e.which == 13) {
 		    filter = $('#inputFilter').val();
-	        window.location.href = '/visualization?article=' + article_url + '&num=' + num + '&filter=' + filter;
+	        window.location.href = '/visualization?article=' + article_url + '&num=' + num + '&filter=' + filter + '&owner=' + owner;
 	    }
 	});
 }
@@ -2766,11 +2767,11 @@ function construct_comment(d) {
 		text += '<BR><div id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
 			if (is_dark(d.tags[i][1])) {
-				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&filter=' + d.tags[i][0] + '">';
+				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			} else {
-				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&filter=' + d.tags[i][0] + '">';
+				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #000000; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			}
@@ -3130,7 +3131,7 @@ function showdiv(d) {
 				if (text != '') {
 					text += '<BR>';
 				}
-				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
+				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
 				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 				if (d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
@@ -3182,14 +3183,14 @@ function showdiv(d) {
 
 			if (d.article) {
 				if (window.location.href.indexOf('/subtree') > -1) {
-					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '">See Entire Discussion</a>';
+					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '">See Entire Discussion</a>';
 				}
 			} else {
 				if (comment_id != d.d_id) {
 					if (text != '') {
 						text += '<BR>';
 					}
-					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num +'">See Isolated Subtree</a>';
+					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner +'">See Isolated Subtree</a>';
 				
 
 				}
@@ -3241,7 +3242,7 @@ function hide_replace_nodes(id) {
 	}
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
+		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 	}
 	if (text != '') {
@@ -3266,7 +3267,7 @@ function show_replace_nodes(id) {
 
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '">See Isolated Subtree</a>';
+		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 
 	}
