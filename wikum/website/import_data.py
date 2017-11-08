@@ -554,7 +554,7 @@ def import_decide_proposal_posts(result, article):
 
 
             if anonymous:
-                comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_decide=True)
             else:
                 author_id = response['public_author']['id']
                 print 'aaaa ' + str(author_id)               
@@ -570,6 +570,7 @@ def import_decide_proposal_posts(result, article):
                                                           real_name = response['author']['username'],
                                                           anonymous = anonymous,
                                                           disqus_id = author_id,
+                                                          is_decide=True
                                                           )
                                                           
             
