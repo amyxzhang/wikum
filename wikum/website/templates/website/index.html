@@ -29,10 +29,11 @@
 			                    	
 			                    	{% endif %}
 
+
+						{% if articles %}
                     		<BR>
                     		<BR>
                     		<div>
-                    		
                     		
                     		<ul id="post-list-table">
                     			<li class="first-row-item">
@@ -63,6 +64,19 @@
 								  						</strong>
 								  					{% else %}
 								  						<a href="\?sort=source">Source</a>
+								  					{% endif %}
+								  				</span>
+								  				<span class="owner">
+								  					{% if sort == "owner" %}
+								  						<strong>
+								  							<a href="\?sort=-owner">Owner</a>
+								  						</strong>
+								  					{% elif sort == "-owner" %}
+								  						<strong>
+								  							<a href="\?sort=owner">Owner</a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="\?sort=owner">Owner</a>
 								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
@@ -111,7 +125,7 @@
 								
                     				
 							  	{% for a in articles %}
-							  	<a href="/summary?article={{ a.url }}&num={{ a.num }}">
+							  	<a href="/summary?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">
 								
 							  		<li class="row-item">
 							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
@@ -135,6 +149,23 @@
 								  						</strong>
 								  					{% else %}
 								  						{{a.source.source_name}}
+								  					{% endif %}
+								  				</span>
+								  				<span class="owner">
+								  					{% if sort == "owner" or sort == "-owner" %}
+								  						<strong>
+								  							{% if a.owner == user %}
+								  								me
+								  							{% else %}
+								  								{{a.owner}}
+								  							{% endif %}
+								  						</strong>
+								  					{% else %}
+								  						{% if a.owner == user %}
+								  								me
+								  							{% else %}
+								  								{{a.owner}}
+								  							{% endif %}
 								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
@@ -170,6 +201,8 @@
 							 
 							 	</ul>
 							 </div>
+							 
+							 {% endif %}
                
 						</p>
                     </div>
@@ -331,8 +364,12 @@ of detail based on their interests.
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
+ 					var owner = $('#owner').text();
+ 					if (!owner) {
+ 						owner = 'None';
+ 					}
  					article = article.replace('#', '%23').replace('&', '%26');
-  					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+  					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
   				}
@@ -346,10 +383,15 @@ of detail based on their interests.
     
     	function submiturl() {
     		var article = $('#articleUrl').val();
+    		var owner = $('#owner').text();
+    		if (!owner) {
+    			owner = "None";
+    		}
 			$.ajax({
 				url: "import_article",
 				data: {
 					'article': article,
+					'owner': owner,
 				},
 				success: function(res){
 					console.log(res);

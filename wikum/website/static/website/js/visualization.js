@@ -160,6 +160,7 @@ svg.append('svg:rect')
 var nodes_all = null;
 
 var article_url = getParameterByName('article');
+var owner = getParameterByName('owner');
 article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
@@ -185,7 +186,7 @@ if (!filter) {
 
 var comment_id = null;
 
-d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}`, function(error, flare) {
+d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -211,9 +212,9 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
 
  $('#button_subtree').html(`
     <a class="btn-sm btn-default" disabled>Overall</a>
-    <a class="btn-sm btn-default" href="/subtree?article=${article_url}&num=${num}">Subtree</a>
-    <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}">Cluster</a>-->
-    <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}">Summary</a>
+    <a class="btn-sm btn-default" href="/subtree?article=${article_url}&num=${num}&owner=${owner}">Subtree</a>
+    <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}&owner=${owner}">Cluster</a>-->
+    <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}&owner=${owner}">Summary</a>
     <a class="btn-sm btn-default" href="/history?article=${article_id}">Edit History</a>`);
 });
 
@@ -238,7 +239,7 @@ function make_dropdown() {
 	}
 
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/visualization?article=" + article_url + '&sort=';
+	url = "/visualization?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
 	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
 
 
@@ -250,7 +251,7 @@ function make_dropdown() {
 	}
 	if (count == 25) {
 		next_sub = next + 1;
-		text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
+		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
 	}
 	
 	$('#node_sort').html(text);

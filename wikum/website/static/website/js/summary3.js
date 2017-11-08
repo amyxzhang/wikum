@@ -51,10 +51,11 @@ $(document).ready(function () {
 	if (!num) {
 		num = 0;
 	}
+	var owner = getParameterByName('owner');
 	
 	$.ajax({ 
 	    type: 'GET', 
-	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num, 
+	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num + '&owner=' + owner, 
 	    dataType: 'json',
 	    success: function (data) { 
 	    	

@@ -46,6 +46,8 @@ class Article(models.Model):
     # There are some cases when wikicode does not parse a section as a section when given a whole page.
     # To prevent this, we first grab only the section(not the entire page) using "section_index" and parse it.
     section_index = models.IntegerField(default=0)
+    
+    owner = models.ForeignKey(User, null=True)
 
     def __unicode__(self):
         return self.title
@@ -112,7 +114,8 @@ class Comment(models.Model):
     
     vector = models.BinaryField()
     
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, related_name="comments")
+    suggested_tags = models.ManyToManyField(Tag, related_name="suggested_comments")
 
     def __unicode__(self):
         return 'Comment by %s on %s' % (self.author, self.article.title)

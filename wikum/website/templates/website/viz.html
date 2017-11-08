@@ -5,17 +5,31 @@
 <header id="title_info">
 	<h1>{{ article.title }}</h1>
 	
-	<div class="btn btn-sm btn-primary" style="cursor: default; float: right; margin-right: 20px;" id="access_mode">
-		{% if article.access_mode == 1 %}
-			Edit Access
-		{% elif article.access_mode == 2 %}
-			Comment Access
-		{% elif article.access_mode == 3 %}
-			View Access
-		{% elif article.access_mode == 4 %}
-			Private Access
-		{% endif %}
-	</div>
+	{% if user == article.owner %}
+		<div class="btn btn-sm btn-primary" style="cursor: hand; float: right; margin-right: 20px;" id="access_mode">
+			{% if article.access_mode == 1 %}
+				Edit Access
+			{% elif article.access_mode == 2 %}
+				Comment Access
+			{% elif article.access_mode == 3 %}
+				View Access
+			{% elif article.access_mode == 4 %}
+				Private Access
+			{% endif %}
+		</div>
+	{% else %}
+		<div class="btn btn-sm btn-primary" style="cursor: default; float: right; margin-right: 20px;" id="access_mode">
+			{% if article.access_mode == 1 %}
+				Edit Access
+			{% elif article.access_mode == 2 %}
+				Comment Access
+			{% elif article.access_mode == 3 %}
+				View Access
+			{% elif article.access_mode == 4 %}
+				Private Access
+			{% endif %}
+		</div>
+	{% endif %}
 	
 	<label class="progress-label"><span>0</span>% of this page summarized
 		<progress value="20" max="100"></progress>
