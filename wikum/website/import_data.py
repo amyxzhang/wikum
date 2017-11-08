@@ -565,9 +565,11 @@ def import_decide_proposal_posts(result, article):
                 if comment_author.count() > 0:
                     comment_author = comment_author[0]
                 else:
-                    
-                    comment_author,_ = CommentAuthor.objects.get_or_create(username = response['public_author']['username'],
-                                                          real_name = response['public_author']['username'],
+                    real_name = ''
+                    if not response['public_author']['username'] is None:
+                        real_name = response['public_author']['username']
+                    comment_author,_ = CommentAuthor.objects.get_or_create(username = real_name,
+                                                          real_name = real_name,
                                                           anonymous = anonymous,
                                                           disqus_id = author_id,
                                                           is_decide=True
