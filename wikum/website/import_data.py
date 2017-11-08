@@ -542,18 +542,24 @@ def import_decide_proposal_posts(result, article):
             
             count += 1
 
+
             anonymous = not 'public_author' in response or not 'id' in response['public_author']
             if anonymous:
                 comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             else:
                 author_id = response['public_author']['id']
-
-
-            if comment_author.count() > 0:
-                comment_author = comment_author[0]
-            else:                    
-                comment_author,_ = CommentAuthor.objects.get_or_create(username = response['public_author']['username']
+                
+                comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+                if comment_author.count() > 0:
+                    comment_author = comment_author[0]
+                else:
+                    
+                    comment_author,_ = CommentAuthor.objects.get_or_create(username = response['author']['username'],
+                                                          real_name = response['author']['username'],
+                                                          anonymous = anonymous,
+                                                          disqus_id = author_id,
                                                           )
+                                                          
             
             parent = None
             if not response['ancestry'] is None:
