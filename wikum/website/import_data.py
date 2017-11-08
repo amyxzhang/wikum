@@ -544,6 +544,8 @@ def import_decide_proposal_posts(result, article):
             
             if not 'public_author' in response:
                 comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
+            elif not 'id' in response['public_author']:
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             else:
                 author_id = response['public_author']['id']
                 
