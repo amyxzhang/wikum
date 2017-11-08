@@ -97,7 +97,7 @@ def poll_status(request):
                 if request.session['owner'] == "None":
                     owner = None
                 else:
-                    owner = User.objects.get(username=owner)
+                    owner = User.objects.get(username=request.session['owner'])
                 
                 a = Article.objects.filter(url=request.session['url'], owner=owner)
                 if a.exists():
