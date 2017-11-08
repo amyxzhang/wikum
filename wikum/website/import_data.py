@@ -566,8 +566,8 @@ def import_decide_proposal_posts(result, article):
                     comment_author = comment_author[0]
                 else:
                     
-                    comment_author,_ = CommentAuthor.objects.get_or_create(username = response['author']['username'],
-                                                          real_name = response['author']['username'],
+                    comment_author,_ = CommentAuthor.objects.get_or_create(username = response['public_author']['username'],
+                                                          real_name = response['public_author']['username'],
                                                           anonymous = anonymous,
                                                           disqus_id = author_id,
                                                           is_decide=True
