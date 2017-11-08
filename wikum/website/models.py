@@ -145,6 +145,8 @@ class CommentAuthor(models.Model):
     edit_count = models.IntegerField(default=0)
     gender = models.CharField(max_length=15, null=True)
     groups = models.TextField(null=True)
+
+    is_decide = models.BooleanField(default=False)
     
     def __unicode__(self):
         if self.anonymous:
