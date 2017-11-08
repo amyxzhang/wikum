@@ -108,14 +108,13 @@ def poll_status(request):
     return HttpResponse(json_data, content_type='application/json')
     
 
-def import_article(request):
-    user = request.user
-    if user.is_anonymous():
-        user = None
-        
+def import_article(request):       
     data = 'Fail'
     if request.is_ajax():
         from tasks import import_article
+        user = request.user
+        if user.is_anonymous():
+            user = None
         url = request.GET['article']
         job = import_article.delay(url, user)
         
