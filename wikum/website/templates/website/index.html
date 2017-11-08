@@ -364,7 +364,7 @@ of detail based on their interests.
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
- 					var owner = $('#owner').val();
+ 					var owner = $('#owner').text();
  					if (!owner) {
  						owner = 'None';
  					}
@@ -383,7 +383,7 @@ of detail based on their interests.
     
     	function submiturl() {
     		var article = $('#articleUrl').val();
-    		var owner = $('#owner').val();
+    		var owner = $('#owner').text();
     		if (!owner) {
     			owner = "None";
     		}
