@@ -94,7 +94,12 @@ def poll_status(request):
                 data['result'] = "That source is not supported."
                 data['state'] = 'FAILURE'
             else:
-                a = Article.objects.filter(url=request.session['url'], owner=request.session['owner'])
+                if request.session['owner'] == "None":
+                    owner = None
+                else:
+                    owner = User.objects.get(username=owner)
+                
+                a = Article.objects.filter(url=request.session['url'], owner=owner)
                 if a.exists():
                     comment_count = a[0].comment_set.count()
                     if comment_count == 0:
