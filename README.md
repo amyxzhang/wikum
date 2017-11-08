@@ -1,3 +1,6 @@
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/haystack/wikum) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # WIKUM
 
 
@@ -19,67 +22,11 @@ This repository contains:
 ## Table of Contents
 
 - [Background](#background)
-- [Installation](#install)
 - [Usage](#usage)
 - [Contribute](#contribute)
 - [License](#license)
 
 ## Background
-
-
-## Install
-
-This project uses [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
-
-
-Inside the project do:
-
-```sh
-$ cd wikum/
-$ virtualenv wikum
-$ mkdir /opt/wikum
-$ echo "true" > /dev/wikum/debug
-$ echo "dev" > /dev/wikum/env
-
-```
-
-Now, you should create a local database:
-
-```sh
-$ sudo mysql
-> CREATE USER 'myUser'@'localhost' IDENTIFIED BY 'myPassword';
-> CREATE DATABASE wikum;
-> USE wikum;
-> GRANT ALL PRIVILEGES ON wikum.* TO 'myUser'@'localhost';
-
-```
-
-Input this on-line command in order to create a file named **private.py**, this file will set the configuration for connecting your local database. 
-*Note that you should replace 'myUser' and 'myPassword' with the ones you've just created*.
-
-```sh
-$ echo "MYSQL_PROD = {
-        'NAME' : 'wikum',
-        'USER' : 'myUser',
-        'PASSWORD' : 'myPassword',
-        'HOST' : 'localhost',  
-    }
-
-    SECRET_KEY = ''
-    DISQUS_API_KEY = ''
-
-    " > private.py
-```
-
-In order to follow the correct Django configuration you should create a strong secret key (assign a long string to the SECRET_KEY variable).
-
-After this you should create the tables for the database:
-
-```sh
-$ python manage.py syncdb
-```
-
-Then visit [http://localhost:8000/](http://localhost:8000/)
 
 
 ## Usage
@@ -94,6 +41,11 @@ Follow this link to find a [video](#usage) description of the Wikum project.
 
 ## Contribute
 
-Feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
+Before you get started, please review our [contributor guidelines](/CONTRIBUTING.md), if you agree with all of the terms and conditions then feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
 
 
+If you'll be working on a coding issue, follow the [coding setup](/coding_setup.md) instructions to get a local version of the project up and running.
+
+## License
+
+[MIT](/CONTRIBUTING.md) 
