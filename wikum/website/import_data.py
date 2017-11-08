@@ -552,12 +552,17 @@ def import_decide_proposal_posts(result, article):
             elif response['public_author']['id'] is None:
                 anonymous = True
 
+
+
             if anonymous:
                 comment_author = CommentAuthor.objects.get(disqus_id='anonymous')
             else:
                 author_id = response['public_author']['id']
-                
-                comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+                print 'aaaa ' + str(author_id)               
+                comment_author = CommentAuthor.objects.filter(disqus_id=author_id)                
+                print 'bbbb ' + str(comment_author)               
+
+
                 if comment_author.count() > 0:
                     comment_author = comment_author[0]
                 else:
