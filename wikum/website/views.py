@@ -29,7 +29,7 @@ def index(request):
     user = request.user
     sort = request.GET.get('sort')
 
-    if not sort and user:
+    if not sort and not user.is_anonymous():
         a_1 = list(Article.objects.filter(owner=user).order_by('-percent_complete').select_related())
         a_2 = list(Article.objects.filter(~Q(owner=user)).order_by('-percent_complete').select_related())
         a = a_1 + a_2
