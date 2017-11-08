@@ -1,6 +1,0 @@
-[console_scripts]
-breadability = breadability.scripts.client:main
-breadability-2.7 = breadability.scripts.client:main
-breadability_test = breadability.scripts.test_helper:main
-breadability_test-2.7 = breadability.scripts.test_helper:main
-

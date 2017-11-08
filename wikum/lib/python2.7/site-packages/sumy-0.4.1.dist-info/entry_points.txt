@@ -1,6 +1,0 @@
-[console_scripts]
-sumy = sumy.__main__:main
-sumy-3.5 = sumy.__main__:main
-sumy_eval = sumy.evaluation.__main__:main
-sumy_eval-3.5 = sumy.evaluation.__main__:main
-

@@ -1,3 +1,0 @@
-[console_scripts]
-praw-multiprocess = praw.multiprocess:run
-
