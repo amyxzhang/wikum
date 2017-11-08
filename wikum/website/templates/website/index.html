@@ -379,10 +379,15 @@ of detail based on their interests.
     
     	function submiturl() {
     		var article = $('#articleUrl').val();
+    		var owner = $('#owner').val();
+    		if (!owner) {
+    			owner = "None";
+    		}
 			$.ajax({
 				url: "import_article",
 				data: {
 					'article': article,
+					'owner': owner,
 				},
 				success: function(res){
 					console.log(res);

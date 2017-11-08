@@ -112,15 +112,13 @@ def import_article(request):
     data = 'Fail'
     if request.is_ajax():
         from tasks import import_article
-        user = request.user
-        if user.is_anonymous():
-            user = None
+        owner = request.GET['owner']
         url = request.GET['article']
-        job = import_article.delay(url, user)
+        job = import_article.delay(url, owner)
         
         request.session['task_id'] = job.id
         request.session['url'] = url
-        request.session['owner'] = user
+        request.session['owner'] = owner
         data = job.id
     else:
         data = 'This is not an ajax request!'
