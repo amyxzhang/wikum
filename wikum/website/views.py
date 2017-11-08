@@ -58,7 +58,7 @@ def index(request):
 def visualization(request):
     user = request.user
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -135,7 +135,7 @@ def import_article(request):
     
 def summary_page(request):
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -186,7 +186,7 @@ def summary_data(request):
     url = urllib2.unquote(request.GET['article'])
     
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -223,7 +223,7 @@ def summary_data(request):
 def subtree(request):
     url = request.GET['article']
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -237,7 +237,7 @@ def subtree(request):
 def cluster(request):
     url = request.GET['article']
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -1025,7 +1025,7 @@ def history(request):
 def tags(request):
     article_url = request.GET['article']
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -1051,7 +1051,7 @@ def determine_is_collapsed(post, article):
 def viz_data(request):
     article_url = request.GET['article']
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -1135,7 +1135,7 @@ def cluster_data(request):
     article_url = request.GET['article']
     
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
@@ -1232,7 +1232,7 @@ def subtree_data(request):
     sort = request.GET.get('sort', None)
     next = request.GET.get('next', None)
     owner = request.GET.get('owner', None)
-    if owner == "None":
+    if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
