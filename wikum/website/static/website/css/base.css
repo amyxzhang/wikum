@@ -62,18 +62,22 @@ footer p {
 
 .source {
 	position: relative;
-	top: -6px;
 	width: 120px;
 	display: inline-block;
 	margin-right: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .owner {
 	position: relative;
-	top: -6px;
 	width: 90px;
 	display: inline-block;
 	margin-right: 20px;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .blurb {
