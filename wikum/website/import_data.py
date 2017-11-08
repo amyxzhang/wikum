@@ -554,7 +554,7 @@ def import_decide_proposal_posts(result, article):
                 comment_author,_ = CommentAuthor.objects.get_or_create(username = response['public_author']['username']
                                                           )
             
-            parent = article.disqus_id
+            parent = None
             if not response['ancestry'] is None:
                 parent = response['ancestry'].split('/')[-1]
 
