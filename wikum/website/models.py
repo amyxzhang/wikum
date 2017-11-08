@@ -114,7 +114,7 @@ class Comment(models.Model):
     
     vector = models.BinaryField()
     
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, related_name="comments")
     suggested_tags = models.ManyToManyField(Tag, related_name="suggested_comments")
 
     def __unicode__(self):
