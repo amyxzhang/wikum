@@ -115,18 +115,18 @@ def poll_status(request):
 
 def import_article(request):       
     data = 'Fail'
-    if request.is_ajax():
-        from tasks import import_article
-        owner = request.GET['owner']
-        url = request.GET['article']
-        job = import_article.delay(url, owner)
-        
-        request.session['task_id'] = job.id
-        request.session['url'] = url
-        request.session['owner'] = owner
-        data = job.id
-    else:
-        data = 'This is not an ajax request!'
+    #if request.is_ajax():
+    from tasks import import_article
+    owner = request.GET['owner']
+    url = request.GET['article']
+    job = import_article.delay(url, owner)
+    
+    request.session['task_id'] = job.id
+    request.session['url'] = url
+    request.session['owner'] = owner
+    data = job.id
+    #else:
+    #    data = 'This is not an ajax request!'
   
     json_data = json.dumps(data)
 
