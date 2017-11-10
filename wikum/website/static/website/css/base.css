@@ -34,7 +34,7 @@ footer p {
 	position: relative;
 	top: -6px;
 	display: inline-block;
-	width: 50px;
+	width: 100px;
 	margin-right: 20px;
 }
 
@@ -62,22 +62,10 @@ footer p {
 
 .source {
 	position: relative;
-	width: 120px;
+	top: -6px;
+	width: 130px;
 	display: inline-block;
 	margin-right: 20px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.owner {
-	position: relative;
-	width: 90px;
-	display: inline-block;
-	margin-right: 20px;
-	white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .blurb {
@@ -113,7 +101,7 @@ progress::-ms-fill { background: var(--bar-background); }
 .ellipsis {
     display: inline-block;
     white-space: nowrap;
-    width: 50%;
+    width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -212,3 +200,4 @@ div.gallerytext {
 ul.mw-gallery-packed-hover, ul.mw-gallery-packed-overlay, ul.mw-gallery-packed {
     text-align: center;
 }
+

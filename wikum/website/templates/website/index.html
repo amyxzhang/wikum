@@ -1,14 +1,16 @@
+
 {% extends 'website/base.html' %}
+{% load i18n %}
 {% load staticfiles %}
+
 
 {% block styles %}
 {% endblock %}
 
 
 {% block content %}
-
     <!-- Intro Header -->
-    <header class="intro">
+    <header class="intro" >
         <div class="intro-body">
             <div class="container">
                 <div class="row">
@@ -18,22 +20,21 @@
                     		<BR>
                     			<BR>
                     				
-                    				<h3>Summarize long comment threads.</h3>
+                    				<h3>{% trans "Summarize long comment threads" %}</h3>
                     				
                     				{% if user.is_authenticated %}
-                    					<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
+                    					<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ {% trans "Import Discussion" %}</a>
                     				{% else %}
-			                    		<a href="/account/login" class="btn btn-default btn-lg">Login</a> 
-			                    		<a href="/account/signup" class="btn btn-default btn-lg">Sign Up</a> 
-			                    		<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ Import Discussion</a>
+			                    		<a href="/account/login" class="btn btn-default btn-lg">{% trans "Login" %}</a> 
+			                    		<a href="/account/signup" class="btn btn-default btn-lg">{% trans "Sign Up" %}</a> 
+			                    		<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ {% trans "Import Discussion" %}</a>
 			                    	
 			                    	{% endif %}
 
-
-						{% if articles %}
                     		<BR>
                     		<BR>
                     		<div>
+                    		
                     		
                     		<ul id="post-list-table">
                     			<li class="first-row-item">
@@ -42,81 +43,68 @@
 								  					
 								  						{% if sort == "-percent_complete" %}
 								  							<strong>
-								  								<a href="\?sort=percent_complete">% Done</a>
+								  								<a href="\?sort=percent_complete">% {% trans "Done" %}</a>
 								  							</strong>
 								  						{% elif sort == "percent_complete" %}
 								  							<strong>
-								  								<a href="\?sort=-percent_complete">% Done</a>
+								  								<a href="\?sort=-percent_complete">% {% trans "Done" %}</a>
 								  							</strong>
 								  						{% else %}
-								  							<a href="\?sort=-percent_complete">% Done</a>
+								  							<a href="\?sort=-percent_complete">% {% trans "Done" %}</a>
 								  						{% endif %}
 								  					
 								  				</span>
 								  				<span class="source">
 								  					{% if sort == "source" %}
 								  						<strong>
-								  							<a href="\?sort=-source">Source</a>
+								  							<a href="\?sort=-source">  {% trans "Source" %} </a>
 								  						</strong>
 								  					{% elif sort == "-source" %}
 								  						<strong>
-								  							<a href="\?sort=source">Source</a>
+								  							<a href="\?sort=source"> {% trans "Source" %}  </a>
 								  						</strong>
 								  					{% else %}
-								  						<a href="\?sort=source">Source</a>
-								  					{% endif %}
-								  				</span>
-								  				<span class="owner">
-								  					{% if sort == "owner" %}
-								  						<strong>
-								  							<a href="\?sort=-owner">Owner</a>
-								  						</strong>
-								  					{% elif sort == "-owner" %}
-								  						<strong>
-								  							<a href="\?sort=owner">Owner</a>
-								  						</strong>
-								  					{% else %}
-								  						<a href="\?sort=owner">Owner</a>
+								  						<a href="\?sort=source">{% trans "Source" %} </a>
 								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
 													{% if sort == "title" %}
 														<strong>
-													 		<a href="\?sort=-title">Discussion</a>
+													 		<a href="\?sort=-title">{% trans "Discussion" %}</a>
 													 	</strong>
 													{% elif sort == "-title" %}
 														<strong> 
-															<a href="\?sort=title">Discussion</a>
+															<a href="\?sort=title">{% trans "Discussion" %}</a>
 														</strong>
 													{% else %}
-													 	<a href="\?sort=title">Discussion</a>
+													 	<a href="\?sort=title">{% trans "Discussion" %}</a>
 													{% endif %}
 												</span>
 												<span class="right-side">
 													<span class="comment_num" style="position: relative; left: -30px">
 														{% if sort == "-comment_num" %}
 															<strong>
-								  								<a href="\?sort=comment_num">Comments</a>
+								  								<a href="\?sort=comment_num">{% trans "Comments" %}</a>
 								  							</strong>
 								  						{% elif sort == "comment_num" %}
 								  							<strong>
-								  								<a href="\?sort=-comment_num">Comments</a>
+								  								<a href="\?sort=-comment_num">{% trans "Comments" %}</a>
 								  							</strong>
 								  						{% else %}
-								  							<a href="\?sort=-comment_num">Comments</a>
+								  							<a href="\?sort=-comment_num">{% trans "Comments" %}</a>
 								  						{% endif %}
 								  					</span>
 								  					<span class="summary_num">
 								  						{% if sort == "-summary_num" %}
 								  							<strong>
-								  								<a href="\?sort=summary_num">Summaries</a>
+								  								<a href="\?sort=summary_num">{% trans "Summaries" %}</a>
 								  							</strong>
 								  						{% elif sort == "summary_num" %}
 								  							<strong>
-								  								<a href="\?sort=summary_num">Summaries</a>
+								  								<a href="\?sort=summary_num">{% trans "Summaries" %}</a>
 								  							</strong>
 								  						{% else %}
-								  							<a href="\?sort=-summary_num">Summaries</a>
+								  							<a href="\?sort=-summary_num">{% trans "Summaries" %}</a>
 								  						{% endif %}
 								  					</span>
 								  				</span>
@@ -125,8 +113,7 @@
 								
                     				
 							  	{% for a in articles %}
-							  	<a href="/visualization?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">
-								
+							  	<a href="/visualization?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">								
 							  		<li class="row-item">
 							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
 							  			
@@ -149,23 +136,6 @@
 								  						</strong>
 								  					{% else %}
 								  						{{a.source.source_name}}
-								  					{% endif %}
-								  				</span>
-								  				<span class="owner">
-								  					{% if sort == "owner" or sort == "-owner" %}
-								  						<strong>
-								  							{% if a.owner == user %}
-								  								me
-								  							{% else %}
-								  								{{a.owner}}
-								  							{% endif %}
-								  						</strong>
-								  					{% else %}
-								  						{% if a.owner == user %}
-								  								me
-								  							{% else %}
-								  								{{a.owner}}
-								  							{% endif %}
 								  					{% endif %}
 								  				</span>
 												<span class="ellipsis">
@@ -201,8 +171,6 @@
 							 
 							 	</ul>
 							 </div>
-							 
-							 {% endif %}
                
 						</p>
                     </div>
@@ -216,38 +184,34 @@
     <section id="about" class="container content-section text-center">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
-                <h2>About Wikum</h2>
-                <p>Wikum is a tool for summarizing and exploring long comment threads.
+                <h2>{% trans "About Wikum" %}</h2>
+                <p> {% trans "Wikum is a tool for summarizing and exploring long comment threads." %} 
                 </p>
-                
-				<h4>Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization</h4>
-<P>
-Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to 
-group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest.
-In this article, we describe a workflow called <i>recursive summarization</i>, implemented in our <i>Wikum</i> prototype, that enables 
-a large population of readers or editors to work in small doses to refine out the main points of the discussion.  More than just a 
-single summary, our workflow produces a <i>summary tree</i> that enables a reader to explore distinct subtopics at multiple levels 
-of detail based on their interests.
-</P>
-									<br>
-										
-							
-											Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization. 
-											Amy X. Zhang, Lea Verou, David Karger.
-											<i>CSCW '17</i>. 
-											<br>
-									[<a href="http://people.csail.mit.edu/axz/papers/wikum.pdf">pdf</a>][<a href="http://people.csail.mit.edu/axz/wikum">slides and talk</a>]
-                
-                
+				<h4>
+					{% trans "Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization" %} 
+				</h4>
+				<P>
+					{% trans "Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to group coordination." %} 
+					{% trans "But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest.In this article, we describe a workflow called" %} 
+					<i> {% trans "recursive summarization" %}</i>
+					{% trans ", implemented in our " %} <i> Wikum </i> 
+					{% trans "prototype, that enables a large population of readers or editors to work in small doses to refine out the main points of the discussion. More than just a single summary, our workflow produces a" %} 
+					<i> {% trans  "summary tree" %}</i> {% trans "that enables a reader to explore distinct subtopics at multiple levels of detail based on their interests." %}
+				</P>
+				<br>
+					{% trans "Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization. 
+					Amy X. Zhang, Lea Verou, David Karger." %}
+				<i>CSCW '17</i>. 
+				<br>
+				[<a href="http://people.csail.mit.edu/axz/papers/wikum.pdf">pdf</a>][<a href="http://people.csail.mit.edu/axz/wikum">{% trans "slides and talk" %}</a>]
             </div>
         </div>
     </section>
-
     <!-- Contact Section -->
     <section id="contact" class="container content-section text-center">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
-                <h2>Contact Us</h2>
+                <h2>{% trans "Contact Us" %}</h2>
                 
        
 					<a href="http://people.csail.mit.edu/axz">
@@ -300,19 +264,18 @@ of detail based on their interests.
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Import a Discussion</h4>
+        <h4 class="modal-title">{% trans "Import a Discussion" %}</h4>
       </div>
       <div class="modal-body">
       	
-      	Import a new discussion by pasting an Atlantic article url, Reddit page url, or Wikipedia Talk page section url here.
-		  	
+			{% trans "Import a new discussion by pasting an Atlantic article url, Reddit page url, or Wikipedia Talk page section url here." %}
         
 		   <form>
 		  <div class="form-group">
 		  	
 		    <input type="url" class="form-control" id="articleUrl" placeholder="">
 		 	<BR>
-		 	<button type="button" class="btn btn-default" id="submiturl">Submit</button>
+		 	<button type="button" class="btn btn-default" id="submiturl">{% trans "Submit" %}</button>
 		 
 		  </div>
 		  </form>
@@ -364,12 +327,8 @@ of detail based on their interests.
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
  					var article = $('#articleUrl').val();
- 					var owner = $('#owner').text();
- 					if (!owner) {
- 						owner = 'None';
- 					}
  					article = article.replace('#', '%23').replace('&', '%26');
-  					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+  					$('.status').html(task.state + '!  <a href="/summary?article=' + article + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
   				}
@@ -383,15 +342,10 @@ of detail based on their interests.
     
     	function submiturl() {
     		var article = $('#articleUrl').val();
-    		var owner = $('#owner').text();
-    		if (!owner) {
-    			owner = "None";
-    		}
 			$.ajax({
 				url: "import_article",
 				data: {
 					'article': article,
-					'owner': owner,
 				},
 				success: function(res){
 					console.log(res);
