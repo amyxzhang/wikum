@@ -80,7 +80,7 @@ def generate_tags(article_id):
         count_vect = CountVectorizer(
             stop_words='english',
             min_df=3, max_df=0.30,
-            lowercase=True,
+            #lowercase=True,
             ngram_range=(1, 2),
         )
         X_train_counts = count_vect.fit_transform(list(tagged.train_text))
