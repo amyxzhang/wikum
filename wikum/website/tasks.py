@@ -101,7 +101,11 @@ def generate_tags(article_id):
         # add suggested tags to the database
         for c in a.comment_set.all():
             # search row with same disqus_id in df, then add content to django db
-            c.suggested_tags.add(df.loc[df['disqus_id'] == c.disqus_id])
+            if df['disqus_id'] == c.disqus_id:
+                print df.loc[df['disqus_id'] == c.disqus_id]
+                c.suggested_tags.add(df.loc[df['disqus_id'] == c.disqus_id])
+            
+            
     except Exception, e:
         print e
         
