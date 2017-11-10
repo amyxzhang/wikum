@@ -194,7 +194,6 @@ LOCALE_PATHS = (
     BASE_DIR + '/website/locale',     
 )
 
-print LOCALE_PATHS,"******************"
 DEFAULT_CHARSET = 'utf-8'
 
 
