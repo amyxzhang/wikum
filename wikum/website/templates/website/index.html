@@ -113,8 +113,7 @@
 								
                     				
 							  	{% for a in articles %}
-							  	<a href="/summary?article={{ a.url }}&num={{ a.num }}">
-								
+							  	<a href="/visualization?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">								
 							  		<li class="row-item">
 							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
 							  			
