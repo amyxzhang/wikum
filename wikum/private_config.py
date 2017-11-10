@@ -1,6 +1,6 @@
 MYSQL_PROD = {
         'NAME' : 'wikum',
-        'USER' : 'myUser',
+        'USER' : 'myUSer',
         'PASSWORD' : 'myPassword',
         'HOST' : 'localhost',  
     }
