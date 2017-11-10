@@ -78,7 +78,7 @@ msgstr ""
 
 #: website/templates/account/login.html:23
 msgid "Log in"
-msgstr ""
+msgstr "Entrar"
 
 #: website/templates/account/login.html:24
 msgid "Forgot your password?"

@@ -1,6 +1,5 @@
 .DS_Store
 *.pyc 
-/wikum/share
-/wikum/lib
-/wikum/bin
 requirements.txt
+private.py
+
