@@ -99,11 +99,15 @@ def generate_tags(article_id):
         print suggested
         
         # add suggested tags to the database
-        for c in a.comment_set.all():
+        for idx, comment in a.comment_set.all():
             # search row with same disqus_id in df, then add content to django db
-            if df['disqus_id'] == c.disqus_id:
-                print df.loc[df['disqus_id'] == c.disqus_id]
-                c.suggested_tags.add(df.loc[df['disqus_id'] == c.disqus_id])
+            if df.iloc[idx].disqus_id != comment.disqus_id:
+                print df.iloc[idx].disqus_id, comment.disqus_id
+#             print '-----'
+#             if df['disqus_id'] == c.disqus_id:
+#                 print df.loc[]
+            if df.iloc[idx].suggested_tags:
+                comment.suggested_tags.add(df.iloc[idx].suggested_tags)
             
             
     except Exception, e:
