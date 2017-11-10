@@ -1,0 +1,425 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-10 09:40+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: website/templates/account/delete.html:15
+#: website/templates/website/base.html:111
+#: website/templates/website/base.html:135
+msgid "Delete Account"
+msgstr "Eliminar cuenta"
+
+#: website/templates/account/delete.html:17
+msgid "If you go ahead and delete your account, your information will be"
+msgstr ""
+
+#: website/templates/account/delete.html:17
+msgid "expunged within"
+msgstr ""
+
+#: website/templates/account/delete.html:17
+msgid "hours"
+msgstr ""
+
+#: website/templates/account/delete.html:21
+#, fuzzy
+#| msgid "Delete Account"
+msgid "Delete My Account"
+msgstr "Eliminar cuenta"
+
+#: website/templates/account/email_confirm.html:15
+msgid "Confirm Email"
+msgstr ""
+
+#: website/templates/account/email_confirm.html:18
+msgid "Confirm email address"
+msgstr ""
+
+#: website/templates/account/email_confirm.html:19
+msgid "Confirm"
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:14
+msgid "Confirm your email address"
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:16
+msgid "We have sent you an email to"
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:17
+msgid ""
+"for verification. Follow the link provided to finalize the signup process. "
+"If you do not receive it within a few minutes, contact us at "
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:19
+msgid "Go back"
+msgstr ""
+
+#: website/templates/account/login.html:16
+msgid "Log in to an existing account"
+msgstr ""
+
+#: website/templates/account/login.html:23
+msgid "Log in"
+msgstr ""
+
+#: website/templates/account/login.html:24
+msgid "Forgot your password?"
+msgstr ""
+
+#: website/templates/account/login.html:29
+msgid "Don't have an account?"
+msgstr ""
+
+#: website/templates/account/login.html:29
+#, fuzzy
+#| msgid "Sign Up"
+msgid "Sign up"
+msgstr "Registrarse"
+
+#: website/templates/website/base.html:109
+#: website/templates/website/base.html:133
+msgid "Change Password"
+msgstr "Cambiar contrasena"
+
+#: website/templates/website/base.html:110
+#: website/templates/website/base.html:134
+msgid "Logout"
+msgstr "Salir"
+
+#: website/templates/website/base.html:116
+#: website/templates/website/base.html:118
+msgid "About"
+msgstr "Qué es"
+
+#: website/templates/website/base.html:123
+#: website/templates/website/base.html:125
+msgid "Contact"
+msgstr "Contacto"
+
+#: website/templates/website/base.html:139
+#: website/templates/website/index.html:28
+msgid "Login"
+msgstr "Entrar"
+
+#: website/templates/website/base.html:142
+#: website/templates/website/index.html:29
+msgid "Sign Up"
+msgstr "Registrarse"
+
+#: website/templates/website/history.html:14
+msgid "Edit History"
+msgstr "Editar historial"
+
+#: website/templates/website/history.html:20
+msgid "Action"
+msgstr ""
+
+#: website/templates/website/history.html:21
+msgid "User"
+msgstr "Usuario"
+
+#: website/templates/website/history.html:22
+msgid "Time"
+msgstr ""
+
+#: website/templates/website/history.html:23
+msgid "From"
+msgstr "Desde"
+
+#: website/templates/website/history.html:24
+msgid "To"
+msgstr "Hasta"
+
+#: website/templates/website/history.html:25
+msgid "Explanation"
+msgstr "Explicacion"
+
+#: website/templates/website/history.html:30
+#: website/templates/website/viz.html:47
+msgid "Hide Comment"
+msgstr "Ocultar comentario"
+
+#: website/templates/website/history.html:32
+#, fuzzy
+#| msgid "Summarize long comment threads"
+msgid "Summarize Comment"
+msgstr "Resume largos hilos de conversaciones"
+
+#: website/templates/website/history.html:34
+msgid "Edit Summary of a Comment"
+msgstr "Editar resumen del comentario"
+
+#: website/templates/website/history.html:36
+msgid "Hide All Replies of a Comment"
+msgstr "Ocultar todas las respuestas al comentario"
+
+#: website/templates/website/history.html:38
+msgid "Hide Multiple Comments"
+msgstr "Ocultar multiples comentarios"
+
+#: website/templates/website/history.html:40
+msgid "Summarize Subtree"
+msgstr "Resumir subarbol"
+
+#: website/templates/website/history.html:42
+#, fuzzy
+#| msgid "Summarize long comment threads"
+msgid "Summarize Group of Comments"
+msgstr "Resume largos hilos de conversaciones"
+
+#: website/templates/website/history.html:44
+msgid "Edit Summary of Subtree"
+msgstr "Editar el resumen en subarbol"
+
+#: website/templates/website/history.html:46
+msgid "Move Comment"
+msgstr "Mover comentario"
+
+#: website/templates/website/history.html:48
+#: website/templates/website/viz.html:73
+msgid "Tag Comment"
+msgstr "Etiquetar comentario"
+
+#: website/templates/website/history.html:50
+msgid "Tag Comments"
+msgstr "Etiquetar comentarios"
+
+#: website/templates/website/history.html:56
+msgid "Anonymous"
+msgstr "Anonimo"
+
+#: website/templates/website/history.html:80
+msgid "Comment Hidden"
+msgstr "Comentario oculto"
+
+#: website/templates/website/history.html:82
+#: website/templates/website/history.html:84
+msgid "All Comments Hidden"
+msgstr "Comentarios ocultos"
+
+#: website/templates/website/history.html:86
+#, fuzzy
+#| msgid "Move Comment"
+msgid "Move CommentMove Comment"
+msgstr "Mover comentario"
+
+#: website/templates/website/index.html:23
+msgid "Summarize long comment threads"
+msgstr "Sintetiza largos hilos de conversaciones"
+
+#: website/templates/website/index.html:26
+#: website/templates/website/index.html:30
+msgid "Import Discussion"
+msgstr "Importar discusion"
+
+#: website/templates/website/index.html:46
+#: website/templates/website/index.html:50
+#: website/templates/website/index.html:53
+msgid "Done"
+msgstr "Completado"
+
+#: website/templates/website/index.html:60
+#: website/templates/website/index.html:64
+#: website/templates/website/index.html:67
+msgid "Source"
+msgstr "Fuente"
+
+#: website/templates/website/index.html:73
+#: website/templates/website/index.html:77
+#: website/templates/website/index.html:80
+msgid "Discussion"
+msgstr "Discusión"
+
+#: website/templates/website/index.html:87
+#: website/templates/website/index.html:91
+#: website/templates/website/index.html:94
+msgid "Comments"
+msgstr "Comentarios"
+
+#: website/templates/website/index.html:100
+#: website/templates/website/index.html:104
+#: website/templates/website/index.html:107
+msgid "Summaries"
+msgstr "Resumenes"
+
+#: website/templates/website/index.html:188
+msgid "About Wikum"
+msgstr "Qué es Wikum"
+
+#: website/templates/website/index.html:189
+msgid "Wikum is a tool for summarizing and exploring long comment threads."
+msgstr ""
+"Wikum es una herramienta para crear  resúmenes de grandes comentarios en "
+"largas conversaciones"
+
+#: website/templates/website/index.html:192
+msgid ""
+"Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization"
+msgstr "Wikum:Foros de discusiones y Wikis usando Resúmenes Recursivos"
+
+#: website/templates/website/index.html:195
+msgid ""
+"Large-scale discussions between many participants abound on the internet "
+"today, on topics ranging from political arguments to group coordination."
+msgstr ""
+"Las discusiones a gran escala entre muchos participantes abundan hoy en "
+"Internetdesde temas que van desde argumentos políticos hasta la coordinación "
+"grupal"
+
+#: website/templates/website/index.html:196
+msgid ""
+"But as these discussions grow to tens of thousands of posts, they become "
+"ever more difficult for a reader to digest.In this article, we describe a "
+"workflow called"
+msgstr ""
+"Pero a medida que estas discusiones crecen a decenas de miles de "
+"publicaciones, se vuelven cada vez más difíciles de digerir para un lector. "
+"En este articulo, describimos un flujo de trabajo llamado "
+
+#: website/templates/website/index.html:197
+msgid "recursive summarization"
+msgstr "resumen recursivo"
+
+#: website/templates/website/index.html:198
+msgid ", implemented in our "
+msgstr ", implementado en nuestro prototipo "
+
+#: website/templates/website/index.html:199
+msgid ""
+"prototype, that enables a large population of readers or editors to work in "
+"small doses to refine out the main points of the discussion. More than just "
+"a single summary, our workflow produces a"
+msgstr ""
+", que permite que una gran cantidad de lectores o editores trabajeen "
+"pequeñas dosis para refinar los puntos principales de la discusión. Más que "
+"un solo resumen, nuestro flujo de trabajo produce un"
+
+#: website/templates/website/index.html:200
+#, fuzzy
+#| msgid "Summarize Subtree"
+msgid "summary tree"
+msgstr "árbol de resúmenes"
+
+#: website/templates/website/index.html:200
+msgid ""
+"that enables a reader to explore distinct subtopics at multiple levels of "
+"detail based on their interests."
+msgstr ""
+"que permite a un lector explorar subtemas distintos en múltiples niveles de "
+"detalle según sus intereses."
+
+#: website/templates/website/index.html:207
+msgid "slides and talk"
+msgstr "Presentaciones y Pláticas"
+
+#: website/templates/website/index.html:215
+msgid "Contact Us"
+msgstr "Contáctanos"
+
+#: website/templates/website/index.html:268
+msgid "Import a Discussion"
+msgstr "Importar discusión"
+
+#: website/templates/website/index.html:272
+msgid ""
+"Import a new discussion by pasting an Atlantic article url, Reddit page url, "
+"or Wikipedia Talk page section url here."
+msgstr ""
+"Pega una url de Reddit, Atlantic o Wikipedia para importar una discusión"
+
+#: website/templates/website/index.html:279
+#: website/templates/website/viz.html:58 website/templates/website/viz.html:82
+#: website/templates/website/viz.html:110
+#: website/templates/website/viz.html:143
+msgid "Submit"
+msgstr "Enviar"
+
+#: website/templates/website/summary.html:18
+#: website/templates/website/summary1.html:19
+#: website/templates/website/summary2.html:20
+#: website/templates/website/summary3.html:19
+#: website/templates/website/summary4.html:20
+msgid "View Wikum Editing Interface"
+msgstr "Ver la interfáz de edición de Wikum"
+
+#: website/templates/website/summary1.html:27
+#, fuzzy
+#| msgid "Full threading view, Auto-horizontal scrolling, 3 levels of context"
+msgid "Full threading view, Auto-horizontal scrolling, No context"
+msgstr ""
+"Full threading view, Desplazamiento horizontal automático, 3 Niveles de "
+"contexto"
+
+#: website/templates/website/summary2.html:22
+#: website/templates/website/summary4.html:22
+msgid "Interface:"
+msgstr "interfáz:"
+
+#: website/templates/website/summary2.html:28
+msgid "Full threading view, Auto-horizontal scrolling, 3 levels of context"
+msgstr ""
+"Full threading view, Desplazamiento horizontal automático, 3 Niveles de "
+"contexto"
+
+#: website/templates/website/summary3.html:27
+msgid "Partial threading view, 3 levels of context"
+msgstr "Vista parcial, 3 Niveles de contexto"
+
+#: website/templates/website/summary4.html:28
+msgid "Partial threading view, No context"
+msgstr "Vista parcial, Sin contexto"
+
+#: website/templates/website/viz.html:20
+msgid "of this page summarized"
+msgstr "de esta página esta resumido"
+
+#: website/templates/website/viz.html:53
+msgid "Leave a note as to why this comment should be hidden (optional):"
+msgstr ""
+"Dejar una nota indicando por qué este comentario deberia de ser ocultado "
+"(opcional):"
+
+#: website/templates/website/viz.html:59 website/templates/website/viz.html:83
+#: website/templates/website/viz.html:111
+#: website/templates/website/viz.html:144
+msgid "Close"
+msgstr "Cerrar"
+
+#: website/templates/website/viz.html:98
+#, fuzzy
+#| msgid "Summarize long comment threads"
+msgid "Summarize Comments"
+msgstr "Resumir comentarios"
+
+#: website/templates/website/viz.html:104
+#: website/templates/website/viz.html:135
+msgid "Summary:"
+msgstr "Resumen:"
+
+#: website/templates/website/viz.html:126
+#, fuzzy
+#| msgid "Summarize long comment threads"
+msgid "Summarize Multiple Comments"
+msgstr "Resume multiples comentarios"
+
+#~ msgid ""
+#~ "Full threading view, Desplazamiento horizontal automático, Sin contexto"
+#~ msgstr "Vista completa, "

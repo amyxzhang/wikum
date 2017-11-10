@@ -1,9 +1,10 @@
+
 {% load staticfiles %}
-
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html >
 
-<head>
+<head lang="{{LANGUAGE_CODE}}">
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -87,35 +88,58 @@
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>
+                    <li class="dropdown">
+                        <form style="padding-top: 15px; padding-bottom: 15px;" class="dropdown" action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                                <button class="dropdown" type="button" data-toggle="dropdown">Language
+                                <span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    {% get_language_info_list for LANGUAGES as lenguajes %}
+                                    {% for l in lenguajes %}
+                                        <li>
+                                            <button title="{{ l.name_local |title }}" name="language"  {% if l.code == LANGUAGE_CODE %} style="outline: none; border: none; width:100%; background-color: #42dca3"
+                                            {% else %} style="outline: none; border: none; width:100%; background-color: #fff" {% endif %} value="{{ l.code }}">{{ l.code | upper }}</button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                        </form>
+                    </li>                    
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                            <li><a href="/account/logout">{% trans "Logout" %}</a></li>
+                            <li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
+                        </ul>
+                    </li>
                     <li>
                     	{% if page == 'index' %}
-                        	<a class="page-scroll" href="#about">About</a>
+                        	<a class="page-scroll" href="#about">{% trans "About" %}</a>
                         {% else %}
-                        	<a class="page-scroll" href="/#about">About</a>
+                        	<a class="page-scroll" href="/#about">{% trans "About" %}</a>
                         {% endif %}
                     </li>
                     <li>
                         {% if page == 'index' %}
-                        	<a class="page-scroll" href="#contact">Contact</a>
+                        	<a class="page-scroll" href="#contact"> {% trans "Contact" %} </a>
                         {% else %}
-                        	<a class="page-scroll" href="/#contact">Contact</a>
+                        	<a class="page-scroll" href="/#contact">{% trans "Contact" %}</a>
                         {% endif %}
                     </li>
                     
                     	{% if user.is_authenticated %}
                     	<li class="dropdown">
-                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="owner">{{ user.username }}</span></a>
+                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
                     		<ul class="dropdown-menu">
-                    			<li><a href="/account/password/reset/">Change Password</a></li>
-                    			<li><a href="/account/logout">Logout</a></li>
-                    			<li><a href="/account/delete">Delete Account</a></li>
+                    			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                    			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
+                    			<li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
                     		</ul>
                     	{% else %}
                     	<li>
-                    		<a href="/account/login">Login</a>
+                    		<a href="/account/login">{% trans "Login" %}</a>
                     		</li>
                     		<li>
-                    		<a href="/account/signup">Sign Up</a>
+                    		<a href="/account/signup">{% trans "Sign Up" %}</a>
                     		</li>
                     	{% endif %}
                     </li>
@@ -130,10 +154,6 @@
 {% block content %}
 {% endblock %}
 	
-
-
-
-
     
 	{% block scripts %}
 	{% endblock %}
