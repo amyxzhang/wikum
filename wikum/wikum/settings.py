@@ -82,7 +82,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'website',
     'account',
-    "django_makemessages_xgettext",
 ]
 
 MIDDLEWARE_CLASSES = [
