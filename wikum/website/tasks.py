@@ -69,13 +69,14 @@ def generate_tags(article_id):
             'text', 'summary',
             'tags', 'suggested_tags')))
         # merge all text (comments+summaries) into a new column
-        df['train_text'] = df[['text', 'summary']].apply(lambda x: ''.join(x), axis=1)
+        df['train_text'] = df[['text', 'summary']].apply(lambda x: ' '.join(x), axis=1)
 
         # define  classifier
         clf = OneVsRestClassifier(SVC(kernel='linear'))
 
         # train data: use only comments with tags
         tagged = df.loc[df['tags'].notnull()]
+        
         # train data: preproccess and vectorize (TfIdf) text data
         count_vect = CountVectorizer(
             stop_words='english',
@@ -90,15 +91,21 @@ def generate_tags(article_id):
         clf = clf.fit(X_train_tfidf, tagged.tags)
 
         # suggest tags for ALL instances in df
-        X_test_counts = count_vect.transform(list(df.train_text))
+        
+        test_df = df.drop_duplicates(subset=['disqus_id'])
+        X_test_counts = count_vect.transform(list(test_df.train_text))
         X_test_tfidf = tfidf_transformer.transform(X_test_counts)
         suggested = clf.predict(X_test_tfidf)
         # save suggested tags to the dataframe
-        df.suggested_tags = suggested
-        
-        print suggested
+        test_df.suggested_tags = suggested
         
         # add suggested tags to the database
+        sorted_df = df.sort_values('disqus_id')
+        comments = a.comment_set.all().order_by('disqus_id')
+        
+        for index, row in df.iterrows():
+        
+        
         for idx, comment in enumerate(a.comment_set.all()):
             # search row with same disqus_id in df, then add content to django db
             if df.iloc[idx].disqus_id != comment.disqus_id:

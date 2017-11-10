@@ -22,8 +22,9 @@ from wikimarkup import parse
 import parse_helper
 import math
 import json
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.contrib.auth.models import User
+from wikum.website.models import CommentRating
 
 @render_to('website/index.html')
 def index(request):
@@ -302,7 +303,12 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
-                  'tags': [(tag.text, tag.color) for tag in post.tags.all()]
+                  'tags': [(tag.text, tag.color) for tag in post.tags.all()],
+                  'rating': {
+                             'neutral': post.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
+                             'coverage':  post.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
+                             'quality': post.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
+                             },
                   }
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
@@ -893,6 +899,46 @@ def tag_comment(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
+    
+
+def rate_summary(request):
+    try:
+        req_user = request.user if request.user.is_authenticated() else None
+        if req_user:
+            article_id = request.POST['article']
+            a = Article.objects.get(id=article_id)
+            id = request.POST['id']
+            neutral_rating = request.POST['neutral_rating']
+            coverage_rating = request.POST['coverage_rating']
+            quality_rating = request.POST['quality_rating']
+        
+            comment = Comment.objects.get(id=id)
+        
+            if comment.summary != '':
+        
+                r,_ = CommentRating.objects.get_or_create(article=a, comment=comment, user=req_user)
+                r.neutral_rating = neutral_rating
+                r.coverage_rating = coverage_rating
+                r.quality_rating = quality_rating
+                r.save()
+                
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='rate_comment',
+                                           explanation="Add Rating %s (neutral), %s (coverage), %s (quality) to a comment" % (neutral_rating,
+                                                                                                                              coverage_rating,
+                                                                                                                              quality_rating)
+                                           )
+                
+                h.comments.add(comment)
+                
+                recurse_up_post(comment)
+           
+        return JsonResponse()
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 
 def delete_comment_summary(request):
     try:
