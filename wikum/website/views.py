@@ -24,7 +24,7 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from wikum.website.models import CommentRating
+from website.models import CommentRating
 
 @render_to('website/index.html')
 def index(request):
