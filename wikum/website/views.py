@@ -203,8 +203,8 @@ def summary_data(request):
     else:
         next = int(next)
         
-    start = 25 * next
-    end = (25 * next) + 25
+    start = 15 * next
+    end = (15 * next) + 15
     
     
     if sort == 'id':
@@ -1064,8 +1064,8 @@ def viz_data(request):
     else:
         next = int(next)
         
-    start = 25 * next
-    end = (25 * next) + 25
+    start = 15 * next
+    end = (15 * next) + 15
     
     num = int(request.GET.get('num', 0))
     

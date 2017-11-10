@@ -1140,7 +1140,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						text += `<footer>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
-							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary Node</a>
+							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
 						</footer>`;
 					}
 
@@ -1257,7 +1257,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						text += `<footer>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-							<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
+							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 						</footer>`;
 					}
 
@@ -2793,7 +2793,7 @@ function construct_comment(d) {
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				text += `<footer>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
-					<a onclick="post_delete_summary_node(${d.id});">Delete Summary Node</a>
+					<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
 				</footer>`;
 			}
