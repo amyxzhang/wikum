@@ -91,7 +91,6 @@ def generate_tags(article_id):
         clf = clf.fit(X_train_tfidf, tagged.tags)
 
         # suggest tags for ALL instances in df
-        
         test_df = df.drop_duplicates(subset=['disqus_id'])
         X_test_counts = count_vect.transform(list(test_df.train_text))
         X_test_tfidf = tfidf_transformer.transform(X_test_counts)
@@ -100,22 +99,12 @@ def generate_tags(article_id):
         test_df.suggested_tags = suggested
         
         # add suggested tags to the database
-        sorted_df = df.sort_values('disqus_id')
+        sorted_df = test_df.sort_values('disqus_id')
         comments = a.comment_set.all().order_by('disqus_id')
         
-        for index, row in df.iterrows():
-        
-        
-        for idx, comment in enumerate(a.comment_set.all()):
-            # search row with same disqus_id in df, then add content to django db
-            if df.iloc[idx].disqus_id != comment.disqus_id:
-                print df.iloc[idx].disqus_id, comment.disqus_id
-#             print '-----'
-#             if df['disqus_id'] == c.disqus_id:
-#                 print df.loc[]
-            if df.iloc[idx].suggested_tags:
-                comment.suggested_tags.add(df.iloc[idx].suggested_tags)
-            
+        for row_item, comment in zip(df.iterrows(), comments):
+            index, row = row_item
+            comment.suggested_tags.add(row['suggested_tags'])
             
     except Exception, e:
         print e
