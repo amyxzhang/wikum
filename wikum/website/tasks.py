@@ -3,7 +3,7 @@ from celery import shared_task, current_task
 from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
     get_reddit_posts, count_replies, get_wiki_talk_posts
-from django.df import connection
+from django.db import connection
 
 import pandas as pd
 import numpy as np
