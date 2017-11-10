@@ -104,7 +104,9 @@ def generate_tags(article_id):
         
         for row_item, comment in zip(df.iterrows(), comments):
             index, row = row_item
-            comment.suggested_tags.add(row['suggested_tags'])
+            print row['suggested_tags']
+            if row['suggested_tags']:
+                comment.suggested_tags.add(row['suggested_tags'])
             
     except Exception, e:
         print e
