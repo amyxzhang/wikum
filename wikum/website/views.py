@@ -713,7 +713,7 @@ def tag_comments(request):
         for com in affected_comms:
             recurse_up_post(com)
             
-        tag_count = Tag.objects.filter(article=a).count()
+        tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 10 == 0:
             from tasks import generate_tags
             generate_tags.delay(article_id)
@@ -881,7 +881,7 @@ def tag_comment(request):
             
             recurse_up_post(comment)
                 
-        tag_count = Tag.objects.filter(article=a).count()
+        tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 10 == 0:
             from tasks import generate_tags
             generate_tags.delay(article_id)
