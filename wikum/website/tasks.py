@@ -99,7 +99,7 @@ def generate_tags(article_id):
         print suggested
         
         # add suggested tags to the database
-        for idx, comment in a.comment_set.all():
+        for idx, comment in enumerate(a.comment_set.all()):
             # search row with same disqus_id in df, then add content to django db
             if df.iloc[idx].disqus_id != comment.disqus_id:
                 print df.iloc[idx].disqus_id, comment.disqus_id
