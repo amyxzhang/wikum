@@ -95,6 +95,9 @@ def generate_tags(article_id):
         suggested = clf.predict(X_test_tfidf)
         # save suggested tags to the dataframe
         df.suggested_tags = suggested
+        
+        print suggested
+        
         # add suggested tags to the database
         for c in a.comment_set.all():
             # search row with same disqus_id in df, then add content to django db
