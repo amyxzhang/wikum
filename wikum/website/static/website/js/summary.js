@@ -62,10 +62,11 @@ $(document).ready(function () {
 			sort = "likes";
 		}
 	}
+	var owner = getParameterByName('owner');
 	
 	$.ajax({ 
 	    type: 'GET', 
-	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num + '&sort=' + sort, 
+	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num + '&sort=' + sort + '&owner=' + owner, 
 	    dataType: 'json',
 	    success: function (data) { 
 	    	

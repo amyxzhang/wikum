@@ -185,7 +185,9 @@ if (!comment_id) {
 	comment_id = '';
 }
 
-d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&comment_id=' + comment_id, function(error, flare) {
+var owner = getParameterByName('owner');
+
+d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&owner=' + owner + '&comment_id=' + comment_id, function(error, flare) {
   if (error) throw error;
 
   if (!flare.no_subtree) {
@@ -232,10 +234,10 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   var article_id = $("#article_id").text();
 
   $('#button_subtree').html(`
-     <a class="btn-sm btn-default" href="/visualization?article=${article_url}&num=${num}">Overall</a>
+     <a class="btn-sm btn-default" href="/visualization?article=${article_url}&num=${num}&owner=${owner}">Overall</a>
      <a class="btn-sm btn-default" disabled>Subtree</a>
-     <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}">Cluster</a>-->
-     <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}">Summary</a>
+     <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}&owner=${owner}">Cluster</a>-->
+     <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}&owner=${owner}">Summary</a>
      <a class="btn-sm btn-default" href="/history?article=${article_id}">Edit History</a>`);
 });
 
@@ -262,7 +264,7 @@ function make_dropdown() {
 	}
 
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/subtree?article=" + article_url + '&sort=';
+	url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
 	text += '<li><a href="' + url + 'random">Random</a></li><li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
 
 	next_sub = next + 1;
