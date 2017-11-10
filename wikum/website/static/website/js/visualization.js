@@ -249,7 +249,7 @@ function make_dropdown() {
 			count += 1;
 		}
 	}
-	if (count == 25) {
+	if (count == 15) {
 		next_sub = next + 1;
 		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
 	}
