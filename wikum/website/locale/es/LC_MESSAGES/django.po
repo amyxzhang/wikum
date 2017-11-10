@@ -70,7 +70,7 @@ msgstr ""
 
 #: website/templates/account/email_confirmation_sent.html:19
 msgid "Go back"
-msgstr ""
+msgstr "Regresar"
 
 #: website/templates/account/login.html:16
 msgid "Log in to an existing account"

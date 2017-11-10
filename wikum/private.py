@@ -1,9 +1,9 @@
 MYSQL_PROD = {
         'NAME' : 'wikum',
-        'USER' : 'myUser',
-        'PASSWORD' : 'myPassword',
+        'USER' : 'alexter',
+        'PASSWORD' : 'lolexie',
         'HOST' : 'localhost',  
     }
 
-SECRET_KEY = ''
+SECRET_KEY = 'veryLoooooooooooooooooooooooooooooooooooongString'
 DISQUS_API_KEY = ''
