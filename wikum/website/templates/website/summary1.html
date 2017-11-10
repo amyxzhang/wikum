@@ -1,4 +1,5 @@
 {% extends 'website/base.html' %}
+{% load i18n %}
 {% load staticfiles %}
 
 {% block styles %}
@@ -15,7 +16,7 @@
 	<div class="row">
 		<div class="col-lg-8 col-lg-offset-2">
 			<h1><a href="{{ article.url }}" title="Read the article in {{ source.source_name }}">{{ article.title }}</a></h1>
-			<a href="/visualization?article={{ url }}&num={{ num }}">View Wikum Editing Interface</a>
+			<a href="/visualization?article={{ url }}&num={{ num }}">{% trans "View Wikum Editing Interface" %}</a>
 			<BR>
 				Interface: <a href="/summary?article={{ url }}&num={{ num }}">0</a> | 
 				<a href="/summary1?article={{ url }}&num={{ num }}">1</a> | 
@@ -23,7 +24,8 @@
 				<a href="/summary3?article={{ url }}&num={{ num }}">3</a> |
 				<a href="/summary4?article={{ url }}&num={{ num }}">4</a>
 			<BR><BR>
-				Full threading view, Auto-horizontal scrolling, No context
+				{% trans "Full threading view, Auto-horizontal scrolling, No context" %}
+				
 				
 		</div>
 	</div>

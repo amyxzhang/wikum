@@ -34,7 +34,7 @@ footer p {
 	position: relative;
 	top: -6px;
 	display: inline-block;
-	width: 60px;
+	width: 100px;
 	margin-right: 20px;
 }
 
@@ -200,3 +200,4 @@ div.gallerytext {
 ul.mw-gallery-packed-hover, ul.mw-gallery-packed-overlay, ul.mw-gallery-packed {
     text-align: center;
 }
+

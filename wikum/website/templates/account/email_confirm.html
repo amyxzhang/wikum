@@ -1,5 +1,6 @@
 {% extends 'website/base.html' %}
 {% load staticfiles %}
+{% load i18n %}
 
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/accounts.css" %}>
@@ -12,11 +13,11 @@
             <div class="col-lg-8 col-lg-offset-2">
             	
 				 <form method="post" action="{% url "account_confirm_email" key=confirmation.key %}">
-	                <legend>Confirm Email</legend>
+	                <legend>{% trans "Confirm Email" %}</legend>
 	                <fieldset>
 	                    {% csrf_token %}
-	                    <p>Confirm email address <b>{{ confirmation.email_address.email }}</b>?</p>
-	                    <button type="submit" class="btn btn-primary">Confirm</button>
+	                    <p>{% trans "Confirm email address" %} <b>{{ confirmation.email_address.email }}</b>?</p>
+	                    <button type="submit" class="btn btn-primary">{% trans "Confirm" %}</button>
 	                </fieldset>
 	            </form>
 	           </div>

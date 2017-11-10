@@ -172,7 +172,9 @@ if (!num) {
 	num = 0;
 }
 
-d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num, function(error, flare) {
+var owner = getParameterByName('owner');
+
+d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num + '&owner' + owner, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -190,13 +192,13 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num,
   
   make_highlight();
   
-  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '&num=' + num + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '&num=' + num + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '&num=' + num + '">Summary View</a>');
+  $('#button_subtree').html('<a class="btn-sm btn-default" href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '">Overall View</a> <a class="btn-sm btn-default" href="/subtree?article=' + article_url + '&num=' + num + '">Subtree View</a> &nbsp;<strong>Cluster View </strong> <a class="btn-sm btn-default" href="/summary?article=' + article_url + '&num=' + num + '">Summary View</a>');
 	
   
   $( "#slider" ).slider({
   	value: size,
   	change: function( event, ui ) {
-  		url = "/cluster?article=" + article_url + '&size=';
+  		url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&size=';
   		window.location.href = url + ui.value;
   	}
   });
@@ -204,7 +206,7 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num,
 });
 
 function make_dropdown() {
-	url = "/cluster?article=" + article_url + '&size=';
+	url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner  + '&size=';
 	
 	text = '<a class="btn btn-xs" href="' +url + size + '">Get another random cluster &gt;&gt;</a>';
 	

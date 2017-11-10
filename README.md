@@ -1,26 +1,51 @@
-# wikum
 
-## Local install
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/haystack/wikum) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-1. git clone https://github.com/amyxzhang/wikum.git
-2. `cd wikum/wikum`
-2. Install pip and [virtualenv](https://virtualenv.pypa.io/en/latest/)
-3. `virtualenv wikum`
-3. `mkdir /opt/wikum`
-3. `echo "true" > /opt/wikum/debug`
-4. `echo "prod" > /opt/wikum/env`
-5. `touch private.py`
-6. `vim private.py`
-7. Inside private.py, paste this to connect to the remote database, then `:wq`: 
-	```
-	MYSQL_PROD = {
-	    'NAME' : 'wikum',
-	    'USER' : (ask me),
-	    'PASSWORD' : (ask me),
-	    'HOST' : 'mysql.csail.mit.edu',  
-	}
-	```
-	
-8. `source wikum/bin/activate` Your prompt should change and have `(wikum)` in front of it.
-9. `pip install -r requirements.txt` If you get an error about MySQL, open a new tab and run `brew install mysql`, then try again. If that errors too, run `brew update` first.
-9. `python manage.py runserver`
+# WIKUM
+
+
+
+> A tool for summarizing and exploring long comment threads.
+
+Large-scale discussions between many participants abound on the internet today, on topics ranging from political arguments to group coordination. But as these discussions grow to tens of thousands of posts, they become ever more difficult for a reader to digest. In this repository, we document the [Wikum tool](http://wikum.csail.mit.edu) that enables a large population of readers or editors to produce a summary tree that enables a reader to explore distinct subtopics at multiple levels of detail based on their interests.
+
+
+
+
+This repository contains:
+
+
+1. The instructions for how locally install and run Wikum.
+
+
+
+## Table of Contents
+
+- [Background](#background)
+- [Usage](#usage)
+- [Contribute](#contribute)
+- [License](#license)
+
+## Background
+
+
+## Usage
+
+Once you have Wikum locally installed you can start developing. 
+Follow this link to find a [video](#usage) description of the Wikum project.
+
+
+## Maintainers
+
+[@Amyxzhang](https://github.com/amyxzhang).
+
+## Contribute
+
+Before you get started, please review our [contributor guidelines](/CONTRIBUTING.md), if you agree with all of the terms and conditions then feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
+
+
+If you'll be working on a coding issue, follow the [coding setup](/coding_setup.md) instructions to get a local version of the project up and running.
+
+## License
+
+[MIT](/CONTRIBUTING.md) 
