@@ -713,6 +713,11 @@ def tag_comments(request):
         for com in affected_comms:
             recurse_up_post(com)
             
+        tag_count = Tag.objects.filter(article=a).count()
+        if tag_count % 10 == 0:
+            from tasks import generate_tags
+            generate_tags.delay(article_id)
+            
         if len(affected_comms) > 0:
             return JsonResponse({'color': color})
         else:
@@ -876,6 +881,10 @@ def tag_comment(request):
             
             recurse_up_post(comment)
                 
+        tag_count = Tag.objects.filter(article=a).count()
+        if tag_count % 10 == 0:
+            from tasks import generate_tags
+            generate_tags.delay(article_id)
             
         if affected:
             return JsonResponse({'color': color})

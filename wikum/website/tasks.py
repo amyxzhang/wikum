@@ -60,6 +60,7 @@ def import_article(url, owner):
 def generate_tags(article_id):
     connection.close()
     try:
+        from website.models import Article
         a = Article.objects.get(id=article_id)
 
         # import article's comments into dataframe
@@ -79,7 +80,7 @@ def generate_tags(article_id):
         count_vect = CountVectorizer(
             stop_words='english',
             min_df=3, max_df=0.30,
-            # lowercase=True,
+            lowercase=True,
             ngram_range=(1, 2),
         )
         X_train_counts = count_vect.fit_transform(list(tagged.train_text))
@@ -98,3 +99,6 @@ def generate_tags(article_id):
         for c in a.comment_set.all():
             # search row with same disqus_id in df, then add content to django db
             c.suggested_tags.add(df.loc[df['disqus_id'] == c.disqus_id])
+    except Exception, e:
+        print e
+        
