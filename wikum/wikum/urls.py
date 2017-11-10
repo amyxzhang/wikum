@@ -16,13 +16,20 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+
+# js_info_dict = {
+#     'domain' : 'djangojs',
+#     'package': ''
+# }
+
+
 urlpatterns = [
     url(r'^$','website.views.index'),
     url(r'^visualization','website.views.visualization'),
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
-     url(r'^tags','website.views.tags'),
+    url(r'^tags','website.views.tags'),
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),
     url(r'^summary_data','website.views.summary_data'),
@@ -58,4 +65,8 @@ urlpatterns = [
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
+
+    url(r"^i18n/", include("django.conf.urls.i18n")),
+
 ]
+

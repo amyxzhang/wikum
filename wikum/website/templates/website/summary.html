@@ -1,4 +1,5 @@
 {% extends 'website/base.html' %}
+{% load i18n %}
 {% load staticfiles %}
 
 {% block styles %}
@@ -14,7 +15,7 @@
 	<div class="row">
 		<div class="col-lg-8 col-lg-offset-2">
 			<h1><a href="{{ article.url }}" title="Read the article in {{ source.source_name }}">{{ article.title }}</a></h1>
-			<a href="/visualization?article={{ url }}&num={{ num }}">View Wikum Editing Interface</a>
+			<a href="/visualization?article={{ url }}&num={{ num }}">{% trans "View Wikum Editing Interface" %}</a>
 		</div>
 	</div>
 </header>
