@@ -39,25 +39,6 @@ source wikum/bin/activate
 ```
 
 
-#### Configuration
-* Edit database details in a new file called **private.py**, also in this private.py file, add your security settings:
-
-```sh
-$ echo "MYSQL_PROD = {
-        'NAME' : 'wikum',
-        'USER' : 'myUser',
-        'PASSWORD' : 'myPassword',
-        'HOST' : 'localhost',  
-    }
-
-    SECRET_KEY = ''
-    DISQUS_API_KEY = ''
-
-    " > private.py
-```
-*Note that you should replace 'myUser' and 'myPassword' with the ones you've choosen. Also In order to follow the correct Django configuration you should create a strong secret key (assign a long string to the SECRET_KEY variable).*
-
-
 #### Setup the database 
 
 ```sh
@@ -68,6 +49,26 @@ $ sudo mysql
 > GRANT ALL PRIVILEGES ON wikum.* TO 'myUser'@'localhost';
 
 ```
+
+
+#### Configuration
+* Edit database details inside the file called **private_config.py** to add the security settings of your so created database:
+
+* Also, you should change the file name to **private.py**
+
+```sh
+"MYSQL_PROD = {
+        'NAME' : 'wikum',
+        'USER' : 'myUser',
+        'PASSWORD' : 'myPassword',
+        'HOST' : 'localhost',  
+    }
+
+SECRET_KEY = ''
+DISQUS_API_KEY = ''
+```
+*Note that you should replace 'myUser' and 'myPassword' with the ones you've choosen. Also In order to follow the correct Django configuration you should create a strong secret key (assign a long string to the SECRET_KEY variable).*
+
 
 
 #### Install schema
