@@ -6,15 +6,6 @@ from website.import_data import get_source, get_article, get_disqus_posts,\
 from django.db import connection
 from django.contrib.auth.models import User
 
-import pandas as pd
-import numpy as np
-import itertools
-
-from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.svm import SVC
-
 
 @shared_task()
 def import_article(url, owner):
@@ -60,6 +51,15 @@ def import_article(url, owner):
 def generate_tags(article_id):
     connection.close()
     try:
+        import pandas as pd
+        import numpy as np
+        import itertools
+        
+        from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
+        from sklearn.preprocessing import MultiLabelBinarizer
+        from sklearn.multiclass import OneVsRestClassifier
+        from sklearn.svm import SVC
+
         from website.models import Article
         a = Article.objects.get(id=article_id)
 
