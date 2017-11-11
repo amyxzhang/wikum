@@ -136,7 +136,7 @@ def import_article(request):
     data = 'Fail'
     if request.is_ajax():
         from tasks import import_article
-        owner = request.GET['owner']
+        owner = request.GET.get('owner', 'None')
         url = request.GET['article']
         job = import_article.delay(url, owner)
         
@@ -1064,7 +1064,11 @@ def downvote_summary(request):
             id = request.POST['id']
             comment = Comment.objects.get(id=id)
             
+            change_vote = False
             rate, created = CommentRating.objects.get_or_create(user=req_user, comment=comment)
+            if not created and rate.neutral_rating == 5:
+                change_vote = True
+                
             rate.neutral_rating = 1
             rate.coverage_rating = 1
             rate.quality_rating = 1
