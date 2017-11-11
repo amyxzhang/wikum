@@ -205,7 +205,7 @@ def summary_data(request):
     url = urllib2.unquote(request.GET['article'])
     
     owner = request.GET.get('owner', None)
-    if not owner or owner == "None":
+    if not owner or owner == "None" or owner == "null":
         owner = None
     else:
         owner = User.objects.get(username=owner)
