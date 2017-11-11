@@ -432,7 +432,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	});
 	
 
-	if (evt.data.type == "tag_one") {
+	if (type == "tag_one") {
 		data.id = evt.data.data_id;
 	} else {
 		data.ids = evt.data.dids;
