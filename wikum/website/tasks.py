@@ -102,10 +102,11 @@ def generate_tags(article_id):
         sorted_df = test_df.sort_values('disqus_id')
         comments = a.comment_set.all().order_by('disqus_id')
         
-        for row_item, comment in zip(sorted_df.iterrows(), comments):
+        for comment in comments:
             comment.suggested_tags.all().delete()
+        
+        for row_item, comment in zip(sorted_df.iterrows(), comments):
             index, row = row_item
-            print row['suggested_tags']
             if row['suggested_tags']:
                 comment.suggested_tags.add(row['suggested_tags'])
             
