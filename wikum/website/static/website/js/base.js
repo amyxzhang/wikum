@@ -448,11 +448,13 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		url: '/suggested_tags',
 		data: data,
 		success: function(res) {
+			console.log(res);
 			if (res.suggested_tags.length > 0) {
 				var text = 'Suggested tags: ';
 				for (var i=0; i<res.suggested_tags.length; i++) {
 					text += '<button class="btn btn-xs" style="background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag +'</button> ';
 				}
+				$('#suggested_tags').html(text);
 			}
 		}
 	});
