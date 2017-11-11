@@ -322,12 +322,24 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()],
-                  'rating': {
+                  'avg_rating': {
                              'neutral': post.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
                              'coverage':  post.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
                              'quality': post.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
                              },
                   }
+            
+            v1['rating'] = []
+            for rating in post.commentrating_set.all():
+                v = []
+                if rating.neutral_rating:
+                    v.append(rating.neutral_rating)
+                if rating.coverage_rating:
+                    v.append(rating.coverage_rating)
+                if rating.quality_rating:
+                    v.append(rating.quality_rating)
+                    
+                v1['rating'].append(sum(v)/3.0)
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 v1['name'] = parse(post.text)

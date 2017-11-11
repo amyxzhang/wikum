@@ -767,4 +767,6 @@ form.modal-content {
 	filter: drop-shadow(0 5px 15px rgba(0,0,0,.5));
 }
 
-
+.thumbs{
+   height: 16px;
+}

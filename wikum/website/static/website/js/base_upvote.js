@@ -1171,11 +1171,18 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 					
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
+						
 						text += `<footer>
+							&nbsp;
+							0
+							<img src="/static/website/img/thumb_up.png" class="thumbs">
+							0
+							<img src="/static/website/img/thumb_down.png" class="thumbs">
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
 						</footer>`;
 					}
+					
 
 					for (var i=0; i<children.length; i++) {
 						if (children[i] == lowest_d) {
@@ -1289,6 +1296,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						text += `<footer>
+							&nbsp;
+							0
+							<img src="/static/website/img/thumb_up.png" class="thumbs">
+							0
+							<img src="/static/website/img/thumb_down.png" class="thumbs">
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 						</footer>`;
@@ -1332,6 +1344,27 @@ function post_delete_comment_summary(id){
 				}
 		});
 	}
+}
+
+function get_upvote_downvote(id) {
+	d = nodes_all[id-1];
+	var up = 0;
+	var down = 0;
+	
+	console.log(d);
+	
+	if (d.rating) {
+		for (var i=0; i<d.rating.length; i++) {
+			if (d.rating[i] >= 3.0) {
+				up += 1;
+			} else {
+				down += 1;
+			}
+		}
+	}
+	
+	return {up: up, down: down};
+	
 }
 
 function delete_comment_summary(id){
@@ -2824,7 +2857,15 @@ function construct_comment(d) {
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
+				
+				var count = get_upvote_downvote(d.id);
+				
 				text += `<footer>
+					&nbsp;
+					${count.up}
+					<img src="/static/website/img/thumb_up.png" class="thumbs">
+					${count.down}
+					<img src="/static/website/img/thumb_down.png" class="thumbs">
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
