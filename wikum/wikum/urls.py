@@ -53,6 +53,9 @@ urlpatterns = [
     
     url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
     
+    url(r'^upvote_summary','website.views.upvote_summary'),
+    url(r'^downvote_summary','website.views.downvote_summary'),
+    
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
     

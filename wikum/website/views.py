@@ -1027,6 +1027,64 @@ def delete_comment_summary(request):
         print e
         return HttpResponseBadRequest()
 
+
+def upvote_summary(request):
+    try:
+        req_user = request.user if request.user.is_authenticated() else None
+        if req_user:
+            
+            id = request.POST['id']
+            comment = Comment.objects.get(id=id)
+            
+            rate, created = CommentRating.objects.get_or_create(user=req_user, comment=comment)
+            rate.neutral_rating = 5
+            rate.coverage_rating = 5
+            rate.quality_rating = 5
+            rate.save()
+        
+            if created:
+                h = History.objects.create(user=req_user, 
+                                           article=comment.article,
+                                           action='upvote_comment')
+                h.comments.add(comment)
+            
+            parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=comment.article)
+            if parent.count() > 0:
+                recurse_up_post(parent[0])
+        return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+    
+def downvote_summary(request):
+    try:
+        req_user = request.user if request.user.is_authenticated() else None
+        if req_user:
+            
+            id = request.POST['id']
+            comment = Comment.objects.get(id=id)
+            
+            rate, created = CommentRating.objects.get_or_create(user=req_user, comment=comment)
+            rate.neutral_rating = 1
+            rate.coverage_rating = 1
+            rate.quality_rating = 1
+            rate.save()
+        
+            if created:
+                h = History.objects.create(user=req_user, 
+                                           article=comment.article,
+                                           action='downvote_comment')
+                h.comments.add(comment)
+            
+            parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=comment.article)
+            if parent.count() > 0:
+                recurse_up_post(parent[0])
+        return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
+
 def hide_comment(request):
     try:
         article_id = request.POST['article']

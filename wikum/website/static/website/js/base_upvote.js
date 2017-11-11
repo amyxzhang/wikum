@@ -1346,6 +1346,42 @@ function post_delete_comment_summary(id){
 	}
 }
 
+function upvote_summary(id) {
+	var csrf = $('#csrf').text();
+	
+	var data = {csrfmiddlewaretoken: csrf,
+		id: id};
+	$.ajax({
+				type: 'POST',
+				url: '/upvote_summary',
+				data: data,
+				success: function(res) {
+					console.log(res);
+				},
+				error: function() {
+					error_noty();
+				}
+		});
+}
+
+function downvote_summary(id) {
+	var csrf = $('#csrf').text();
+	
+	var data = {csrfmiddlewaretoken: csrf,
+		id: id};
+	$.ajax({
+				type: 'POST',
+				url: '/downvote_summary',
+				data: data,
+				success: function(res) {
+					console.log(res);
+				},
+				error: function() {
+					error_noty();
+				}
+		});
+}
+
 function get_upvote_downvote(id) {
 	d = nodes_all[id-1];
 	var up = 0;
@@ -2862,10 +2898,14 @@ function construct_comment(d) {
 				
 				text += `<footer>
 					&nbsp;
+					<a onclick="upvote_summary('${d.id}')">
 					${count.up}
 					<img src="/static/website/img/thumb_up.png" class="thumbs">
+					</a>
+					<a onclick="downvote_summary('${d.id}')">
 					${count.down}
 					<img src="/static/website/img/thumb_down.png" class="thumbs">
+					</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
