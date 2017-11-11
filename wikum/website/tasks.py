@@ -103,7 +103,7 @@ def generate_tags(article_id):
         comments = a.comment_set.all().order_by('disqus_id')
         
         for comment in comments:
-            comment.suggested_tags.all().delete()
+            comment.suggested_tags.clear()
         
         for row_item, comment in zip(sorted_df.iterrows(), comments):
             index, row = row_item
