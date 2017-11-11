@@ -700,7 +700,7 @@ def suggested_tags(request):
             
         resp = {"suggested_tags": []}
         for tag in suggested_tags:
-            resp['suggested_tags'].push({
+            resp['suggested_tags'].append({
                                          'color': tag.color,
                                          'tag': tag.text}) 
         
