@@ -64,6 +64,10 @@ footer p {
 	width: 120px;
 	display: inline-block;
 	margin-right: 20px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .owner {
