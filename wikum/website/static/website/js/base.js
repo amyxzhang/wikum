@@ -432,6 +432,11 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	});
 	
 
+	var article_id = $('#article_id').text();
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+		article: article_id};
+
 	if (type == "tag_one") {
 		data.id = evt.data.data_id;
 	} else {
