@@ -438,9 +438,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		article: article_id};
 
 	if (type == "tag_one") {
-		data.id = evt.data.data_id;
+		data.id = did;
 	} else {
-		data.ids = evt.data.dids;
+		data.ids = dids;
 	}
 
 	$.ajax({
