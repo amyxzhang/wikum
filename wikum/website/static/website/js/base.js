@@ -452,7 +452,11 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			if (res.suggested_tags.length > 0) {
 				var text = 'Suggested tags: ';
 				for (var i=0; i<res.suggested_tags.length; i++) {
-					text += '<button class="btn btn-xs" style="background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag +'</button> ';
+					if (is_dark(res.suggested_tags[i].color)) {
+						text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag + '</button> ';
+					} else {
+						text += '<button class="btn btn-xs" style="background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag + '</button> ';
+					}			
 				}
 				$('#suggested_tags').html(text);
 			}
