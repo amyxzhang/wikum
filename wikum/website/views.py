@@ -55,6 +55,24 @@ def index(request):
 
     return resp
 
+
+@render_to('website/visualization_upvote.html')
+def visualization_upvote(request):
+    user = request.user
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    url = request.GET['article']
+    num = int(request.GET.get('num', 0))
+    article = Article.objects.filter(url=url, owner=owner)[num]
+    return {'article': article,
+            'user': user,
+            'source': article.source}
+
+
+
 @render_to('website/visualization.html')
 def visualization(request):
     user = request.user

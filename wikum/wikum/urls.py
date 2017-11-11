@@ -25,6 +25,9 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^$','website.views.index'),
+    
+    url(r'^visualization_upvote','website.views.visualization_upvote'),
+    
     url(r'^visualization','website.views.visualization'),
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
