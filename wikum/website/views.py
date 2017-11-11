@@ -681,6 +681,36 @@ def summarize_comments(request):
         
         return HttpResponseBadRequest()  
 
+
+def suggested_tags(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        id = request.POST.get('id', None)
+        if not id:
+            ids = request.POST.getlist('ids[]')
+            comments = Comment.objects.filter(id__in=ids, hidden=False)
+            comment = comments[0]
+        else:
+            comment = Comment.objects.get(id=id)
+        
+        suggested_tags = comment.suggested_tags.all()
+            
+        resp = {"suggested_tags": []}
+        for tag in suggested_tags:
+            resp['suggested_tags'].push({
+                                         'color': tag.color,
+                                         'tag': tag.text}) 
+        
+    
+        return JsonResponse(resp)
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
+
 def tag_comments(request):
     try:
         article_id = request.POST['article']
