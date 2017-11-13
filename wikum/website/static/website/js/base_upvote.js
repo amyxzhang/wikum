@@ -1174,10 +1174,14 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						
 						text += `<footer>
 							&nbsp;
-							0
+							<a onclick="upvote_summary(${new_d.d_id},${new_d.id})">
+							<span id="${new_d.id}-up">0</span>
 							<img src="/static/website/img/thumb_up.png" class="thumbs">
-							0
+							</a>
+							<a onclick="downvote_summary(${new_d.d_id},${new_d.id})">
+							<span id="${new_d.id}-down">0</span>
 							<img src="/static/website/img/thumb_down.png" class="thumbs">
+							</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
 						</footer>`;
@@ -1297,10 +1301,14 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						text += `<footer>
 							&nbsp;
-							0
+							<a onclick="upvote_summary(${d.d_id},${d.id})">
+							<span id="${d.id}-up">0</span>
 							<img src="/static/website/img/thumb_up.png" class="thumbs">
-							0
+							</a>
+							<a onclick="downvote_summary(${d.d_id},${d.id})">
+							<span id="${d.id}-down">0</span>
 							<img src="/static/website/img/thumb_down.png" class="thumbs">
+							</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 						</footer>`;
@@ -1346,17 +1354,38 @@ function post_delete_comment_summary(id){
 	}
 }
 
-function upvote_summary(id) {
+function upvote_summary(did, id) {
 	var csrf = $('#csrf').text();
 	
 	var data = {csrfmiddlewaretoken: csrf,
-		id: id};
+		id: did};
 	$.ajax({
 				type: 'POST',
 				url: '/upvote_summary',
 				data: data,
 				success: function(res) {
 					console.log(res);
+					success_noty();
+					if (res.success) {
+						if (res.created) {
+							var upvote = $('#' + id + '-up').text();
+							upvote = parseInt(upvote);
+							upvote += 1;
+							$('#' + id + '-up').text(upvote);
+						} else {
+							if (res.change_vote) {
+								var upvote = $('#' + id + '-up').text();
+								upvote = parseInt(upvote);
+								upvote += 1;
+								$('#' + id + '-up').text(upvote);
+								
+								var downvote = $('#' + id + '-down').text();
+								downvote = parseInt(downvote);
+								downvote -= 1;
+								$('#' + id + '-down').text(downvote);
+							}
+						}
+					}
 				},
 				error: function() {
 					error_noty();
@@ -1364,19 +1393,41 @@ function upvote_summary(id) {
 		});
 }
 
-function downvote_summary(id) {
+function downvote_summary(did, id) {
 	var csrf = $('#csrf').text();
 	
 	var data = {csrfmiddlewaretoken: csrf,
-		id: id};
+		id: did};
 	$.ajax({
 				type: 'POST',
 				url: '/downvote_summary',
 				data: data,
 				success: function(res) {
 					console.log(res);
+					success_noty();
+					if (res.success) {
+						if (res.created) {
+							var downvote = $('#' + id + '-down').text();
+							downvote = parseInt(downvote);
+							downvote += 1;
+							$('#' + id + '-down').text(downvote);
+						} else {
+							if (res.change_vote) {
+								var downvote = $('#' + id + '-down').text();
+								downvote = parseInt(downvote);
+								downvote += 1;
+								$('#' + id + '-down').text(downvote);
+								
+								var upvote = $('#' + id + '-up').text();
+								upvote = parseInt(upvote);
+								upvote -= 1;
+								$('#' + id + '-up').text(upvote);
+							}
+						}
+					}
 				},
 				error: function() {
+					success_noty();
 					error_noty();
 				}
 		});
@@ -2885,7 +2936,12 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (!d.replace_node) {
-			text += '<P><a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
+			text += '<P>';
+			var count = get_upvote_downvote(d.id);
+			text += '<a onclick="upvote_summary(' + d.d_id + ',' + d.id + ')"><span id="' + d.id + '-up">' + count.up + '</span> <img src="/static/website/img/thumb_up.png" class="thumbs"></a>';
+			text += ' <a onclick="downvote_summary(' + d.d_id + ',' + d.id + ')"><span id="' + d.id + '-down">' + count.down + '</span> <img src="/static/website/img/thumb_down.png" class="thumbs"></a>';
+			
+			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
 				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a></P>';
@@ -2898,12 +2954,12 @@ function construct_comment(d) {
 				
 				text += `<footer>
 					&nbsp;
-					<a onclick="upvote_summary('${d.id}')">
-					${count.up}
+					<a onclick="upvote_summary(${d.d_id},${d.id})">
+					<span id="${d.id}-up">${count.up}</span>
 					<img src="/static/website/img/thumb_up.png" class="thumbs">
 					</a>
-					<a onclick="downvote_summary('${d.id}')">
-					${count.down}
+					<a onclick="downvote_summary(${d.d_id},${d.id})">
+					<span id="${d.id}-down">${count.down}</span>
 					<img src="/static/website/img/thumb_down.png" class="thumbs">
 					</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>

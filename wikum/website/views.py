@@ -1036,7 +1036,11 @@ def upvote_summary(request):
             id = request.POST['id']
             comment = Comment.objects.get(id=id)
             
+            change_vote = False
             rate, created = CommentRating.objects.get_or_create(user=req_user, comment=comment)
+            if not created and rate.neutral_rating == 1:
+                change_vote = True
+                
             rate.neutral_rating = 5
             rate.coverage_rating = 5
             rate.quality_rating = 5
@@ -1048,10 +1052,14 @@ def upvote_summary(request):
                                            action='upvote_comment')
                 h.comments.add(comment)
             
-            parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=comment.article)
-            if parent.count() > 0:
-                recurse_up_post(parent[0])
-        return JsonResponse({})
+            if created or change_vote:
+                recurse_up_post(comment)
+            
+            return JsonResponse({'success': True,
+                                 'created': created,
+                                 'change_vote': change_vote})
+        else:
+            return JsonResponse({'success': False})
     except Exception, e:
         print e
         return HttpResponseBadRequest()
@@ -1080,10 +1088,14 @@ def downvote_summary(request):
                                            action='downvote_comment')
                 h.comments.add(comment)
             
-            parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=comment.article)
-            if parent.count() > 0:
-                recurse_up_post(parent[0])
-        return JsonResponse({})
+            if created or change_vote:
+                recurse_up_post(comment)
+                
+            return JsonResponse({'success': True,
+                                 'created': created,
+                                 'change_vote': change_vote})
+        else:
+            return JsonResponse({'success': False})
     except Exception, e:
         print e
         return HttpResponseBadRequest()
