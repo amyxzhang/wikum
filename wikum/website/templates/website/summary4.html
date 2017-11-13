@@ -49,8 +49,8 @@
 {% endblock %}
 
 {% block scripts %}
-
+	<!--I18n javascript-->
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>	
 	<script src={% static "website/js/summary_base.js" %}></script>
 	<script src={% static "website/js/summary4.js" %}></script>
-
 {% endblock %}
