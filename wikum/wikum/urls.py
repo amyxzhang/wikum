@@ -17,10 +17,9 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 
-# js_info_dict = {
-#     'domain' : 'djangojs',
-#     'package': ''
-# }
+js_info_dict = {
+    'packages': ('recurrence', ),
+}
 
 
 urlpatterns = [
@@ -67,6 +66,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     url(r"^i18n/", include("django.conf.urls.i18n")),
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
 
 ]
 
