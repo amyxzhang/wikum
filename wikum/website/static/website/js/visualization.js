@@ -240,7 +240,7 @@ function make_dropdown() {
 
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
 	url = "/visualization?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
-	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	text += '<li><a href="' + url + 'likes"># '+ gettext("Likes") + '</a></li><li><a href="' + url + 'replies"># '+ gettext("Replies") + '</a></li><li><a href="' + url + 'long">'+ gettext("Longest") + '</a></li><li><a href="' + url + 'short">'+ gettext("Shortest") + '</a></li><li><a href="' + url + 'newest">'+ gettext("Newest") + '</a></li><li><a href="' + url + 'oldest">'+ gettext("Oldest") + '</a></li></ul>';
 
 
 	count = 0;
@@ -251,7 +251,7 @@ function make_dropdown() {
 	}
 	if (count == 25) {
 		next_sub = next + 1;
-		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
+		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">' + gettext("Get next page of comments") + '&gt;&gt;</a>';
 	}
 	
 	$('#node_sort').html(text);
