@@ -126,7 +126,7 @@
 								
                     				
 							  	{% for a in articles %}
-							  	<a href="/visualization?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">								
+							  	<a href="/visualization_upvote?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">								
 							  		<li class="row-item">
 							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
 							  			
@@ -361,7 +361,7 @@
  					if (!owner) {
  						owner = "None";
  					}
-  					$('.status').html(task.state + '!  <a href="/visualization?article=' + article + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+  					$('.status').html(task.state + '!  <a href="/visualization_upvote?article=' + article + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
   				}

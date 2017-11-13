@@ -1385,6 +1385,11 @@ function upvote_summary(did, id) {
 								$('#' + id + '-down').text(downvote);
 							}
 						}
+						if (res.created || res.change_vote) {
+							d = nodes_all[id -1];
+							d.avg_rating = res.avg_rating;
+                            d.rating = res.rating;
+						}
 					}
 				},
 				error: function() {
@@ -1423,6 +1428,11 @@ function downvote_summary(did, id) {
 								upvote -= 1;
 								$('#' + id + '-up').text(upvote);
 							}
+						}
+						if (res.created || res.change_vote) {
+							d = nodes_all[id -1];
+							d.avg_rating = res.avg_rating;
+                            d.rating = res.rating;
 						}
 					}
 				},

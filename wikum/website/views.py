@@ -1045,6 +1045,24 @@ def upvote_summary(request):
             rate.coverage_rating = 5
             rate.quality_rating = 5
             rate.save()
+            
+            
+            avg_rating = {'neutral': comment.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
+                          'coverage':  comment.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
+                          'quality': comment.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
+                          }
+            
+            list_rating = []
+            for rating in comment.commentrating_set.all():
+                v = []
+                if rating.neutral_rating:
+                    v.append(rating.neutral_rating)
+                if rating.coverage_rating:
+                    v.append(rating.coverage_rating)
+                if rating.quality_rating:
+                    v.append(rating.quality_rating)
+                    
+                list_rating.append(sum(v)/3.0)
         
             if created:
                 h = History.objects.create(user=req_user, 
@@ -1057,7 +1075,10 @@ def upvote_summary(request):
             
             return JsonResponse({'success': True,
                                  'created': created,
-                                 'change_vote': change_vote})
+                                 'change_vote': change_vote,
+                                 'avg_rating': avg_rating,
+                                 'rating': list_rating
+                                 })
         else:
             return JsonResponse({'success': False})
     except Exception, e:
@@ -1081,6 +1102,23 @@ def downvote_summary(request):
             rate.coverage_rating = 1
             rate.quality_rating = 1
             rate.save()
+            
+            avg_rating = {'neutral': comment.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
+                          'coverage':  comment.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
+                          'quality': comment.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
+                          }
+            
+            list_rating = []
+            for rating in comment.commentrating_set.all():
+                v = []
+                if rating.neutral_rating:
+                    v.append(rating.neutral_rating)
+                if rating.coverage_rating:
+                    v.append(rating.coverage_rating)
+                if rating.quality_rating:
+                    v.append(rating.quality_rating)
+                    
+                list_rating.append(sum(v)/3.0)
         
             if created:
                 h = History.objects.create(user=req_user, 
@@ -1093,7 +1131,10 @@ def downvote_summary(request):
                 
             return JsonResponse({'success': True,
                                  'created': created,
-                                 'change_vote': change_vote})
+                                 'change_vote': change_vote,
+                                 'avg_rating': avg_rating,
+                                 'rating': list_rating
+                                 })
         else:
             return JsonResponse({'success': False})
     except Exception, e:
