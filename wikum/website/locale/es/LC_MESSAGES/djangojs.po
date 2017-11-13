@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-13 09:47+0000\n"
+"POT-Creation-Date: 2017-11-13 13:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: website/static/website/js/base.js:230
+msgid "Tag this comment."
+msgstr "Etiquetar comentario."
+
 #: website/static/website/js/base.js:295 website/static/website/js/base.js:377
 #: website/static/website/js/base.js:418
 msgid "Current tags: "
 msgstr "Etiquetas actuales: "
+
+#: website/static/website/js/base.js:307
+msgid "Add tag: "
+msgstr "Añadir etiqueta: "
 
 #: website/static/website/js/base.js:307
 msgid "New tag"
@@ -34,6 +42,24 @@ msgstr "Etiquetas sugeridas: "
 #: website/static/website/js/base.js:384 website/static/website/js/base.js:429
 msgid "Tags: "
 msgstr "Etiquetas: "
+
+#: website/static/website/js/base.js:468
+#, fuzzy
+#| msgid "Hide all these comments from view."
+msgid "Hide this comment from view."
+msgstr "Ocultar todos los comentarios"
+
+#: website/static/website/js/base.js:470
+msgid "Original Comment: "
+msgstr "Comentario Original: "
+
+#: website/static/website/js/base.js:470
+msgid "Replies: "
+msgstr "Respuestas: "
+
+#: website/static/website/js/base.js:472
+msgid "Hide the replies to this original comment from view."
+msgstr "Ocultar todas las  respuestas a este comentario original "
 
 #: website/static/website/js/base.js:495
 msgid "Summary Node: "
@@ -63,6 +89,16 @@ msgstr "Resumir comentario"
 msgid "Quote"
 msgstr "Cita"
 
+#: website/static/website/js/base.js:882
+msgid "Cite Comment"
+msgstr "Citar Comentario"
+
+#: website/static/website/js/base.js:919
+msgid "Summarize this comment and all replies (replaces them all)."
+msgstr ""
+"Resumir este comentario y todas sus respuestas        (reemplazar todas "
+"ellas)."
+
 #: website/static/website/js/base.js:1869
 #: website/static/website/js/base.js:1872
 msgid "This summary will be deleted."
@@ -88,6 +124,10 @@ msgstr "Lo sentimos, se ha producido un error."
 msgid "Filter by tag"
 msgstr "Filtrar por etiqueta"
 
+#: website/static/website/js/base.js:2025
+msgid "Highlight text"
+msgstr "Resaltar texto"
+
 #: website/static/website/js/base.js:2798
 msgid "View Original Comment"
 msgstr "Ver Comentario Original"
@@ -98,8 +138,6 @@ msgstr "Eliminar Resumen de Comentario"
 
 #: website/static/website/js/base.js:2820
 #: website/static/website/js/base.js:2830
-#, fuzzy
-#| msgid "Summarize this comment."
 msgid "Summarize Comment"
 msgstr "Resumir comentario"
 
@@ -119,12 +157,10 @@ msgstr "Marcar como irrelevante"
 msgid "Show Hidden Comments"
 msgstr "Mostrar Comentarios Ocultos"
 
-#: website/static/website/js/base.js:2826
+
 #: website/static/website/js/base.js:2843
-#, fuzzy
-#| msgid "Summarize this comment."
 msgid "Summarize Comment + Replies"
-msgstr "Resumir comentario"
+msgstr "Resumir comentario + Respuestas"
 
 #: website/static/website/js/base.js:2829
 #: website/static/website/js/base.js:2846
@@ -146,7 +182,9 @@ msgstr "Mostrar elresumen padre"
 #: website/static/website/js/base.js:2969
 msgid ""
 "Click on a node to see it and its children or drag to select multiple nodes."
-msgstr "Click en el nodo para visualizarlo o arrastra para seleccionar multiples nodos"
+msgstr ""
+"Click en el nodo para visualizarlo o arrastra para seleccionar multiples "
+"nodos"
 
 #: website/static/website/js/base.js:3146
 #: website/static/website/js/base.js:3205
@@ -201,30 +239,70 @@ msgstr "ocultos"
 msgid " hidden"
 msgstr " ocultos"
 
+#: website/static/website/js/summary4.js:78
+#, fuzzy
+#| msgid "See Entire Discussion"
+msgid "End of discussion"
+msgstr "Ver la Conversacion Completa"
+
+#: website/static/website/js/summary4.js:80
+#, fuzzy
+#| msgid "See Entire Discussion"
+msgid "See Next Page of Discussions"
+msgstr "Ver la Conversacion Completa"
+
 #: website/static/website/js/visualization.js:226
 msgid "Sort all by - ID"
 msgstr "Ordenar por - ID"
 
 #: website/static/website/js/visualization.js:228
 msgid "Sort all by - # Likes"
-msgstr "Ordenar por - # Likes"
+msgstr "Ordenar por - # Me gusta "
 
 #: website/static/website/js/visualization.js:230
 msgid "Sort all by - # Replies"
-msgstr "Ordenar por - # Replies"
+msgstr "Ordenar por - # Respuestas "
 
 #: website/static/website/js/visualization.js:232
 msgid "Sort all by - Longest"
-msgstr "Ordenar por - Mas largos"
+msgstr "Ordenar por - Mas largos "
 
 #: website/static/website/js/visualization.js:234
 msgid "Sort all by - Shortest"
-msgstr "Ordenar por - Mas cortos"
+msgstr "Ordenar por - Mas cortos "
 
 #: website/static/website/js/visualization.js:236
 msgid "Sort all by - Newest"
-msgstr "Ordenar por - Mas recientes"
+msgstr "Ordenar por - Mas recientes "
 
 #: website/static/website/js/visualization.js:238
 msgid "Sort all by - Oldest"
-msgstr "Ordenar por - Mas antiguos"
+msgstr "Ordenar por - Mas antiguos "
+
+#: website/static/website/js/visualization.js:243
+msgid "Likes"
+msgstr "Me gusta"
+
+#: website/static/website/js/visualization.js:243
+msgid "Replies"
+msgstr "Respuestas"
+
+#: website/static/website/js/visualization.js:243
+msgid "Longest"
+msgstr "Más largos"
+
+#: website/static/website/js/visualization.js:243
+msgid "Shortest"
+msgstr "Más cortos"
+
+#: website/static/website/js/visualization.js:243
+msgid "Newest"
+msgstr "Más nuevos"
+
+#: website/static/website/js/visualization.js:243
+msgid "Oldest"
+msgstr "Más viejos"
+
+#: website/static/website/js/visualization.js:254
+msgid "Get next page of comments"
+msgstr "Siguiente página de comentarios"
