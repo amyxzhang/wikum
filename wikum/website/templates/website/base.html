@@ -155,7 +155,9 @@
 {% endblock %}
 	
     
-	{% block scripts %}
+    {% block scripts %}
+    <!--I18n javascript-->
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
 	{% endblock %}
 
 </body>
