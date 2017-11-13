@@ -227,7 +227,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			$('#tag_comment_text').text('Tag this summary.');
 		} else {
 			var text = '<div class="tag_comment_comment">' + d.name + '</div>';
-			$('#tag_comment_text').text('Tag this comment.');
+			$('#tag_comment_text').text(gettext('Tag this comment.'));
 		}
 
 		overlapping_tags = d.tags;
@@ -304,7 +304,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	} else {
 		d_text += '<BR><div id="current_tags"></div><BR>';
 	}
-	d_text += 'Add tag: <div id="remote"><input required class="typeahead form-control input-sm" id="tag-form" placeholder="'+ gettext("New tag"); + '"></div>';
+	d_text += gettext("Add tag: ") + ' <div id="remote"><input required class="typeahead form-control input-sm" id="tag-form" placeholder="'+ gettext("New tag") + '"></div>';
 
 	if (suggested_tags.length > 0) {
 		d_text += '<BR><div id="current_tags">' + gettext("Suggested tags: ");
@@ -465,11 +465,11 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	highlight_box(id);
 	if (type == "hide_comment") {
 		var text = '<div class="hide_comment_comment">' + d.name + '</div>';
-		$('#hide_comment_text').text('Hide this comment from view.');
+		$('#hide_comment_text').text(gettext('Hide this comment from view.'));
 	} else if (type == "hide_replies") {
-		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>Replies:</strong><BR>';
+		var text = '<strong>' + gettext("Original Comment: ") + '</strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>' + gettext("Replies: ") + '</strong><BR>';
 		text = get_subtree(text, d, 0);
-		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
+		$('#hide_comment_text').text(gettext('Hide the replies to this original comment from view.'));
 	} else if (type == "hide_all_selected") {
 		var text = '';
 		var datas = [];
@@ -879,14 +879,14 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				if (objs[i].summary) {
 					text += `
 					<a class="btn-xs btn-edit" onclick="copy_summary(${objs[i].id});">Copy Entire Summary</a> |
-					<a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Comment</a>
+					<a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});"> ` + gettext("Cite Comment") + `</a>
 					</P>
 					<strong>Summary:</strong>
 					${render_summary_node_edit(objs[i])}`;
 				} else {
-					text += ` | <a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Comment</a>
+					text += ` | <a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">` + gettext("Cite Comment") + `</a>
 					</P>
-					${show_comment_text(objs[i].name, objs[i].d_id)}
+					${show_comment_text(objs[i].name, objs[i].d_id)} 
 					<P>-- ${objs[i].author}</P>`;
 				}
 			}
@@ -916,7 +916,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			}
 
 			text = get_subtree_summarize(text, d, 1);
-			$('#summarize_multiple_comment_text').text('Summarize this comment and all replies (replaces them all).');
+			$('#summarize_multiple_comment_text').text(gettext('Summarize this comment and all replies (replaces them all).'));
 			$('#summarize_multiple_comment_textarea').val("");
 		} else if (type == "edit_summarize") {
 
@@ -2022,7 +2022,7 @@ function make_filter() {
 }
 
 function make_highlight() {
-	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
+	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="' + gettext("Highlight text") + '"><div id="count_result"></div>';
 	$('#node_highlight').html(text);
 
 	$('#inputHighlight').keyup(function (e) {
