@@ -301,7 +301,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
       step: 1,
       slide: function( event, ui ) {
         if (ui.value == 1) {
-      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with bias');
+      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with bias');
       	} else if (ui.value == 2) {
       		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with bias');
       	} else if (ui.value == 3) {
@@ -324,7 +324,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
       step: 1,
       slide: function( event, ui ) {
       	if (ui.value == 1) {
-      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with misrepresentation or inaccuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with misrepresentation or inaccuracy');
       	} else if (ui.value == 2) {
       		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with misrepresentation or inaccuracy');
       	} else if (ui.value == 3) {
@@ -347,7 +347,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
       step: 1,
       slide: function( event, ui ) {
         if (ui.value == 1) {
-      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with writing quality');
+      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with writing quality');
       	} else if (ui.value == 2) {
       		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with writing quality');
       	} else if (ui.value == 3) {
@@ -3070,7 +3070,7 @@ function construct_comment(d) {
 				found = true;
 			}
 			if (d.rating_flag.neutral == 1) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a strong problem with bias</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a major problem with bias</div>`;
 	      	} else if (d.rating_flag.neutral == 2) {
 	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with bias</div>`;
 	      	} else if (d.rating_flag.neutral == 4) {
@@ -3085,7 +3085,7 @@ function construct_comment(d) {
 	      		found = true;
 	      	}
 	      	if (d.rating_flag.coverage == 1) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a strong problem with misrepresentation or inaccuracy</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a major problem with misrepresentation or inaccuracy</div>`;
 	      	} else if (d.rating_flag.coverage == 2) {
 	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with misrepresentation or inaccuracy</div>`;
 	      	} else if (d.rating_flag.coverage == 4) {
@@ -3098,7 +3098,7 @@ function construct_comment(d) {
 	      		text += `<br>`;
 	      	}
 	      	if (d.rating_flag.quality == 1) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a strong problem with writing quality</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a major problem with writing quality</div>`;
 	      	} else if (d.rating_flag.quality == 2) {
 	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with writing quality</div>`;
 	      	} else if (d.rating_flag.quality == 4) {
