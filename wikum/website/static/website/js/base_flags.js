@@ -250,7 +250,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			neutral = d.rating_flag.neutral;
 		}
 		if (neutral == 1) {
-      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with bias');
+      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with bias');
       	} else if (neutral == 2) {
       		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with bias');
       	} else if (neutral == 3) {
@@ -266,7 +266,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			coverage = d.rating_flag.coverage;
 		}
 		if (coverage == 1) {
-      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with misrepresentation or inaccuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with misrepresentation or inaccuracy');
       	} else if (coverage == 2) {
       		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with misrepresentation or inaccuracy');
       	} else if (coverage == 3) {
@@ -282,7 +282,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			quality = d.rating_flag.quality;
 		}
 		if (quality == 1) {
-      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with writing quality');
+      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with writing quality');
       	} else if (quality == 2) {
       		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with writing quality');
       	} else if (quality == 3) {
