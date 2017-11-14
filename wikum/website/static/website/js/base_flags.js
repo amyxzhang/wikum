@@ -3530,7 +3530,7 @@ function showdiv(d) {
 				}
 				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
 				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
-				if (d.hid.length > 0) {
+				if (d.hid && d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
 				}				
 				if (d.hashidden) {
