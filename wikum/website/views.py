@@ -72,6 +72,21 @@ def visualization_upvote(request):
             'source': article.source}
 
 
+@render_to('website/visualization_flags.html')
+def visualization_flag(request):
+    user = request.user
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    url = request.GET['article']
+    num = int(request.GET.get('num', 0))
+    article = Article.objects.filter(url=url, owner=owner)[num]
+    return {'article': article,
+            'user': user,
+            'source': article.source}
+
 
 @render_to('website/visualization.html')
 def visualization(request):
@@ -322,12 +337,8 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()],
-                  'avg_rating': {
-                             'neutral': post.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
-                             'coverage':  post.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
-                             'quality': post.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
-                             },
                   }
+            
             
             v1['rating'] = []
             for rating in post.commentrating_set.all():
@@ -340,6 +351,14 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     v.append(rating.quality_rating)
                     
                 v1['rating'].append(sum(v)/3.0)
+            
+            ratings = post.commentrating_set.all()
+            if len(ratings) > 0:
+                v1['rating_flag'] = {
+                             'neutral': ratings[len(ratings)-1].neutral_rating,
+                             'coverage':  ratings[len(ratings)-1].coverage_rating,
+                             'quality': ratings[len(ratings)-1].quality_rating,
+                             }
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 v1['name'] = parse(post.text)
@@ -965,25 +984,23 @@ def rate_summary(request):
     try:
         req_user = request.user if request.user.is_authenticated() else None
         if req_user:
-            article_id = request.POST['article']
-            a = Article.objects.get(id=article_id)
             id = request.POST['id']
-            neutral_rating = request.POST['neutral_rating']
-            coverage_rating = request.POST['coverage_rating']
-            quality_rating = request.POST['quality_rating']
+            neutral_rating = request.POST['neu']
+            coverage_rating = request.POST['cov']
+            quality_rating = request.POST['qual']
         
             comment = Comment.objects.get(id=id)
         
             if comment.summary != '':
         
-                r,_ = CommentRating.objects.get_or_create(article=a, comment=comment, user=req_user)
+                r,_ = CommentRating.objects.get_or_create(comment=comment, user=req_user)
                 r.neutral_rating = neutral_rating
                 r.coverage_rating = coverage_rating
                 r.quality_rating = quality_rating
                 r.save()
                 
                 h = History.objects.create(user=req_user, 
-                                           article=a,
+                                           article=comment.article,
                                            action='rate_comment',
                                            explanation="Add Rating %s (neutral), %s (coverage), %s (quality) to a comment" % (neutral_rating,
                                                                                                                               coverage_rating,
@@ -994,7 +1011,8 @@ def rate_summary(request):
                 
                 recurse_up_post(comment)
            
-        return JsonResponse()
+                return JsonResponse({'success': True});
+        return JsonResponse({'success': False});
     except Exception, e:
         print e
         return HttpResponseBadRequest()

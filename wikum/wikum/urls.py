@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^$','website.views.index'),
     
     url(r'^visualization_upvote','website.views.visualization_upvote'),
+    url(r'^visualization_flag','website.views.visualization_flag'),
     
     url(r'^visualization','website.views.visualization'),
     url(r'^subtree_data','website.views.subtree_data'),
@@ -53,6 +54,8 @@ urlpatterns = [
     
     url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
     
+    url(r'^rate_summary','website.views.rate_summary'),
+     
     url(r'^upvote_summary','website.views.upvote_summary'),
     url(r'^downvote_summary','website.views.downvote_summary'),
     

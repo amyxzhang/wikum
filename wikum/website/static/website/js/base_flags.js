@@ -199,6 +199,9 @@ $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
 	unhighlight_sents();
 });
 
+
+
+
 function luminance(color) {
 	// Formula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
 	var rgb = color.match(/.{2}/g).map(function(c){
@@ -215,6 +218,197 @@ function luminance(color) {
 function is_dark(color) {
 	return luminance(color) < 50;
 }
+
+
+$('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
+	var id = $(e.relatedTarget).data('id');
+	d = nodes_all[id-1];
+	
+	var text = 'Flag this summary as being problematic or exemplary in the below characteristics:';
+	$('#evaluate_text').html(text);
+	
+	if (d.replace_node) {
+		var node_text = '<strong>Summary Node:</strong><BR>' + render_summary_node(d, false);
+	} else if (d.summary != '') {
+		var node_text = '<strong>Summary:</strong> ' + render_summary_node(d, false);
+	} else {
+		var node_text = d.name;
+	}
+			
+	var text = '<div class="summary_box tag_comment_comment">' + node_text+ '</div>';
+
+	$('#evaluate_summary_box').html(text);
+	var neutral = 3;
+	var coverage = 3;
+	var quality = 3;
+	
+	if (d.rating_flag) {
+		
+		if (!d.rating_flag.neutral) {
+			neutral = 3;
+		} else {
+			neutral = d.rating_flag.neutral;
+		}
+		if (neutral == 1) {
+      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with bias');
+      	} else if (neutral == 2) {
+      		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with bias');
+      	} else if (neutral == 3) {
+      		$('#neutral_score').html('None');
+      	} else if (neutral == 4) {
+      		$('#neutral_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt to be neutral');
+      	} else if (neutral == 5) {
+      		$('#neutral_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of neutrality');
+      	}
+		if (!d.rating_flag.coverage) {
+			coverage = 3;
+		} else {
+			coverage = d.rating_flag.coverage;
+		}
+		if (coverage == 1) {
+      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with misrepresentation or inaccuracy');
+      	} else if (coverage == 2) {
+      		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with misrepresentation or inaccuracy');
+      	} else if (coverage == 3) {
+      		$('#coverage_score').html('None');
+      	} else if (coverage == 4) {
+      		$('#coverage_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at representativeness and accuracy');
+      	} else if (coverage == 5) {
+      		$('#coverage_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of representativeness and accuracy');
+      	}
+		if (!d.rating_flag.quality) {
+			quality = 3;
+		} else {
+			quality = d.rating_flag.quality;
+		}
+		if (quality == 1) {
+      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with writing quality');
+      	} else if (quality == 2) {
+      		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with writing quality');
+      	} else if (quality == 3) {
+      		$('#quality_score').html('None');
+      	} else if (quality == 4) {
+      		$('#quality_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at a well-written summary');
+      	} else if (quality == 5) {
+      		$('#quality_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of a well-written summary');
+      	}
+	}
+
+	$( "#neutral_rating" ).slider({
+      value:neutral,
+      min: 1,
+      max: 5,
+      step: 1,
+      slide: function( event, ui ) {
+        if (ui.value == 1) {
+      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with bias');
+      	} else if (ui.value == 2) {
+      		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with bias');
+      	} else if (ui.value == 3) {
+      		$('#neutral_score').html('None');
+      	} else if (ui.value == 4) {
+      		$('#neutral_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt to be neutral');
+      	} else if (ui.value == 5) {
+      		$('#neutral_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of neutrality');
+      	}
+      }
+    });
+    
+    $('#neutral_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
+
+    
+    $( "#coverage_rating" ).slider({
+      value:coverage,
+      min: 1,
+      max: 5,
+      step: 1,
+      slide: function( event, ui ) {
+      	if (ui.value == 1) {
+      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with misrepresentation or inaccuracy');
+      	} else if (ui.value == 2) {
+      		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with misrepresentation or inaccuracy');
+      	} else if (ui.value == 3) {
+      		$('#coverage_score').html('None');
+      	} else if (ui.value == 4) {
+      		$('#coverage_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at representativeness and accuracy');
+      	} else if (ui.value == 5) {
+      		$('#coverage_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of representativeness and accuracy');
+      	}
+      }
+    });
+    
+    $('#coverage_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
+
+    
+    $( "#quality_rating" ).slider({
+      value:quality,
+      min: 1,
+      max: 5,
+      step: 1,
+      slide: function( event, ui ) {
+        if (ui.value == 1) {
+      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a strong problem with writing quality');
+      	} else if (ui.value == 2) {
+      		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with writing quality');
+      	} else if (ui.value == 3) {
+      		$('#quality_score').html('None');
+      	} else if (ui.value == 4) {
+      		$('#quality_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at a well-written summary');
+      	} else if (ui.value == 5) {
+      		$('#quality_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of a well-written summary');
+      	}
+      }
+    });
+    
+    $('#quality_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
+
+
+	var did = $(e.relatedTarget).data('did');
+
+	$('#evaluate_summary_modal_box form').off("submit");
+
+	$('#evaluate_summary_modal_box form').submit({data_id: did, id: id}, function(evt) {
+		evt.preventDefault();
+		
+		var neu = $( "#neutral_rating" ).slider('value');
+		var cov = $( "#coverage_rating" ).slider('value');
+		var qual = $( "#quality_rating" ).slider('value');
+		
+		var csrf = $('#csrf').text();
+		var data = {csrfmiddlewaretoken: csrf,
+			neu: neu,
+			cov: cov,
+			qual: qual
+			};
+		data.id = evt.data.data_id;
+		$.ajax({
+			type: 'POST',
+			url: '/rate_summary',
+			data: data,
+			success: function(res) {
+				success_noty();
+				$('#evaluate_summary_modal_box').modal('toggle');
+				
+				if (res.success) {
+					if (!d.rating_flag) {
+						d.rating_flag = {};
+					}
+					d.rating_flag.neutral = neu;
+					d.rating_flag.coverage = cov;
+					d.rating_flag.quality = qual;
+					
+					show_text(d);
+					
+				}
+			},
+			error: function() {
+				error_noty();
+			}
+		});
+	});
+	
+});
+
 
 $('#tag_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
@@ -1181,17 +1375,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						
 						text += `<footer>
-							&nbsp;
-							<a onclick="upvote_summary(${new_d.d_id},${new_d.id})">
-							<span id="${new_d.id}-up">0</span>
-							<img src="/static/website/img/thumb_up.png" class="thumbs">
-							</a>
-							<a onclick="downvote_summary(${new_d.d_id},${new_d.id})">
-							<span id="${new_d.id}-down">0</span>
-							<img src="/static/website/img/thumb_down.png" class="thumbs">
-							</a>
-							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
+							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
 							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
+							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
 					
@@ -1308,17 +1494,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						text += `<footer>
-							&nbsp;
-							<a onclick="upvote_summary(${d.d_id},${d.id})">
-							<span id="${d.id}-up">0</span>
-							<img src="/static/website/img/thumb_up.png" class="thumbs">
-							</a>
-							<a onclick="downvote_summary(${d.d_id},${d.id})">
-							<span id="${d.id}-down">0</span>
-							<img src="/static/website/img/thumb_down.png" class="thumbs">
-							</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
+							<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
 
@@ -2864,7 +3042,6 @@ function construct_comment(d) {
 	if (summary) {
 		if (d.replace_node) {
 			text += `<h6 align="right" title="ID: ${d.d_id}">Summary`;
-			text += ` Node</h1>`;
 		} else {
 			text += `<h6 align="right" title="ID: ${d.d_id}">Summary`;
 			text += ` of Comment by <strong>`;
@@ -2886,7 +3063,52 @@ function construct_comment(d) {
 			}
 		}
 		
-		text += `</h6>`;
+		text += `</h6><span id="flags-${d.id}" class="flags">`;
+		var found = false;
+		if (d.rating_flag) {
+			if (d.rating_flag.neutral != 3) {
+				found = true;
+			}
+			if (d.rating_flag.neutral == 1) {
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a strong problem with bias</div>`;
+	      	} else if (d.rating_flag.neutral == 2) {
+	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with bias</div>`;
+	      	} else if (d.rating_flag.neutral == 4) {
+	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> This summary is a good attempt to be neutral</div>`;
+	      	} else if (d.rating_flag.neutral == 5) {
+	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9  style="margin-left: 2px;"> This summary is a great example of neutrality</div>`;
+	      	}
+	      
+	      	if (found && d.rating_flag.coverage != 3) {
+	      		text += `<br>`;
+	      	} else if (d.rating_flag.coverage != 3) {
+	      		found = true;
+	      	}
+	      	if (d.rating_flag.coverage == 1) {
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a strong problem with misrepresentation or inaccuracy</div>`;
+	      	} else if (d.rating_flag.coverage == 2) {
+	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with misrepresentation or inaccuracy</div>`;
+	      	} else if (d.rating_flag.coverage == 4) {
+	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> This summary is a good attempt at representativeness and accuracy</div>`;
+	      	} else if (d.rating_flag.coverage == 5) {
+	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9  style="margin-left: 2px;"> This summary is a great example of representativeness and accuracy</div>`;
+	      	}
+	      	
+	      	if (found && d.rating_flag.quality != 3) {
+	      		text += `<br>`;
+	      	}
+	      	if (d.rating_flag.quality == 1) {
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a strong problem with writing quality</div>`;
+	      	} else if (d.rating_flag.quality == 2) {
+	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with writing quality</div>`;
+	      	} else if (d.rating_flag.quality == 4) {
+	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> This summary is a good attempt at a well-written summary</div>`;
+	      	} else if (d.rating_flag.quality == 5) {
+	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9 style="margin-left: 2px;"> This summary is a great example of a well-written summary</div>`;
+	      	}
+		}
+		
+		text += `</span>`;
 
 		text += render_summary_node(d, false);
 	} else if (d.hiddennode) {
@@ -2955,34 +3177,21 @@ function construct_comment(d) {
 	if (summary) {
 		if (!d.replace_node) {
 			text += '<P>';
-			var count = get_upvote_downvote(d.id);
-			text += '<a onclick="upvote_summary(' + d.d_id + ',' + d.id + ')"><span id="' + d.id + '-up">' + count.up + '</span> <img src="/static/website/img/thumb_up.png" class="thumbs"></a>';
-			text += ' <a onclick="downvote_summary(' + d.d_id + ',' + d.id + ')"><span id="' + d.id + '-down">' + count.down + '</span> <img src="/static/website/img/thumb_down.png" class="thumbs"></a>';
-			
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
-				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a></P>';
+				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a> | ';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate Summary</a></P>';
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				
-				var count = get_upvote_downvote(d.id);
-				
 				text += `<footer>
-					&nbsp;
-					<a onclick="upvote_summary(${d.d_id},${d.id})">
-					<span id="${d.id}-up">${count.up}</span>
-					<img src="/static/website/img/thumb_up.png" class="thumbs">
-					</a>
-					<a onclick="downvote_summary(${d.d_id},${d.id})">
-					<span id="${d.id}-down">${count.down}</span>
-					<img src="/static/website/img/thumb_down.png" class="thumbs">
-					</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
+					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 				</footer>`;
 			}
 		}

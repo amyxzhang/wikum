@@ -302,6 +302,7 @@ textarea {
 	max-height: calc(100vh - 200px);
 	margin: 200px 15px 15px 600px;
 	overflow: auto;
+	min-width: 55%;
 }
 
 #box a {
@@ -530,10 +531,40 @@ textarea {
 
 .hide_comment_comment, .tag_comment_comment {
 	display: block;
-	background-color: #eef7fa;
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 5px;
+}
+
+.score {
+	font-style: italic;
+}
+
+.flags {
+	position: relative;
+    display: block;
+    top: -50px;
+    left: -5px;
+}
+
+.green-flag {
+	color: green;
+    border: 1px solid green;
+    display: inline-block;
+    padding: 1px 8px 0px 0px;
+    font-size: 12px;
+}
+
+.red-flag {
+	color: red;
+    border: 1px solid red;
+    display: inline-block;
+    padding: 1px 8px 0px 0px;
+    font-size: 12px;
+}
+
+.tag_comment, .hide_comment {
+	background-color: #eef7fa;
 }
 
 .resizable {
@@ -640,6 +671,16 @@ a.btn-edit {
 	width: 100%;
 	height: 400px;
 	resize: vertical;
+}
+
+#evaluate_summary_box {
+	height: 200px;
+    overflow-y: scroll;
+    border: 1px #000000 solid;
+    display: block;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 5px;
 }
 
 #summarize_multiple_comment_box {

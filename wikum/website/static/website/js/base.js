@@ -165,6 +165,14 @@ $("#summarize_multiple_modal_box").draggable({
     handle: ".modal-title"
 });
 
+$("#tag_modal_box").draggable({
+    handle: ".modal-title"
+});
+
+$("#evaluate_summary_modal_box").draggable({
+    handle: ".modal-title"
+});
+
 $('#hide_modal_box').on('hidden.bs.modal', function () {
     var cnt = $(".ui-resizable").contents();
 	$(".ui-resizable").replaceWith(cnt);
@@ -220,10 +228,10 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	highlight_box(id);
 	if (type == "tag_one") {
 		if (d.replace_node) {
-			var text = '<div class="tag_comment_comment summary_box"><P>' + render_summary_node(d, true); + '</P></div>';
+			var text = '<div class="summary_box tag_comment_comment"><P>' + render_summary_node(d, true); + '</P></div>';
 			$('#tag_comment_text').text('Tag this summary.');
 		} else {
-			var text = '<div class="tag_comment_comment">' + d.name + '</div>';
+			var text = '<div class="tag_comment_comment tag_comment">' + d.name + '</div>';
 			$('#tag_comment_text').text('Tag this comment.');
 		}
 
