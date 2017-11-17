@@ -5,18 +5,31 @@
 
 <header id="title_info">
 	<h1>{{ article.title }}</h1>
-	
-	<div class="btn btn-sm btn-primary" style="cursor: default; float: right; margin-right: 20px;" id="access_mode">
-		{% if article.access_mode == 1 %}
-			Edit Access
-		{% elif article.access_mode == 2 %}
-			Comment Access
-		{% elif article.access_mode == 3 %}
-			View Access
-		{% elif article.access_mode == 4 %}
-			Private Access
-		{% endif %}
-	</div>
+	{% if user == article.owner %}
+		<div class="btn btn-sm btn-primary" style="cursor: hand; float: right; margin-right: 20px;" id="access_mode">
+			{% if article.access_mode == 1 %}
+				Edit Access
+			{% elif article.access_mode == 2 %}
+				Comment Access
+			{% elif article.access_mode == 3 %}
+				View Access
+			{% elif article.access_mode == 4 %}
+				Private Access
+			{% endif %}
+		</div>
+	{% else %}
+		<div class="btn btn-sm btn-primary" style="cursor: default; float: right; margin-right: 20px;" id="access_mode">
+			{% if article.access_mode == 1 %}
+				Edit Access
+			{% elif article.access_mode == 2 %}
+				Comment Access
+			{% elif article.access_mode == 3 %}
+				View Access
+			{% elif article.access_mode == 4 %}
+				Private Access
+			{% endif %}
+		</div>
+	{% endif %}
 	
 	<label class="progress-label"><span>0</span>% {% trans "of this page summarized" %} 
 		<progress value="20" max="100"></progress>
@@ -139,6 +152,43 @@
 			</td>
 			</tr>
 		</table>
+	</div>
+	  <div class="modal-footer">
+		<button type="submit" class="btn btn-default">{% trans "Submit" %}</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+	  </div>
+  </form>
+
+  </div>
+</div>
+
+<div id="evaluate_summary_modal_box" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+	<!-- Modal content-->
+	<form class="modal-content" action="/rate_summary" method="POST">
+	  <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Evaluate Summary</h4>
+	  </div>
+	  <div class="modal-body" style="min-height: 200px;">
+	  	<div id="evaluate_text"></div>
+	  	<div id="evaluate_summary_box"></div>
+	  		  	<BR>
+	  	Neutrality:<BR>
+	  	
+		<div id="neutral_rating"></div>
+		Current status: <span id="neutral_score" class="score">None</span><BR>
+		<BR>
+	  	Accuracy/Representativeness:<BR>
+	  	
+		<div id="coverage_rating"></div>
+		Current status: <span id="coverage_score" class="score">None</span><BR>
+		
+		<BR>
+	  	Writing Quality:<BR>
+		<div id="quality_rating"></div>
+		Current status: <span id="quality_score" class="score">None</span><BR>
 	</div>
 	  <div class="modal-footer">
 		<button type="submit" class="btn btn-default">{% trans "Submit" %}</button>

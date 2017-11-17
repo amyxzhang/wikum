@@ -24,6 +24,10 @@ js_info_dict = {
 
 urlpatterns = [
     url(r'^$','website.views.index'),
+    
+    url(r'^visualization_upvote','website.views.visualization_upvote'),
+    url(r'^visualization_flag','website.views.visualization_flag'),
+    
     url(r'^visualization','website.views.visualization'),
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
@@ -49,11 +53,17 @@ urlpatterns = [
     
     url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
     
+    url(r'^rate_summary','website.views.rate_summary'),
+     
+    url(r'^upvote_summary','website.views.upvote_summary'),
+    url(r'^downvote_summary','website.views.downvote_summary'),
+    
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
     
     url(r'^delete_comment_summary','website.views.delete_comment_summary'),
 
+    url(r'^suggested_tags','website.views.suggested_tags'),
     url(r'^tag_comments','website.views.tag_comments'),
     url(r'^tag_comment','website.views.tag_comment'),
     

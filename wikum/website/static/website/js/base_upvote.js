@@ -231,10 +231,8 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			var text = '<div class="summary_box tag_comment_comment"><P>' + render_summary_node(d, true); + '</P></div>';
 			$('#tag_comment_text').text('Tag this summary.');
 		} else {
-
-			var text = '<div class="tag_comment_comment">' + d.name + '</div>';
-			$('#tag_comment_text').text(gettext('Tag this comment.'));
-
+			var text = '<div class="tag_comment_comment tag_comment">' + d.name + '</div>';
+			$('#tag_comment_text').text('Tag this comment.');
 		}
 
 		overlapping_tags = d.tags;
@@ -299,7 +297,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	d_text = '';
 
 	if (overlapping_tags.length > 0) {
-		d_text += '<BR><div id="current_tags">' + gettext("Current tags: ");
+		d_text += '<BR><div id="current_tags">Current tags: ';
 		for (var i=0; i<overlapping_tags.length; i++) {
 			if (is_dark(overlapping_tags[i][1])) {
 				d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + '</button> ';
@@ -311,19 +309,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	} else {
 		d_text += '<BR><div id="current_tags"></div><BR>';
 	}
-
-	d_text += gettext("Add tag: ") + ' <div id="remote"><input required class="typeahead form-control input-sm" id="tag-form" placeholder="'+ gettext("New tag") + '"></div>';
-
-	if (suggested_tags.length > 0) {
-		d_text += '<BR><div id="current_tags">' + gettext("Suggested tags: ");
-		for (var i=0; i<suggested_tags.length; i++) {
-			d_text += '<button class="btn btn-xs" style="background-color: #' + suggested_tags_color[i] + '">' + suggested_tags[i] +'</button> ';
-		}
-		d_text += '</div><BR>';
-	} else {
-		d_text += '<BR><div id="current_tags"></div><BR>';
-	}
-
+	d_text += 'Add tag:';
+	d_text += '<BR><div id="suggested_tags"></div><BR>';
+	d_text += '<div id="remote"><input required class="typeahead form-control input-sm" id="tag-form" placeholder="New tag"></div>';
 
 	$('#tag_comment_dropdown').html(d_text);
 
@@ -383,14 +371,14 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 						text = $('#current_tags').html();
 						if (text == "") {
-							$('#current_tags').html(gettext("Current tags: ") + d_text);
+							$('#current_tags').html('Current tags: ' + d_text);
 						} else {
 							$('#current_tags').append(d_text);
 						}
 
 						text = $('#tags_' + d.id).html();
 						if (text == "") {
-							$('#tags_' + d.id).html(gettext('Tags: ') + d_text);
+							$('#tags_' + d.id).html('Tags: ' + d_text);
 						} else {
 							$('#tags_' + d.id).append(d_text);
 						}
@@ -424,7 +412,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 						text = $('#current_tags').html();
 						if (text == "") {
-							$('#current_tags').html(gettext("Current tags: ")  + d_text);
+							$('#current_tags').html('Current tags: ' + d_text);
 						} else {
 							$('#current_tags').append(d_text);
 						}
@@ -435,7 +423,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 							text = $('#tags_' + d.id).html();
 							if (text == "") {
-								$('#tags_' + d.id).html(gettext('Tags: ') + d_text);
+								$('#tags_' + d.id).html('Tags: ' + d_text);
 							} else {
 								$('#tags_' + d.id).append(d_text);
 							}
@@ -506,11 +494,11 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	highlight_box(id);
 	if (type == "hide_comment") {
 		var text = '<div class="hide_comment_comment">' + d.name + '</div>';
-		$('#hide_comment_text').text(gettext('Hide this comment from view.'));
+		$('#hide_comment_text').text('Hide this comment from view.');
 	} else if (type == "hide_replies") {
-		var text = '<strong>' + gettext("Original Comment: ") + '</strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>' + gettext("Replies: ") + '</strong><BR>';
+		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>Replies:</strong><BR>';
 		text = get_subtree(text, d, 0);
-		$('#hide_comment_text').text(gettext('Hide the replies to this original comment from view.'));
+		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
 	} else if (type == "hide_all_selected") {
 		var text = '';
 		var datas = [];
@@ -533,10 +521,10 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 
 			var class_sum = "";
 			if (datas[i].replace_node) {
-				var node_text = '<strong>' + gettext("Summary Node: ") + '</strong><BR>' + render_summary_node(datas[i], false);
+				var node_text = '<strong>Summary Node:</strong><BR>' + render_summary_node(datas[i], false);
 				var class_sum = "summary_box";
 			} else if (datas[i].summary != '') {
-				var node_text = '<strong>' + gettext("Summary: ") + '</strong> ' + render_summary_node(datas[i], false);
+				var node_text = '<strong>Summary:</strong> ' + render_summary_node(datas[i], false);
 			} else {
 				var node_text = datas[i].name;
 			}
@@ -551,7 +539,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 
 		}
 
-		$('#hide_comment_text').text(gettext('Hide all these comments from view.'));
+		$('#hide_comment_text').text('Hide all these comments from view.');
 	}
 
 	$('#hide_comment_box').html(text);
@@ -682,7 +670,7 @@ function show_comment_text(text, did) {
 	if (indices.length > 1) {
 		for (var i=indices.length-1; i>=0; i--) {
 			if (text.substring(indices[i]-4, indices[i]-1) != '<p>') {
-				cite_text = '<BR><a class="btn-xs btn-edit" onclick="cite_para(' + did + ',' + i + ')">' + gettext("Cite Paragraph")+ '</a>';
+				cite_text = '<BR><a class="btn-xs btn-edit" onclick="cite_para(' + did + ',' + i + ')">Cite Paragraph</a>';
 				text = text.slice(0, indices[i]) + cite_text + text.slice(indices[i]);
 			}
 		}
@@ -725,16 +713,16 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	highlight_check = localStorage.getItem('highlight_check');
 
 	if (highlight_check == "true") {
-		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">' + gettext("Highlight top sentences")+ '</button><input type="checkbox" class="hidden" checked /></span>');
+		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">Highlight top sentences</button><input type="checkbox" class="hidden" checked /></span>');
 	} else {
-		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">' + gettext("Highlight top sentences")+ '</button><input type="checkbox" class="hidden" /></span>');
+		$('#summarize_highlight_button').html('<span class="button-checkbox"><button type="button" class="btn btn-xs" data-color="yellow">Highlight top sentences</button><input type="checkbox" class="hidden" /></span>');
 	}
 	check_button_checkbox();
 
 	if (type == "summarize_one") {
 		var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment"><P>ID: ' + d.d_id + '</P>' + show_comment_text(d.name, d.d_id) + '<P>-- ' + d.author + '</P></div>';
 
-		$('#summarize_comment_text').text(gettext('Summarize this comment.'));
+		$('#summarize_comment_text').text('Summarize this comment.');
 		$('#summarize_comment_textarea').val(""); 
 
 	} else if (type == "edit_summarize_one") {
@@ -758,7 +746,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		$('#summarize_comment_text').text('Edit the summary for this comment.');
 	}
 
-	text = '<div class="img-rounded" id="tooltip_sum">' + gettext("Quote")+ '</div>' + text;
+	text = '<div class="img-rounded" id="tooltip_sum">Quote</div>' + text;
 
 	$('#summarize_comment_box').html(text);
 	$('#summarize_comment_box').wrap('<div/>')
@@ -920,14 +908,14 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				if (objs[i].summary) {
 					text += `
 					<a class="btn-xs btn-edit" onclick="copy_summary(${objs[i].id});">Copy Entire Summary</a> |
-					<a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});"> ` + gettext("Cite Comment") + `</a>
+					<a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Comment</a>
 					</P>
 					<strong>Summary:</strong>
 					${render_summary_node_edit(objs[i])}`;
 				} else {
-					text += ` | <a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">` + gettext("Cite Comment") + `</a>
+					text += ` | <a class="btn-xs btn-edit" onclick="cite_comment(${objs[i].d_id});">Cite Comment</a>
 					</P>
-					${show_comment_text(objs[i].name, objs[i].d_id)} 
+					${show_comment_text(objs[i].name, objs[i].d_id)}
 					<P>-- ${objs[i].author}</P>`;
 				}
 			}
@@ -957,7 +945,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			}
 
 			text = get_subtree_summarize(text, d, 1);
-			$('#summarize_multiple_comment_text').text(gettext('Summarize this comment and all replies (replaces them all).'));
+			$('#summarize_multiple_comment_text').text('Summarize this comment and all replies (replaces them all).');
 			$('#summarize_multiple_comment_textarea').val("");
 		} else if (type == "edit_summarize") {
 
@@ -1191,11 +1179,22 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 					
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
+						
 						text += `<footer>
+							&nbsp;
+							<a onclick="upvote_summary(${new_d.d_id},${new_d.id})">
+							<span id="${new_d.id}-up">0</span>
+							<img src="/static/website/img/thumb_up.png" class="thumbs">
+							</a>
+							<a onclick="downvote_summary(${new_d.d_id},${new_d.id})">
+							<span id="${new_d.id}-down">0</span>
+							<img src="/static/website/img/thumb_down.png" class="thumbs">
+							</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
 						</footer>`;
 					}
+					
 
 					for (var i=0; i<children.length; i++) {
 						if (children[i] == lowest_d) {
@@ -1309,6 +1308,15 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					if ($.trim($('#access_mode').text()) == "Edit Access") {
 						text += `<footer>
+							&nbsp;
+							<a onclick="upvote_summary(${d.d_id},${d.id})">
+							<span id="${d.id}-up">0</span>
+							<img src="/static/website/img/thumb_up.png" class="thumbs">
+							</a>
+							<a onclick="downvote_summary(${d.d_id},${d.id})">
+							<span id="${d.id}-down">0</span>
+							<img src="/static/website/img/thumb_down.png" class="thumbs">
+							</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 						</footer>`;
@@ -1352,6 +1360,116 @@ function post_delete_comment_summary(id){
 				}
 		});
 	}
+}
+
+function upvote_summary(did, id) {
+	var csrf = $('#csrf').text();
+	
+	var data = {csrfmiddlewaretoken: csrf,
+		id: did};
+	$.ajax({
+				type: 'POST',
+				url: '/upvote_summary',
+				data: data,
+				success: function(res) {
+					console.log(res);
+					success_noty();
+					if (res.success) {
+						if (res.created) {
+							var upvote = $('#' + id + '-up').text();
+							upvote = parseInt(upvote);
+							upvote += 1;
+							$('#' + id + '-up').text(upvote);
+						} else {
+							if (res.change_vote) {
+								var upvote = $('#' + id + '-up').text();
+								upvote = parseInt(upvote);
+								upvote += 1;
+								$('#' + id + '-up').text(upvote);
+								
+								var downvote = $('#' + id + '-down').text();
+								downvote = parseInt(downvote);
+								downvote -= 1;
+								$('#' + id + '-down').text(downvote);
+							}
+						}
+						if (res.created || res.change_vote) {
+							d = nodes_all[id -1];
+							d.avg_rating = res.avg_rating;
+                            d.rating = res.rating;
+						}
+					}
+				},
+				error: function() {
+					error_noty();
+				}
+		});
+}
+
+function downvote_summary(did, id) {
+	var csrf = $('#csrf').text();
+	
+	var data = {csrfmiddlewaretoken: csrf,
+		id: did};
+	$.ajax({
+				type: 'POST',
+				url: '/downvote_summary',
+				data: data,
+				success: function(res) {
+					console.log(res);
+					success_noty();
+					if (res.success) {
+						if (res.created) {
+							var downvote = $('#' + id + '-down').text();
+							downvote = parseInt(downvote);
+							downvote += 1;
+							$('#' + id + '-down').text(downvote);
+						} else {
+							if (res.change_vote) {
+								var downvote = $('#' + id + '-down').text();
+								downvote = parseInt(downvote);
+								downvote += 1;
+								$('#' + id + '-down').text(downvote);
+								
+								var upvote = $('#' + id + '-up').text();
+								upvote = parseInt(upvote);
+								upvote -= 1;
+								$('#' + id + '-up').text(upvote);
+							}
+						}
+						if (res.created || res.change_vote) {
+							d = nodes_all[id -1];
+							d.avg_rating = res.avg_rating;
+                            d.rating = res.rating;
+						}
+					}
+				},
+				error: function() {
+					success_noty();
+					error_noty();
+				}
+		});
+}
+
+function get_upvote_downvote(id) {
+	d = nodes_all[id-1];
+	var up = 0;
+	var down = 0;
+	
+	console.log(d);
+	
+	if (d.rating) {
+		for (var i=0; i<d.rating.length; i++) {
+			if (d.rating[i] >= 3.0) {
+				up += 1;
+			} else {
+				down += 1;
+			}
+		}
+	}
+	
+	return {up: up, down: down};
+	
 }
 
 function delete_comment_summary(id){
@@ -1907,10 +2025,10 @@ function copy_summary_node(id) {
 
 	var html_str = $('#sum_box_' + id).html();
 
-	if (html_str.indexOf(gettext('This summary will be deleted.')) == -1) {
+	if (html_str.indexOf("This summary will be deleted.") == -1) {
 		delete_summary_nodes.push(d.d_id);
 		delete_summary_node_ids.push(d.id);
-		html_str = '<strong style="color:red;">' + gettext('This summary will be deleted.') + '</strong> <a class="btn-xs btn-warning" onclick="undo_delete_summary(' + d.d_id + ',' + id + ');">'+ gettext('Undo') + '</a><BR>' + html_str;
+		html_str = '<strong style="color:red;">This summary will be deleted.</strong> <a class="btn-xs btn-warning" onclick="undo_delete_summary(' + d.d_id + ',' + id + ');">Undo</a><BR>' + html_str;
 	}
 
 	$('#sum_box_' + id).html(html_str);
@@ -1948,7 +2066,7 @@ function render_summary_node(d, show_collapsible) {
 
 	if (d.extra_summary != '') {
 		if (!show_collapsible) {
-			text += '<BR><a onclick="show_extra_summary(' + d.id + ');">' + gettext("Show summary below the fold") + '</a>';
+			text += '<BR><a onclick="show_extra_summary(' + d.id + ');">Show summary below the fold</a>';
 			text += '<BR><div class="extra_summary" id="extra_summary_' + d.id + '">' + d.extra_summary + '</div>';
 		} else {
 			text += '<BR>-------------------<BR>';
@@ -1994,7 +2112,7 @@ function delete_children_boxes(node) {
 
 function success_noty() {
 	noty({
-	    text: gettext('Your change is saved!'),
+	    text: 'Your change is saved!',
 	    layout: 'topCenter',
 	    type: 'success',
 	    timeout: 1500,
@@ -2011,7 +2129,7 @@ function success_noty() {
 
 function error_noty() {
 	noty({
-	    text: gettext('Sorry, an error occurred.'),
+	    text: 'Sorry, an error occurred.',
 	    layout: 'topCenter',
 	    type: 'error',
 	    timeout: 1500,
@@ -2027,7 +2145,7 @@ function error_noty() {
 }
 
 function make_filter() {
-	text = '<div id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="' + gettext("Filter by tag") + '"></div>';
+	text = '<div id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
 
 	$('#filter').html(text);
 
@@ -2063,7 +2181,7 @@ function make_filter() {
 }
 
 function make_highlight() {
-	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="' + gettext("Highlight text") + '"><div id="count_result"></div>';
+	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
 	$('#node_highlight').html(text);
 
 	$('#inputHighlight').keyup(function (e) {
@@ -2836,15 +2954,32 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (!d.replace_node) {
-			text += '<P><a onclick="toggle_original(' + d.id + ');">' + gettext("View Original Comment") + '</a> | ';
+			text += '<P>';
+			var count = get_upvote_downvote(d.id);
+			text += '<a onclick="upvote_summary(' + d.d_id + ',' + d.id + ')"><span id="' + d.id + '-up">' + count.up + '</span> <img src="/static/website/img/thumb_up.png" class="thumbs"></a>';
+			text += ' <a onclick="downvote_summary(' + d.d_id + ',' + d.id + ')"><span id="' + d.id + '-down">' + count.down + '</span> <img src="/static/website/img/thumb_down.png" class="thumbs"></a>';
+			
+			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
-				text += '<a onclick="post_delete_comment_summary('+d.id+');">' + gettext("Delete Comment Summary") + '</a></P>';
+				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a></P>';
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 			if ($.trim($('#access_mode').text()) == "Edit Access") {
+				
+				var count = get_upvote_downvote(d.id);
+				
 				text += `<footer>
+					&nbsp;
+					<a onclick="upvote_summary(${d.d_id},${d.id})">
+					<span id="${d.id}-up">${count.up}</span>
+					<img src="/static/website/img/thumb_up.png" class="thumbs">
+					</a>
+					<a onclick="downvote_summary(${d.d_id},${d.id})">
+					<span id="${d.id}-down">${count.down}</span>
+					<img src="/static/website/img/thumb_down.png" class="thumbs">
+					</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
@@ -2858,18 +2993,18 @@ function construct_comment(d) {
 			text += '<footer>';
 	
 			if (!d.children && !d.replace_node) {
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">' + gettext("Summarize Comment") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">' + gettext("Tag Comment") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">' + gettext("Mark Unimportant") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#option_show_unimportant" data-type="show_unimportant" data-id="' + d.id + '">' + gettext("Show Hidden Comments") + '</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#option_show_unimportant" data-type="show_unimportant" data-id="' + d.id + '">Show Hidden Comments</a>';
 			} else if (!d.replace_node) {
 				if (!(d.parent && d.parent.replace_node)) {
-					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">' + gettext("Summarize Comment + Replies") + '</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
 				}
 	
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">' + gettext("Mark Replies Unimportant") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">' + gettext("Summarize Comment") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">' + gettext("Tag Comment") + '</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark Replies Unimportant</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 			}
 	
 			text += '</footer>';
@@ -2877,15 +3012,15 @@ function construct_comment(d) {
 			text += '<footer>';
 	
 			if (!d.children) {
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">' + gettext("Tag Comment") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">' + gettext("Mark Unimportant") + '</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 			} else {
 				if (!(d.parent && d.parent.replace_node)) {
-					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">' + gettext("Summarize Comment + Replies") + '</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
 				}
 	
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">' + gettext("Mark Replies Unimportant") + '</a>';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">' + gettext("Tag Comment") + '</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark Replies Unimportant</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 			}
 	
 			text += '</footer>';
@@ -2989,11 +3124,11 @@ function show_text(d) {
 			if (d.depth > 1
                 	) {
 			    if (!summary) {
-			        text += '<a onclick="show_parent(' + d.id + ');">' + gettext("Show parent comment") + '</a><BR>';
+			        text += '<a onclick="show_parent(' + d.id + ');">Show parent comment</a><BR>';
 			    }
 			    else
 			    {
-			        text += '<a onclick="show_parent(' + d.id + ');">' + gettext("Show parent summary") + '</a><BR>';
+			        text += '<a onclick="show_parent(' + d.id + ');">Show parent summary</a><BR>';
 			    }
 			}
 
@@ -3007,7 +3142,7 @@ function show_text(d) {
 		$('#box').html(d.name);
 		clear_box_top();
 	} else if (d == null){
-		$('#box').html(gettext('Click on a node to see it and its children or drag to select multiple nodes.'));
+		$('#box').html('Click on a node to see it and its children or drag to select multiple nodes.');
 		clear_box_top();
 	} else {
 		$('#box').html('');
@@ -3043,10 +3178,10 @@ function show_text(d) {
 			if (!level && objs[i].depth > 1) {
 			    if (!summary)
 			    {
-			        text += '<a onclick="show_parent(' + objs[i].id + ');">' + gettext("Show parent comment") + '</a><BR>';
+			        text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent comment</a><BR>';
 			    }
 			    else {
-			        text += '<a onclick="show_parent(' + objs[i].id + ');">' + gettext("Show parent summary") + '</a><BR>';
+			        text += '<a onclick="show_parent(' + objs[i].id + ');">Show parent summary</a><BR>';
 			    }
 			    
 			}
@@ -3184,15 +3319,13 @@ function showdiv(d) {
 				if (text != '') {
 					text += '<BR>';
 				}
-
-				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">' + gettext("See Isolated Subtree") + '</a>';
-				text += '<BR><a onclick="expand_all(' + d.id + ')">' + gettext("Expand all Summaries") + '</a>';
-				if (d.hid.length > 0) {
-					text += '<BR><a onclick="show_hidden(' + d.id + ')"> ' + gettext("Show ")  + d.hid.length  + gettext("Hidden") + ' </a>';
-
+				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+				if (d.hid && d.hid.length > 0) {
+					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
 				}				
 				if (d.hashidden) {
-					text += '<BR><a onclick="hide_hidden(' + d.id + ')"> ' + gettext("Rehide hidden") + '</a>';
+					text += '<BR><a onclick="hide_hidden(' + d.id + ')"> Rehide hidden </a>';
 				}
 
 			}
@@ -3230,7 +3363,7 @@ function showdiv(d) {
 				text = '';
 			} else {
 				if (!d.parent_node) {
-					text = '<a onclick="collapse_node(' + d.id + ');">' + gettext("Collapse replies") + '</a><BR><a onclick="expand_node(' + d.id + ');">' + gettext("Expand replies") + '</a>';
+					text = '<a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
 				} else {
 					text = '';
 				}
@@ -3238,25 +3371,25 @@ function showdiv(d) {
 
 			if (d.article) {
 				if (window.location.href.indexOf('/subtree') > -1) {
-					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '">' + gettext("See Entire Discussion") + '</a>';
+					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '">See Entire Discussion</a>';
 				}
 			} else {
 				if (comment_id != d.d_id) {
 					if (text != '') {
 						text += '<BR>';
 					}
-					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner +'">' + gettext("See Isolated Subtree") + '</a>';
+					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner +'">See Isolated Subtree</a>';
 				
 
 				}
 			}
-			text += '<BR><a onclick="expand_all(' + d.id + ')">' + gettext("Expand all Summaries") + '</a>';
+			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 
 			if (d.hid.length > 0) {
-					text += '<BR><a onclick="show_hidden(' + d.id + ')"> ' + gettext("Show")  + d.hid.length + gettext("hidden")  + '</a>';
+					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' hidden </a>';
 				}
 			if (d.hashidden) {
-					text += '<BR><a onclick="hide_hidden(' + d.id + ')">' + gettext("Rehide hidden") + '</a>';
+					text += '<BR><a onclick="hide_hidden(' + d.id + ')"> Rehide hidden </a>';
 				}
 
 			if (text != '') {
@@ -3297,8 +3430,8 @@ function hide_replace_nodes(id) {
 	}
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">' + gettext("See Isolated Subtree") + '</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')"> ' + gettext("Expand all Summaries") + '</a>';
+		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -3322,8 +3455,8 @@ function show_replace_nodes(id) {
 
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">' + gettext("See Isolated Subtree") + '</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">' + gettext("Expand all Summaries") + '</a>';
+		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
 
 	}
 	if (text != '') {
@@ -3349,7 +3482,7 @@ function show_hidden(id) {
 	d.hidconstant = d.hid.length;
 
 	$($('#expand').children()[$('#expand').children().length-1]).attr("onclick","hide_hidden("+id+")");
-	$($('#expand').children()[$('#expand').children().length-1]).text(gettext('Rehide hidden'));
+	$($('#expand').children()[$('#expand').children().length-1]).text('Rehide hidden');
 	
 
 	if (d.hid.length>0) {
@@ -3372,7 +3505,7 @@ function hide_hidden(id) {
 	newchildren = [];
 
 	$($('#expand').children()[$('#expand').children().length-1]).attr("onclick","show_hidden("+id+")");
-	$($('#expand').children()[$('#expand').children().length-1]).text(gettext('Show ') + d.hidconstant + gettext(' hidden'));
+	$($('#expand').children()[$('#expand').children().length-1]).text('Show ' + d.hidconstant + ' hidden');
 	
 
 	for (var i=0; i<d.children.length; i++) {
@@ -3618,5 +3751,5 @@ $(".summary-editor").on("input", function(evt) {
 	$wordcount.text(`${summaryWords}/${max_length}`);
 	$wordcount.toggleClass("invalid", !isValid);
 
-	this.setCustomValidity(isValid? "" : gettext("Summary is too long"));
+	this.setCustomValidity(isValid? "" : "Summary is too long");
 })

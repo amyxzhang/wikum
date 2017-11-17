@@ -190,10 +190,9 @@ LANGUAGES = (
     ('es', _('Spanish')),
 )
 LOCALE_PATHS = (
-    "/home/alexter/wikum/participa-lab/wikum/wikum/website/locale",     
+    BASE_DIR + '/website/locale',     
 )
 
-print LOCALE_PATHS,"******************"
 DEFAULT_CHARSET = 'utf-8'
 
 

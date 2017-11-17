@@ -14,6 +14,10 @@
 
     <title>Wikum</title>
 
+
+	
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href={% static "website/css/bootstrap.min.css" %}>
     
@@ -21,6 +25,7 @@
 	<link rel="stylesheet" href={% static "website/css/grayscale.css" %}>
     
     <link rel="stylesheet" href={% static "website/css/base.css" %}>
+
 
     <link rel="stylesheet" href={% static "website/assets/css/style.css" %}>
     <!--Simple Line icons -->
@@ -34,6 +39,7 @@
     <!--Template Stylesheets css-->
     <link rel="stylesheet" href={% static "website/assets/css/style.css" %}>
     <link rel="stylesheet" href={% static "website/assets/css/responsive.css" %}>
+
 	{% block styles %}
 	{% endblock %}
 	
@@ -64,6 +70,8 @@
 
     <!-- Custom Theme JavaScript -->
     <script src={% static "website/js/grayscale.js" %}></script>
+    
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <!-- Google Fonts -->
 
@@ -150,11 +158,13 @@
                     
                     	{% if user.is_authenticated %}
                     	<li class="dropdown">
-                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
-                    		<ul class="nav navbar-nav navbar-right navigation-links">
-                    			<li><a class="section-scroll" href="/account/password/reset/">{% trans "Change Password" %}</a></li>
-                    			<li><a class="section-scroll" href="/account/logout">{% trans "Logout" %}</a></li>
-                    			<li><a class="section-scroll" href="/account/delete">{% trans "Delete Account" %}</a></li>
+
+                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="owner">{{ user.username }}</span></a>
+                    		<ul class="dropdown-menu">
+                    			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                    			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
+                    			<li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
+
                     		</ul>
                     	{% else %}
                     	<li>
