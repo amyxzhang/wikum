@@ -223,24 +223,24 @@ function make_dropdown() {
 	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
 
 	if (!sort || sort == "id") {
-		text += 'Sort all by - ID';
+		text += gettext('Sort all by - ID');
 	} else if (sort == "likes") {
-		text += 'Sort all by - # Likes';
+		text += gettext('Sort all by - # Likes');
 	} else if (sort == "replies") {
-		text += 'Sort all by - # Replies';
+		text += gettext('Sort all by - # Replies');
 	} else if (sort == "long") {
-		text += 'Sort all by - Longest';
+		text += gettext('Sort all by - Longest');
 	} else if (sort == "short") {
-		text += 'Sort all by - Shortest';
+		text += gettext('Sort all by - Shortest');
 	} else if (sort == "newest") {
-		text += 'Sort all by - Newest';
+		text += gettext('Sort all by - Newest');
 	} else if (sort == "oldest") {
-		text += 'Sort all by - Oldest';
+		text += gettext('Sort all by - Oldest');
 	}
 
 	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
 	url = "/visualization?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
-	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	text += '<li><a href="' + url + 'likes"># '+ gettext("Likes") + '</a></li><li><a href="' + url + 'replies"># '+ gettext("Replies") + '</a></li><li><a href="' + url + 'long">'+ gettext("Longest") + '</a></li><li><a href="' + url + 'short">'+ gettext("Shortest") + '</a></li><li><a href="' + url + 'newest">'+ gettext("Newest") + '</a></li><li><a href="' + url + 'oldest">'+ gettext("Oldest") + '</a></li></ul>';
 
 
 	count = 0;
@@ -251,7 +251,7 @@ function make_dropdown() {
 	}
 	if (count == 15) {
 		next_sub = next + 1;
-		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
+		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">' + gettext("Get next page of comments") + '&gt;&gt;</a>';
 	}
 	
 	$('#node_sort').html(text);

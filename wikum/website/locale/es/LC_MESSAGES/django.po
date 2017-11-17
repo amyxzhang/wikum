@@ -99,7 +99,7 @@ msgstr "Aún no tienes una cuenta?"
 #: website/templates/account/login.html:29
 
 msgid "Sign up"
-msgstr "Registrarse"
+msgstr "Regístrate"
 
 #: website/templates/website/base.html:109
 #: website/templates/website/base.html:133
@@ -133,7 +133,7 @@ msgstr "Registrarse"
 
 #: website/templates/website/history.html:14
 msgid "Edit History"
-msgstr "Editar historial"
+msgstr "Historial de ediciones"
 
 #: website/templates/website/history.html:20
 msgid "Action"
@@ -149,11 +149,11 @@ msgstr "Tiempo"
 
 #: website/templates/website/history.html:23
 msgid "From"
-msgstr "Desde"
+msgstr "De"
 
 #: website/templates/website/history.html:24
 msgid "To"
-msgstr "Hasta"
+msgstr "A"
 
 #: website/templates/website/history.html:25
 msgid "Explanation"
@@ -232,7 +232,7 @@ msgstr "Sintetiza largos hilos de conversaciones"
 #: website/templates/website/index.html:26
 #: website/templates/website/index.html:30
 msgid "Import Discussion"
-msgstr "Importar discusion"
+msgstr "Importar discusión"
 
 #: website/templates/website/index.html:46
 #: website/templates/website/index.html:50
@@ -352,7 +352,7 @@ msgstr ""
 #: website/templates/website/viz.html:111
 #: website/templates/website/viz.html:144
 msgid "Submit"
-msgstr "Enviar"
+msgstr "Aceptar"
 
 #: website/templates/website/summary.html:18
 #: website/templates/website/summary1.html:19
@@ -394,7 +394,7 @@ msgstr "de esta página esta resumido"
 #: website/templates/website/viz.html:54
 msgid "Leave a note as to why this comment should be hidden (optional):"
 msgstr ""
-"Dejar una nota indicando por qué este comentario deberia de ser ocultado "
+"Deja una nota indicando por qué este comentario deberia de ser ocultado "
 "(opcional):"
 
 #: website/templates/website/viz.html:60 website/templates/website/viz.html:84
@@ -415,7 +415,7 @@ msgstr "Resumen:"
 #: website/templates/website/viz.html:127
 
 msgid "Summarize Multiple Comments"
-msgstr "Resume multiples comentarios"
+msgstr "Resumen de multiples comentarios"
 
 #~ msgid ""
 #~ "Full threading view, Desplazamiento horizontal automático, Sin contexto"

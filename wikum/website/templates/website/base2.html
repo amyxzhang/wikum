@@ -1,0 +1,166 @@
+
+{% load staticfiles %}
+{% load i18n %}
+<!DOCTYPE html>
+<html >
+
+<head lang="{{LANGUAGE_CODE}}">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Wikum</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href={% static "website/css/bootstrap.min.css" %}>
+    
+    <!-- Custom CSS -->
+	<link rel="stylesheet" href={% static "website/css/grayscale.css" %}>
+    
+    <link rel="stylesheet" href={% static "website/css/base.css" %}>
+    
+	{% block styles %}
+	{% endblock %}
+	
+	
+    <!-- Custom Fonts -->
+    <link href={% static "website/font-awesome/css/font-awesome.min.css" %} rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+        <!-- jQuery -->
+    <script src={% static "website/js/jquery.js" %}></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src={% static "website/js/bootstrap.min.js" %}></script>
+    
+    
+
+    <!-- Plugin JavaScript -->
+    <script src={% static "website/js/jquery.easing.min.js" %}></script>
+
+
+    <!-- Custom Theme JavaScript -->
+    <script src={% static "website/js/grayscale.js" %}></script>
+
+
+</head>
+
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                
+                    {% if page == 'index' %}
+                    <span style="text-transform: lowercase;">
+                        <a class="navbar-brand page-scroll" href="#page-top">
+		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 700;letter-spacing: 1px;font-size: 50px;">Wikum</span>
+		                </a>  </span>
+                    {% else %}
+                    	<a class="navbar-brand page-scroll" href="/">
+		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 600;letter-spacing: 1px;font-size: 30px;">Wikum</span>
+		                </a>
+                    {% endif %}
+                
+
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="dropdown">
+                        <form style="padding-top: 15px; padding-bottom: 15px;" class="dropdown" action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                                <button class="dropdown" type="button" data-toggle="dropdown">Language
+                                <span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    {% get_language_info_list for LANGUAGES as lenguajes %}
+                                    {% for l in lenguajes %}
+                                        <li>
+                                            <button title="{{ l.name_local |title }}" name="language"  {% if l.code == LANGUAGE_CODE %} style="outline: none; border: none; width:100%; background-color: #42dca3"
+                                            {% else %} style="outline: none; border: none; width:100%; background-color: #fff" {% endif %} value="{{ l.code }}">{{ l.code | upper }}</button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                        </form>
+                    </li>                    
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                            <li><a href="/account/logout">{% trans "Logout" %}</a></li>
+                            <li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                    	{% if page == 'index' %}
+                        	<a class="page-scroll" href="#about">{% trans "About" %}</a>
+                        {% else %}
+                        	<a class="page-scroll" href="/#about">{% trans "About" %}</a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if page == 'index' %}
+                        	<a class="page-scroll" href="#contact"> {% trans "Contact" %} </a>
+                        {% else %}
+                        	<a class="page-scroll" href="/#contact">{% trans "Contact" %}</a>
+                        {% endif %}
+                    </li>
+                    
+                    	{% if user.is_authenticated %}
+                    	<li class="dropdown">
+                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
+                    		<ul class="dropdown-menu">
+                    			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                    			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
+                    			<li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
+                    		</ul>
+                    	{% else %}
+                    	<li>
+                    		<a href="/account/login">{% trans "Login" %}</a>
+                    		</li>
+                    		<li>
+                    		<a href="/account/signup">{% trans "Sign Up" %}</a>
+                    		</li>
+                    	{% endif %}
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+
+{% block content %}
+{% endblock %}
+	
+    
+    {% block scripts %}
+    <!--I18n javascript-->
+    <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+	{% endblock %}
+
+</body>
+
+</html>
+

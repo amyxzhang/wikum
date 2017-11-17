@@ -75,9 +75,9 @@ $(document).ready(function () {
         	$('#summary').html(summary_text);
         	
         	if (data.posts.children.length < 5) {
-        		$('#link_next').html('<BR><P>End of discussion</P>');
+        		$('#link_next').html('<BR><P>'+ gettext("End of discussion") + '</P>');
         	} else {
-        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
+        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">'+ gettext("See Next Page of Discussions") + ' &gt;&gt;</a></P>');
 			}
 			
 			click_arrows();	
