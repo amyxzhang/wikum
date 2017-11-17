@@ -21,7 +21,19 @@
 	<link rel="stylesheet" href={% static "website/css/grayscale.css" %}>
     
     <link rel="stylesheet" href={% static "website/css/base.css" %}>
-    
+
+    <link rel="stylesheet" href={% static "website/assets/css/style.css" %}>
+    <!--Simple Line icons -->
+    <link rel="stylesheet" href={% static "website/assets/css/simple-line-icons.css" %}>
+    <!--Animate -->
+    <link rel="stylesheet" href={% static "website/assets/css/animate.css" %}>
+    <!-- Owl-carousel-->
+    <link rel="stylesheet" href={% static "website/assets/css/owl.carousel.min.css" %}>
+    <!-- Magnific Popup-->
+    <link rel="stylesheet" href={% static "website/assets/css/magnific-popup.css" %}>
+    <!--Template Stylesheets css-->
+    <link rel="stylesheet" href={% static "website/assets/css/style.css" %}>
+    <link rel="stylesheet" href={% static "website/assets/css/responsive.css" %}>
 	{% block styles %}
 	{% endblock %}
 	
@@ -53,6 +65,16 @@
     <!-- Custom Theme JavaScript -->
     <script src={% static "website/js/grayscale.js" %}></script>
 
+    <!-- Google Fonts -->
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    
+    
+        <!-- Favicon -->
+        <link rel="shortcut icon" href={% static "website/assets/img/favicon.png" %} type="image/x-icon">
+        <link rel="icon" href={% static "website/assets/img/favicon.png" %} type="image/x-icon">
+        <script src={% static "website/assets/js/modernizr.js" %}></script>
+
 
 </head>
 
@@ -60,7 +82,10 @@
 <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+
+ 
+    <div class="navbar navbar-default navbar-fixed-top affix-top" role="navigation" data-spy="affix" data-offset-top="50">
+        
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
@@ -70,11 +95,11 @@
                     {% if page == 'index' %}
                     <span style="text-transform: lowercase;">
                         <a class="navbar-brand page-scroll" href="#page-top">
-		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 700;letter-spacing: 1px;font-size: 50px;">Wikum</span>
+		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 700;letter-spacing: 1px;font-size: 50px;">W</span>
 		                </a>  </span>
                     {% else %}
                     	<a class="navbar-brand page-scroll" href="/">
-		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 600;letter-spacing: 1px;font-size: 30px;">Wikum</span>
+		                    <span class="light" style="text-transform: uppercase;font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;font-weight: 600;letter-spacing: 1px;font-size: 30px;">W</span>
 		                </a>
                     {% endif %}
                 
@@ -82,12 +107,9 @@
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
+            <div class="navbar-collapse collapse" id="navbar-collapse"> 
+                <ul class="nav navbar-nav navbar-right navigation-links">
                     <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
                     <li class="dropdown">
                         <form style="padding-top: 15px; padding-bottom: 15px;" class="dropdown" action="{% url 'set_language' %}" method="post">{% csrf_token %}
                                 <button class="dropdown" type="button" data-toggle="dropdown">Language
@@ -106,40 +128,40 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
                         <ul class="dropdown-menu">
-                            <li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
-                            <li><a href="/account/logout">{% trans "Logout" %}</a></li>
-                            <li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
+                            <li><a class="section-scroll" href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                            <li><a class="section-scroll" href="/account/logout">{% trans "Logout" %}</a></li>
+                            <li><a class="section-scroll" href="/account/delete">{% trans "Delete Account" %}</a></li>
                         </ul>
                     </li>
                     <li>
                     	{% if page == 'index' %}
-                        	<a class="page-scroll" href="#about">{% trans "About" %}</a>
+                        	<a class="section-scroll" href="#about">{% trans "About" %}</a>
                         {% else %}
-                        	<a class="page-scroll" href="/#about">{% trans "About" %}</a>
+                        	<a class="section-scroll" href="/#about">{% trans "About" %}</a>
                         {% endif %}
                     </li>
                     <li>
                         {% if page == 'index' %}
-                        	<a class="page-scroll" href="#contact"> {% trans "Contact" %} </a>
+                        	<a class="section-scroll" href="#contact"> {% trans "Contact" %} </a>
                         {% else %}
-                        	<a class="page-scroll" href="/#contact">{% trans "Contact" %}</a>
+                        	<a class="section-scroll" href="/#contact">{% trans "Contact" %}</a>
                         {% endif %}
                     </li>
                     
                     	{% if user.is_authenticated %}
                     	<li class="dropdown">
                     		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
-                    		<ul class="dropdown-menu">
-                    			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
-                    			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
-                    			<li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
+                    		<ul class="nav navbar-nav navbar-right navigation-links">
+                    			<li><a class="section-scroll" href="/account/password/reset/">{% trans "Change Password" %}</a></li>
+                    			<li><a class="section-scroll" href="/account/logout">{% trans "Logout" %}</a></li>
+                    			<li><a class="section-scroll" href="/account/delete">{% trans "Delete Account" %}</a></li>
                     		</ul>
                     	{% else %}
                     	<li>
                     		<a href="/account/login">{% trans "Login" %}</a>
                     		</li>
                     		<li>
-                    		<a href="/account/signup">{% trans "Sign Up" %}</a>
+                    		<a href="/account/signup" class="section-scroll btn btn-lg btn-link text-uppercase">{% trans "Sign Up" %}</a>
                     		</li>
                     	{% endif %}
                     </li>
@@ -147,8 +169,9 @@
             </div>
             <!-- /.navbar-collapse -->
         </div>
+        
         <!-- /.container -->
-    </nav>
+    </div>
 
 
 {% block content %}
@@ -158,6 +181,7 @@
     {% block scripts %}
     <!--I18n javascript-->
     <script type="text/javascript" src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    
 	{% endblock %}
 
 </body>
