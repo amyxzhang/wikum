@@ -1,0 +1,390 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-11-10 06:32-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: website/templates/account/delete.html:15
+#: website/templates/website/base.html:111
+#: website/templates/website/base.html:135
+msgid "Delete Account"
+msgstr ""
+
+#: website/templates/account/delete.html:17
+msgid "If you go ahead and delete your account, your information will be"
+msgstr ""
+
+#: website/templates/account/delete.html:17
+msgid "expunged within"
+msgstr ""
+
+#: website/templates/account/delete.html:17
+msgid "hours"
+msgstr ""
+
+#: website/templates/account/delete.html:21
+msgid "Delete My Account"
+msgstr ""
+
+#: website/templates/account/email_confirm.html:16
+msgid "Confirm Email"
+msgstr ""
+
+#: website/templates/account/email_confirm.html:19
+msgid "Confirm email address"
+msgstr ""
+
+#: website/templates/account/email_confirm.html:20
+msgid "Confirm"
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:15
+msgid "Confirm your email address"
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:17
+msgid "We have sent you an email to"
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:18
+msgid ""
+"for verification. Follow the link provided to finalize the signup process. "
+"If you do not receive it within a few minutes, contact us at "
+msgstr ""
+
+#: website/templates/account/email_confirmation_sent.html:20
+msgid "Go back"
+msgstr ""
+
+#: website/templates/account/email_confirmed.html:15
+msgid "Email confirmed"
+msgstr ""
+
+#: website/templates/account/email_confirmed.html:16
+msgid "You have confirmed "
+msgstr ""
+
+#: website/templates/account/login.html:16
+msgid "Log in to an existing account"
+msgstr ""
+
+#: website/templates/account/login.html:23
+msgid "Log in"
+msgstr ""
+
+#: website/templates/account/login.html:24
+msgid "Forgot your password?"
+msgstr ""
+
+#: website/templates/account/login.html:29
+msgid "Don't have an account?"
+msgstr ""
+
+#: website/templates/account/login.html:29
+msgid "Sign up"
+msgstr ""
+
+#: website/templates/website/base.html:109
+#: website/templates/website/base.html:133
+msgid "Change Password"
+msgstr ""
+
+#: website/templates/website/base.html:110
+#: website/templates/website/base.html:134
+msgid "Logout"
+msgstr ""
+
+#: website/templates/website/base.html:116
+#: website/templates/website/base.html:118
+msgid "About"
+msgstr ""
+
+#: website/templates/website/base.html:123
+#: website/templates/website/base.html:125
+msgid "Contact"
+msgstr ""
+
+#: website/templates/website/base.html:139
+#: website/templates/website/index.html:28
+msgid "Login"
+msgstr ""
+
+#: website/templates/website/base.html:142
+#: website/templates/website/index.html:29
+msgid "Sign Up"
+msgstr ""
+
+#: website/templates/website/history.html:14
+msgid "Edit History"
+msgstr ""
+
+#: website/templates/website/history.html:20
+msgid "Action"
+msgstr ""
+
+#: website/templates/website/history.html:21
+msgid "User"
+msgstr ""
+
+#: website/templates/website/history.html:22
+msgid "Time"
+msgstr ""
+
+#: website/templates/website/history.html:23
+msgid "From"
+msgstr ""
+
+#: website/templates/website/history.html:24
+msgid "To"
+msgstr ""
+
+#: website/templates/website/history.html:25
+msgid "Explanation"
+msgstr ""
+
+#: website/templates/website/history.html:30
+#: website/templates/website/viz.html:48
+msgid "Hide Comment"
+msgstr ""
+
+#: website/templates/website/history.html:32
+msgid "Summarize Comment"
+msgstr ""
+
+#: website/templates/website/history.html:34
+msgid "Edit Summary of a Comment"
+msgstr ""
+
+#: website/templates/website/history.html:36
+msgid "Hide All Replies of a Comment"
+msgstr ""
+
+#: website/templates/website/history.html:38
+msgid "Hide Multiple Comments"
+msgstr ""
+
+#: website/templates/website/history.html:40
+msgid "Summarize Subtree"
+msgstr ""
+
+#: website/templates/website/history.html:42
+msgid "Summarize Group of Comments"
+msgstr ""
+
+#: website/templates/website/history.html:44
+msgid "Edit Summary of Subtree"
+msgstr ""
+
+#: website/templates/website/history.html:46
+msgid "Move Comment"
+msgstr ""
+
+#: website/templates/website/history.html:48
+#: website/templates/website/viz.html:74
+msgid "Tag Comment"
+msgstr ""
+
+#: website/templates/website/history.html:50
+msgid "Tag Comments"
+msgstr ""
+
+#: website/templates/website/history.html:56
+msgid "Anonymous"
+msgstr ""
+
+#: website/templates/website/history.html:80
+msgid "Comment Hidden"
+msgstr ""
+
+#: website/templates/website/history.html:82
+#: website/templates/website/history.html:84
+msgid "All Comments Hidden"
+msgstr ""
+
+#: website/templates/website/history.html:86
+msgid "Move CommentMove Comment"
+msgstr ""
+
+#: website/templates/website/index.html:23
+msgid "Summarize long comment threads"
+msgstr ""
+
+#: website/templates/website/index.html:26
+#: website/templates/website/index.html:30
+msgid "Import Discussion"
+msgstr ""
+
+#: website/templates/website/index.html:46
+#: website/templates/website/index.html:50
+#: website/templates/website/index.html:53
+msgid "Done"
+msgstr ""
+
+#: website/templates/website/index.html:60
+#: website/templates/website/index.html:64
+#: website/templates/website/index.html:67
+msgid "Source"
+msgstr ""
+
+#: website/templates/website/index.html:73
+#: website/templates/website/index.html:77
+#: website/templates/website/index.html:80
+msgid "Discussion"
+msgstr ""
+
+#: website/templates/website/index.html:87
+#: website/templates/website/index.html:91
+#: website/templates/website/index.html:94
+msgid "Comments"
+msgstr ""
+
+#: website/templates/website/index.html:100
+#: website/templates/website/index.html:104
+#: website/templates/website/index.html:107
+msgid "Summaries"
+msgstr ""
+
+#: website/templates/website/index.html:187
+msgid "About Wikum"
+msgstr ""
+
+#: website/templates/website/index.html:188
+msgid "Wikum is a tool for summarizing and exploring long comment threads."
+msgstr ""
+
+#: website/templates/website/index.html:191
+msgid ""
+"Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization"
+msgstr ""
+
+#: website/templates/website/index.html:194
+msgid ""
+"Large-scale discussions between many participants abound on the internet "
+"today, on topics ranging from political arguments to group coordination."
+msgstr ""
+
+#: website/templates/website/index.html:195
+msgid ""
+"But as these discussions grow to tens of thousands of posts, they become "
+"ever more difficult for a reader to digest.In this article, we describe a "
+"workflow called"
+msgstr ""
+
+#: website/templates/website/index.html:196
+msgid "recursive summarization"
+msgstr ""
+
+#: website/templates/website/index.html:197
+msgid ", implemented in our "
+msgstr ""
+
+#: website/templates/website/index.html:198
+msgid ""
+"prototype, that enables a large population of readers or editors to work in "
+"small doses to refine out the main points of the discussion. More than just "
+"a single summary, our workflow produces a"
+msgstr ""
+
+#: website/templates/website/index.html:199
+msgid "summary tree"
+msgstr ""
+
+#: website/templates/website/index.html:199
+msgid ""
+"that enables a reader to explore distinct subtopics at multiple levels of "
+"detail based on their interests."
+msgstr ""
+
+#: website/templates/website/index.html:206
+msgid "slides and talk"
+msgstr ""
+
+#: website/templates/website/index.html:214
+msgid "Contact Us"
+msgstr ""
+
+#: website/templates/website/index.html:267
+msgid "Import a Discussion"
+msgstr ""
+
+#: website/templates/website/index.html:271
+msgid ""
+"Import a new discussion by pasting an Atlantic article url, Reddit page url, "
+"or Wikipedia Talk page section url here."
+msgstr ""
+
+#: website/templates/website/index.html:278
+#: website/templates/website/viz.html:59 website/templates/website/viz.html:83
+#: website/templates/website/viz.html:111
+#: website/templates/website/viz.html:144
+msgid "Submit"
+msgstr ""
+
+#: website/templates/website/summary.html:18
+#: website/templates/website/summary1.html:19
+#: website/templates/website/summary2.html:20
+#: website/templates/website/summary3.html:19
+#: website/templates/website/summary4.html:20
+msgid "View Wikum Editing Interface"
+msgstr ""
+
+#: website/templates/website/summary1.html:27
+msgid "Full threading view, Auto-horizontal scrolling, No context"
+msgstr ""
+
+#: website/templates/website/summary2.html:22
+#: website/templates/website/summary4.html:22
+msgid "Interface:"
+msgstr ""
+
+#: website/templates/website/summary2.html:28
+msgid "Full threading view, Auto-horizontal scrolling, 3 levels of context"
+msgstr ""
+
+#: website/templates/website/summary3.html:27
+msgid "Partial threading view, 3 levels of context"
+msgstr ""
+
+#: website/templates/website/summary4.html:28
+msgid "Partial threading view, No context"
+msgstr ""
+
+#: website/templates/website/viz.html:21
+msgid "of this page summarized"
+msgstr ""
+
+#: website/templates/website/viz.html:54
+msgid "Leave a note as to why this comment should be hidden (optional):"
+msgstr ""
+
+#: website/templates/website/viz.html:60 website/templates/website/viz.html:84
+#: website/templates/website/viz.html:112
+#: website/templates/website/viz.html:145
+msgid "Close"
+msgstr ""
+
+#: website/templates/website/viz.html:99
+msgid "Summarize Comments"
+msgstr ""
+
+#: website/templates/website/viz.html:105
+#: website/templates/website/viz.html:136
+msgid "Summary:"
+msgstr ""
+
+#: website/templates/website/viz.html:127
+msgid "Summarize Multiple Comments"
+msgstr ""

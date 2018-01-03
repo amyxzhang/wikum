@@ -1,5 +1,6 @@
 {% extends 'website/base.html' %}
 {% load staticfiles %}
+{% load i18n %}
 
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/accounts.css" %}>
@@ -11,8 +12,8 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2">
             	
-				<h1>Email confirmed</h1>
-			    <p>You have confirmed <b>{{ confirmation.email_address.email }}</b></p>
+				<h1>{% trans "Email confirmed" %}</h1>
+			    <p>{% trans "You have confirmed " %}<b>{{ confirmation.email_address.email }}</b></p>
 			
 
 	           </div>

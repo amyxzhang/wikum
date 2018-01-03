@@ -16,13 +16,24 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+
+# js_info_dict = {
+#     'domain' : 'djangojs',
+#     'package': ''
+# }
+
+
 urlpatterns = [
     url(r'^$','website.views.index'),
+    
+    url(r'^visualization_upvote','website.views.visualization_upvote'),
+    url(r'^visualization_flag','website.views.visualization_flag'),
+    
     url(r'^visualization','website.views.visualization'),
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
-     url(r'^tags','website.views.tags'),
+    url(r'^tags','website.views.tags'),
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),
     url(r'^summary_data','website.views.summary_data'),
@@ -43,11 +54,17 @@ urlpatterns = [
     
     url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
     
+    url(r'^rate_summary','website.views.rate_summary'),
+     
+    url(r'^upvote_summary','website.views.upvote_summary'),
+    url(r'^downvote_summary','website.views.downvote_summary'),
+    
     url(r'^hide_comments','website.views.hide_comments'),
     url(r'^hide_comment','website.views.hide_comment'),
     
     url(r'^delete_comment_summary','website.views.delete_comment_summary'),
 
+    url(r'^suggested_tags','website.views.suggested_tags'),
     url(r'^tag_comments','website.views.tag_comments'),
     url(r'^tag_comment','website.views.tag_comment'),
     
@@ -58,4 +75,8 @@ urlpatterns = [
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
+
+    url(r"^i18n/", include("django.conf.urls.i18n")),
+
 ]
+

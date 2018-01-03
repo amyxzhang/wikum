@@ -15,7 +15,7 @@ import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+SITE_ROOT = os.path.dirname(BASE_DIR)
 try:
     execfile(BASE_DIR + '/private.py')
 except IOError:
@@ -89,12 +89,14 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'account.middleware.LocaleMiddleware',
     'account.middleware.TimezoneMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'wikum.urls'
@@ -109,6 +111,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.i18n', # added this one
                 'django.contrib.messages.context_processors.messages',
                 'account.context_processors.account',
             ],
@@ -166,7 +169,11 @@ CELERY_IGNORE_RESULT = False
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+
+
+LANGUAGE_CODE = 'es'
+
+from django.utils.translation import ugettext_lazy as _
 
 TIME_ZONE = 'UTC'
 
@@ -175,6 +182,18 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+
+LANGUAGES = (
+    ('en', _('English')),
+    ('es', _('Spanish')),
+)
+LOCALE_PATHS = (
+    BASE_DIR + '/website/locale',     
+)
+
+DEFAULT_CHARSET = 'utf-8'
 
 
 # Static files (CSS, JavaScript, Images)

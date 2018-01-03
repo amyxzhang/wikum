@@ -5,17 +5,22 @@ import json
 import praw
 import datetime
 import re
+import requests
 
 USER_AGENT = "website:Wikum:v1.0.0 (by /u/smileyamers)"
 
 THREAD_CALL = 'http://disqus.com/api/3.0/threads/list.json?api_key=%s&forum=%s&thread=link:%s'
 COMMENTS_CALL = 'https://disqus.com/api/3.0/threads/listPosts.json?api_key=%s&thread=%s'
 
+DECIDE_CALL = '{ proposal(id: %s) { id cached_votes_up comments_count confidence_score description external_url geozone { id name } hot_score public_author { id username } public_created_at retired_at retired_explanation retired_reason summary tags(first: 10) { edges { node { id name } } } comments(first: 50, after: "%s") { pageInfo { hasNextPage endCursor } edges { node { public_author { id username } cached_votes_up cached_votes_down public_created_at id body ancestry } } } title video_url } }'
+
 _CLOSE_COMMENT_KEYWORDS =  [r'{{(atop|quote box|consensus|Archive(-?)( ?)top|Discussion( ?)top|(closed.*?)?rfc top)', r'\|result=', r"(={2,3}|''')( )?Clos(e|ing)( comment(s?)|( RFC)?)( )?(={2,3}|''')" , 'The following discussion is an archived discussion of the proposal' , 'A summary of the debate may be found at the bottom of the discussion', 'A summary of the conclusions reached follows']
 _CLOSE_COMMENT_RE = re.compile(r'|'.join(_CLOSE_COMMENT_KEYWORDS), re.IGNORECASE|re.DOTALL)
 
-def get_article(url, source, num):
-    article = Article.objects.filter(url=url)
+def get_article(url, user, source, num):
+    
+    article = Article.objects.filter(url=url, owner=user)
+    
     if article.count() == 0:
         if source.source_name == "The Atlantic":
             
@@ -71,7 +76,16 @@ def get_article(url, source, num):
                 title = title + ' - ' + section_title
 
             link = urllib2.unquote(url)
-        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source)
+
+        elif source.source_name == "Decide Proposal":
+            url_parts = url.split('/proposals/')
+            id = url_parts[1].split('-')[0]
+            #title = url_parts[1]
+            link = urllib2.unquote(url)
+            r = requests.post('https://decide.madrid.es/graphql', data = {'query': DECIDE_CALL % (id, '')})
+            title = json.loads(str(r.content))['data']['proposal']['title']
+ 
+        article,_ = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, owner=user)
     else:
         article = article[num]
         
@@ -84,9 +98,15 @@ def get_source(url):
         return Source.objects.get(source_name="Reddit")
     elif 'wikipedia.org/wiki/' in url:
         return Source.objects.get(source_name="Wikipedia Talk Page")
+    elif 'decide.madrid.es/proposals' in url:
+        return Source.objects.get(source_name="Decide Proposal")
     return None
 
+
+
 def get_wiki_talk_posts(article, current_task, total_count):
+
+   
     from wikitools import wiki, api
     domain = article.url.split('/wiki/')[0]
     site = wiki.Wiki(domain + '/w/api.php')
@@ -167,6 +187,7 @@ def get_wiki_talk_posts(article, current_task, total_count):
             total_count = import_wiki_talk_posts(start_comments, article, None, current_task, total_count)
 
     total_count = import_wiki_sessions(start_sections, article, None, current_task, total_count)
+
     
 def import_wiki_sessions(sections, article, reply_to, current_task, total_count):
     for section in sections:
@@ -288,7 +309,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
             comment_wikum.save()
             comment_wikum.disqus_id = comment_wikum.id
             comment_wikum.save()
-            
+             
             for signer in comment_cosigners:
                 comment_wikum.cosigners.add(signer)
         
@@ -323,17 +344,55 @@ def count_replies(article):
             c.save()
 
 
+def get_decide_proposal_posts(article, current_task, total_count):
+    decide_comment_call = DECIDE_CALL % (article.disqus_id, '')
+          
+    r = requests.post('https://decide.madrid.es/graphql', data = {'query': decide_comment_call})
+    result = json.loads(str(r.content))
+
+    count = import_decide_proposal_posts(result, article)
+    
+    ### current_task?
+    if current_task:
+        total_count += count
+        
+        ### why (total_count % 3 == 0) ?            
+        if total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                      meta={'count': total_count})
+    
+    while result['data']['proposal']['comments']['pageInfo']['endCursor']:
+        next = result['data']['proposal']['comments']['pageInfo']['endCursor']
+        decide_comment_call_cursor = decide_comment_call = DECIDE_CALL % (article.disqus_id, next)
+
+
+        
+        r = requests.post('https://decide.madrid.es/graphql', data = {'query': decide_comment_call_cursor})
+        result = json.loads(str(r.content))
+        
+        count = import_decide_proposal_posts(result, article)
+        
+        if current_task:
+            total_count += count
+            
+            if total_count % 3 == 0:
+                current_task.update_state(state='PROGRESS',
+                                          meta={'count': total_count})
+
+
 def get_disqus_posts(article, current_task, total_count):
     comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
             
     result = urllib2.urlopen(comment_call)
     result = json.load(result)
-    
+
     count = import_disqus_posts(result, article)
     
+    ### current_task?
     if current_task:
         total_count += count
-                    
+        
+        ### why (total_count % 3 == 0) ?            
         if total_count % 3 == 0:
             current_task.update_state(state='PROGRESS',
                                       meta={'count': total_count})
@@ -354,7 +413,6 @@ def get_disqus_posts(article, current_task, total_count):
             if total_count % 3 == 0:
                 current_task.update_state(state='PROGRESS',
                                           meta={'count': total_count})
-
 
 def import_reddit_posts(comments, article, reply_to, current_task, total_count):
     
@@ -468,6 +526,68 @@ def import_disqus_posts(result, article):
                                              flagged = response['isFlagged'],
                                              deleted = response['isDeleted'],
                                              approved = response['isApproved']
+                                             )
+        
+    return count
+
+
+def import_decide_proposal_posts(result, article):
+    count = 0
+    for r in result['data']['proposal']['comments']['edges']:
+        response = r['node'] 
+        comment_id = response['id']
+        comment = Comment.objects.filter(disqus_id=comment_id, article=article)
+        
+        if comment.count() == 0:
+            
+            count += 1
+
+            anonymous = False
+            if not 'public_author' in response:
+                anonymous = True
+            elif response['public_author'] is None:
+                anonymous = True
+            elif not 'id' in response['public_author']:
+                anonymous = True
+            elif response['public_author']['id'] is None:
+                anonymous = True
+
+
+
+            if anonymous:
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_decide=True)
+            else:
+                author_id = response['public_author']['id']
+                comment_author = CommentAuthor.objects.filter(disqus_id=author_id)                
+
+                if comment_author.count() > 0:
+                    comment_author = comment_author[0]
+                else:
+                    real_name = ''
+                    if not response['public_author']['username'] is None:
+                        real_name = response['public_author']['username']
+                    comment_author,_ = CommentAuthor.objects.get_or_create(username = real_name,
+                                                          real_name = real_name,
+                                                          anonymous = anonymous,
+                                                          disqus_id = author_id,
+                                                          is_decide=True
+                                                          )
+                                                          
+            
+            parent = None
+            if not response['ancestry'] is None:
+                parent = response['ancestry'].split('/')[-1]
+
+            comment = Comment.objects.create(article = article,
+                                             author = comment_author,
+                                             text = response['body'],
+                                             disqus_id = response['id'],
+                                             reply_to_disqus = parent,
+                                             text_len = len(response['body']),
+                                             likes = response['cached_votes_up'],
+                                             dislikes = response['cached_votes_down'],
+                                             points = response['cached_votes_up']-response['cached_votes_down'],
+                                             created_at = datetime.datetime.strptime(response['public_created_at'].split(' +')[0], '%Y-%m-%d %H:%M:%S')
                                              )
         
     return count

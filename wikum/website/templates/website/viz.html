@@ -1,23 +1,37 @@
+{% load i18n %}
 <span id="article_id" style="display:none;">{{ article.id }}</span>
 <span id="csrf" style="display:none;">{{ csrf_token }}</span>
 <span id="highlight_authors" style="display:none;">{{ article.highlight_authors }}</span>
 
 <header id="title_info">
 	<h1>{{ article.title }}</h1>
+	{% if user == article.owner %}
+		<div class="btn btn-sm btn-primary" style="cursor: hand; float: right; margin-right: 20px;" id="access_mode">
+			{% if article.access_mode == 1 %}
+				Edit Access
+			{% elif article.access_mode == 2 %}
+				Comment Access
+			{% elif article.access_mode == 3 %}
+				View Access
+			{% elif article.access_mode == 4 %}
+				Private Access
+			{% endif %}
+		</div>
+	{% else %}
+		<div class="btn btn-sm btn-primary" style="cursor: default; float: right; margin-right: 20px;" id="access_mode">
+			{% if article.access_mode == 1 %}
+				Edit Access
+			{% elif article.access_mode == 2 %}
+				Comment Access
+			{% elif article.access_mode == 3 %}
+				View Access
+			{% elif article.access_mode == 4 %}
+				Private Access
+			{% endif %}
+		</div>
+	{% endif %}
 	
-	<div class="btn btn-sm btn-primary" style="cursor: default; float: right; margin-right: 20px;" id="access_mode">
-		{% if article.access_mode == 1 %}
-			Edit Access
-		{% elif article.access_mode == 2 %}
-			Comment Access
-		{% elif article.access_mode == 3 %}
-			View Access
-		{% elif article.access_mode == 4 %}
-			Private Access
-		{% endif %}
-	</div>
-	
-	<label class="progress-label"><span>0</span>% of this page summarized
+	<label class="progress-label"><span>0</span>% {% trans "of this page summarized" %} 
 		<progress value="20" max="100"></progress>
 	</label>
 </header>
@@ -44,19 +58,19 @@
 	<div class="modal-content">
 	  <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<h4 class="modal-title">Hide Comment</h4>
+		<h4 class="modal-title">{% trans "Hide Comment" %}</h4>
 	  </div>
 	  <div class="modal-body">
 		<div id="hide_comment_text"></div>
 		<div id="hide_comment_box" class="resizable"></div>
 		<BR>
-		<P>Leave a note as to why this comment should be hidden (optional):<BR>
+		<P>{% trans "Leave a note as to why this comment should be hidden (optional):" %}<BR>
 			<textarea id="hide_comment_textarea"></textarea>
 		</P>
 	  </div>
 	  <div class="modal-footer">
-		<button type="button" class="btn btn-default" id="hide_comment_submit">Submit</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-default" id="hide_comment_submit">{% trans "Submit" %}</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
 	  </div>
 	</div>
 
@@ -70,7 +84,7 @@
 	<form class="modal-content" action="/tag_comment" method="POST">
 	  <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
-		<h4 class="modal-title">Tag Comment</h4>
+		<h4 class="modal-title">{% trans "Tag Comment" %}</h4>
 	  </div>
 	  <div class="modal-body">
 		<div id="tag_comment_text"></div>
@@ -79,8 +93,8 @@
 
 	  </div>
 	  <div class="modal-footer">
-		<button type="submit" class="btn btn-default">Submit</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-default">{% trans "Submit" %}</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
 	  </div>
   </form>
 
@@ -95,20 +109,20 @@
 	  <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
 		<div id="summarize_highlight_button"></div>
-		<h4 class="modal-title">Summarize Comments</h4>
+		<h4 class="modal-title">{% trans "Summarize Comments" %}</h4>
 	  </div>
 	  <div class="modal-body">
 		<div id="summarize_comment_text"></div>
 		<div id="summarize_comment_box" class="resizable"></div>
 		<BR>
-		<P>Summary:
+		<P>{% trans "Summary:" %}
 			<span class="wordcount"></span>
 			<textarea class="summary-editor" id="summarize_comment_textarea" required placeholder="This commenter..."></textarea>
 		</P>
 	  </div>
 	  <div class="modal-footer">
-		<button type="submit" class="btn btn-default">Submit</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-default">{% trans "Submit" %}</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
 	  </div>
   </form>
 
@@ -123,7 +137,7 @@
 	  <div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
 		<div id="summarize_multiple_highlight_button"></div>
-		<h4 class="modal-title">Summarize Multiple Comments</h4>
+		<h4 class="modal-title">{% trans "Summarize Multiple Comments" %}</h4>
 	  </div>
 	  <div class="modal-body">
 		<table style="width: 100%; height: 100%; table-layout: fixed;">
@@ -132,7 +146,7 @@
 				<div id="summarize_multiple_comment_box"></div>
 		   </td>
 		   <td width="50%" height="100%">
-				Summary:
+					{% trans "Summary:" %}
 				<span class="wordcount"></span>
 				<textarea class="summary-editor" id="summarize_multiple_comment_textarea" required placeholder="The commenters..."></textarea>
 			</td>
@@ -140,8 +154,45 @@
 		</table>
 	</div>
 	  <div class="modal-footer">
-		<button type="submit" class="btn btn-default">Submit</button>
-		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="submit" class="btn btn-default">{% trans "Submit" %}</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+	  </div>
+  </form>
+
+  </div>
+</div>
+
+<div id="evaluate_summary_modal_box" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+	<!-- Modal content-->
+	<form class="modal-content" action="/rate_summary" method="POST">
+	  <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Evaluate Summary</h4>
+	  </div>
+	  <div class="modal-body" style="min-height: 200px;">
+	  	<div id="evaluate_text"></div>
+	  	<div id="evaluate_summary_box"></div>
+	  		  	<BR>
+	  	Neutrality:<BR>
+	  	
+		<div id="neutral_rating"></div>
+		Current status: <span id="neutral_score" class="score">None</span><BR>
+		<BR>
+	  	Accuracy/Representativeness:<BR>
+	  	
+		<div id="coverage_rating"></div>
+		Current status: <span id="coverage_score" class="score">None</span><BR>
+		
+		<BR>
+	  	Writing Quality:<BR>
+		<div id="quality_rating"></div>
+		Current status: <span id="quality_score" class="score">None</span><BR>
+	</div>
+	  <div class="modal-footer">
+		<button type="submit" class="btn btn-default">{% trans "Submit" %}</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
 	  </div>
   </form>
 

@@ -22,16 +22,23 @@ from wikimarkup import parse
 import parse_helper
 import math
 import json
+from django.db.models import Q, Avg
+from django.contrib.auth.models import User
+from website.models import CommentRating
 
 @render_to('website/index.html')
 def index(request):
-    
+    user = request.user
     sort = request.GET.get('sort')
-    
-    if not sort:
-        sort = '-percent_complete'
-    
-    a = Article.objects.all().order_by(sort).select_related()
+
+    if not sort and not user.is_anonymous():
+        a_1 = list(Article.objects.filter(owner=user).order_by('-percent_complete').select_related())
+        a_2 = list(Article.objects.filter(~Q(owner=user)).order_by('-percent_complete').select_related())
+        a = a_1 + a_2
+    else:
+        if not sort:
+            sort = '-percent_complete'
+        a = Article.objects.all().order_by(sort).select_related()
     
     for art in a:
         art.url = re.sub('#', '%23', art.url)
@@ -39,6 +46,7 @@ def index(request):
 
     resp = {'page': 'index',
             'articles': a,
+            'user': user,
             'sort': sort}
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
@@ -47,12 +55,52 @@ def index(request):
 
     return resp
 
-@render_to('website/visualization.html')
-def visualization(request):
+
+@render_to('website/visualization_upvote.html')
+def visualization_upvote(request):
+    user = request.user
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     url = request.GET['article']
     num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url)[num]
+    article = Article.objects.filter(url=url, owner=owner)[num]
     return {'article': article,
+            'user': user,
+            'source': article.source}
+
+
+@render_to('website/visualization_flags.html')
+def visualization_flag(request):
+    user = request.user
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    url = request.GET['article']
+    num = int(request.GET.get('num', 0))
+    article = Article.objects.filter(url=url, owner=owner)[num]
+    return {'article': article,
+            'user': user,
+            'source': article.source}
+
+
+@render_to('website/visualization.html')
+def visualization(request):
+    user = request.user
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    url = request.GET['article']
+    num = int(request.GET.get('num', 0))
+    article = Article.objects.filter(url=url, owner=owner)[num]
+    return {'article': article,
+            'user': user,
             'source': article.source}
 
 @csrf_exempt    
@@ -80,7 +128,12 @@ def poll_status(request):
                 data['result'] = "That source is not supported."
                 data['state'] = 'FAILURE'
             else:
-                a = Article.objects.filter(url=request.session['url'])
+                if request.session['owner'] == "None":
+                    owner = None
+                else:
+                    owner = User.objects.get(username=request.session['owner'])
+                
+                a = Article.objects.filter(url=request.session['url'], owner=owner)
                 if a.exists():
                     comment_count = a[0].comment_set.count()
                     if comment_count == 0:
@@ -94,15 +147,17 @@ def poll_status(request):
     return HttpResponse(json_data, content_type='application/json')
     
 
-def import_article(request):
+def import_article(request):       
     data = 'Fail'
     if request.is_ajax():
         from tasks import import_article
+        owner = request.GET.get('owner', 'None')
         url = request.GET['article']
-        job = import_article.delay(url)
+        job = import_article.delay(url, owner)
         
         request.session['task_id'] = job.id
         request.session['url'] = url
+        request.session['owner'] = owner
         data = job.id
     else:
         data = 'This is not an ajax request!'
@@ -113,6 +168,11 @@ def import_article(request):
 
     
 def summary_page(request):
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     url = request.GET['article']
     next = request.GET.get('next')
     num = int(request.GET.get('num', 0))
@@ -122,8 +182,9 @@ def summary_page(request):
     else:
         next = int(next)
         
-    source = get_source(url)    
-    article = get_article(url, source, num)
+    source = get_source(url) 
+        
+    article = get_article(url, owner, source, num)
     
     posts = get_posts(article)
     article.url = re.sub('&', '%26', article.url)
@@ -157,10 +218,18 @@ def summary4(request):
     
 def summary_data(request):
     url = urllib2.unquote(request.GET['article'])
+    
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None" or owner == "null":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+        
     num = int(request.GET.get('num', 0))
     sort = request.GET.get('sort', 'id')
     
-    a = Article.objects.filter(url=url)[num]
+    
+    a = Article.objects.filter(url=url, owner=owner)[num]
     
     next = request.GET.get('next')
     if not next:
@@ -168,8 +237,8 @@ def summary_data(request):
     else:
         next = int(next)
         
-    start = 25 * next
-    end = (25 * next) + 25
+    start = 15 * next
+    end = (15 * next) + 15
     
     
     if sort == 'id':
@@ -187,18 +256,28 @@ def summary_data(request):
 @render_to('website/subtree.html')
 def subtree(request):
     url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url)[num]
+    article = Article.objects.filter(url=url, owner=owner)[num]
     return {'article': article,
             'source': article.source}
 
 @render_to('website/cluster.html')
 def cluster(request):
     url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url)[num]
+    article = Article.objects.filter(url=url, owner=owner)[num]
     
     return {'article': article,
             'source': article.source}
@@ -257,8 +336,29 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
-                  'tags': [(tag.text, tag.color) for tag in post.tags.all()]
+                  'tags': [(tag.text, tag.color) for tag in post.tags.all()],
                   }
+            
+            
+            v1['rating'] = []
+            for rating in post.commentrating_set.all():
+                v = []
+                if rating.neutral_rating:
+                    v.append(rating.neutral_rating)
+                if rating.coverage_rating:
+                    v.append(rating.coverage_rating)
+                if rating.quality_rating:
+                    v.append(rating.quality_rating)
+                    
+                v1['rating'].append(sum(v)/3.0)
+            
+            ratings = post.commentrating_set.all()
+            if len(ratings) > 0:
+                v1['rating_flag'] = {
+                             'neutral': ratings[len(ratings)-1].neutral_rating,
+                             'coverage':  ratings[len(ratings)-1].coverage_rating,
+                             'quality': ratings[len(ratings)-1].quality_rating,
+                             }
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 v1['name'] = parse(post.text)
@@ -630,6 +730,36 @@ def summarize_comments(request):
         
         return HttpResponseBadRequest()  
 
+
+def suggested_tags(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        id = request.POST.get('id', None)
+        if not id:
+            ids = request.POST.getlist('ids[]')
+            comments = Comment.objects.filter(id__in=ids, hidden=False)
+            comment = comments[0]
+        else:
+            comment = Comment.objects.get(id=id)
+        
+        suggested_tags = comment.suggested_tags.all()
+            
+        resp = {"suggested_tags": []}
+        for tag in suggested_tags:
+            resp['suggested_tags'].append({
+                                         'color': tag.color,
+                                         'tag': tag.text}) 
+        
+    
+        return JsonResponse(resp)
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
+
 def tag_comments(request):
     try:
         article_id = request.POST['article']
@@ -667,6 +797,11 @@ def tag_comments(request):
             
         for com in affected_comms:
             recurse_up_post(com)
+            
+        tag_count = a.comment_set.filter(tags__isnull=False).count()
+        if tag_count % 2 == 0:
+            from tasks import generate_tags
+            generate_tags.delay(article_id)
             
         if len(affected_comms) > 0:
             return JsonResponse({'color': color})
@@ -831,6 +966,10 @@ def tag_comment(request):
             
             recurse_up_post(comment)
                 
+        tag_count = a.comment_set.filter(tags__isnull=False).count()
+        if tag_count % 2 == 0:
+            from tasks import generate_tags
+            generate_tags.delay(article_id)
             
         if affected:
             return JsonResponse({'color': color})
@@ -839,6 +978,45 @@ def tag_comment(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
+    
+
+def rate_summary(request):
+    try:
+        req_user = request.user if request.user.is_authenticated() else None
+        if req_user:
+            id = request.POST['id']
+            neutral_rating = request.POST['neu']
+            coverage_rating = request.POST['cov']
+            quality_rating = request.POST['qual']
+        
+            comment = Comment.objects.get(id=id)
+        
+            if comment.summary != '':
+        
+                r,_ = CommentRating.objects.get_or_create(comment=comment, user=req_user)
+                r.neutral_rating = neutral_rating
+                r.coverage_rating = coverage_rating
+                r.quality_rating = quality_rating
+                r.save()
+                
+                h = History.objects.create(user=req_user, 
+                                           article=comment.article,
+                                           action='rate_comment',
+                                           explanation="Add Rating %s (neutral), %s (coverage), %s (quality) to a comment" % (neutral_rating,
+                                                                                                                              coverage_rating,
+                                                                                                                              quality_rating)
+                                           )
+                
+                h.comments.add(comment)
+                
+                recurse_up_post(comment)
+           
+                return JsonResponse({'success': True});
+        return JsonResponse({'success': False});
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 
 def delete_comment_summary(request):
     try:
@@ -866,6 +1044,121 @@ def delete_comment_summary(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
+
+
+def upvote_summary(request):
+    try:
+        req_user = request.user if request.user.is_authenticated() else None
+        if req_user:
+            
+            id = request.POST['id']
+            comment = Comment.objects.get(id=id)
+            
+            change_vote = False
+            rate, created = CommentRating.objects.get_or_create(user=req_user, comment=comment)
+            if not created and rate.neutral_rating == 1:
+                change_vote = True
+                
+            rate.neutral_rating = 5
+            rate.coverage_rating = 5
+            rate.quality_rating = 5
+            rate.save()
+            
+            
+            avg_rating = {'neutral': comment.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
+                          'coverage':  comment.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
+                          'quality': comment.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
+                          }
+            
+            list_rating = []
+            for rating in comment.commentrating_set.all():
+                v = []
+                if rating.neutral_rating:
+                    v.append(rating.neutral_rating)
+                if rating.coverage_rating:
+                    v.append(rating.coverage_rating)
+                if rating.quality_rating:
+                    v.append(rating.quality_rating)
+                    
+                list_rating.append(sum(v)/3.0)
+        
+            if created:
+                h = History.objects.create(user=req_user, 
+                                           article=comment.article,
+                                           action='upvote_comment')
+                h.comments.add(comment)
+            
+            if created or change_vote:
+                recurse_up_post(comment)
+            
+            return JsonResponse({'success': True,
+                                 'created': created,
+                                 'change_vote': change_vote,
+                                 'avg_rating': avg_rating,
+                                 'rating': list_rating
+                                 })
+        else:
+            return JsonResponse({'success': False})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+    
+def downvote_summary(request):
+    try:
+        req_user = request.user if request.user.is_authenticated() else None
+        if req_user:
+            
+            id = request.POST['id']
+            comment = Comment.objects.get(id=id)
+            
+            change_vote = False
+            rate, created = CommentRating.objects.get_or_create(user=req_user, comment=comment)
+            if not created and rate.neutral_rating == 5:
+                change_vote = True
+                
+            rate.neutral_rating = 1
+            rate.coverage_rating = 1
+            rate.quality_rating = 1
+            rate.save()
+            
+            avg_rating = {'neutral': comment.commentrating_set.filter(neutral_rating__isnull=False).aggregate(Avg('neutral_rating')),
+                          'coverage':  comment.commentrating_set.filter(coverage_rating__isnull=False).aggregate(Avg('coverage_rating')),
+                          'quality': comment.commentrating_set.filter(quality_rating__isnull=False).aggregate(Avg('quality_rating'))
+                          }
+            
+            list_rating = []
+            for rating in comment.commentrating_set.all():
+                v = []
+                if rating.neutral_rating:
+                    v.append(rating.neutral_rating)
+                if rating.coverage_rating:
+                    v.append(rating.coverage_rating)
+                if rating.quality_rating:
+                    v.append(rating.quality_rating)
+                    
+                list_rating.append(sum(v)/3.0)
+        
+            if created:
+                h = History.objects.create(user=req_user, 
+                                           article=comment.article,
+                                           action='downvote_comment')
+                h.comments.add(comment)
+            
+            if created or change_vote:
+                recurse_up_post(comment)
+                
+            return JsonResponse({'success': True,
+                                 'created': created,
+                                 'change_vote': change_vote,
+                                 'avg_rating': avg_rating,
+                                 'rating': list_rating
+                                 })
+        else:
+            return JsonResponse({'success': False})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 
 def hide_comment(request):
     try:
@@ -979,9 +1272,14 @@ def history(request):
     
 def tags(request):
     article_url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     
@@ -1000,6 +1298,11 @@ def determine_is_collapsed(post, article):
 
 def viz_data(request):
     article_url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     sort = request.GET.get('sort')
     next = request.GET.get('next')
     filter = request.GET.get('filter', '')
@@ -1009,12 +1312,12 @@ def viz_data(request):
     else:
         next = int(next)
         
-    start = 25 * next
-    end = (25 * next) + 25
+    start = 15 * next
+    end = (15 * next) + 15
     
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -1078,10 +1381,17 @@ def cluster_data(request):
     import numpy as np
     
     article_url = request.GET['article']
+    
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    
     cluster_size = int(request.GET.get('size'))
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -1169,12 +1479,17 @@ def subtree_data(request):
     article_url = request.GET['article']
     sort = request.GET.get('sort', None)
     next = request.GET.get('next', None)
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
     
     comment_id = request.GET.get('comment_id', None)
     
     num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url)[num]
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
 
     least = 2
     most = 6

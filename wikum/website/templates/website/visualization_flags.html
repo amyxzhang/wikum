@@ -1,0 +1,30 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+	<link rel="stylesheet" href={% static "website/css/base-vis.css" %}>
+	<link rel="stylesheet" href={% static "website/css/jquery-ui.min.css" %}>
+	<link rel="stylesheet" href={% static "website/css/typeaheadjs.css" %}>
+{% endblock %}
+
+
+{% block content %}
+
+	{% include 'website/viz.html' %}
+
+{% endblock %}
+
+
+{% block scripts %}
+
+	<script src={% static "website/js/d3.min.js" %}></script>
+	<script src={% static "website/js/jquery.scrollTo.min.js" %}></script>
+	<script src={% static "website/js/jquery-ui.min.js" %}></script>
+	<script src={% static "website/js/jquery.noty.packaged.min.js" %}></script>
+	<script src={% static "website/js/jquery.highlight.js" %}></script>
+	<script src={% static "website/js/typeahead.bundle.js" %}></script>
+
+    <script src={% static "website/js/base_flags.js" %}></script>
+	<script src={% static "website/js/visualization.js" %}></script>
+
+{% endblock %}

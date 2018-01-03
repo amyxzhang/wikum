@@ -32,10 +32,10 @@ footer p {
 
 .percent {
 	position: relative;
-	top: -6px;
 	display: inline-block;
-	width: 60px;
+	width: 50px;
 	margin-right: 20px;
+	top: -6px;
 }
 
 .summary_num {
@@ -62,10 +62,21 @@ footer p {
 
 .source {
 	position: relative;
-	top: -6px;
-	width: 130px;
+	width: 120px;
 	display: inline-block;
 	margin-right: 20px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.owner {
+	position: relative;
+	width: 90px;
+	display: inline-block;
+	margin-right: 20px;
+	top: -6px;
 }
 
 .blurb {
@@ -101,7 +112,7 @@ progress::-ms-fill { background: var(--bar-background); }
 .ellipsis {
     display: inline-block;
     white-space: nowrap;
-    width: 60%;
+    width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -200,3 +211,4 @@ div.gallerytext {
 ul.mw-gallery-packed-hover, ul.mw-gallery-packed-overlay, ul.mw-gallery-packed {
     text-align: center;
 }
+

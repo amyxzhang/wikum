@@ -1,0 +1,191 @@
+@media only screen and (max-width: 320px){
+    .text-section h1 {
+        font-size: 32px;
+    }
+    .sm-section-align .text-section {
+        top: 20px!important;
+    }
+    
+    .owl-carousel .owl-item img {
+        width: 50%;
+        max-width: 50%;
+    }
+}
+
+@media only screen and (max-width: 767px){
+
+
+.phone-beyond.app-phone-1 {
+      left: 10px;
+}
+    .navbar-default .navbar-collapse .navbar-nav > li:first-child {
+        margin-left: 35px;
+    }
+
+    .navbar-default{
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .affix.navbar-default .navbar-toggle .icon-bar {
+        background-color: #222;
+    }
+    .navbar-default .navbar-nav>li>a {
+        color: #222;
+    }
+    .navbar-default .navbar-nav>.active>a {
+
+        color: #2a7af3;
+    }
+    .testimonial-caroussel .owl-controls .owl-prev, .testimonial-caroussel .owl-controls .owl-next {
+        top: auto;
+        bottom: -20%;
+    }
+    .testimonial-caroussel .owl-controls .owl-prev {
+        left: 38%;
+    }
+    .testimonial-caroussel .owl-controls .owl-next {
+
+        right: 38%;
+    }
+    .screenshot_slider .owl-controls .owl-prev, .testimonial-caroussel .owl-controls .owl-prev,
+    .screenshot_slider .owl-controls .owl-next, .testimonial-caroussel .owl-controls .owl-next{
+        bottom: -25%;
+    }
+    .screenshot_slider .owl-controls .owl-prev {
+        right: auto;
+        left: 38%;
+    }
+    .screenshot_slider .owl-controls .owl-next {
+        left: auto;
+        right: 38%;
+    }
+    .screenshot_slider:after{
+        left: 49.4%;
+    }
+    .navbar-default .navbar-collapse{
+        background-color: #fff;
+        border-color: #fff;
+    }
+
+    span.number-tabs{
+        left: 0;
+    }
+    .hidden-xl{
+        display: none;
+    }
+    .sm-section-align .text-section{
+        top: 0;
+        text-align: center;
+        left: 0;
+        transform: initial;
+    }
+    .text-section h1 {
+        font-size: 28px;
+    }
+    .section-inner-intro{
+
+        padding-bottom: 50px;
+    }
+    .tabs-inner .nav-tabs>li>a{
+        font-size: 15px;
+        padding: 10px 6px;
+
+    }
+      .phone-above{
+            left: -0px !important;
+    }
+    .phone-beyond{
+        right: 35px;
+    }
+    .phone-above.app-phone-2 {
+        left: -0px !important;
+}
+
+.team-member{
+    margin-bottom: 40px;
+}
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .navbar-collapse .navbar-right > li + li {
+        margin-left: 10px;
+    }
+    .navbar-brand{
+        padding-left: 0;
+    }
+
+
+    .section-inner-intro row{
+        height: 100%;
+    }
+    .sm-section-align .text-inner{
+        position: absolute;
+        top: 50%;
+        font-size: 16px;
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
+    .sm-section-align .text-section{
+        left: 0px;
+        top: -50%;
+        transform: translateY(-50%);
+    }
+    .navbar-default .navbar-nav>li>a{
+        padding: 10px 0px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+
+
+    .navbar-collapse .navbar-right > li + li {
+        margin-left: 10px;
+    }
+    .tabs-inner .nav-tabs>li>a{
+        font-size: 12px;
+        padding: 10px 3px;
+    }
+    .intro-section, .section-inner-intro{
+        height: auto;
+    }
+    .section-inner-intro.intro-diagonal:after{
+        height: 200px;
+        top: 200px;
+    }
+    .intro-section-content img{
+        width: 100%!important;
+    }
+span.number-tabs{
+        left: -5%;
+}
+    .intro-section-content{
+        position: relative;
+        top: 18%;
+        transform: translateY(18%);
+        font-size: 16px;
+        vertical-align: middle;
+        display: block;
+        margin-top: -50px;
+    }
+    .phone-above{
+            left: -0px !important;
+    }
+    .phone-beyond{
+            right: 30px;
+    }
+    .phone-above.app-phone-2 {
+    left: -0px !important;
+}
+.phone-beyond.app-phone-1 {
+    left: 0;
+}
+}
+
+
+
+@media only screen and (min-width: 1600px){
+    .section-inner-intro img {
+        width:100% !important;
+    }
+}

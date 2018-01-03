@@ -1,10 +1,9 @@
 {% extends 'website/base.html' %}
+{% load i18n %}
 {% load staticfiles %}
-
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/history.css" %}>
 {% endblock %}
-
 
 {% block content %}
 
@@ -12,49 +11,49 @@
 	        <div class="row">
 	        	
 	        	<h4>{{ article.title }}</h4>
-	        	<strong>Edit History</strong>
+	        	<strong>{% trans "Edit History" %}</strong>
 	        	<BR>
 	        		<BR>
 
 	        	<table>
 	        		<tr>
-	        			<td>Action</td>
-	        			<td>User</td>
-	        			<td>Time</td>
-	        			<td>From</td>
-	        			<td>To</td>
-	        			<td>Explanation</td>
+	        			<td>{% trans "Action" %}</td>
+	        			<td>{% trans "User" %}</td>
+	        			<td>{% trans "Time" %}</td>
+	        			<td>{% trans "From" %}</td>
+	        			<td>{% trans "To" %}</td>
+	        			<td>{% trans "Explanation" %}</td>
 	        		</tr>
 	            {% for h in history %}
 	            	<tr>
 	            	{% if h.action == "hide_comment" %}
-	            		<td>Hide Comment</td>
+	            		<td>{% trans "Hide Comment" %}</td>
 	            	{% elif h.action == "sum_comment" %}
-	            		<td>Summarize Comment</td>
+	            		<td>{% trans "Summarize Comment" %}</td>
 	            	{% elif h.action == "edit_sum" %}
-	            		<td>Edit Summary of a Comment</td>
+	            		<td>{% trans "Edit Summary of a Comment" %}</td>
 	            	{% elif h.action == "hide_replies" %}
-	            		<td>Hide All Replies of a Comment</td>
+	            		<td>{% trans "Hide All Replies of a Comment" %}</td>
 	            	{% elif h.action == "hide_comments" %}
-	            		<td>Hide Multiple Comments</td>
+	            		<td>{% trans "Hide Multiple Comments" %}</td>
 	            	{% elif h.action == "sum_nodes" %}
-	            		<td>Summarize Subtree</td>
+	            		<td>{% trans "Summarize Subtree" %}</td>
 	            	{% elif h.action == "sum_selected" %}
-	            		<td>Summarize Group of Comments</td>
+	            		<td>{% trans "Summarize Group of Comments" %}</td>
 	            	{% elif h.action == "edit_sum_nodes" %}
-	            		<td>Edit Summary of Subtree</td>
+	            		<td>{% trans "Edit Summary of Subtree" %}</td>
 	            	{% elif h.action == "move_comment" %}
-	            		<td>Move Comment</td>
+	            		<td>{% trans "Move Comment" %}</td>
 	            	{% elif h.action == "tag_comment" %}
-	            		<td>Tag Comment</td>
+	            		<td>{% trans "Tag Comment" %}</td>
 	            	{% elif h.action == "tag_comments" %}
-	            		<td>Tag Comments</td>
+	            		<td>{% trans "Tag Comments" %}</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}
 	            		<td>{{ h.user.username }}</td>
 	            	{% else %}
-	            		<td>Anonymous</td>
+	            		<td>{% trans "Anonymous" %}</td>
 	            	{% endif %}
 	            	
 	            	<td>
@@ -78,17 +77,17 @@
 	            	</td>
 	            	
 	            	<td>{% if h.action == "hide_comment" %}
-	            			Comment Hidden
+	            			{% trans "Comment Hidden" %}
 	            		{% elif h.action == "hide_replies" %}
-	            			All Comments Hidden
+						    {% trans "All Comments Hidden" %}
 	            		{% elif h.action == "hide_comments" %}
-	            			All Comments Hidden
+							{% trans "All Comments Hidden" %}
 	            		{% elif h.action == "move_comment" %}
-	            			Move Comment
+							{% trans "Move CommentMove Comment" %}
 	            		{% else %}
 	            			{{ h.to_str }}
-	            		{% endif %} </td>
-	            	
+						{% endif %} 
+					</td>
 	            	<td>
 	            		{{ h.explanation }}
 	            	</td>
