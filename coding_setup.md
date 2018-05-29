@@ -3,7 +3,7 @@
 This project uses [Django](https://docs.djangoproject.com/en/1.11/topics/install/) as backend as well as [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
 
 ### Installation Instructions
-  
+
 
 
 #### Clone this repository
@@ -28,18 +28,18 @@ $ pip install -r requirements.txt
 
 ```
 
-* Create a virtualenv for this project: 
+* Create a virtualenv for this project:
 ```sh
 virtualenv wikum
 ```
 
-* Make sure your virtualenv is activated: 
+* Make sure your virtualenv is activated:
 ```sh
 source wikum/bin/activate
 ```
 
 
-#### Setup the database 
+#### Setup the database
 
 ```sh
 $ sudo mysql
@@ -61,7 +61,7 @@ $ sudo mysql
         'NAME' : 'wikum',
         'USER' : 'myUser',
         'PASSWORD' : 'myPassword',
-        'HOST' : 'localhost',  
+        'HOST' : 'localhost',
     }
 
 SECRET_KEY = ''
@@ -74,7 +74,13 @@ DISQUS_API_KEY = ''
 #### Install schema
 
 ```sh
-$ python manage.py syncdb
+$ python manage.py migrate
+```
+
+#### Load data fixtures
+
+```sh
+$ python manage.py loaddata initial
 ```
 
 
@@ -84,3 +90,26 @@ python manage.py runserver
 ```
 
 Then visit [http://localhost:8000/](http://localhost:8000/)
+
+#### Setup Celery result store
+
+```sh
+$ sudo mysql
+> CREATE USER 'celery'@'localhost' IDENTIFIED BY 'koob';
+> CREATE DATABASE celery;
+> USE celery;
+> GRANT ALL PRIVILEGES ON celery.* TO 'celery'@'localhost';
+```
+
+Then in `wikum/settings.py`:
+
+```
+CELERY_RESULT_BACKEND = "db+mysql://celery:koob@localhost/celery"
+```
+
+#### Start Celery
+
+```sh
+$ rabbitmq-server
+$ celery -A wikum.celery worker
+```

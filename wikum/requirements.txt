@@ -50,3 +50,4 @@ wsgiref==0.1.2
 numpy==1.10.4
 scikit-learn==0.17.1
 scipy==0.17.0
+wikitools==1.3
