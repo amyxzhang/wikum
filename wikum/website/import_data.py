@@ -44,7 +44,7 @@ def get_article(url, user, source, num):
                             username=PRAW_USERNAME,
                             password=PRAW_PASSWORD
                             )
-            submission = r.get_submission(url)
+            submission = r.submission(url)
             title = submission.title
             link = url
             id = submission.id
@@ -347,9 +347,9 @@ def get_reddit_posts(article, current_task, total_count):
                     password=PRAW_PASSWORD
                    )
     
-    submission = r.get_submission(submission_id=article.disqus_id)
+    submission = r.submission(submission_id=article.disqus_id)
 
-    submission.replace_more_comments(limit=None, threshold=0)
+    submission.comments.replace_more(limit=None, threshold=0)
 
     all_forest_comments = submission.comments
 
