@@ -55,5 +55,13 @@
       "source_name": "Decide Proposal",
       "disqus_name": null
     }
+  },
+  {
+    "model": "website.source",
+    "pk": 5,
+    "fields": {
+      "source_name": "JOIN Taiwan",
+      "disqus_name": null
+    }
   }
 ]

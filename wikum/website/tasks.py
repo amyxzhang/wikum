@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from celery import shared_task, current_task
 from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
-    get_reddit_posts, count_replies, get_wiki_talk_posts, get_decide_proposal_posts
+    get_reddit_posts, count_replies, get_wiki_talk_posts, get_decide_proposal_posts, get_join_taiwan_posts
 from django.db import connection
 from django.contrib.auth.models import User
 
@@ -14,12 +14,12 @@ def import_article(url, owner):
     source = get_source(url)
 
     if source:
-        
+
         if owner == "None":
             user = None
         else:
             user = User.objects.get(username=owner)
-        
+
         article = get_article(url, user, source, 0)
         if article:
             posts = article.comment_set
@@ -37,7 +37,9 @@ def import_article(url, owner):
 
                 elif article.source.source_name == "Decide Proposal":
                     get_decide_proposal_posts(article, current_task, total_count)
-               
+                elif article.source.source_name == "JOIN Taiwan":
+                    get_join_taiwan_posts(article, current_task, total_count)
+
                 article.comment_num = article.comment_set.count()
                 article.save()
                 count_replies(article)
@@ -54,7 +56,7 @@ def generate_tags(article_id):
         import pandas as pd
         import numpy as np
         import itertools
-        
+
         from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
         from sklearn.preprocessing import MultiLabelBinarizer
         from sklearn.multiclass import OneVsRestClassifier
@@ -76,7 +78,7 @@ def generate_tags(article_id):
 
         # train data: use only comments with tags
         tagged = df.loc[df['tags'].notnull()]
-        
+
         # train data: preproccess and vectorize (TfIdf) text data
         count_vect = CountVectorizer(
             stop_words='english',
@@ -97,19 +99,19 @@ def generate_tags(article_id):
         suggested = clf.predict(X_test_tfidf)
         # save suggested tags to the dataframe
         test_df.suggested_tags = suggested
-        
+
         # add suggested tags to the database
         sorted_df = test_df.sort_values('disqus_id')
         comments = a.comment_set.all().order_by('disqus_id')
-        
+
         for comment in comments:
             comment.suggested_tags.clear()
-        
+
         for row_item, comment in zip(sorted_df.iterrows(), comments):
             index, row = row_item
             if row['suggested_tags']:
                 comment.suggested_tags.add(row['suggested_tags'])
-            
+
     except Exception, e:
         print e
-        
+
