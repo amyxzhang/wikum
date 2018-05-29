@@ -38,7 +38,12 @@ def get_article(url, user, source, num):
             id = result['response'][0]['id']
 
         elif source.source_name == "Reddit":
-            r = praw.Reddit(user_agent=USER_AGENT)
+            r = praw.Reddit(client_id=PRAW_CLIENT_ID,
+                            client_secret=PRAW_CLIENT_SECRET,
+                            user_agent=USER_AGENT,
+                            username=PRAW_USERNAME,
+                            password=PRAW_PASSWORD
+                            )
             submission = r.get_submission(url)
             title = submission.title
             link = url
