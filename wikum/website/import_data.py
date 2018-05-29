@@ -1,5 +1,5 @@
 from website.models import Article, Source, CommentAuthor, Comment, History, Tag
-from wikum.settings import DISQUS_API_KEY
+from wikum.settings import DISQUS_API_KEY, PRAW_USERNAME, PRAW_PASSWORD, PRAW_CLIENT_ID, PRAW_CLIENT_SECRET
 import urllib2
 import json
 import praw
@@ -335,7 +335,13 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
 
 
 def get_reddit_posts(article, current_task, total_count):
-    r = praw.Reddit(user_agent=USER_AGENT)
+    r = praw.Reddit(client_id=PRAW_CLIENT_ID,
+                    client_secret=PRAW_CLIENT_SECRET,
+                    user_agent=USER_AGENT,
+                    username=PRAW_USERNAME,
+                    password=PRAW_PASSWORD
+                   )
+    
     submission = r.get_submission(submission_id=article.disqus_id)
 
     submission.replace_more_comments(limit=None, threshold=0)
