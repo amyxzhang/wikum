@@ -1,0 +1,67 @@
+[
+  {
+    "model": "website.commentauthor",
+    "pk": 1,
+    "fields": {
+      "username": "anonymous",
+      "real_name": "Anonymous",
+      "power_contrib": false,
+      "anonymous": true,
+      "reputation": 0,
+      "joined_at": null,
+      "disqus_id": "anonymous",
+      "is_reddit": true,
+      "is_mod": false,
+      "is_gold": false,
+      "comment_karma": 0,
+      "link_karma": 0,
+      "avatar": "",
+      "primary": false,
+      "is_wikipedia": true,
+      "edit_count": 0,
+      "gender": null,
+      "groups": null,
+      "is_decide": true
+    }
+  },
+  {
+    "model": "website.source",
+    "pk": 1,
+    "fields": {
+      "source_name": "The Atlantic",
+      "disqus_name": null
+    }
+  },
+  {
+    "model": "website.source",
+    "pk": 2,
+    "fields": {
+      "source_name": "Reddit",
+      "disqus_name": null
+    }
+  },
+  {
+    "model": "website.source",
+    "pk": 3,
+    "fields": {
+      "source_name": "Wikipedia Talk Page",
+      "disqus_name": null
+    }
+  },
+  {
+    "model": "website.source",
+    "pk": 4,
+    "fields": {
+      "source_name": "Decide Proposal",
+      "disqus_name": null
+    }
+  },
+  {
+    "model": "website.source",
+    "pk": 5,
+    "fields": {
+      "source_name": "JOIN Taiwan",
+      "disqus_name": null
+    }
+  }
+]
