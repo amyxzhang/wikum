@@ -90,6 +90,13 @@ svg.append('svg:rect')
 
 	        s.attr( d);
 
+	    })
+	    .on("mouseup", function() {
+	    	isMouseDown = false;
+
+	       // remove selection frame
+	    	svg.selectAll( "rect.selection").remove();
+	    
 	    });
   })
   .on( "mousemove", function() {
