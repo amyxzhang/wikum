@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load i18n %}
 <!DOCTYPE html>
-<html >
+<html>
 
 <head lang="{{LANGUAGE_CODE}}">
 
@@ -23,11 +23,9 @@
     
     <!-- Custom CSS -->
 	<link rel="stylesheet" href={% static "website/css/grayscale.css" %}>
-    
+   
     <link rel="stylesheet" href={% static "website/css/base.css" %}>
-    
 
-    <link rel="stylesheet" href={% static "website/assets/css/style.css" %}>
     <!--Simple Line icons -->
     <link rel="stylesheet" href={% static "website/assets/css/simple-line-icons.css" %}>
     <!--Animate -->
@@ -53,8 +51,10 @@
     
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <!-- Favicon -->
+    
     <link rel="shortcut icon" href={% static "website/assets/img/favicon.png" %} type="image/x-icon">
     <link rel="icon" href={% static "website/assets/img/favicon.png" %} type="image/x-icon">
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -132,15 +132,7 @@
                                     {% endfor %}
                                 </ul>
                         </form>
-                    </li>                    
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }}</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="section-scroll" href="/account/password/reset/">{% trans "Change Password" %}</a></li>
-                            <li><a class="section-scroll" href="/account/logout">{% trans "Logout" %}</a></li>
-                            <li><a class="section-scroll" href="/account/delete">{% trans "Delete Account" %}</a></li>
-                        </ul>
-                    </li>
+                    </li> 
                     <li>
                     	{% if page == 'index' %}
                         	<a class="section-scroll" href="#about">{% trans "About" %}</a>

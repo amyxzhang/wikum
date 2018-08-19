@@ -153,13 +153,14 @@ progress::-ms-fill { background: var(--bar-background); }
 	color: #000000;
 }
 
-
+/*
 .dropdown-menu {
   left: 50%;
   right: auto;
   text-align: center;
   transform: translate(-50%, 0);
 }
+*/
 
 h1 > a {
 	color: inherit;
