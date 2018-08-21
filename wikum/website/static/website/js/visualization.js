@@ -45,7 +45,7 @@ svg.append('svg:rect')
   })
   .on('mousedown', function() {
   		isMouseDown = true;
-
+		
   		cancelClick = setTimeout(is_click, 250);
    		var p = d3.mouse( this);
 
@@ -96,6 +96,13 @@ svg.append('svg:rect')
 
 	       // remove selection frame
 	    	svg.selectAll( "rect.selection").remove();
+	    	
+	    	console.log(isClick);
+	    	
+	    	if (isClick) {
+		  		d3.selectAll( '.clicked').classed( "clicked", true);
+		  		show_text();
+		  	}
 	    
 	    });
   })
@@ -161,6 +168,7 @@ svg.append('svg:rect')
 
 	       // remove selection frame
 	    svg.selectAll( "rect.selection").remove();
+	    
 
 	});
 

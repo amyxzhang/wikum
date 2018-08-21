@@ -1,0 +1,201 @@
+
+    <!-- Intro Header -->
+    <section id="import" class="container content-section text-center">
+
+                <div class="row">
+                    <div class="col-md-12 col-md-offset-0">
+                    
+                    	<P>
+                    				
+                    				<h2 class="section-title text-center">Import a Discussion</h2>
+                    				
+                    					<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ {% trans "Import Discussion" %}</a>
+
+                    	</p>
+                    	</div>
+                    	</div>
+                    </section>
+                    
+                    
+          <section id="public" class="container content-section text-center">
+
+                <div class="row">
+                    <div class="col-md-12 col-md-offset-0">
+                    
+                    <P>
+                    	<h2 class="section-title text-center">Explore Existing Discussions</h2>
+                    	
+                    </P>
+                    		<div>
+                    		
+                    		
+                    		<ul id="post-list-table">
+                    			<li class="first-row-item">
+                    				<div class="first-blurb">
+							  					<span class="percent">
+								  					
+								  						{% if sort == "-percent_complete" %}
+								  							<strong>
+								  								<a href="\?sort=percent_complete">% {% trans "Done" %}</a>
+								  							</strong>
+								  						{% elif sort == "percent_complete" %}
+								  							<strong>
+								  								<a href="\?sort=-percent_complete">% {% trans "Done" %}</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-percent_complete">% {% trans "Done" %}</a>
+								  						{% endif %}
+								  					
+								  				</span>
+								  				<span class="source">
+								  					{% if sort == "source" %}
+								  						<strong>
+								  							<a href="\?sort=-source">  {% trans "Source" %} </a>
+								  						</strong>
+								  					{% elif sort == "-source" %}
+								  						<strong>
+								  							<a href="\?sort=source"> {% trans "Source" %}  </a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="\?sort=source">{% trans "Source" %} </a>
+								  					{% endif %}
+								  				</span>
+								  				<span class="owner">
+								  					{% if sort == "owner" %}
+								  						<strong>
+								  							<a href="\?sort=-owner">Owner</a>
+								  						</strong>
+								  					{% elif sort == "-owner" %}
+								  						<strong>
+								  							<a href="\?sort=owner">Owner</a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="\?sort=owner">Owner</a>
+								  					{% endif %}
+								  				</span>
+												<span class="ellipsis">
+													{% if sort == "title" %}
+														<strong>
+													 		<a href="\?sort=-title">{% trans "Discussion" %}</a>
+													 	</strong>
+													{% elif sort == "-title" %}
+														<strong> 
+															<a href="\?sort=title">{% trans "Discussion" %}</a>
+														</strong>
+													{% else %}
+													 	<a href="\?sort=title">{% trans "Discussion" %}</a>
+													{% endif %}
+												</span>
+												<span class="right-side">
+													<span class="comment_num" style="position: relative; left: -30px">
+														{% if sort == "-comment_num" %}
+															<strong>
+								  								<a href="\?sort=comment_num">{% trans "Comments" %}</a>
+								  							</strong>
+								  						{% elif sort == "comment_num" %}
+								  							<strong>
+								  								<a href="\?sort=-comment_num">{% trans "Comments" %}</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-comment_num">{% trans "Comments" %}</a>
+								  						{% endif %}
+								  					</span>
+								  					<span class="summary_num">
+								  						{% if sort == "-summary_num" %}
+								  							<strong>
+								  								<a href="\?sort=summary_num">{% trans "Summaries" %}</a>
+								  							</strong>
+								  						{% elif sort == "summary_num" %}
+								  							<strong>
+								  								<a href="\?sort=summary_num">{% trans "Summaries" %}</a>
+								  							</strong>
+								  						{% else %}
+								  							<a href="\?sort=-summary_num">{% trans "Summaries" %}</a>
+								  						{% endif %}
+								  					</span>
+								  				</span>
+											</div>
+										</li>
+								
+                    				
+							  	{% for a in articles %}
+							  	<a href="/visualization_upvotes?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">								
+							  		<li class="row-item">
+							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
+							  			
+							  				<div class="blurb">
+							  					
+							  					<span class="percent">
+							  						
+							  						{% if sort == "percent_complete" or sort == "-percent_complete" %}
+									  					<strong>
+									  						{{ a.percent_complete }}%
+									  					</strong>
+									  				{% else %}
+									  						{{ a.percent_complete }}%
+									  				{% endif %}
+								  				</span>
+								  				<span class="source">
+								  					{% if sort == "source" or sort == "-source" %}
+								  						<strong>
+								  							{{a.source.source_name}}
+								  						</strong>
+								  					{% else %}
+								  						{{a.source.source_name}}
+								  					{% endif %}
+								  				</span>
+								  				<span class="owner">
+								  					{% if sort == "owner" or sort == "-owner" %}
+								  						<strong>
+								  							{% if a.owner == user %}
+								  								me
+								  							{% else %}
+								  								{{a.owner}}
+								  							{% endif %}
+								  						</strong>
+								  					{% else %}
+								  						{% if a.owner == user %}
+								  								me
+								  							{% else %}
+								  								{{a.owner}}
+								  							{% endif %}
+								  					{% endif %}
+								  				</span>
+												<span class="ellipsis">
+													{{ a.title }}
+												</span>
+												<span class="right-side">
+													<span class="comment_num">
+														{% if sort == "comment_num" or sort == "-comment_num" %}
+															<strong>
+								  								{{ a.comment_num }}
+								  							</strong>
+								  						{% else %}
+								  							{{ a.comment_num }}
+								  						{% endif %}
+								  					</span>
+								  					<span class="summary_num">
+								  						{% if sort == "summary_num" or sort == "-summary_num" %}
+															<strong>
+								  								{{ a.summary_num }}
+								  							</strong>
+								  						{% else %}
+								  							{{ a.summary_num }}
+								  						{% endif %}
+								  					</span>
+								  				</span>
+												
+												
+											</div>
+				
+										</li>
+									</a>
+								{% endfor %}
+							 
+							 	</ul>
+							 </div>
+               
+						</p>
+                    </div>
+                </div>
+	</section>

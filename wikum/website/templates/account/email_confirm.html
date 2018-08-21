@@ -13,11 +13,11 @@
             <div class="col-lg-8 col-lg-offset-2">
             	
 				 <form method="post" action="{% url "account_confirm_email" key=confirmation.key %}">
-	                <legend>{% trans "Confirm Email" %}</legend>
+	                <legend><h1>{% trans "Confirm Email" %}</h1></legend>
 	                <fieldset>
 	                    {% csrf_token %}
 	                    <p>{% trans "Confirm email address" %} <b>{{ confirmation.email_address.email }}</b>?</p>
-	                    <button type="submit" class="btn btn-primary">{% trans "Confirm" %}</button>
+	                    <button type="submit" class="btn btn-link">{% trans "Confirm" %}</button>
 	                </fieldset>
 	            </form>
 	           </div>

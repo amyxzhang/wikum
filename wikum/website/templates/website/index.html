@@ -1,7 +1,8 @@
 
-{% extends 'website/base.html' %}
+{% extends 'website/base_landing.html' %}
 {% load i18n %}
 {% load staticfiles %}
+{% load websitefilters %}
 
 
 {% block styles %}
@@ -32,7 +33,7 @@
 							<div class="row-centered white-text">
 								<div class="col-md-3 col-sm-3 col-xs-4  col-centered">
 	
-									<img src="static/website/assets/img/logo.png" class="img-responsive" title="" alt="">
+									<img src={% static "website/assets/img/logo.png" %} class="img-responsive" title="" alt="">
 									</div>
 								</div>
 	
@@ -48,9 +49,8 @@
 							<div class="row-centered white-text">
 								<div class="col-md-7 col-sm-7 col-xs-7 col-centered">
 									<h1 class="section-title text-center white-text"> </h1>
-									<p>
-										Summarize large discussion threads.
-	</p>
+									<h3>
+										Summarize large discussion threads.</h3>
 									</div>
 								</div>
 								<!-- End title-section -->
@@ -84,7 +84,7 @@
 		
 							<div class="col-sm-7 col-md-7">
 		
-								<img src="static/website/assets/img/tree.png" class="img-responsive " title="" alt="">
+								<img src={% static "website/assets/img/tree.png" %} class="img-responsive " title="" alt="">
 		
 							</div>
 		
@@ -95,7 +95,8 @@
 									
 									<h1>Summarize with Wikum</h1>
 		
-									<p>By harnessing the power of people backed by state-of-the-art human-computer interaction and machine learning techniques, 
+									<p>By harnessing the power of people backed by state-of-the-art human-computer 
+										interaction and machine learning techniques, 
 										users get complete control over the collaborative summarization process. 
 		</p>
 										
@@ -153,7 +154,7 @@
 																			<span class="number-tabs">01</span>
 				
 																			<p>
-																					Through Wikum's easy-to-navigate tree structure, you can easily get a 
+																					Through Wikum's easy-to-navigate tree structure, you can get a 
 																					snapshot of the various comments, replies, and existing summaries of 
 																					the entire discussion thread and then select the discussion level at
 																					which you want read or summarize.   
@@ -171,8 +172,12 @@
 				
 																			<p>
 																					
-																					After selecting a thread, you can, while write your own summaries, add tags, 
+																					After selecting a thread, you can, while writing your own summaries, add tags, 
 																					see highlighted important sentences, and add citations to existing content.
+																			</P>
+																			<p>
+																						Wikum uses a <b>recursive summarization approach</b>, allowing you to
+																						build summaries on top of other people's summaries.
 																					
 																			</p>
 				
@@ -187,7 +192,7 @@
 																			<span class="number-tabs">03</span>
 				
 																			<p>
-																					With the ability to vote on summaries or flag summaries that are inappropriate, 
+																					With the ability to flag and edit summaries, 
 																					Wikum empowers the community to moderate the entire ecosystem and ensure that only the best quality summaries remains. 
 																			</p>
 				
@@ -202,7 +207,9 @@
 															<div class="col-xs-12 col-md-6 col-sm-6">
 				
 																<div class="phone-screen hidden-xs">
-																	<img class="phone-beyond wow fadeInLeft" src="static/website/assets/img/B.png" data-wow-delay=".8s" alt=""
+																	<img class="phone-beyond wow fadeInLeft" src={% static "website/assets/img/B.png" %}
+																	data-wow-delay=".8s"
+																	alt=""
 																	title="">
 																</div>
 				
@@ -239,7 +246,8 @@
 															 <div class="col-xs-12 col-md-6 col-sm-6">
 					
 																<div class="phone-screen">
-																	<img class="phone-above app-phone-2 wow fadeInLeft" src="static/website/assets/img/C.png" data-wow-delay=".4s" alt=""
+																	<img class="phone-above app-phone-2 wow fadeInLeft" src={% static "website/assets/img/C.png" %} alt=""
+																	data-wow-delay=".4s"
 																	title="">
 					
 																</div>
@@ -316,272 +324,947 @@
 								   </section>
 								   <!--End ABOUT OUR APP-->		
 			
-			
 
-    <!-- Intro Header -->
-    <section id="import" class="container content-section text-center">
+ <section
+        id="explore"
+        class="padd-section bg-color-section"
+    >
+        <!-- container -->
 
-                <div class="row">
-                    <div class="col-md-12 col-md-offset-0">
-                    
-                    	<P>
-                    				
-                    				<h2 class="section-title text-center">Import a Discussion</h2>
-                    				
-                    					<a class="btn btn-default btn-lg" data-toggle="modal" data-target="#createWikumModal">+ {% trans "Import Discussion" %}</a>
+        <div class="container"> 
+            <div class="row">
+                <!-- Start title-section -->
 
-                    	</p>
-                    	</div>
-                    	</div>
-                    </section>
-                    
-                    
-          <section id="public" class="container content-section text-center">
 
-                <div class="row">
-                    <div class="col-md-12 col-md-offset-0">
+                <div class="row-centered">
+                    <div class="col-md-12 col-sm-12 col-centered">
+                        <h2 class="section-title text-center">Explore Public Wikums</h2>
+
+                       </div>
+                      </div>
+                     </div>
+						
+						<div class="row-centered">
+							<div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+	
+								<h1 class="section-title text-center margin-title">Recently Added:</h1>
+								<BR>
+								</div>
+							</div>
+							 <div class="row">
+								 <div class="col-md-2 col-sm-2  hidden-xs"> 
+									</div>			
+											{% for a in recent_articles %}
+												 <div class="col-md-2 col-sm-4 col-xs-6"> 
+												 	<a href="/visualization_flags?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">
+													 <div class="team-member member-image-hover plan-featured" style="padding:10px;"> 
+													 	{{ a.title | shorten:60 }}
+													 	<BR>
+													 		<strong>{{a.source.source_name}}</strong>
+													 	<BR><BR>
+													 		{{ a.comment_num }} comments
+													 		<BR>{{ a.percent_complete }}% summarized
+													</div>
+													</a>
+											   </div>
+											 {% endfor %}
+											 
+											 <div class="col-md-2 col-sm-4 col-xs-6"> 
+											 	
+											 	<a href="/explore_public" class="section-scroll btn btn-lg btn-link text-uppercase">Explore More</a>
+													
+											   </div>
+											   
+										</div>
+					
+                    <div class="row-centered">
+							<div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+	
+								<h1 class="section-title text-center margin-title">Most Summarized:</h1>
+								<BR>
+								</div>
+							</div>
+							 <div class="row">
+								 <div class="col-md-2 col-sm-2  hidden-xs"> 
+									</div>			
+											{% for a in finished_articles %}
+											<a href="/visualization_flags?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">
+												 <div class="col-md-2 col-sm-4 col-xs-6"> 
+													 <div class="team-member member-image-hover plan-featured" style="padding:10px;"> 
+													 	{{ a.title | shorten:60 }}
+													 	<BR>
+													 		<strong>{{a.source.source_name}}</strong>
+													 	<BR><BR>
+													 		{{ a.comment_num }} comments
+													 		<BR>{{ a.percent_complete }}% summarized
+													</div>
+											   </div>
+											   </a>
+											 {% endfor %}
+											 
+											 
+											 <div class="col-md-2 col-sm-4 col-xs-6"> 
+													<a href="/explore_public" class="section-scroll btn btn-lg btn-link text-uppercase">Explore More</a>
+													
+											   </div>
+											   
+										</div>
+					
+                    </div>
                     
-                    <P>
-                    	<h2 class="section-title text-center">Explore Existing Discussions</h2>
-                    	
-                    </P>
-                    		<div>
-                    		
-                    		
-                    		<ul id="post-list-table">
-                    			<li class="first-row-item">
-                    				<div class="first-blurb">
-							  					<span class="percent">
-								  					
-								  						{% if sort == "-percent_complete" %}
-								  							<strong>
-								  								<a href="\?sort=percent_complete">% {% trans "Done" %}</a>
-								  							</strong>
-								  						{% elif sort == "percent_complete" %}
-								  							<strong>
-								  								<a href="\?sort=-percent_complete">% {% trans "Done" %}</a>
-								  							</strong>
-								  						{% else %}
-								  							<a href="\?sort=-percent_complete">% {% trans "Done" %}</a>
-								  						{% endif %}
-								  					
-								  				</span>
-								  				<span class="source">
-								  					{% if sort == "source" %}
-								  						<strong>
-								  							<a href="\?sort=-source">  {% trans "Source" %} </a>
-								  						</strong>
-								  					{% elif sort == "-source" %}
-								  						<strong>
-								  							<a href="\?sort=source"> {% trans "Source" %}  </a>
-								  						</strong>
-								  					{% else %}
-								  						<a href="\?sort=source">{% trans "Source" %} </a>
-								  					{% endif %}
-								  				</span>
-								  				<span class="owner">
-								  					{% if sort == "owner" %}
-								  						<strong>
-								  							<a href="\?sort=-owner">Owner</a>
-								  						</strong>
-								  					{% elif sort == "-owner" %}
-								  						<strong>
-								  							<a href="\?sort=owner">Owner</a>
-								  						</strong>
-								  					{% else %}
-								  						<a href="\?sort=owner">Owner</a>
-								  					{% endif %}
-								  				</span>
-												<span class="ellipsis">
-													{% if sort == "title" %}
-														<strong>
-													 		<a href="\?sort=-title">{% trans "Discussion" %}</a>
-													 	</strong>
-													{% elif sort == "-title" %}
-														<strong> 
-															<a href="\?sort=title">{% trans "Discussion" %}</a>
-														</strong>
-													{% else %}
-													 	<a href="\?sort=title">{% trans "Discussion" %}</a>
-													{% endif %}
-												</span>
-												<span class="right-side">
-													<span class="comment_num" style="position: relative; left: -30px">
-														{% if sort == "-comment_num" %}
-															<strong>
-								  								<a href="\?sort=comment_num">{% trans "Comments" %}</a>
-								  							</strong>
-								  						{% elif sort == "comment_num" %}
-								  							<strong>
-								  								<a href="\?sort=-comment_num">{% trans "Comments" %}</a>
-								  							</strong>
-								  						{% else %}
-								  							<a href="\?sort=-comment_num">{% trans "Comments" %}</a>
-								  						{% endif %}
-								  					</span>
-								  					<span class="summary_num">
-								  						{% if sort == "-summary_num" %}
-								  							<strong>
-								  								<a href="\?sort=summary_num">{% trans "Summaries" %}</a>
-								  							</strong>
-								  						{% elif sort == "summary_num" %}
-								  							<strong>
-								  								<a href="\?sort=summary_num">{% trans "Summaries" %}</a>
-								  							</strong>
-								  						{% else %}
-								  							<a href="\?sort=-summary_num">{% trans "Summaries" %}</a>
-								  						{% endif %}
-								  					</span>
-								  				</span>
-											</div>
-										</li>
-								
-                    				
-							  	{% for a in articles %}
-							  	<a href="/visualization_upvotes?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">								
-							  		<li class="row-item">
-							  			<progress value="{{ a.percent_complete }}" max="100"></progress>
-							  			
-							  				<div class="blurb">
-							  					
-							  					<span class="percent">
-							  						
-							  						{% if sort == "percent_complete" or sort == "-percent_complete" %}
-									  					<strong>
-									  						{{ a.percent_complete }}%
-									  					</strong>
-									  				{% else %}
-									  						{{ a.percent_complete }}%
-									  				{% endif %}
-								  				</span>
-								  				<span class="source">
-								  					{% if sort == "source" or sort == "-source" %}
-								  						<strong>
-								  							{{a.source.source_name}}
-								  						</strong>
-								  					{% else %}
-								  						{{a.source.source_name}}
-								  					{% endif %}
-								  				</span>
-								  				<span class="owner">
-								  					{% if sort == "owner" or sort == "-owner" %}
-								  						<strong>
-								  							{% if a.owner == user %}
-								  								me
-								  							{% else %}
-								  								{{a.owner}}
-								  							{% endif %}
-								  						</strong>
-								  					{% else %}
-								  						{% if a.owner == user %}
-								  								me
-								  							{% else %}
-								  								{{a.owner}}
-								  							{% endif %}
-								  					{% endif %}
-								  				</span>
-												<span class="ellipsis">
-													{{ a.title }}
-												</span>
-												<span class="right-side">
-													<span class="comment_num">
-														{% if sort == "comment_num" or sort == "-comment_num" %}
-															<strong>
-								  								{{ a.comment_num }}
-								  							</strong>
-								  						{% else %}
-								  							{{ a.comment_num }}
-								  						{% endif %}
-								  					</span>
-								  					<span class="summary_num">
-								  						{% if sort == "summary_num" or sort == "-summary_num" %}
-															<strong>
-								  								{{ a.summary_num }}
-								  							</strong>
-								  						{% else %}
-								  							{{ a.summary_num }}
-								  						{% endif %}
-								  					</span>
-								  				</span>
-												
-												
-											</div>
-				
-										</li>
-									</a>
-								{% endfor %}
-							 
-							 	</ul>
-							 </div>
-               
-						</p>
+                    
+                      </section>
+                            
+
+    <section
+        id="workspaces"
+        class="padd-section"
+    >
+        <!-- container -->
+
+        <div class="container">
+            <div class="row">
+                <!-- Start title-section -->
+
+                <div class="section-header">
+                    <div class="row-centered">
+                        <div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+                            <h2 class="section-title text-center">Import Discussions</h2>
+
+                            <p>
+                             Wikum has both public and private workspaces for summarizing discussions.
+                             Explore and contribute to public summaries of discussions or log in to 
+                             create a private workspace for yourself and your collaborators.
+                            </p>
+                            <p>
+                            	Currently, Wikum supports pulling discussion from
+                            	<b>Wikipedia Talk Pages</b>, 
+                            	<b>Disqus forums on articles</b>,
+                            	<b>Reddit</b>,
+                            	<b>Decide Madrid</b>,
+                            	<b>JOIN Taiwan</b>,
+                            	and <b>mbox email files</b>.
+                            </p>
+                        </div>
                     </div>
                 </div>
-	</section>
+
+                <!-- End title-section -->
+
+                <div class="plan-price  text-center clearfix">
+                    <div class="col-xs-12 col-sm-6 wow fadeInLeft">
+                        <div class="plan-featured">
+                            <div class="header-plan text-center">
+                                <i class="icon-support"></i>
+
+                                <h3>Public workspace</h3>
+                            </div>
+
+                            <div class="content-plan">
+                                <ul>
+                                    <li>
+                                        Contribute in summarizing public debates
+                                    </li>
+
+                                    <li>
+                                        Explore what issues bubble to the top
+                                    </li>
+                                    
+                                    
+                                    <li>Dive in to read people's comments</li>
+
+                                </ul>
+
+                                <div class="price-content"></div>
+                            </div>
+
+                            <div class="footer-plan">
+                                
+                                
+                                <a
+                                    href="/explore_public"
+                                    class="btn btn-md btn-outline text-uppercase"
+                                >Explore Existing</a>
+                                
+                                
+                               <a class="btn btn-md btn-outline text-uppercase"
+                               data-toggle="modal" 
+                               data-target="#createWikumModal">{% trans "Import Discussion" %}</a>
+
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 wow fadeInLeft">
+                        <div class="plan-featured text-center">
+                            <div class="header-plan">
+                                <i class="icon-briefcase"></i>
+
+                                <h3>Private workspace</h3>
+                            </div>
+
+                            <div class="content-plan">
+                                <ul>
+                                    <li>Privately archive your summaries of discussions</li>
+
+                                    <li>
+                                        Create collaborative private workspaces
+                                    </li>
+
+                                    <li>Manage viewing and editing permissions</li>
+                                </ul>
+
+                                <div class="price-content"></div>
+                            </div>
+
+                            <div class="footer-plan">
+                                <a
+                                    href="/account/login"
+                                    class="btn btn-md btn-outline text-uppercase"
+                                >{% trans "Login" %}</a>
+                                <a
+                                    href="/account/signup"
+                                    class="btn btn-md btn-outline text-uppercase"
+                                >
+                                {% trans "Sign Up" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- container -->
+        </div>
+    </section>
 
 
-    <!-- About Section -->
-    <section class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2 class="section-title text-center">Research about Wikum</h2>
-				<P>
-					{% trans "Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization. Amy X. Zhang, Lea Verou, David Karger." %}
-				<i>CSCW '17</i>. 
-				<br>
-				[<a href="http://people.csail.mit.edu/axz/papers/wikum.pdf">pdf</a>][<a href="http://people.csail.mit.edu/axz/wikum">{% trans "slides and talk" %}</a>]
-            </p>
+
+
+    <section
+        id="download"
+        class="padd-section padd-bottom bg-color-section"
+    >
+        <!-- container -->
+
+        <div class="container">
+            <!-- Start title-section -->
+
+            <div class="row-centered">
+                <div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+                    <div class="download-content">
+                        <h2></h2>
+
+                        <h3>Learn More</h3>
+
+							<h1 class="section-title text-center margin-title">Source Code</h1>
+													
+
+                        <p>
+                           We believe in open source software and invite you to collaborate 
+                           with us on our Github repository.
+                        </p>
+
+                        <div class="btn-download-content">
+                            <a
+                                href="https://github.com/amyxzhang/wikum"
+                                class="btn-downlaod"
+                            >
+                                <img
+                                    src={% static "website/assets/img/github-logo-white.png" %}
+                                    alt=""
+                                    title=""
+                                >
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="container">
+            <!-- Start title-section -->
+
+            <div class="row-centered">
+                <div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+                    <div class="download-content">
+                        <h2></h2>
+
+                        
+							<h1 class="section-title text-center margin-title">Research</h1>
+													
+
+  <p>
+                           We have written research papers about Wikum and are actively conducting additional studies.
+                        </p>
+
+					</div>
+					</div>
+
+ 				<div class="plan-price  text-center clearfix">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="plan-featured"  style="padding: 15px;">
+                            
+
+                            <div class="content-plan">
+                                <strong>Wikum: Bridging Discussion Forums and Wikis using Recursive Summarization.</strong> 
+							Amy X. Zhang, Lea Verou, David Karger.
+							ACM Conference on Computer Supported Cooperative Work and Social Computing (<a href="http://cscw.acm.org/2017/index.php">CSCW 2017</a>). <br>
+							
+							
+                            </div>
+
+                            <div class="footer-plan">
+                                
+                                <a class="btn btn-lg btn-link text-uppercase" href="http://people.csail.mit.edu/axz/papers/wikum.pdf">pdf</a>
+							<a class="btn btn-lg btn-link text-uppercase" href="http://people.csail.mit.edu/axz/wikum.html">{% trans "slides and talk" %}</a>
+					
+                               
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="plan-featured text-center"   style="padding: 15px;">
+                            
+
+                            <div class="content-plan">
+                                Ongoing research collaboration with <b>Wikimedia Foundation</b> to evaluate the utility of Wikum 
+                        		for synthesizing input and determining consensus on large Wikimedia discussions, such as RfCs and WMF Community consultations.
+                        		
+                            </div>
+
+                            <div class="footer-plan">
+                               <a class="btn btn-lg btn-link text-uppercase" href="https://meta.wikimedia.org/wiki/Research:Discussion_summarization_and_decision_support_with_Wikum">Project Report</a>
+							
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                </div>
+            </div>
+
+            
+        </div>
+    </section>
+
+
+
+   <section
+        id="scennshots"
+        class="padd-section bg-color-blue hidden-xs">
+        <!-- container -->
+
+        <div class="container hidden-xs">
+            <div class="row">
+                <!-- Start title-section -->
+
+                <div class="row-centered white-text">
+                    <div class="col-md-6 col-sm-12 col-centered">
+                        <h2 class="section-title text-center white-text">Wikum @ ICDemocracy17</h2>
+
+                        <p>
+                            Wikum was one of the projects showcased at
+
+                            <b>
+                                <a
+                                    class="green-text"
+                                    href="http://democratic-cities.cc/icd-imagining-together-the-democracy-of-the-21st-century/"
+                                >Collective Intelligence for Democracy 2017- MediaLab Prado Madrid</a></b>,
+
+                            where hackers, activists, politicians, programmers, designers, and researchers from                                     
+                                    all over the world came together and collaborated for two weeks to hack on Wikum and adapt it for improving
+
+                            <b>
+                                citizen participation in democracy.
+                            </b>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- End title-section -->
+
+                <div class="screenshot_slider margin-40 padd-50">
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href="http://democratic-cities.cc/icd-imagining-together-the-democracy-of-the-21st-century/"
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/1.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/2.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/2.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/3.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/3.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/4.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/4.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/5.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/5.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/6.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/6.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:600px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/7.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/7.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:500px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/8.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/8.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:500px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/9.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/9.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:500px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/10.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/10.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:500px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/11.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/11.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:500px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/12.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/12.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+
+                    <div
+                        class="item"
+                        style="width:500px"
+                    >
+                        <a
+                            href={% static "website/assets/img/media/13.jpg" %}
+                            class="popup-image"
+                        >
+                            <img
+                                src={% static "website/assets/img/media/13.jpg" %}
+                                alt=""
+                                title=""
+                            >
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
-    <!-- Contact Section -->
-    <section id="contact" class="container content-section text-center">
-        <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2 class="section-title text-center">{% trans "Contact Us" %}</h2>
-                
-       
-					<a href="http://people.csail.mit.edu/axz">
-					<img src="/static/website/img/amy.jpg" class="img-circle" width="150">
-					</a>
-					<br>
-						<a href="https://twitter.com/amyxzh"><img src="/static/website/img/twitter.png" width="35">@amyxzh</a>
-					<br>
-						<a href="mailto:axz@mit.edu">
-							axz@mit.edu
-						</a>
-					
-			<BR><BR>
-					<a href="http://people.csail.mit.edu/karger">
-					<img src="/static/website/img/karger.png" class="img-circle" width="150">
-					</a>
-					<br>
-						<a href="https://twitter.com/karger"><img src="/static/website/img/twitter.png" width="35">@karger</a>
-					<br>
-						<a href="mailto:karger@mit.edu">
-							karger@mit.edu
-						</a>
-					
-			<BR><BR>
-                
-                
-                <ul class="list-inline banner-social-buttons">
-                    <!--<li>
-                        <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
-                    </li>
-                                       <li>
-                        <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
-                    </li>
-                   -->
-                    <li>
-                        <a href="https://github.com/amyxzhang/wikum" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
-                    </li>
 
-                </ul>
+
+
+
+			
+
+	<section id="contact" class="padd-section bg-color-section">
+			
+			
+										<!--container-->
+			
+										<div class="container">
+											<div class="row">
+												<div class="section-header">
+													<div class="row-centered">
+														<div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+			
+															<h2 class="section-title text-center">Core Team</h2>
+															<p>Wikum researchers at  <a class="green-text"href="http://www.csail.mit.edu/" >Computer Science and Artificial Intelligence Laboratory</a>, MIT 
+																</p>
+															</div>
+														</div>
+													</div>
+												<div class="col-md-3 col-sm-4 hidden-xs "> 
+													</div>
+													
+			
+													<div class="col-md-3 col-sm-4 col-xs-6"> 
+														<div class="team-member member-image-hover"> 
+															 <img src={% static "website/assets/img/contributors/amy.jpg" %}>
+																 <div class="member-caption">
+																	 <div class="member-content text-center">
+																		<div class="member-content-inner">
+																		  <h4 class="member-title">Amy Zhang</h4>
+																		  <p class="member-subtitle">Creator</p>
+																		  <ul class="member-icons">
+																			<li class="social-icon"><a href="http://people.csail.mit.edu/axz"><i class="icon-user"></i></a></li>
+																			<li class="social-icon"><a href="https://twitter.com/amyxzh"><i class="icon-social-twitter"></i></a></li>
+																			<li class="social-icon"><a href="mailto:axz@mit.edu"><i class="icon-envelope"></i></a></li>
+																			  <li class="social-icon"><a href="https://github.com/amyxzhang"><i class="icon-social-github"></i></a></li>
+																		</ul>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												 <div class="col-md-3 col-sm-4 col-xs-6"> 
+													 <div class="team-member member-image-hover"> 
+													 <img src={% static "website/assets/img/contributors/karger.png" %}>
+															 <div class="member-caption">
+			
+																 <div class="member-content text-center">
+																	<div class="member-content-inner">
+																	  <h4 class="member-title">David R. Karger</h4>
+																	  <p class="member-subtitle">Creator</p>
+																	  <ul class="member-icons">
+																		<li class="social-icon"><a href="http://people.csail.mit.edu/karger"><i class="icon-user"></i></a></li>
+																		<li class="social-icon"><a href="https://twitter.com/karger"><i class="icon-social-twitter"></i></a></li>
+																		<li class="social-icon"><a href="mailto:karger@mit.edu"><i class="icon-envelope"></i></a></li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+											</div>
+										</div>
+										
+										<div class="row-centered">
+												<div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+	
+													<h1 class="section-title text-center margin-title">Additional Contributors</h1>
+															<p>Current and former graduate and undergraduate students in the <a class="green-text" href="http://haystack.csail.mit.edu">Haystack Group</a> at MIT CSAIL.
+																</p>
+													</div>
+												</div>
+											 <div class="row">
+												 
+													<div class="col-md-3 col-sm-4  hidden-xs"> 
+													</div>
+														<div class="col-md-2 col-sm-3 col-xs-4"> 
+															<div class="team-member member-image-hover"> 
+															 <img src={% static "website/assets/img/contributors/jane.jpg" %}>
+																	 <div class="member-caption">
+																		 <div class="member-content text-center">
+																			<div class="member-content-inner">
+																			  <h4 class="member-title">Jane Im</h4>
+																			  <p class="member-subtitle">Contributor</p>
+																			  <ul class="member-icons">
+																				
+																				<li class="social-icon"><a href="https://github.com/trusttri"><i class="icon-social-github"></i></a></li>
+																				<li class="social-icon"><a href="mailto:alwaysjane15@gmail.com"><i class="icon-envelope"></i></a></li>
+																			</ul>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<div class="col-md-2 col-sm-3 col-xs-4"> 
+															 <div class="team-member member-image-hover"> 
+															 <img src={% static "website/assets/img/contributors/sunny.jpg" %}>
+																 <div class="member-caption">
+																	 <div class="member-content text-center">
+																		<div class="member-content-inner">
+																		  <h4 class="member-title">Sunny Tian</h4>
+																		  <p class="member-subtitle">Contributor</p>
+																		  <ul class="member-icons">
+																			<li class="social-icon"><a href="http://people.csail.mit.edu/axz"><i class="icon-user"></i></a></li>
+																			<li class="social-icon"><a href="https://twitter.com/amyxzh"><i class="icon-social-twitter"></i></a></li>
+																			<li class="social-icon"><a href="mailto:axz@mit.edu"><i class="icon-envelope"></i></a></li>
+																		</ul>
+																	</div>
+																</div>
+															</div>
+														</div>
+													 </div>
+													 <div class="col-md-2 col-sm-4 col-xs-4"> 
+															<div class="team-member member-image-hover"> 
+															<img src={% static "website/assets/img/contributors/verou.jpg" %}>
+																	<div class="member-caption">
+				   
+																		<div class="member-content text-center">
+																		   <div class="member-content-inner">
+																			 <h4 class="member-title">Lea Verou</h4>
+																			 <p class="member-subtitle">Contributor</p>
+																			 <ul class="member-icons">
+																			   <li class="social-icon"><a href="http://http://lea.verou.me"><i class="icon-user"></i></a></li>
+																			   <li class="social-icon"><a href="https://twitter.com/leaverou"><i class="icon-social-twitter"></i></a></li>
+																			   <li class="social-icon"><a href="mailto:"><i class="icon-envelope"></i></a></li>
+																				 <li class="social-icon"><a href="https://github.com/LeaVerou"><i class="icon-social-github"></i></a></li>
+																		   </ul>
+																	   </div>
+																   </div>
+															   </div>
+														   </div>
+													  </div>
+												</div>
+												 
+										
+										<div class="row-centered">
+												<div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+	
+													<h1 class="section-title text-center margin-title">Wikum @ ICDemocracia17</h1>
+													<p>Wikum Collaborators at <a class="green-text"href="http://medialab-prado.es/article/collective-intelligence-for-democracy-2017-call-for-collaborators?lang=en" >Collective Intelligence for Democracy 2017</a> <br> Medialab Prado, Madrid.</p>
+													</div>
+												</div>
+											 <div class="row">
+												 <div class="col-md-2 col-sm-4  hidden-xs"> 
+													</div>			
+													
+												 <div class="col-md-2 col-sm-3 col-xs-3"> 
+													 <div class="team-member member-image-hover"> 
+													 <img src={% static "website/assets/img/contributors/abhi.jpg" %}>
+															 <div class="member-caption">
+			
+																 <div class="member-content text-center">
+																	<div class="member-content-inner">
+																	  <h4 class="member-title">Abhishek Srivastava</h4>
+																	  <p class="member-subtitle">Contributor</p>
+																	  <ul class="member-icons">
+																		<li class="social-icon"><a href="http://abhisheksrivastava.net"><i class="icon-user"></i></a></li>
+																		<li class="social-icon"><a href="https://twitter.com/agelesschronicl"><i class="icon-social-twitter"></i></a></li>
+																		<li class="social-icon"><a href="mailto:emailabhishek1@gmail.com"><i class="icon-envelope"></i></a></li>
+																		  <li class="social-icon"><a href="https://github.com/elaragon"><i class="icon-social-github"></i></a></li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+											   </div>
+											   <div class="col-md-2 col-sm-3 col-xs-3"> 
+													<div class="team-member member-image-hover"> 
+													<img src={% static "website/assets/img/contributors/curtomil.jpg" %}>
+															<div class="member-caption">
+		   
+																<div class="member-content text-center">
+																   <div class="member-content-inner">
+																	 <h4 class="member-title">Daniel Curto-Milet</h4>
+																	 <p class="member-subtitle">Contributor</p>
+																	 <ul class="member-icons">
+																	   <li class="social-icon"><a href="http://people.csail.mit.edu/karger"><i class="icon-user"></i></a></li>
+																	   <li class="social-icon"><a href="https://twitter.com/karger"><i class="icon-social-twitter"></i></a></li>
+																	   <li class="social-icon"><a href="mailto:karger@mit.edu"><i class="icon-envelope"></i></a></li>
+																		 <li class="social-icon"><a href="https://github.com/elaragon"><i class="icon-social-github"></i></a></li>
+																   </ul>
+															   </div>
+														   </div>
+													   </div>
+												   </div>
+											  </div>
+											   <div class="col-md-2 col-sm-3 col-xs-3"> 
+													<div class="team-member member-image-hover"> 
+														 <img src={% static "website/assets/img/contributors/elaragon.jpg" %}>
+															 <div class="member-caption">
+																 <div class="member-content text-center">
+																	<div class="member-content-inner">
+																	  <h4 class="member-title">Pablo Aragón</h4>
+																	  <p class="member-subtitle">Contributor</p>
+																	  <ul class="member-icons">
+																		<li class="social-icon"><a href="https://elaragon.wordpress.com"><i class="icon-user"></i></a></li>
+																		<li class="social-icon"><a href="https://twitter.com/elaragon"><i class="icon-social-twitter"></i></a></li>
+																		<li class="social-icon"><a href="mailto:elaragon@gmail.com"><i class="icon-envelope"></i></a></li>
+																		<li class="social-icon"><a href="https://github.com/elaragon"><i class="icon-social-github"></i></a></li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+												 
+												 
+												 <div class="col-md-2 col-sm-3 col-xs-3"> 
+													 <div class="team-member member-image-hover"> 
+													 <img src={% static "website/assets/img/contributors/bere.jpg" %}>
+														 <div class="member-caption">
+															 <div class="member-content text-center">
+																<div class="member-content-inner">
+																  <h4 class="member-title">Berenice</h4>
+																  <p class="member-subtitle">Contributor</p>
+																  <ul class="member-icons">
+																	<li class="social-icon"><a href="https://twitter.com/darkolina"><i class="icon-social-twitter"></i></a></li>
+																  </ul>
+															</div>
+														</div>
+													</div>
+												</div>
+												 </div>
+										</div>
+										<div class="row">
+												<div class="col-md-3 col-sm-4 col-xs-1"> 
+													</div>
+												<div class="col-md-2 col-sm-3 col-xs-3"> 
+													 <div class="team-member member-image-hover"> 
+													 <img src={% static "website/assets/img/contributors/ramla.jpg" %}>
+													<div class="member-caption">
+														<div class="member-content text-center">
+																<div class="member-content-inner">
+																	<h4 class="member-title">Ramla</h4>
+																	<p class="member-subtitle">Contributor</p>
+																	<ul class="member-icons">
+																		<li class="social-icon"><a href="https://twitter.com/ramlaAyadi"><i class="icon-social-twitter"></i></a></li>
+																		<li class="social-icon"><a href="mailto:ramlayadi13@gmail.com"><i class="icon-envelope"></i></a></li>
+																	</ul>
+																</div>
+														</div>
+													</div>
+													</div>
+											    </div>
+											    <div class="col-md-2 col-sm-3 col-xs-3"> 
+													<div class="team-member member-image-hover"> 
+													    <img src={% static "website/assets/img/contributors/julio.jpg" %}>
+															<div class="member-caption">
+																<div class="member-content text-center">
+																	<div class="member-content-inner">
+																	  <h4 class="member-title">Julio Reyes</h4>
+																	  <p class="member-subtitle">Contributor</p>
+																	  <ul class="member-icons">
+																		<li class="social-icon"><a href="https://twitter.com/etjulio"><i class="icon-social-twitter"></i></a></li>
+																	</ul>
+																</div>
+															</div>
+														</div>
+													</div>
+											   </div>
+												<div class="col-md-2 col-sm-3 col-xs-3"> 
+													<div class="team-member member-image-hover"> 
+													    <img src={% static "website/assets/img/contributors/alexter.jpg" %}>
+														 <div class="member-caption">
+															 <div class="member-content text-center">
+																<div class="member-content-inner">
+																  <h4 class="member-title">Alejandra Monroy</h4>
+																  <p class="member-subtitle">Contributor</p>
+																  <ul class="member-icons">
+																	<li class="social-icon"><a href="https://twitter.com/alexter42"><i class="icon-social-twitter"></i></a></li>
+																	<li class="social-icon"><a href="mailto:a.monroy@berkeley.edu"><i class="icon-envelope"></i></a></li>
+																</ul>
+															</div>
+														 </div>
+													</div>
+												</div>
+												</div>
+										</div>
+									</div>
+								</section>
+			
+
+
+	<section id="thanks" class="padd-section">
+			
+			
+										<!--container-->
+			
+										<div class="container">
+											<div class="row">
+												<div class="section-header">
+													<div class="row-centered">
+														<div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+			
+															<h2 class="section-title text-center">Thank you to:</h2>
+															<p>
+																
+															</p>
+															</div>
+													</div>
+												</div>
+											</div>
+												<div class="row" style="display: flex; align-items: center;">
+												 <div class="col-md-2 col-sm-4  hidden-xs"> 
+													</div>			
+													
+												 <div class="col-md-2 col-sm-3 col-xs-3" style="text-align:center;">
+												 	<img src={% static "website/assets/img/collaborations/mit.png" %}>
+                         						</div>
+                         						<div class="col-md-2 col-sm-3 col-xs-3" style="text-align:center;">
+												 	<img src={% static "website/assets/img/collaborations/csail.png" %} width=60%>
+                         						</div>
+                         						 <div class="col-md-2 col-sm-3 col-xs-3" style="text-align:center;">
+												 	<img src={% static "website/assets/img/collaborations/medialab.jpeg" %} width=80%>
+                         						</div>
+                         						<div class="col-md-2 col-sm-3 col-xs-3" style="text-align:center;">
+												 	<img src={% static "website/assets/img/collaborations/wmf.png" %} width=70%>
+                         						</div>
+													</div>
+											</div>
+										
+									</section>
+
+
+       <footer>
+        <div class="container">
+            <div class="row">
+                <div class="footer-top">
+                    <!-- Start title-section -->
+
+                    <div class="row-centered">
+                        <div class="col-md-6 col-xs-12 col-sm-6 col-centered">
+                            <ul class="list-social list-inline">
+                                <li>
+                                    <a
+                                        href="https://twitter.com/wikum_mit"
+                                        target="_blank"
+                                        class="btn btn-circle  btn-twitter"
+                                    >
+                                        <i class="icon-social-twitter"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <!-- COPYRIGHT TEXT -->
+
+                    <div class="copyright">
+                        <p>
+                            Last updated: Sept 2018.
+                        </p>
+                    </div>
+
+                    <!-- COPYRIGHT TEXT -->
+                </div>
             </div>
         </div>
-    </section>
-    
+    </footer>
     
 <!-- Modal -->
 <div id="createWikumModal" class="modal fade" role="dialog">
@@ -631,6 +1314,18 @@
 
 
 {% block scripts %}
+
+
+
+    <script src={% static "website/assets/js/wow.min.js" %}></script>
+    <script src={% static "website/assets/js/owl.carousel.min.js" %}></script>
+    <script src={% static "website/assets/js/magnific-popup.min.js" %}></script>
+    <script src={% static "website/assets/js/jquery.scrollUp.min.js" %}></script>
+    <script src={% static "website/assets/js/jquery.ajaxchimp.min.js" %}></script>
+    <!-- Main js -->
+    <script src={% static "website/assets/js/main.js" %}></script>
+
+
 
 <script>
 	var PollState = function(task_id) {

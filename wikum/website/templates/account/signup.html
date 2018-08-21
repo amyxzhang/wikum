@@ -3,6 +3,7 @@
 
 {% block styles %}
 	<link rel="stylesheet" href={% static "website/css/accounts.css" %}>
+	
 {% endblock %}
 
 {% block content %}
@@ -12,17 +13,21 @@
             <div class="col-lg-8 col-lg-offset-2">
 
 				 <form id="signup_form" method="post" action="{% url "account_signup" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
-	                <legend>Sign up</legend>
+	                <legend><h1>Sign up</h1></legend>
 	                {% csrf_token %}
-	                {{ form }}
+	               <table>
+	                {{ form.as_table }}
+	                </table>
+	                <BR>
 	                {% if redirect_field_value %}
 	                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+	                	<BR>
 	                {% endif %}
-	                <button type="submit" class="btn btn-primary">Sign Up</button>
+	                <button type="submit" class="btn btn-link">Sign Up</button>
 	            </form>
 	            <p class="login-signup">
 	                <small>
-	                    Already have an account?  <strong><a href="/account/login">Log In</a></strong>
+	                    Already have an account?  <strong> <a href="/account/login">Log In</a></strong>
 	                </small>
 	            </p>
 

@@ -238,7 +238,7 @@ Navigation
 ----------------------------------------*/
 
 .navbar-default .navbar-nav>li>a {
-    color: #fff;
+    color: #777;
     padding: 10px 0;
 }
 .navbar-default .navbar-right > li + li {
@@ -248,13 +248,11 @@ Navigation
     margin-right: 0;
 }
 .navbar-default {
-    padding: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
     background-color: transparent;
     border-color: transparent;
-    -webkit-transition: all .5s ease .25s;
-    transition: all .5s ease .25s;
 }
 .navbar-default .navbar-toggle {
     border-color: transparent;
@@ -270,13 +268,13 @@ Navigation
 }
 .navbar-default .navbar-nav>.active>a{
     background-color: transparent;
-    color: #fff;
+    color: #777;
 
 }
 .navigation-menu .navbar-default .navbar-nav a{
     padding: 8px 0 4px;
     font-size: 15px;
-    color:#fff;
+    color:#777;
     border-bottom: 2px solid transparent;
 }
 .navbar-default .navbar-collapse .navbar-nav > li:first-child{
@@ -296,7 +294,7 @@ Navigation
 .navbar-collapse .navbar-right > li > a:focus {
     outline: none;
     background-color: transparent;
-    color: white;
+    color: #777;
 }
 
 .navbar-collapse .navbar-right > li.active > a {
@@ -316,22 +314,23 @@ Navigation
 .navbar-default .navbar-nav>li>a.active-link {
     color: #fff;
 }
-.affix {
+.navbar {
     background-color: #fff !important;
     border: none;
     box-shadow: 0 0px 4px rgba(0,0,0,0.4);
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 25px;
+    padding-bottom: 6px;
 }
-.navigation-menu .affix .navigation-links  li a{
+.navigation-menu .navbar .navigation-links  li a{
     color: rgb(3, 169, 244);
     line-height: 35px;
+    border-bottom: 2px solid #ffffff;
 }
-.navigation-menu .affix .navigation-links  li.active a{
+.navigation-menu .navbar .navigation-links  li.active a{
     color: rgb(3, 169, 244);
     border-bottom: 2px solid rgb(3, 169, 244);
 }
-.navigation-menu .affix .navigation-links  li a:hover, .navigation-menu .affix .navigation-links  li a:focus, .navigation-menu .affix .navigation-links  li a:active{
+.navigation-menu .navbar .navigation-links  li a:hover, .navigation-menu .affix .navigation-links  li a:focus, .navigation-menu .affix .navigation-links  li a:active{
     color: rgba(3, 169, 244,0.6);
     border-bottom: 2px solid rgb(3, 169, 244);
 }
@@ -375,13 +374,14 @@ Navigation
 .navbar-default.affix .navbar-brand.logo img.logo-dark{
     display: block;
 }
-.navbar-default.affix .navbar-brand.logo img.logo-light{
+.navbar-default .navbar-brand.logo img.logo-light{
     display: none;
 }
-.navbar-default.affix .navbar-nav>li>a{
+.navbar-default .navbar-nav>li>a{
     color: #7d8a93;
+    border-bottom: 2px solid #ffffff;
 }
-.affix .navbar-right > li.active > a {
+.navbar .navbar-right > li.active > a {
     border-bottom: 2px solid #5D8EF0;
     color:#5D8EF0;
 
@@ -389,7 +389,7 @@ Navigation
 .affix .navbar-right > li > a:hover ,.affix .navbar-right > li > a:focus{
     color:#5D8EF0!important;
 }
-.affix .navbar-right > li > a:hover {
+.navbar .navbar-right > li > a:hover {
     border-bottom: 2px solid #5D8EF0;;
 }
 /*----------------------------------------

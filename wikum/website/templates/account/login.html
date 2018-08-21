@@ -13,20 +13,24 @@
             <div class="col-lg-8 col-lg-offset-2">
             	
 	            <form method="POST" action="{% url "account_login" %}" autocapitalize="off" {% if form.is_multipart %} enctype="multipart/form-data"{% endif %}>
-	                <legend>{% trans "Log in to an existing account" %}</legend>
+	                <legend><h1>{% trans "Log in to an existing account" %}</h1></legend>
 	                {% csrf_token %}
-	                
-	                {{ form }}
+	                <table>
+	                {{ form.as_table }}
+	                </table>
+	                <BR>
 	                {% if redirect_field_value %}
 	                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+	                	
+	                 <BR>
 	                {% endif %}
-	                <button type="submit" class="btn btn-primary">{% trans "Log in" %}</button>
+	                <button type="submit" class="btn btn-link">{% trans "Log in" %}</button>
 	                <a href="{% url "account_password_reset" %}" class="btn btn-link">{% trans "Forgot your password?" %}</a>
 	            </form>
 	            {% if ACCOUNT_OPEN_SIGNUP %}
 	                <p class="login-signup">
 	                    <small>
-								{% trans "Don't have an account?" %}<strong><a href="/account/signup">{% trans "Sign up" %}</a></strong>
+								{% trans "Don't have an account?" %}<strong> <a href="/account/signup">{% trans "Sign up" %}</a></strong>
 	                    </small>
 	                </p>
 	            {% endif %}

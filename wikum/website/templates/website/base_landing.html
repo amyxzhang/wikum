@@ -94,6 +94,18 @@
     data-target=".navbar-default"
     data-offset="100"
 >
+    <!-- Page Preloader -->
+
+    <div id="loading-page">
+        <div id="loading-center-page">
+            <div id="loading-center-absolute">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- header -->
+    
     
                
     <div
@@ -101,7 +113,6 @@
         role="navigation"
         data-spy="affix"
         data-offset-top="50"
-        style="background-color: #5D8EF0;"
     >
         <div class="container">
             <!-- Mobile navigation & logo -->
@@ -118,7 +129,7 @@
                     <span class="icon-bar"></span>
                 </button>
 
-                 <a class="navbar-brand page-scroll" href="{{ BASE_URL }}">
+                 <a class="navbar-brand page-scroll" href="#page-top">
 			         <img src={% static "website/assets/img/wikum_logo.png" %} width=120>
 			      </a> 
             </div>
@@ -145,32 +156,33 @@
                                 </ul>
                         </form>
                     </li> 
-                         
                     <li>
-                        	<a class="section-scroll" href="{{ BASE_URL }}/#about">{% trans "About" %}</a>
+                    	<a class="section-scroll" href="#about">{% trans "About" %}</a>
+                       
                     </li>
                     
                     <li>
-                    	
-                        	<a class="section-scroll" href="{{ BASE_URL }}/#explore">Explore</a>
+                        	<a class="section-scroll" href="#explore">Explore</a>
+                        
                     </li>
                     
                     
                     <li>
-                        	<a class="section-scroll" href="{{ BASE_URL }}/#workspaces">Import</a>
+                        	<a class="section-scroll" href="#workspaces">Import</a>
+                        
                     </li>
                     
                     <li>
-                        	<a class="section-scroll" href="{{ BASE_URL }}/#download">{% trans "Learn More" %}</a>
+                        	<a class="section-scroll" href="#download"> {% trans "Learn More" %} </a>
+                      
                     </li>
                     
                      
                     <li>
-                        	<a class="section-scroll" href="{{ BASE_URL }}/#contact">{% trans "Contact" %}</a>
+                        	<a class="section-scroll" href="#contact"> {% trans "Contact" %} </a>
+                       
                     </li>
-                    
-                    
-                    	{% if user.is_authenticated %}
+					{% if user.is_authenticated %}
                     	<li class="dropdown">
                     		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="owner">{{ user.username }}</span></a>
                     		<ul class="dropdown-menu">
@@ -186,15 +198,15 @@
                     		<a href="/account/signup" class="section-scroll btn btn-lg btn-link text-uppercase">{% trans "Sign Up" %}</a>
                     		</li>
                     	{% endif %}
-                
                 </ul>
             </div>
         </div>
     </div>
 
-                    
-                    
-                    
+
+
+
+
 
 {% block content %}
 {% endblock %}

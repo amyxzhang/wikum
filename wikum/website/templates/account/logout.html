@@ -12,11 +12,11 @@
             <div class="col-lg-8 col-lg-offset-2">
             	
 				<form method="POST" action="{% url "account_logout" %}">
-	                <legend>Log Out</legend>
+	                <legend><h1>Log Out</h1></legend>
 	                <fieldset>
 	                    {% csrf_token %}
 	                    <p>Are you sure you want to log out?</p>
-	                    <button type="submit" class="btn btn-primary">Log out</button>
+	                    <button type="submit" class="btn btn-link">Log out</button>
 	                </fieldset>
 	            </form>
 

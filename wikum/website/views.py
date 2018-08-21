@@ -29,8 +29,23 @@ from website.models import CommentRating
 @render_to('website/index.html')
 def index(request):
     user = request.user
-    sort = request.GET.get('sort')
 
+    b = Article.objects.all().order_by('-created_at')[0:4]
+    a = Article.objects.all().order_by('-percent_complete')[0:4]
+    resp = {'page': 'index',
+            'recent_articles': b,
+            'finished_articles': a,
+            'user': user}
+    
+    if 'task_id' in request.session.keys() and request.session['task_id']:
+        task_id = request.session['task_id']
+        resp['task_id'] = task_id
+
+    return resp
+
+
+
+def test():
     if not sort and not user.is_anonymous():
         a_1 = list(Article.objects.filter(owner=user).order_by('-percent_complete').select_related())
         a_2 = list(Article.objects.filter(~Q(owner=user)).order_by('-percent_complete').select_related())
