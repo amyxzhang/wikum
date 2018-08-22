@@ -287,20 +287,11 @@ textarea {
 	min-height: 100px;
 }
 
-#box_top {
-	position: fixed;
-	display: block;
-	width: 550px;
-	top: 90px;
-	left: 700px;
-	height: 20px;
-	text-align: center;
-}
-
 #box {
+	padding-top: 15px;
 	position: fixed;
-	max-height: calc(100vh - 110px);
-	margin: 110px 15px 15px 600px;
+	max-height: calc(100vh - 80px);
+	margin: 80px 15px 15px 600px;
 	overflow: auto;
 	min-width: 55%;
 	max-width: 680px;
@@ -793,7 +784,7 @@ form.modal-content {
 }
 
 #controldiv {
-	position: absolute;
+	position: fixed;
 	left:380px;
 	top: 100px;
 }

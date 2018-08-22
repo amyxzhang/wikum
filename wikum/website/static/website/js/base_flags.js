@@ -3250,7 +3250,6 @@ function escapeHtml(text) {
 
 function clear_box_top() {
 	$('#box_top').html('');
-	$('#box_top').css('border-bottom', '0px');
 }
 
 
@@ -3482,12 +3481,10 @@ function construct_box_top(objs) {
 	}
 
 	if (accepted && count > 1 && !parent_node.replace_node) {
-		 var text = '<a data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a> | ';
-		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a> | ';
-		 text += '<a data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
+		 var text = '<BR> <a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a><BR>';
+		 text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a><BR>';
+		 text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
 
-
-		$('#box_top').css('border-bottom', '#000000 1px solid');
 		$('#box_top').html(text);
 	}
 }
@@ -3530,7 +3527,7 @@ function showdiv(d) {
 					text += '<BR>';
 				}
 				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
-				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 				if (d.hid && d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
 				}				
@@ -3593,7 +3590,7 @@ function showdiv(d) {
 
 				}
 			}
-			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 
 			if (d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' hidden </a>';
@@ -3641,7 +3638,7 @@ function hide_replace_nodes(id) {
 	text = '';
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -3666,7 +3663,7 @@ function show_replace_nodes(id) {
 	text = '';
 	if (comment_id != d.d_id) {
 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all Summaries</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 
 	}
 	if (text != '') {
