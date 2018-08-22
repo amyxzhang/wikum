@@ -35,17 +35,17 @@ svg.append('svg:rect')
   	clearTimeout(cancelClick);
   	if (isClick) {
   		d3.selectAll( '.clicked').classed( "clicked", false);
-  		unhighlight_all();
-  		show_text(null);
+  		highlight_all();
+  		show_text(nodes_all[0]);
   	} else {
   		show_text('clicked');
   	}
-  	
+
   	isClick = true;
   })
   .on('mousedown', function() {
   		isMouseDown = true;
-  		
+		
   		cancelClick = setTimeout(is_click, 250);
    		var p = d3.mouse( this);
 
@@ -73,28 +73,39 @@ svg.append('svg:rect')
                 y : p[1] - d.y
             }
 	        ;
-	
+
 	        if( move.x < 1 || (move.x*2<d.width)) {
 	            d.x = p[0];
 	            d.width -= move.x;
 	        } else {
-	            d.width = move.x;       
+	            d.width = move.x;
 	        }
-	
+
 	        if( move.y < 1 || (move.y*2<d.height)) {
 	            d.y = p[1];
 	            d.height -= move.y;
 	        } else {
-	            d.height = move.y;       
+	            d.height = move.y;
 	        }
-	        
+
 	        s.attr( d);
-	        
+
+	    })
+	    .on("mouseup", function() {
+	    	isMouseDown = false;
+
+	       // remove selection frame
+	    	svg.selectAll( "rect.selection").remove();
+
+	  		d3.selectAll( '.clicked').classed( "clicked", false);
+	  		highlight_all();
+	  		show_text(nodes_all[0]);
+		 
 	    });
   })
   .on( "mousemove", function() {
     var s = svg.select( "rect.selection");
-    
+
     if( !s.empty()) {
         var p = d3.mouse(this),
             d = {
@@ -113,28 +124,28 @@ svg.append('svg:rect')
             d.x = p[0];
             d.width -= move.x;
         } else {
-            d.width = move.x;       
+            d.width = move.x;
         }
 
         if( move.y < 1 || (move.y*2<d.height)) {
             d.y = p[1];
             d.height -= move.y;
         } else {
-            d.height = move.y;       
+            d.height = move.y;
         }
-       
+
         s.attr( d);
-        
+
 		// deselect all temporary selected state objects
 		d3.selectAll( '.clicked').classed( "clicked", false);
         unhighlight_all();
 
-        d3.selectAll('path').each( function(state_data, i) {
+        d3.selectAll( 'path').each( function(state_data, i) {
         	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
-	            if( 
-	                !d3.select( this).classed( "selected") && 
+	            if(
+	                !d3.select( this).classed( "selected") &&
 	                    // inner circle inside selection frame
-	                state_data.x>=d.y && state_data.x<=d.y+d.height && 
+	                state_data.x>=d.y && state_data.x<=d.y+d.height &&
 	                state_data.y>=d.x && state_data.y<=d.x+d.width
 	            ) {
 	            	if (!state_data.article) {
@@ -144,17 +155,18 @@ svg.append('svg:rect')
 						.attr("class", "clicked");
 					}
 	            }
-	         }
+	        }
         });
-        
+
         }
         })
 	.on( "mouseup", function() {
 		isMouseDown = false;
-	
+
 	       // remove selection frame
 	    svg.selectAll( "rect.selection").remove();
 	    
+
 	});
 
 var nodes_all = null;

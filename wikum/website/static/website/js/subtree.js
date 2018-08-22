@@ -35,8 +35,8 @@ svg.append('svg:rect')
   	clearTimeout(cancelClick);
   	if (isClick) {
   		d3.selectAll( '.clicked').classed( "clicked", false);
-  		unhighlight_all();
-  		show_text(null);
+  		highlight_all();
+  		show_text(nodes_all[0]);
   	} else {
   		show_text('clicked');
   	}
@@ -45,7 +45,7 @@ svg.append('svg:rect')
   })
   .on('mousedown', function() {
   		isMouseDown = true;
-
+		
   		cancelClick = setTimeout(is_click, 250);
    		var p = d3.mouse( this);
 
@@ -90,6 +90,17 @@ svg.append('svg:rect')
 
 	        s.attr( d);
 
+	    })
+	    .on("mouseup", function() {
+	    	isMouseDown = false;
+
+	       // remove selection frame
+	    	svg.selectAll( "rect.selection").remove();
+
+	  		d3.selectAll( '.clicked').classed( "clicked", false);
+	  		highlight_all();
+	  		show_text(nodes_all[0]);
+		 
 	    });
   })
   .on( "mousemove", function() {
@@ -144,7 +155,7 @@ svg.append('svg:rect')
 						.attr("class", "clicked");
 					}
 	            }
-	         }
+	        }
         });
 
         }
@@ -154,6 +165,7 @@ svg.append('svg:rect')
 
 	       // remove selection frame
 	    svg.selectAll( "rect.selection").remove();
+	    
 
 	});
 

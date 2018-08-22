@@ -35,8 +35,8 @@ svg.append('svg:rect')
   	clearTimeout(cancelClick);
   	if (isClick) {
   		d3.selectAll( '.clicked').classed( "clicked", false);
-  		unhighlight_all();
-  		show_text(null);
+  		highlight_all();
+  		show_text(nodes_all[0]);
   	} else {
   		show_text('clicked');
   	}
@@ -96,14 +96,11 @@ svg.append('svg:rect')
 
 	       // remove selection frame
 	    	svg.selectAll( "rect.selection").remove();
-	    	
-	    	console.log(isClick);
-	    	
-	    	if (isClick) {
-		  		d3.selectAll( '.clicked').classed( "clicked", true);
-		  		show_text();
-		  	}
-	    
+
+	  		d3.selectAll( '.clicked').classed( "clicked", false);
+	  		highlight_all();
+	  		show_text(nodes_all[0]);
+		 
 	    });
   })
   .on( "mousemove", function() {

@@ -3292,6 +3292,13 @@ function unhighlight_all() {
 	}
 }
 
+function highlight_all() {
+	for (var i=1; i<nodes_all.length; i++) {
+		d3.select("#node_" + nodes_all[i].id)
+		.style("stroke-width", stroke_width);
+	}
+}
+
 function highlight_link(from_id, to_id) {
 	d3.select("#link_" + from_id + '_' + to_id).transition()
 		.style("stroke", "red")
@@ -3351,9 +3358,11 @@ function show_text(d) {
 		$('#box').html(d.name);
 		clear_box_top();
 	} else if (d == null){
+		console.log('null');
 		$('#box').html('Click on a node to see it and its children or drag to select multiple nodes.');
 		clear_box_top();
 	} else {
+		console.log('clicked');
 		$('#box').html('');
 		clear_box_top();
 		var objs = [];
