@@ -1,6 +1,7 @@
 
 {% load staticfiles %}
 {% load i18n %}
+{% load websitefilters %}
 <!DOCTYPE html>
 <html>
 
@@ -93,11 +94,80 @@
     <div class="navbar navbar-default navbar-fixed-top" role="navigation" data-offset-top="50" style="background-color: #ffffff;">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
+            	<button
+                    type="button"
+                    class="navbar-toggle dropdown-button waves-effect waves-teal btn-flat"
+                    data-toggle="collapse"
+                    data-target="#navbar-collapse"
+                >
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
                 </button>
                 
-                {{ article.title }}
+            	 <button
+                    type="button"
+                    class="navbar-toggle dropdown-button waves-effect waves-teal btn-flat"
+                    data-toggle="collapse"
+                    data-target="#navbar-collapse2"
+                >
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                
+                
+               <span title="{{ article.title }}" style="font-size:16px; color: #000000;"> {{ article.title | shorten:100 }} </span><BR>
+               
+               <div class="navbar-collapse collapse" id="navbar-collapse2"> 
+                <ul class="nav navbar-nav navbar-left navigation-links menu">
+	               <li class="dropdown">
+	               	<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding-top:2px; padding-bottom:2px;">View</a>
+                    		
+	               
+	               <ul class="dropdown-menu" id="menu-view">
+	                    			<li><a href="">All Comments</a></li>
+	                    			<li title="View a small subtree from the discussion one at at time"><a href="">Subtree</a></li>
+	                    			<li title="Cluster comments and view one cluster at a time"><a href="">By Cluster</a></li>
+	                    			<li title="See all edits to this Wikum"><a href="">Edit History</a></li>
+	                    		</ul>
+	               </li>
+	               <li class="dropdown">
+	               	<a href="#" class="dropdown-toggle" data-toggle="dropdown"  style="padding-top:2px; padding-bottom:2px;">Sort</a>
+                    		
+	               
+	               <ul class="dropdown-menu" id="menu-sort">
+	               					<li><a href="">Comment ID</a></li>
+	                    			<li><a href="">Most Number of Likes</a></li>
+	                    			<li><a href="">Most Number of Replies</a></li>
+	                    			<li><a href="">Longest</a></li>
+	                    			<li><a href="">Shortest</a></li>
+	                    			<li><a href="">Newest</a></li>
+	                    			<li><a href="">Oldest</a></li>
+	                    		</ul>
+	               </li>
+	               
+	          
+	               
+	               <li>
+	               		
+	               						<div style="display: inline-block" id="filter"></div>
+	               </li>
+	               <li>
+	               	
+	               		<div style="display: inline-block" id="node_highlight"></div>
+	               </li>
+               </ul>
+               </div>
+               
+				<!-- <div id="node_sort"></div>
+				
+				
+<div id="node_highlight"></div>
+
+<div id="filter"></div>
+
+<div id="button_subtree"></div> -->
 
             </div>
 
@@ -143,7 +213,11 @@
                     
                     	{% if user.is_authenticated %}
                     	<li class="dropdown">
-                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="owner">{{ user.username }}</span></a>
+                    		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="owner">{{ user.username }}</span>
+                    			
+							        <span class="caret"></span>
+                    			
+                    		</a>
                     		<ul class="dropdown-menu">
                     			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
                     			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
@@ -154,7 +228,7 @@
                     		<a href="/account/login">{% trans "Login" %}</a>
                     		</li>
                     		<li>
-                    		<a href="/account/signup" class="section-scroll btn btn-lg btn-link text-uppercase">{% trans "Sign Up" %}</a>
+                    		<a href="/account/signup">{% trans "Sign Up" %}</a>
                     		</li>
                     	{% endif %}
                     	<li class="dropdown">

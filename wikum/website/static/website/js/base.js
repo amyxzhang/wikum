@@ -2015,7 +2015,7 @@ function error_noty() {
 }
 
 function make_filter() {
-	text = '<div id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
+	text = '<div id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Search for a tag"></div>';
 
 	$('#filter').html(text);
 
@@ -2045,7 +2045,7 @@ function make_filter() {
 	$('#inputFilter').keypress(function(e) {
 	    if(e.which == 13) {
 		    filter = $('#inputFilter').val();
-	        window.location.href = '/visualization?article=' + article_url + '&num=' + num + '&filter=' + filter + '&owner=' + owner;
+	        window.location.href = '/visualization_flags?article=' + article_url + '&num=' + num + '&filter=' + filter + '&owner=' + owner;
 	    }
 	});
 }

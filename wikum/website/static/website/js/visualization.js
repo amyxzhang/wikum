@@ -224,38 +224,54 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
   make_highlight();
 
   var article_id = $("#article_id").text();
+  
+  
+  $('#menu-view').children().first().css({'background-color': '#42dca3'});
+  $('#menu-view').children().first().addClass('disabled-menu');
+  
+  $('#menu-view').children().first().children().first().on('click', function() {
+	    return false;
+	});
+	
+ $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
+	  
 
- $('#button_subtree').html(`
-    <a class="btn-sm btn-default" disabled>Overall</a>
-    <a class="btn-sm btn-default" href="/subtree?article=${article_url}&num=${num}&owner=${owner}">Subtree</a>
-    <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}&owner=${owner}">Cluster</a>-->
-    <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}&owner=${owner}">Summary</a>
-    <a class="btn-sm btn-default" href="/history?article=${article_id}">Edit History</a>`);
 });
 
 function make_dropdown() {
-
-	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
-
-	if (!sort || sort == "id") {
-		text += 'Sort all by - ID';
-	} else if (sort == "likes") {
-		text += 'Sort all by - # Likes';
+	var sort_num = 0;
+	if (sort == "likes") {
+		sort_num = 1;
 	} else if (sort == "replies") {
-		text += 'Sort all by - # Replies';
+		sort_num = 2;
 	} else if (sort == "long") {
-		text += 'Sort all by - Longest';
+		sort_num = 3;
 	} else if (sort == "short") {
-		text += 'Sort all by - Shortest';
+		sort_num = 4;
 	} else if (sort == "newest") {
-		text += 'Sort all by - Newest';
+		sort_num = 5;
 	} else if (sort == "oldest") {
-		text += 'Sort all by - Oldest';
+		sort_num = 6;
 	}
-
-	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/visualization?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
-	text += '<li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
+	
+  $('#menu-sort').children().eq(sort_num).css({'background-color': '#42dca3'});
+  $('#menu-sort').children().eq(sort_num).addClass('disabled-menu');
+  
+  $('#menu-sort').children().eq(sort_num).children().first().on('click', function() {
+	    return false;
+	});
+	
+  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
+  $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
+  $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
+  $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
+  $('#menu-sort').children().eq(3).children().first().attr('href', String(url + 'long'));
+  $('#menu-sort').children().eq(4).children().first().attr('href', String(url + 'short'));
+  $('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'newest'));
+  $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
 
 
 	count = 0;
@@ -264,12 +280,20 @@ function make_dropdown() {
 			count += 1;
 		}
 	}
-	if (count == 15) {
-		next_sub = next + 1;
-		text += '</div><a class="btn btn-xs" href="' +url + sort+ '&next=' + next_sub + '">Get next page of comments &gt;&gt;</a>';
-	}
+	var text = '';
+	if (next > 0) {
+		var prev = next - 1;
+	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	   text += '<a class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
 	
-	$('#node_sort').html(text);
+	}
+	if (count == 15) {
+		var next_sub = next + 1;
+	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	  text += ' <a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
+	 
+	}
+	 $('#paginate').html(text);
 
 	
 }

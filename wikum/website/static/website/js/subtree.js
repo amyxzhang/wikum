@@ -185,6 +185,12 @@ if (!comment_id) {
 	comment_id = '';
 }
 
+var filter = getParameterByName('filter');
+if (!filter) {
+	filter = '';
+}
+
+
 var owner = getParameterByName('owner');
 
 d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&owner=' + owner + '&comment_id=' + comment_id, function(error, flare) {
@@ -225,49 +231,63 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   make_key();
 
 
-  if (!comment_id) {
-  	make_dropdown();
-  }
+  make_dropdown();
+  
+    make_filter();
 
   make_highlight();
   
   var article_id = $("#article_id").text();
+  
+  $('#menu-view').children().eq(1).css({'background-color': '#42dca3'});
+  $('#menu-view').children().eq(1).addClass('disabled-menu');
+  
+  $('#menu-view').children().eq(1).children().first().on('click', function() {
+	    return false;
+	});
 
-  $('#button_subtree').html(`
-     <a class="btn-sm btn-default" href="/visualization?article=${article_url}&num=${num}&owner=${owner}">Overall</a>
-     <a class="btn-sm btn-default" disabled>Subtree</a>
-     <!--<a class="btn-sm btn-default" href="/cluster?article=${article_url}&num=${num}&owner=${owner}">Cluster</a>-->
-     <a class="btn-sm btn-default" href="/summary?article=${article_url}&num=${num}&owner=${owner}">Summary</a>
-     <a class="btn-sm btn-default" href="/history?article=${article_id}">Edit History</a>`);
+ $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
+	  
 });
 
 function make_dropdown() {
 
-	text = '<div class="dropdown" style="margin-bottom: 8px;"><button class="btn btn-xs dropdown-toggle" type="button" data-toggle="dropdown">';
-
-	if (!sort || sort == "random") {
-	    text += 'Get Random Subtree';
-	    sort = "random";
-	}
+	var sort_num = 0;
 	if (sort == "likes") {
-		text += 'Get Subtree by # Likes';
+		sort_num = 1;
 	} else if (sort == "replies") {
-		text += 'Get Subtree by # Replies';
+		sort_num = 2;
 	} else if (sort == "long") {
-		text += 'Get Long Comment Subtree';
+		sort_num = 3;
 	} else if (sort == "short") {
-		text += 'Get Short Comment Subtree';
+		sort_num = 4;
 	} else if (sort == "newest") {
-		text += 'Get New Subtree';
+		sort_num = 5;
 	} else if (sort == "oldest") {
-		text += 'Get Old Subtree';
+		sort_num = 6;
 	}
-
-	text += '<span class="caret"></span></button><ul class="dropdown-menu">';
-	url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
-	text += '<li><a href="' + url + 'random">Random</a></li><li><a href="' + url + 'likes"># Likes</a></li><li><a href="' + url + 'replies"># Replies</a></li><li><a href="' + url + 'long">Longest</a></li><li><a href="' + url + 'short">Shortest</a></li><li><a href="' + url + 'newest">Newest</a></li><li><a href="' + url + 'oldest">Oldest</a></li></ul>';
-
-	next_sub = next + 1;
-	text += '</div><a class="btn btn-xs" href="' +url+sort+ '&next=' + next_sub + '">Get another subtree &gt;&gt;</a>';
-	$('#node_sort').html(text);
+	
+  $('#menu-sort').children().eq(sort_num).css({'background-color': '#42dca3'});
+  $('#menu-sort').children().eq(sort_num).addClass('disabled-menu');
+  
+  $('#menu-sort').children().eq(sort_num).children().first().on('click', function() {
+	    return false;
+	});
+	
+  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
+  $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
+  $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
+  $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
+  $('#menu-sort').children().eq(3).children().first().attr('href', String(url + 'long'));
+  $('#menu-sort').children().eq(4).children().first().attr('href', String(url + 'short'));
+  $('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'newest'));
+  $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
+  
+  var next_sub = next + 1;
+  var url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+  var text = '<a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Get another subtree &gt;&gt;</a>';
+  $('#paginate').html(text);
 }

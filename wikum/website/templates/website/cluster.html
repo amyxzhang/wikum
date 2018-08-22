@@ -1,4 +1,4 @@
-{% extends 'website/base.html' %}
+{% extends 'website/base_viz.html' %}
 {% load staticfiles %}
 
 {% block styles %}
@@ -9,6 +9,14 @@
 
 
 {% block content %}
+
+<div id="controldiv">
+	Cluster size: 
+<div id="slider" style="width: 100px;display: inline-block;">
+</div>
+<div id="paginate"></div>
+</div>
+
 
 	{% include 'website/viz.html' %}
 
@@ -24,7 +32,7 @@
 	<script src={% static "website/js/jquery.highlight.js" %}></script>
 	<script src={% static "website/js/typeahead.bundle.js" %}></script>
 
-    <script src={% static "website/js/base.js" %}></script>
+    <script src={% static "website/js/base_flags.js" %}></script>
 	<script src={% static "website/js/cluster.js" %}></script>
 
 {% endblock %}

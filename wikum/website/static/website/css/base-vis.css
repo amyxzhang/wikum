@@ -291,7 +291,7 @@ textarea {
 	position: fixed;
 	display: block;
 	width: 550px;
-	top: 180px;
+	top: 90px;
 	left: 700px;
 	height: 20px;
 	text-align: center;
@@ -299,10 +299,12 @@ textarea {
 
 #box {
 	position: fixed;
-	max-height: calc(100vh - 200px);
-	margin: 200px 15px 15px 600px;
+	max-height: calc(100vh - 110px);
+	margin: 110px 15px 15px 600px;
 	overflow: auto;
 	min-width: 55%;
+	max-width: 680px;
+	overflow-x: scroll;
 }
 
 #box a {
@@ -311,8 +313,6 @@ textarea {
 
 #viz {
 	float: left;
-	position: relative;
-	margin-top: 110px;
 }
 
 text {
@@ -603,26 +603,6 @@ textarea {
 	cursor: pointer;
 }
 
-#node_sort {
-	position: absolute;
-	display: block;
-	top: 120px;
-	left: 280px;
-}
-
-#node_highlight {
-    position: fixed;
-    display: block;
-    top: 140px;
-    left: 30px;
-}
-
-#filter {
-    position: fixed;
-    display: block;
-    top: 105px;
-    left: 30px;
-}
 
 #button_subtree {
     position: absolute;
@@ -810,4 +790,10 @@ form.modal-content {
 
 .thumbs{
    height: 16px;
+}
+
+#controldiv {
+	position: absolute;
+	left:380px;
+	top: 100px;
 }

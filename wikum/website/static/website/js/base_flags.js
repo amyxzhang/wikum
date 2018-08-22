@@ -2330,7 +2330,7 @@ function make_filter() {
 	if (filter != '') {
 		$('#inputFilter').val(filter);
 	}
-
+	
 	var tag_suggestions = new Bloodhound({
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -2353,13 +2353,14 @@ function make_filter() {
 	$('#inputFilter').keypress(function(e) {
 	    if(e.which == 13) {
 		    filter = $('#inputFilter').val();
-	        window.location.href = '/visualization?article=' + article_url + '&num=' + num + '&filter=' + filter + '&owner=' + owner;
+	        window.location.href = '/visualization_flags?article=' + article_url + '&num=' + num + '&filter=' + filter + '&owner=' + owner;
 	    }
 	});
 }
 
 function make_highlight() {
-	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text"><div id="count_result"></div>';
+	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text" style="display: inline; width: 125px; margin-right: 10px;">';
+	text += '<span id="count_result"></span>';
 	$('#node_highlight').html(text);
 
 	$('#inputHighlight').keyup(function (e) {
@@ -2369,7 +2370,7 @@ function make_highlight() {
 						.style("fill", color);
 		}
 
-		$('#count_result').text('0 comments highlighted');
+		$('#count_result').text('0');
 
 
 	  	highlight_text = $('#inputHighlight').val();
@@ -2386,7 +2387,7 @@ function make_highlight() {
 		  	}
 		  	$('#box').highlight(highlight_text, { wordsOnly: true });
 
-			$('#count_result').text(count + ' comments highlighted');
+			$('#count_result').text(count);
 
 		} else {
 			$('#count_result').text('');
@@ -3160,11 +3161,11 @@ function construct_comment(d) {
 		text += '<BR><div id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
 			if (is_dark(d.tags[i][1])) {
-				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
+				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			} else {
-				text += '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
+				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #000000; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			}
@@ -3580,7 +3581,7 @@ function showdiv(d) {
 
 			if (d.article) {
 				if (window.location.href.indexOf('/subtree') > -1) {
-					text = '<a href="/visualization?article=' + article_url + '&num=' + num + '&owner=' + owner + '">See Entire Discussion</a>';
+					text = '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '">See Entire Discussion</a>';
 				}
 			} else {
 				if (comment_id != d.d_id) {

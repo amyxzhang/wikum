@@ -1,4 +1,4 @@
-{% extends 'website/base.html' %}
+{% extends 'website/base_viz.html' %}
 {% load i18n %}
 {% load staticfiles %}
 {% block styles %}
@@ -10,8 +10,7 @@
 	<section class="container text-center" style="padding-top: 150px;">
 	        <div class="row">
 	        	
-	        	<h4>{{ article.title }}</h4>
-	        	<strong>{% trans "Edit History" %}</strong>
+	        	<h1>{% trans "Edit History" %}</h1>
 	        	<BR>
 	        		<BR>
 
@@ -102,4 +101,43 @@
 
 
 {% block scripts %}
+
+<script>
+
+		function getParameterByName(name, url) {
+		    if (!url) url = window.location.href;
+		    name = name.replace(/[\[\]]/g, "\\$&");
+		    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		        results = regex.exec(url);
+		    if (!results) return null;
+		    if (!results[2]) return '';
+		    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+	
+		var article_url = getParameterByName('article');
+		var owner = getParameterByName('owner');
+		article_url = article_url.replace('#','%23');
+		
+		var num = parseInt(getParameterByName('num'));
+		if (!num) {
+			num = 0;
+		}
+		
+  
+	  $('#menu-view').children().eq(3).css({'background-color': '#42dca3'});
+	  $('#menu-view').children().eq(3).addClass('disabled-menu');
+	  
+	  $('#menu-view').children().eq(3).children().first().on('click', function() {
+		    return false;
+		});
+	
+	 $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
+	 $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
+	 $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
+	 $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
+	  
+	 $('#menu-sort').parent().html('');
+  
+	</script>
+
 {% endblock %}

@@ -282,6 +282,25 @@ def subtree(request):
     return {'article': article,
             'source': article.source}
 
+
+@render_to('website/history.html')
+def history(request):
+    url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    num = int(request.GET.get('num', 0))
+    
+    article = Article.objects.filter(url=url, owner=owner)[num]
+    
+    hist = History.objects.filter(article_id=article.id).order_by('-datetime').select_related()[0:20]
+    
+    return {'history': hist,
+            'article': article,
+            'source': article.source}
+
 @render_to('website/cluster.html')
 def cluster(request):
     url = request.GET['article']
@@ -1271,19 +1290,7 @@ def hide_replies(request):
     except Exception, e:
         print e
         return HttpResponseBadRequest()
-   
-@render_to('website/history.html')
-def history(request):
-    article = request.GET['article']
-    hist = History.objects.filter(article_id=article).order_by('-datetime').select_related()[0:20]
-    
-    if hist.count() > 0:
-        a = hist[0].article
-    else :
-        a = Article.objects.get(id=article)
-    
-    return {'history': hist,
-            'article': a}
+
     
 def tags(request):
     article_url = request.GET['article']
