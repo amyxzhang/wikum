@@ -1494,7 +1494,7 @@ def cluster_data(request):
            'size': 400,
            'article': True}
     
-    posts = a.comment_set.filter(hidden=False, num_subchildren=0, reply_to_disqus=None)
+    posts = a.comment_set.filter(hidden=False, reply_to_disqus=None)
     
     num_posts = posts.count()
 

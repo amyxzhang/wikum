@@ -212,6 +212,27 @@ if (!filter) {
 
 var owner = getParameterByName('owner');
 
+  make_dropdown();
+  
+    make_filter();
+
+  make_highlight();
+  
+  var article_id = $("#article_id").text();
+  
+  $('#menu-view').children().eq(1).css({'background-color': '#42dca3'});
+  $('#menu-view').children().eq(1).addClass('disabled-menu');
+  
+  $('#menu-view').children().eq(1).children().first().on('click', function() {
+	    return false;
+	});
+
+ $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
+ $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
+	  
+
 d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&owner=' + owner + '&comment_id=' + comment_id, function(error, flare) {
   if (error) throw error;
 
@@ -247,29 +268,7 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
   	$('#box').text('There are no more subtrees to summarize!');
   }
 
-  make_key();
 
-
-  make_dropdown();
-  
-    make_filter();
-
-  make_highlight();
-  
-  var article_id = $("#article_id").text();
-  
-  $('#menu-view').children().eq(1).css({'background-color': '#42dca3'});
-  $('#menu-view').children().eq(1).addClass('disabled-menu');
-  
-  $('#menu-view').children().eq(1).children().first().on('click', function() {
-	    return false;
-	});
-
- $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
-	  
 });
 
 function make_dropdown() {

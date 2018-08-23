@@ -203,24 +203,6 @@ if (!filter) {
 	filter = '';
 }
 
-var comment_id = null;
-
-d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
-  if (error) throw error;
-
-  flare.x0 = 100;
-  flare.y0 = 100;
-
-  nodes_all = tree.nodes(flare);
-
-  update(root = flare);
-
-  show_text(nodes_all[0]);
-
-  make_progress_bar();
-
-  make_key();
-
   make_dropdown();
 
   make_filter();
@@ -243,6 +225,20 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
  $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
 	  
 
+
+d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
+  if (error) throw error;
+
+  flare.x0 = 100;
+  flare.y0 = 100;
+
+  nodes_all = tree.nodes(flare);
+
+  update(root = flare);
+
+  show_text(nodes_all[0]);
+
+  make_progress_bar();
 });
 
 function make_dropdown() {

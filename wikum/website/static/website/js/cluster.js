@@ -208,26 +208,6 @@ if (!filter) {
 
 var owner = getParameterByName('owner');
 
-d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num + '&owner' + owner, function(error, flare) {
-  if (error) throw error;
-
-  flare.x0 = 100;
-  flare.y0 = 100;
-  
-  nodes_all = tree.nodes(flare);
-  
-  update(root = flare);
-  
-  show_text(nodes_all[0]);
-  
-  make_key();
-  
-  make_dropdown();
-  
-  make_filter();
-  
-  make_highlight();
-  
   var article_id = $("#article_id").text();
   
   $('#menu-view').children().eq(2).css({'background-color': '#42dca3'});
@@ -242,9 +222,8 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num 
  $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
  $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
 	  
-  
-  
-  $( "#slider" ).slider({
+	  
+ $( "#slider" ).slider({
   	value: size,
   	change: function( event, ui ) {
   		url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&size=';
@@ -252,6 +231,28 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num 
   	}
   });
   
+ make_dropdown();
+  
+  make_filter();
+  
+  make_highlight();
+  
+
+
+d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num + '&owner' + owner, function(error, flare) {
+  if (error) throw error;
+
+  flare.x0 = 100;
+  flare.y0 = 100;
+  
+  nodes_all = tree.nodes(flare);
+  
+  update(root = flare);
+  
+  show_text(nodes_all[0]);
+  
+  	  make_progress_bar();
+
 });
 
 function make_dropdown() {
