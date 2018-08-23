@@ -788,3 +788,10 @@ form.modal-content {
 	left:380px;
 	top: 100px;
 }
+
+.editors {
+	float: right; 
+	position:relative; 
+	top: -25px; 
+	font-size: 10px;
+}

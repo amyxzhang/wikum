@@ -3209,6 +3209,14 @@ function construct_comment(d) {
 	}
 
 	if (summary) {
+		if (d.editors && d.editors.length > 0) {
+			text +='<div class="editors">Summary edited by: ';
+			for (var i=0;i<d.editors.length; i++) {
+				text += d.editors[i] + ', '
+			}
+			text = text.slice(0, -2);
+			text += '</div>';
+		}
 		if (!d.replace_node) {
 			text += '<P>';
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';

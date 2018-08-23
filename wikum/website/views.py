@@ -429,8 +429,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     v.append(rating.coverage_rating)
                 if rating.quality_rating:
                     v.append(rating.quality_rating)
-                    
-                v1['rating'].append(sum(v)/3.0)
             
             ratings = post.commentrating_set.all()
             if len(ratings) > 0:
@@ -463,7 +461,15 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 v1['summary'] = post.summary
                 v1['extra_summary'] = post.extra_summary
                 
-            
+            if post.summary.strip() != '':
+                hist = post.history_set.filter(action__contains='sum')
+                editors = set()
+                for h in hist:
+                    if h.user:
+                        editors.add(h.user.username)
+                    else:
+                        editors.add('Anonymous')
+                v1['editors'] = list(editors)
             
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
             if c1.count() == 0:
@@ -531,6 +537,8 @@ def summarize_comment(request):
         
         h.comments.add(c)
         recurse_up_post(c)
+        
+        make_vector(c, a)
         
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)

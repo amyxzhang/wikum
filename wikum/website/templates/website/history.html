@@ -47,6 +47,8 @@
 	            		<td>{% trans "Tag Comment" %}</td>
 	            	{% elif h.action == "tag_comments" %}
 	            		<td>{% trans "Tag Comments" %}</td>
+	            	{% elif h.action == "rate_comment" %}
+	            		<td>Evaluate Summary</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}
