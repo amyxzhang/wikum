@@ -210,6 +210,8 @@ def poll_status(request):
 def author_info(request):
     username = request.GET.get('username', None)
     url = request.GET.get('article', None)
+    url = re.sub('%26', '&', url)
+    url = re.sub('%23', '#', url)
     owner = request.GET.get('owner', None)
     
     if not owner or owner == "None":
@@ -228,7 +230,8 @@ def author_info(request):
             author = CommentAuthor.objects.filter(username=username, is_wikipedia=True)
             if author.exists():
                 author = author[0]
-                author_info['registration'] = author.joined_at
+                if author.joined_at:
+                    author_info['registration'] = author.joined_at.strftime('%Y-%m-%d %H:%M')
                 author_info['edit_count'] = author.edit_count
                 author_info['groups'] = author.groups
                 author_info['comment_count'] = a.comment_set.filter(author=author).count()
@@ -236,7 +239,8 @@ def author_info(request):
             author = CommentAuthor.objects.filter(username=username, is_wikipedia=False)
             if author.exists():
                 author = author[0]
-                author_info['registration'] = author.joined_at.strftime('%Y-%m-%d %H:%M')
+                if author.joined_at:
+                    author_info['registration'] = author.joined_at.strftime('%Y-%m-%d %H:%M')
                 author_info['comment_count'] = a.comment_set.filter(author=author).count()
                 
     json_data = json.dumps(author_info)

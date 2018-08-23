@@ -3502,9 +3502,12 @@ function author_hover() {
 					}
 		$.get("/author_info", args, function(data) {
 			$('#author_info').css({'display': 'block', 'top': e.pageY + 'px', 'left': e.pageX + 'px'});
-			var text = '<strong>Registered</strong>: ' + data.registration + '<BR>' +
-						'<strong>Total Comments</strong>: ' + data.comment_count;
+			var text = '<strong>Total Comments</strong>: ' + data.comment_count;
 			
+			
+			if (data.registration) {
+				text += '<BR><strong>Registered</strong>: ' + data.registration;
+			}
 			if (data.edit_count) {
 				text += '<BR><strong>Edit Count</strong>: ' + data.edit_count;
 			}
