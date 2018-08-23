@@ -3501,11 +3501,8 @@ function author_hover() {
 					'owner': owner
 					}
 		$.get("/author_info", args, function(data) {
-			var d_y =  e.pageY + 15;
-			var d_x =  e.pageX - 60;
-			$('#author_info').css({'display': 'block', 'top': d_y + 'px', 'left': d_x + 'px'});
-			var text = '<strong>Total Comments</strong>: ' + data.comment_count;
 			
+			var text = '<strong>Total Comments</strong>: ' + data.comment_count;
 			
 			if (data.registration) {
 				text += '<BR><strong>Registered</strong>: ' + data.registration;
@@ -3519,6 +3516,14 @@ function author_hover() {
 			}
 			
 			$('#author_info').html(text);
+			
+			var d_y =  e.pageY + 15;
+			var d_x =  e.pageX - $('#author_info').width();
+			$('#author_info').css({'display': 'block', 'top': d_y + 'px', 'left': d_x + 'px'});
+			
+			
+			
+			
 		});
 	})
 	.mouseout(function(e) {
