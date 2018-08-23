@@ -167,7 +167,11 @@
                     </li> 
                          
                     <li>
+                    		{% if user.is_authenticated %}
+                    		<a class="section-scroll" href="{{ BASE_URL }}/about#about">{% trans "About" %}</a>
+                    		{% else %}
                         	<a class="section-scroll" href="{{ BASE_URL }}/#about">{% trans "About" %}</a>
+                        	{% endif %}
                     </li>
                     
                     <li>
@@ -181,12 +185,20 @@
                     </li>
                     
                     <li>
+                    		{% if user.is_authenticated %}
+                    		<a class="section-scroll" href="{{ BASE_URL }}/about#download">{% trans "Learn More" %}</a>
+                    		{% else %}
                         	<a class="section-scroll" href="{{ BASE_URL }}/#download">{% trans "Learn More" %}</a>
+                        	{% endif %}
                     </li>
-                    
+                        	
                      
                     <li>
+                    	{% if user.is_authenticated %}
+                    		<a class="section-scroll" href="{{ BASE_URL }}/about#contact">{% trans "Contact" %}</a>
+                    		{% else %}
                         	<a class="section-scroll" href="{{ BASE_URL }}/#contact">{% trans "Contact" %}</a>
+                        	{% endif %}
                     </li>
                     
                     
@@ -194,6 +206,7 @@
                     	<li class="dropdown">
                     		<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="owner">{{ user.username }}</span><span class="caret"></span></a>
                     		<ul class="dropdown-menu">
+                    			<li><a href="{{ BASE_URL }}/">My Wikums</a></li>
                     			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
                     			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
                     			<li><a href="/account/delete">{% trans "Delete Account" %}</a></li>

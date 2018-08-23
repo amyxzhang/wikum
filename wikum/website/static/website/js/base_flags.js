@@ -3083,7 +3083,7 @@ function construct_comment(d) {
 			highlight_authors = $('#highlight_authors').text().split(',');
 
 			if (highlight_authors.indexOf(d.author) > -1) {
-				text += `<span style="background-color: pink;">${d.author}</span></strong>`;
+				text += `<span style="background-color: pink; display: inline;">${d.author}</span></strong>`;
 			} else {
 				text += `${d.author}</strong>`;
 			}
@@ -3149,7 +3149,7 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong><span style="background-color: pink;">${d.author}</span></strong>`;
+			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong><span style="background-color: pink; display: inline;">${d.author}</span></strong>`;
 		} else {
 			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong>${d.author}</strong>`;
 		}
@@ -3171,7 +3171,7 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink;">${d.author}</span></strong>`;
+			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink; display: inline;">${d.author}</span></strong>`;
 		} else {
 			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong>`;
 		}

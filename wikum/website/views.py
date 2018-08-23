@@ -26,10 +26,39 @@ from django.db.models import Q, Avg
 from django.contrib.auth.models import User
 from website.models import CommentRating
 
-@render_to('website/index.html')
+
 def index(request):
     user = request.user
 
+    if user.is_authenticated():
+        sort = request.GET.get('sort', None)
+        
+        if not sort:
+            sort = '-percent_complete'
+        
+        a = Article.objects.filter(owner=user).order_by(sort).order_by('-percent_complete').select_related()
+        resp = {'articles': a,
+                'user': user,
+                'sort': sort
+                }
+        return render(request, 'website/home.html', resp)
+    else:
+        b = Article.objects.all().order_by('-created_at')[0:4]
+        a = Article.objects.all().order_by('-percent_complete')[0:4]
+        resp = {'recent_articles': b,
+                'finished_articles': a,
+                'user': user}
+        
+        if 'task_id' in request.session.keys() and request.session['task_id']:
+            task_id = request.session['task_id']
+            resp['task_id'] = task_id
+
+        return render(request, 'website/index.html', resp)
+
+
+@render_to('website/index.html')
+def about(request):
+    user = request.user
     b = Article.objects.all().order_by('-created_at')[0:4]
     a = Article.objects.all().order_by('-percent_complete')[0:4]
     resp = {'recent_articles': b,
@@ -39,7 +68,6 @@ def index(request):
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']
         resp['task_id'] = task_id
-
     return resp
 
 @render_to('website/explore_public.html')

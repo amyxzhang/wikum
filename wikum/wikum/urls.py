@@ -32,6 +32,8 @@ urlpatterns = [
     url(r'^visualization','website.views.visualization'),
     
     url(r'^explore_public','website.views.explore_public'),
+    url(r'^about','website.views.about'),
+    
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
