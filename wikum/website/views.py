@@ -24,7 +24,7 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from website.models import CommentRating
+from website.models import CommentRating, CommentAuthor
 
 
 def index(request):
@@ -207,6 +207,40 @@ def poll_status(request):
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
     
+def author_info(request):
+    username = request.GET.get('username', None)
+    url = request.GET.get('article', None)
+    owner = request.GET.get('owner', None)
+    
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    
+    num = int(request.GET.get('num', 0))
+    
+    
+    author_info = {}
+    if username and url:
+        a = Article.objects.filter(url=url, owner=owner)[num]
+        print a.url
+        if 'en.wikipedia' in a.url:
+            author = CommentAuthor.objects.filter(username=username, is_wikipedia=True)
+            if author.exists():
+                author = author[0]
+                author_info['registration'] = author.joined_at
+                author_info['edit_count'] = author.edit_count
+                author_info['groups'] = author.groups
+                author_info['comment_count'] = a.comment_set.filter(author=author).count()
+        else:
+            author = CommentAuthor.objects.filter(username=username, is_wikipedia=False)
+            if author.exists():
+                author = author[0]
+                author_info['registration'] = author.joined_at.strftime('%Y-%m-%d %H:%M')
+                author_info['comment_count'] = a.comment_set.filter(author=author).count()
+                
+    json_data = json.dumps(author_info)
+    return HttpResponse(json_data, content_type='application/json')
 
 def import_article(request):       
     data = 'Fail'

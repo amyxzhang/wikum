@@ -31,6 +31,8 @@ urlpatterns = [
     
     url(r'^visualization','website.views.visualization'),
     
+    url(r'^author_info','website.views.author_info'),
+    
     url(r'^explore_public','website.views.explore_public'),
     url(r'^about','website.views.about'),
     

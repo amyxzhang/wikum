@@ -1026,6 +1026,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 				var text = construct_comment(d);
 				$('#comment_' + evt.data.id).empty();
 				$('#comment_' + evt.data.id).html(text);
+				author_hover();
 				
 				d3.select("#node_" + d.id).style("fill",color);
 				$('#comment_' + evt.data.id).addClass("summary");
@@ -1658,6 +1659,7 @@ function delete_comment_summary(id){
 	$('#comment_'+id).removeClass("summary")
 	$('#comment_'+id).empty();
 	$('#comment_'+id).append(construct_comment(d));
+	author_hover();
 }
 
 function post_delete_summary_node(id) {
@@ -3075,17 +3077,17 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (d.replace_node) {
-			text += `<h6 align="right" title="ID: ${d.d_id}">Summary`;
+			text += `<h6 align="right">Summary`;
 		} else {
-			text += `<h6 align="right" title="ID: ${d.d_id}">Summary`;
-			text += ` of Comment by <strong>`;
+			text += `<h6 align="right">Summary`;
+			text += ` of Comment by `;
 
 			highlight_authors = $('#highlight_authors').text().split(',');
 
 			if (highlight_authors.indexOf(d.author) > -1) {
-				text += `<span style="background-color: pink; display: inline;">${d.author}</span></strong>`;
+				text += `<span class="author" style="background-color: pink;">${d.author}</span>`;
 			} else {
-				text += `${d.author}</strong>`;
+				text += `<span class="author">${d.author}</span>`;
 			}
 			if (d.size > 0) {
 				text += ` (${d.size} `;
@@ -3149,9 +3151,9 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong><span style="background-color: pink; display: inline;">${d.author}</span></strong>`;
+			text += `<h6 align="right">(Hidden) Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
 		} else {
-			text += `<h6 align="right" title="ID: ${d.d_id}">(Hidden) Comment by <strong>${d.author}</strong>`;
+			text += `<h6 align="right">(Hidden) Comment by <span class="author">${d.author}</span>`;
 		}
 
 		if (d.size > 0) {
@@ -3171,9 +3173,9 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong><span style="background-color: pink; display: inline;">${d.author}</span></strong>`;
+			text += `<h6 align="right">Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
 		} else {
-			text += `<h6 align="right" title="ID: ${d.d_id}">Comment by <strong>${d.author}</strong>`;
+			text += `<h6 align="right">Comment by <span class="author">${d.author}</span>`;
 		}
 
 		if (d.size > 0) {
@@ -3404,6 +3406,7 @@ function show_text(d) {
 			text = get_subtree_box(text, d, 1);
 		}
 		$('#box').html(text);
+		author_hover();
 	} else if (d && d != 'clicked') {
 		$('#box').html(d.name);
 		clear_box_top();
@@ -3457,6 +3460,7 @@ function show_text(d) {
 			text += construct_comment(objs[i]);
 			text += '</article>';
 			$('#box').append(text);
+			author_hover();
 		};
 	}
 
@@ -3487,6 +3491,37 @@ function unextra_highlight_node(id) {
 			.style("stroke-width", stroke_width);
 		highlight_box(id);
 	}
+}
+
+function author_hover() {
+	$('.author').mouseover(function(e) {
+		var args = {'username': e.currentTarget.innerText, 
+					'article': article_url,
+					'num': num,
+					'owner': owner
+					}
+		$.get("/author_info", args, function(data) {
+			$('#author_info').css({'display': 'block', 'top': e.pageY + 'px', 'left': e.pageX + 'px'});
+			var text = '<strong>Registered</strong>: ' + data.registration + '<BR>' +
+						'<strong>Total Comments</strong>: ' + data.comment_count;
+			
+			if (data.edit_count) {
+				text += '<BR><strong>Edit Count</strong>: ' + data.edit_count;
+			}
+			
+			if (data.groups) {
+				text += '<BR><strong>Groups</strong>: ' + data.groups;
+			}
+			
+			$('#author_info').html(text);
+			console.log(data);
+		});
+	})
+	.mouseout(function(e) {
+		$('#author_info').css({'display': 'none'});
+		$('#author_info').html("");
+		
+	});
 }
 
 function construct_box_top(objs) {

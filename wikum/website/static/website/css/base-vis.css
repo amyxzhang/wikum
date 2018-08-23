@@ -795,3 +795,17 @@ form.modal-content {
 	top: -25px; 
 	font-size: 10px;
 }
+
+.author {
+	display: inline;
+	cursor: pointer;
+}
+
+#author_info {
+	display: none;
+	border: 2px solid #000000;
+	background-color: #FFFFFF;
+	position: absolute;
+	z-index: 10;
+	padding: 5px;
+}
