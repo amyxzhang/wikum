@@ -1328,6 +1328,17 @@ def tags(request):
     a = Article.objects.filter(url=article_url, owner=owner)[num]
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
+    for i in range(len(tags)):
+        tags[i] = "Tag: " + tags[i]
+    
+    authors = set()
+    
+    for c in Comment.objects.filter(article=a).select_related('author'):
+        if c.author and c.author.username:
+            authors.add('User: ' + c.author.username)
+    authors = list(authors)
+    
+    tags = authors + tags
     
     json_data = json.dumps(tags)
     
@@ -1371,21 +1382,39 @@ def viz_data(request):
 
 
     if filter != '':
-        
-        if sort == 'id':
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('id')[start:end]
-        elif sort == 'likes':
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
-        elif sort == "replies":
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')[start:end]
-        elif sort == "long":
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')[start:end]
-        elif sort == "short":
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')[start:end]
-        elif sort == 'newest':
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')[start:end]
-        elif sort == 'oldest':
-            posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end]    
+        if filter.startswith("Tag: "):
+            filter = filter[5:]
+            if sort == 'id':
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('id')[start:end]
+            elif sort == 'likes':
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
+            elif sort == "replies":
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')[start:end]
+            elif sort == "long":
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')[start:end]
+            elif sort == "short":
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')[start:end]
+            elif sort == 'newest':
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')[start:end]
+            elif sort == 'oldest':
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end] 
+        else:
+            filter = filter[6:]
+            if sort == 'id':
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('id')[start:end]
+            elif sort == 'likes':
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')[start:end]
+            elif sort == "replies":
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-num_replies')[start:end]
+            elif sort == "long":
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-text_len')[start:end]
+            elif sort == "short":
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('text_len')[start:end]
+            elif sort == 'newest':
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-created_at')[start:end]
+            elif sort == 'oldest':
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
+               
         
         val['children'] = []
         val['hid'] = []
@@ -1526,6 +1555,7 @@ def subtree_data(request):
     sort = request.GET.get('sort', None)
     next = request.GET.get('next', None)
     owner = request.GET.get('owner', None)
+     
     if not owner or owner == "None":
         owner = None
     else:

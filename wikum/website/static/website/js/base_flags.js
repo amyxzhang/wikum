@@ -2323,7 +2323,7 @@ function error_noty() {
 }
 
 function make_filter() {
-	text = '<div id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag"></div>';
+	text = '<div style="display: inline-block; width: 160px;" id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag or username"></div>';
 
 	$('#filter').html(text);
 
@@ -3194,11 +3194,11 @@ function construct_comment(d) {
 		text += '<BR><div id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
 			if (is_dark(d.tags[i][1])) {
-				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
+				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			} else {
-				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=' + d.tags[i][0] + '">';
+				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #000000; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			}
