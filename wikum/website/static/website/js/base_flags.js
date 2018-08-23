@@ -3501,7 +3501,9 @@ function author_hover() {
 					'owner': owner
 					}
 		$.get("/author_info", args, function(data) {
-			$('#author_info').css({'display': 'block', 'top': e.pageY + 'px', 'left': e.pageX + 'px'});
+			var d_y =  e.pageY + 15;
+			var d_x =  e.pageX - 60;
+			$('#author_info').css({'display': 'block', 'top': d_y + 'px', 'left': d_x + 'px'});
 			var text = '<strong>Total Comments</strong>: ' + data.comment_count;
 			
 			
@@ -3517,7 +3519,6 @@ function author_hover() {
 			}
 			
 			$('#author_info').html(text);
-			console.log(data);
 		});
 	})
 	.mouseout(function(e) {
