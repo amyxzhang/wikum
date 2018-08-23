@@ -2786,6 +2786,38 @@ function update(source) {
 	      	}
       })
       .on("click", function(d) {
+      	
+      	if (d3.event.ctrlKey || d3.event.metaKey) {
+      		clicked = d3.selectAll(".clicked")[0];
+
+			console.log(clicked.length);
+      		clicked_ids = [];
+      		
+      		for (var i=0; i<clicked.length; i++) {
+      			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
+      		}
+      		
+    		if ($('#node_' + d.id).css('stroke-width') == "0px") {
+    			clicked_ids.push(d.id);
+    			highlight_node(d.id);
+    		} else if ( clicked.length == nodes_all.length - 2) {
+    			unhighlight_all();
+    			clicked_ids = [];
+    			clicked_ids.push(d.id);
+    			highlight_node(d.id);
+    		} else {
+    			var index = clicked_ids.indexOf(d.id);
+				if (index !== -1) array.splice(index, 1);
+				unhighlight_node(d.id);
+    		}
+    		
+    		show_text('clicked');
+      		if (highlight_text) {
+	      		$('#box').highlight(highlight_text);
+	      	}
+      		
+      		
+	    } else {
 
       		clicked = d3.selectAll(".clicked")[0];
       		clicked_ids = [];
@@ -2822,6 +2854,7 @@ function update(source) {
 	      	if (highlight_text) {
 	      		$('#box').highlight(highlight_text);
 	      	}
+	      }
 
       })
       .on("mouseover", showdiv)
@@ -3285,10 +3318,19 @@ function highlight_node(id) {
 	}
 }
 
+function unhighlight_node(id) {
+	if (id != 1) {
+		d3.select("#node_" + id)
+			.style("stroke-width", "0px")
+			.attr("class", null);
+	}
+}
+
 function unhighlight_all() {
 	for (var i=1; i<nodes_all.length; i++) {
 		d3.select("#node_" + nodes_all[i].id)
-		.style("stroke-width", "0px");
+		.style("stroke-width", "0px")
+		.attr("class", null);
 	}
 }
 

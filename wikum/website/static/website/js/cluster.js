@@ -34,9 +34,11 @@ svg.append('svg:rect')
   .on('click', function() {
   	clearTimeout(cancelClick);
   	if (isClick) {
-  		d3.selectAll( '.clicked').classed( "clicked", false);
-  		highlight_all();
-  		show_text(nodes_all[0]);
+  		if (!(d3.event.ctrlKey || d3.event.metaKey)) {
+	  		d3.selectAll( '.clicked').classed( "clicked", false);
+	  		highlight_all();
+	  		show_text(nodes_all[0]);
+	  	}
   	} else {
   		show_text('clicked');
   	}
@@ -96,10 +98,12 @@ svg.append('svg:rect')
 
 	       // remove selection frame
 	    	svg.selectAll( "rect.selection").remove();
-
-	  		d3.selectAll( '.clicked').classed( "clicked", false);
-	  		highlight_all();
-	  		show_text(nodes_all[0]);
+	    	
+	    	if (!(d3.event.ctrlKey || d3.event.metaKey)) {
+		  		d3.selectAll( '.clicked').classed( "clicked", false);
+		  		highlight_all();
+		  		show_text(nodes_all[0]);
+		  	}
 		 
 	    });
   })
@@ -136,27 +140,30 @@ svg.append('svg:rect')
 
         s.attr( d);
 
-		// deselect all temporary selected state objects
-		d3.selectAll( '.clicked').classed( "clicked", false);
-        unhighlight_all();
-
-        d3.selectAll( 'path').each( function(state_data, i) {
-        	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
-	            if(
-	                !d3.select( this).classed( "selected") &&
-	                    // inner circle inside selection frame
-	                state_data.x>=d.y && state_data.x<=d.y+d.height &&
-	                state_data.y>=d.x && state_data.y<=d.x+d.width
-	            ) {
-	            	if (!state_data.article) {
-						d3.select(this)
-						.style("stroke","#000000")
-						.style("stroke-width", stroke_width)
-						.attr("class", "clicked");
-					}
-	            }
-	        }
-        });
+		if (!(d3.event.ctrlKey || d3.event.metaKey)) {
+			// deselect all temporary selected state objects
+			d3.selectAll( '.clicked').classed( "clicked", false);
+	        unhighlight_all();
+	     }
+	
+	        d3.selectAll( 'path').each( function(state_data, i) {
+	        	if (this.className.baseVal.indexOf('ghostCircle') == -1) {
+		            if(
+		                !d3.select( this).classed( "selected") &&
+		                    // inner circle inside selection frame
+		                state_data.x>=d.y && state_data.x<=d.y+d.height &&
+		                state_data.y>=d.x && state_data.y<=d.x+d.width
+		            ) {
+		            	if (!state_data.article) {
+							d3.select(this)
+							.style("stroke","#000000")
+							.style("stroke-width", stroke_width)
+							.attr("class", "clicked");
+						}
+		            }
+		        }
+	        });
+	   
 
         }
         })
