@@ -250,15 +250,15 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			neutral = d.rating_flag.neutral;
 		}
 		if (neutral == 1) {
-      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with bias');
+      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> Inserted Bias (major)');
       	} else if (neutral == 2) {
-      		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with bias');
+      		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> Inserted Bias (minor)');
       	} else if (neutral == 3) {
       		$('#neutral_score').html('None');
       	} else if (neutral == 4) {
-      		$('#neutral_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt to be neutral');
+      		$('#neutral_score').html('<img src="/static/website/img/silver.png" width=18> Neutral POV (good)');
       	} else if (neutral == 5) {
-      		$('#neutral_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of neutrality');
+      		$('#neutral_score').html('<img src="/static/website/img/gold.png" width=11> Neutral POV (great)');
       	}
 		if (!d.rating_flag.coverage) {
 			coverage = 3;
@@ -266,15 +266,15 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			coverage = d.rating_flag.coverage;
 		}
 		if (coverage == 1) {
-      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with misrepresentation or inaccuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> Incomplete or misrepresentative (major)');
       	} else if (coverage == 2) {
-      		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with misrepresentation or inaccuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> Incomplete or misrepresentative (minor)');
       	} else if (coverage == 3) {
       		$('#coverage_score').html('None');
       	} else if (coverage == 4) {
-      		$('#coverage_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at representativeness and accuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/silver.png" width=18> Coverage (good)');
       	} else if (coverage == 5) {
-      		$('#coverage_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of representativeness and accuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/gold.png" width=11> Complete coverage (great)');
       	}
 		if (!d.rating_flag.quality) {
 			quality = 3;
@@ -282,15 +282,15 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			quality = d.rating_flag.quality;
 		}
 		if (quality == 1) {
-      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with writing quality');
+      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> Writing quality (poor)');
       	} else if (quality == 2) {
-      		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with writing quality');
+      		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> Writing quality (needs touchup)');
       	} else if (quality == 3) {
       		$('#quality_score').html('None');
       	} else if (quality == 4) {
-      		$('#quality_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at a well-written summary');
+      		$('#quality_score').html('<img src="/static/website/img/silver.png" width=18> Writing quality (good)');
       	} else if (quality == 5) {
-      		$('#quality_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of a well-written summary');
+      		$('#quality_score').html('<img src="/static/website/img/gold.png" width=11> Writing quality (great)');
       	}
 	}
 
@@ -301,15 +301,15 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
       step: 1,
       slide: function( event, ui ) {
         if (ui.value == 1) {
-      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with bias');
+      		$('#neutral_score').html('<img src="/static/website/img/alarm.png" width=15> Inserted Bias (major)');
       	} else if (ui.value == 2) {
-      		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with bias');
+      		$('#neutral_score').html('<img src="/static/website/img/warning.png" width=15> Inserted Bias (minor)');
       	} else if (ui.value == 3) {
       		$('#neutral_score').html('None');
       	} else if (ui.value == 4) {
-      		$('#neutral_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt to be neutral');
+      		$('#neutral_score').html('<img src="/static/website/img/silver.png" width=18> Neutral POV (good)');
       	} else if (ui.value == 5) {
-      		$('#neutral_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of neutrality');
+      		$('#neutral_score').html('<img src="/static/website/img/gold.png" width=11> Neutral POV (great)');
       	}
       }
     });
@@ -324,15 +324,15 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
       step: 1,
       slide: function( event, ui ) {
       	if (ui.value == 1) {
-      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with misrepresentation or inaccuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/alarm.png" width=15> Incomplete (major)');
       	} else if (ui.value == 2) {
-      		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with misrepresentation or inaccuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/warning.png" width=15> Incomplete (minor)');
       	} else if (ui.value == 3) {
       		$('#coverage_score').html('None');
       	} else if (ui.value == 4) {
-      		$('#coverage_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at representativeness and accuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/silver.png" width=18> Coverage (good)');
       	} else if (ui.value == 5) {
-      		$('#coverage_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of representativeness and accuracy');
+      		$('#coverage_score').html('<img src="/static/website/img/gold.png" width=11> Complete coverage (great)');
       	}
       }
     });
@@ -347,15 +347,15 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
       step: 1,
       slide: function( event, ui ) {
         if (ui.value == 1) {
-      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> This summary has a major problem with writing quality');
+      		$('#quality_score').html('<img src="/static/website/img/alarm.png" width=15> Writing quality (poor)');
       	} else if (ui.value == 2) {
-      		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> This summary has a minor problem with writing quality');
+      		$('#quality_score').html('<img src="/static/website/img/warning.png" width=15> Writing quality (needs touchup)');
       	} else if (ui.value == 3) {
       		$('#quality_score').html('None');
       	} else if (ui.value == 4) {
-      		$('#quality_score').html('<img src="/static/website/img/silver.png" width=18> This summary is a good attempt at a well-written summary');
+      		$('#quality_score').html('<img src="/static/website/img/silver.png" width=18> Writing quality (good)');
       	} else if (ui.value == 5) {
-      		$('#quality_score').html('<img src="/static/website/img/gold.png" width=11> This summary is a great example of a well-written summary');
+      		$('#quality_score').html('<img src="/static/website/img/gold.png" width=11> Writing quality (great)');
       	}
       }
     });
@@ -3104,13 +3104,13 @@ function construct_comment(d) {
 				found = true;
 			}
 			if (d.rating_flag.neutral == 1) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a major problem with bias</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> Inserted Bias (major)</div>`;
 	      	} else if (d.rating_flag.neutral == 2) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with bias</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> Inserted Bias (minor)</div>`;
 	      	} else if (d.rating_flag.neutral == 4) {
-	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> This summary is a good attempt to be neutral</div>`;
+	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> Neutral POV (good)</div>`;
 	      	} else if (d.rating_flag.neutral == 5) {
-	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9  style="margin-left: 2px;"> This summary is a great example of neutrality</div>`;
+	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9  style="margin-left: 2px;"> Neutral POV (great)</div>`;
 	      	}
 	      
 	      	if (found && d.rating_flag.coverage != 3) {
@@ -3119,26 +3119,26 @@ function construct_comment(d) {
 	      		found = true;
 	      	}
 	      	if (d.rating_flag.coverage == 1) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a major problem with misrepresentation or inaccuracy</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> Incomplete (major) </div>`;
 	      	} else if (d.rating_flag.coverage == 2) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with misrepresentation or inaccuracy</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> Incomplete (minor)</div>`;
 	      	} else if (d.rating_flag.coverage == 4) {
-	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> This summary is a good attempt at representativeness and accuracy</div>`;
+	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> Coverage (good) </div>`;
 	      	} else if (d.rating_flag.coverage == 5) {
-	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9  style="margin-left: 2px;"> This summary is a great example of representativeness and accuracy</div>`;
+	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9  style="margin-left: 2px;"> Complete coverage (great)</div>`;
 	      	}
 	      	
 	      	if (found && d.rating_flag.quality != 3) {
 	      		text += `<br>`;
 	      	}
 	      	if (d.rating_flag.quality == 1) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> This summary has a major problem with writing quality</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/alarm.png" width=13> Writing quality (poor) </div>`;
 	      	} else if (d.rating_flag.quality == 2) {
-	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> This summary has a minor problem with writing quality</div>`;
+	      		text += `<div class="red-flag"><img src="/static/website/img/warning.png" width=13> Writing quality (needs touchup) </div>`;
 	      	} else if (d.rating_flag.quality == 4) {
-	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> This summary is a good attempt at a well-written summary</div>`;
+	      		text += `<div class="green-flag"><img src="/static/website/img/silver.png" width=15> Writing quality (good)</div>`;
 	      	} else if (d.rating_flag.quality == 5) {
-	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9 style="margin-left: 2px;"> This summary is a great example of a well-written summary</div>`;
+	      		text += `<div class="green-flag"><img src="/static/website/img/gold.png" width=9 style="margin-left: 2px;"> Writing quality (great)</div>`;
 	      	}
 		}
 		

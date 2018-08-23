@@ -37,6 +37,11 @@ def index(request):
             sort = '-percent_complete'
         
         a = Article.objects.filter(owner=user).order_by(sort).order_by('-percent_complete').select_related()
+        
+        for art in a:
+            art.url = re.sub('#', '%23', art.url)
+            art.url = re.sub('&', '%26', art.url)
+        
         resp = {'articles': a,
                 'user': user,
                 'sort': sort
@@ -45,6 +50,15 @@ def index(request):
     else:
         b = Article.objects.all().order_by('-created_at')[0:4]
         a = Article.objects.all().order_by('-percent_complete')[0:4]
+        
+        for art in a:
+            art.url = re.sub('#', '%23', art.url)
+            art.url = re.sub('&', '%26', art.url)
+            
+        for art in b:
+            art.url = re.sub('#', '%23', art.url)
+            art.url = re.sub('&', '%26', art.url)
+        
         resp = {'recent_articles': b,
                 'finished_articles': a,
                 'user': user}
@@ -64,6 +78,14 @@ def about(request):
     resp = {'recent_articles': b,
             'finished_articles': a,
             'user': user}
+    
+    for art in a:
+        art.url = re.sub('#', '%23', art.url)
+        art.url = re.sub('&', '%26', art.url)
+        
+    for art in b:
+        art.url = re.sub('#', '%23', art.url)
+        art.url = re.sub('&', '%26', art.url)
     
     if 'task_id' in request.session.keys() and request.session['task_id']:
         task_id = request.session['task_id']

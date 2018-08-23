@@ -122,27 +122,27 @@ def create_vectors(article):
     
     
 def make_vector(comment, article):
-    return
-#     if not article.vectorizer:
-#         create_vectors(article)
-#     
-#     vectorizer = pickle.loads(article.vectorizer)
-#     
-#     summary = comment.summary
-#     
-#     if summary != '':
-#     
-#         summary = re.sub(r'\[\[.*?\]\]', ' ', summary)
-#         summary = re.sub(r'\[quote\]', ' ', summary)
-#         summary = re.sub(r'\[endquote\]', ' ', summary)
-#         
-#         vector = vectorizer.transform([summary])[0]
-#         
-#     else:
-#         vector = vectorizer.transform([comment.text])[0]
-#     
-#     comment.vector = pickle.dumps(vector)
-#     comment.save()
+
+    if not article.vectorizer:
+        create_vectors(article)
+     
+    vectorizer = pickle.loads(article.vectorizer)
+     
+    summary = comment.summary
+     
+    if summary != '':
+     
+        summary = re.sub(r'\[\[.*?\]\]', ' ', summary)
+        summary = re.sub(r'\[quote\]', ' ', summary)
+        summary = re.sub(r'\[endquote\]', ' ', summary)
+         
+        vector = vectorizer.transform([summary])[0]
+         
+    else:
+        vector = vectorizer.transform([comment.text])[0]
+     
+    comment.vector = pickle.dumps(vector)
+    comment.save()
     
     
 def word_count(s):
