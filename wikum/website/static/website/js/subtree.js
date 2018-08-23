@@ -212,6 +212,8 @@ if (!filter) {
 
 var owner = getParameterByName('owner');
 
+var comment_id = null;
+
   make_dropdown();
   
     make_filter();

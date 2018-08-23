@@ -208,6 +208,8 @@ if (!filter) {
 
 var owner = getParameterByName('owner');
 
+var comment_id = null;
+
   var article_id = $("#article_id").text();
   
   $('#menu-view').children().eq(2).css({'background-color': '#42dca3'});

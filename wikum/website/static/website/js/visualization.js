@@ -203,6 +203,8 @@ if (!filter) {
 	filter = '';
 }
 
+var comment_id = null;
+
   make_dropdown();
 
   make_filter();
