@@ -241,6 +241,28 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
   show_text(nodes_all[0]);
 
   make_progress_bar();
+  
+  
+	count = 0;
+	for (var i=0;i<nodes_all.length;i++) {
+		if (nodes_all[i].depth == 1) {
+			count += 1;
+		}
+	}
+	var text = '';
+	if (next > 0) {
+		var prev = next - 1;
+	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	   text += '<a class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
+	
+	}
+	if (count == 15) {
+		var next_sub = next + 1;
+	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	  text += ' <a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
+	 
+	}
+	 $('#paginate').html(text);
 });
 
 function make_dropdown() {
@@ -276,26 +298,6 @@ function make_dropdown() {
   $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
 
 
-	count = 0;
-	for (var i=0;i<nodes_all.length;i++) {
-		if (nodes_all[i].depth == 1) {
-			count += 1;
-		}
-	}
-	var text = '';
-	if (next > 0) {
-		var prev = next - 1;
-	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
-	   text += '<a class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
-	
-	}
-	if (count == 15) {
-		var next_sub = next + 1;
-	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
-	  text += ' <a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
-	 
-	}
-	 $('#paginate').html(text);
 
 	
 }

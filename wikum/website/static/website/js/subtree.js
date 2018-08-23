@@ -265,6 +265,11 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 	  show_text(d);
 
 	  make_progress_bar();
+	  
+	  var next_sub = next + 1;
+	  var url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	  var text = '<a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Get another subtree &gt;&gt;</a>';
+	  $('#paginate').html(text);
 
   } else {
   	$('#box').text('There are no more subtrees to summarize!');
@@ -306,8 +311,4 @@ function make_dropdown() {
   $('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'newest'));
   $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
   
-  var next_sub = next + 1;
-  var url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
-  var text = '<a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Get another subtree &gt;&gt;</a>';
-  $('#paginate').html(text);
 }

@@ -254,6 +254,10 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num 
   show_text(nodes_all[0]);
   
   	  make_progress_bar();
+  	  
+  	    var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&size=';
+  var text = '<a class="btn btn-xs btn-primary" href="' +url + size + '">Get another cluster &gt;&gt;</a>';
+  $('#paginate').html(text);
 
 });
 
@@ -290,8 +294,5 @@ function make_dropdown() {
   $('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'newest'));
   $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
   
-	
-  var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&size=';
-  var text = '<a class="btn btn-xs btn-primary" href="' +url + size + '">Get another cluster &gt;&gt;</a>';
-  $('#paginate').html(text);
+
 }
