@@ -612,7 +612,10 @@ textarea {
 	font-size: 12px;
 }
 
-.highlight { background-color: yellow }
+.highlight { 
+	background-color: yellow;
+	display: inline;
+}
 
 
 a.btn-edit {

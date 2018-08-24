@@ -2330,6 +2330,7 @@ function make_filter() {
 
 	if (filter != '') {
 		$('#inputFilter').val(filter);
+		$('#inputFilter').css('background-color','yellow');
 	}
 	
 	var tag_suggestions = new Bloodhound({
@@ -2535,9 +2536,11 @@ function make_highlight() {
 		  	$('#box').highlight(highlight_text, { wordsOnly: true });
 
 			$('#count_result').text(count);
+			$('#inputHighlight').css('background-color','yellow');
 
 		} else {
 			$('#count_result').text('');
+			$('#inputHighlight').css('background-color','transparent');
 		}
 	});
 }
