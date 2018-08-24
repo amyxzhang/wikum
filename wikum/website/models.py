@@ -68,6 +68,9 @@ class Permissions(models.Model):
     article = models.ForeignKey('Article')
     user = models.ForeignKey(User)
     access_level = models.IntegerField(choices=ACCESS_MODES, default=EDIT_ACCESS)
+    
+    class Meta:
+        unique_together = ('article', 'user',)
 
 class History(models.Model):
     id = models.AutoField(primary_key=True)

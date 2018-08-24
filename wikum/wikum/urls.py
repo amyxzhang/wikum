@@ -36,6 +36,10 @@ urlpatterns = [
     url(r'^explore_public','website.views.explore_public'),
     url(r'^about','website.views.about'),
     
+    url(r'^add_user_perm','website.views.add_user_perm'),
+    url(r'^add_global_perm','website.views.add_global_perm'),
+    url(r'^users','website.views.users'),
+    
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),

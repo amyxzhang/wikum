@@ -24,7 +24,7 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from website.models import CommentRating, CommentAuthor
+from website.models import CommentRating, CommentAuthor, Permissions
 
 
 def index(request):
@@ -144,9 +144,23 @@ def visualization_flag(request):
     url = request.GET['article']
     num = int(request.GET.get('num', 0))
     article = Article.objects.filter(url=url, owner=owner)[num]
+    permission = Permissions.objects.filter(user=user, article=article)
+    if permission.exists():
+        permission = permission[0]
+    else:
+        permission = None
+        
+    if owner == user:
+        all_perms = Permissions.objects.filter(article=article).select_related()
+        print all_perms
+    else:
+        all_perms = []
+        
     return {'article': article,
             'user': user,
-            'source': article.source}
+            'source': article.source,
+            'permission': permission,
+            'all_perms': all_perms}
 
 
 @render_to('website/visualization.html')
@@ -1409,6 +1423,81 @@ def tags(request):
     tags = authors + tags
     
     json_data = json.dumps(tags)
+    
+    return HttpResponse(json_data, content_type='application/json')
+
+def add_global_perm(request):
+    try:
+        user = request.user
+        article_url = request.POST['article']
+        owner = request.POST.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
+        num = int(request.POST.get('num', 0))
+        
+        a = Article.objects.filter(url=article_url, owner=owner)[num]
+        
+        if user == owner:
+            access = request.POST.get('access', None).strip()
+           
+            if access == "Publicly Editable":
+                a.access_mode = 1
+            elif access == "Publicly Viewable":
+                a.access_mode = 3
+            elif access == "Private Access":
+                a.access_mode = 4
+            a.save()
+        
+        return JsonResponse({})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
+def add_user_perm(request):
+    try:
+        data = {'created': None}
+        user = request.user
+        article_url = request.POST['article']
+        owner = request.POST.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
+        num = int(request.POST.get('num', 0))
+        
+        a = Article.objects.filter(url=article_url, owner=owner)[num]
+        
+        if user == owner:
+            access = request.POST.get('access', None).strip()
+            access_user = request.POST.get('username', None)
+            delete_perm = request.POST.get('delete_perm', False)
+           
+            a_user = User.objects.get(username=access_user)
+            
+            if delete_perm == 'true':
+                Permissions.objects.filter(article=a, user=a_user).delete()
+            elif access:
+                if access == "Edit Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 1
+                    p.save()
+                    data['created'] = created
+                elif access == "View Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 3
+                    p.save()
+                    data['created'] = created
+        
+        return JsonResponse(data)
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
+def users(request):
+    users = list(User.objects.all().values_list('username', flat=True))
+    json_data = json.dumps(users)
     
     return HttpResponse(json_data, content_type='application/json')
 

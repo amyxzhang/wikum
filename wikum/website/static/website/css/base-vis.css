@@ -495,7 +495,7 @@ textarea {
 }
 
 .modal-body {
-    min-height: 460px;
+    min-height: 160px;
 }
 
 
@@ -808,4 +808,8 @@ form.modal-content {
 	position: absolute;
 	z-index: 10;
 	padding: 5px;
+}
+
+.ui-resizable {
+	background-color: #ffffff;
 }

@@ -1373,8 +1373,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 					var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 					
-					if ($.trim($('#access_mode').text()) == "Edit Access") {
-						
+					if ($('#access_mode').attr('data-access') == "1") {
 						text += `<footer>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
 							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
@@ -1493,7 +1492,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 					var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
 					
-					if ($.trim($('#access_mode').text()) == "Edit Access") {
+					if ($('#access_mode').attr('data-access') == "1") {
 						text += `<footer>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
@@ -2360,6 +2359,152 @@ function make_filter() {
 	});
 }
 
+function add_global_perm(access) {
+	var csrf = $('#csrf').text();
+	var data = {
+		csrfmiddlewaretoken: csrf,
+		access: access,
+		article: article_url,
+		num: num,
+		owner: owner,
+		};
+
+	$.ajax({
+			type: 'POST',
+			url: '/add_global_perm',
+			data: data,
+			success: function(res) {
+				success_noty();
+				$('#access_mode').text(access + ' | Share');
+				if (access == "Publicly Editable") {
+					$('#access_mode').attr('data-access', '1');
+				} else if (access == "Publicly Viewable") {
+					$('#access_mode').attr('data-access', '3');
+				} else if (access == "Private") {
+					$('#access_mode').attr('data-access', '4');
+				}
+			},
+			error: function() {
+				error_noty();
+			}
+	});
+	
+}
+
+function add_user_perm(username, access, delete_perm, delete_row) {
+	var csrf = $('#csrf').text();
+	var data = {
+		csrfmiddlewaretoken: csrf,
+		username: username,
+		access: access,
+		article: article_url,
+		num: num,
+		owner: owner,
+		delete_perm: delete_perm,
+		};
+
+	$.ajax({
+			type: 'POST',
+			url: '/add_user_perm',
+			data: data,
+			success: function(res) {
+				success_noty();
+				if (delete_perm) {
+					delete_row.parent().parent().remove();
+				}
+				if (res.created) {
+					var text = '<tr><td>' + username + '</td><td>';
+					text += '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+					text += access + '<span class="caret"></span></button>';
+					text += '<ul class="dropdown-menu permission-menu"><li><a href="#">Edit Access</a></li>';
+					text += '<li><a href="#">View Access</a></li></ul></div></td>';
+					text += '<td><button type="button" class="btn btn-default btn-xs btn-success update_user_perm">Update</button>';
+					text += '</td><td><button type="button" class="btn btn-default btn-xs btn-danger delete_user_perm">Delete</button></td></tr>';
+					
+					$('#user_perm_table > tbody:last-child').after(text);
+					
+					$(".permission-menu li a").click(function(){
+						$(this).parent().parent().prev().html($(this).text() + ' <span class="caret"></span>');
+				   });
+				   
+				   $('.update_user_perm').click(function(){
+				   		var username = $(this).parent().prev().prev().first().html();
+				   		var access = $(this).parent().prev().children().first().children().first().text();
+				   		add_user_perm(username, access, false, null);
+				   });
+				   
+				   $('.delete_user_perm').click(function(){
+				   		var username = $(this).parent().prev().prev().prev().first().html();
+				   		var access = $(this).parent().prev().prev().children().first().children().first().text();
+				   		add_user_perm(username, access, true, $(this));
+				   });
+				   
+				}
+			},
+			error: function() {
+				error_noty();
+			}
+	});
+}
+
+function make_username_typeahead() {
+	text = '<div style="display: inline-block; width: 200px;" id="user_typeahead"><input required class="typeahead form-control input-md" id="userFilter" placeholder="Type in a Wikum username"></div>';
+
+	$('#username_typeahead').html(text);
+	
+	var user_suggestions = new Bloodhound({
+	  datumTokenizer: Bloodhound.tokenizers.whitespace,
+	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  prefetch: {
+	  	url:'/users',
+	  	cache: false,
+	  }
+	});
+
+
+	$('#user_typeahead .typeahead').typeahead({
+		hint: true,
+		highlight: true,
+		minLength: 1
+	}, {
+	  name: 'users',
+	  source: user_suggestions
+	});
+
+	$('#userFilter').keypress(function(e) {
+	    if(e.which == 13) {
+		    filter = $('#userFilter').val();
+	    }
+	});
+	
+	  $("#global_perm li a").click(function(){
+			$(this).parent().parent().prev().html($(this).text() + ' <span class="caret"></span>');
+			add_global_perm($(this).text());
+	   });
+	
+		$(".permission-menu li a").click(function(){
+			$(this).parent().parent().prev().html($(this).text() + ' <span class="caret"></span>');
+	   });
+	   
+	   $('.update_user_perm').click(function(){
+	   		var username = $(this).parent().prev().prev().first().html();
+	   		var access = $(this).parent().prev().children().first().children().first().text();
+	   		add_user_perm(username, access, false, null);
+	   });
+	   
+	   $('.delete_user_perm').click(function(){
+	   		var username = $(this).parent().prev().prev().prev().first().html();
+	   		var access = $(this).parent().prev().prev().children().first().children().first().text();
+	   		add_user_perm(username, access, true, $(this));
+	   });
+	   
+	   $('#add_user_perm').click(function() {
+	   		var username = $('#userFilter').val();
+	   		var access = $('#add_user_perm').prev().children().first().text();
+	   		add_user_perm(username, access, false, null);
+	   });
+}
+
 function make_highlight() {
 	text = '<input type="text" class="form-control input-sm" id="inputHighlight" placeholder="Highlight text" style="display: inline; width: 125px; margin-right: 10px;">';
 	text += '<span id="count_result"></span>';
@@ -3222,14 +3367,14 @@ function construct_comment(d) {
 		if (!d.replace_node) {
 			text += '<P>';
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
-			if ($.trim($('#access_mode').text()) == "Edit Access") {
+			if ($('#access_mode').attr('data-access') == "1") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
 				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a> | ';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate Summary</a></P>';
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
-			if ($.trim($('#access_mode').text()) == "Edit Access") {
+			if ($('#access_mode').attr('data-access') == "1") {
 				
 				text += `<footer>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
@@ -3241,7 +3386,7 @@ function construct_comment(d) {
 		}
 	}
 
-	if ($.trim($('#access_mode').text()) == "Edit Access") {
+	if ($('#access_mode').attr('data-access') == "1") {
 		 if (!summary && d.name.length > 300) {
 			text += '<footer>';
 	
@@ -3535,7 +3680,7 @@ function author_hover() {
 
 function construct_box_top(objs) {
 	
-	if ($.trim($('#access_mode').text()) != "Edit Access") {
+	if ($('#access_mode').attr('data-access') != "1") {
 		return;
 	}
 

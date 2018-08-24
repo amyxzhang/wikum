@@ -206,27 +206,46 @@
                    <li>
                    {% if user == article.owner %}
                    
-						<div class="btn btn-xs btn-primary" style="cursor: hand; position: relative; top: 7px;" id="access_mode">
+                   
+                   
+                   <div data-target="#permission_modal_box" data-toggle="modal" data-backdrop="false" class="btn btn-xs btn-primary" style="cursor: hand; position: relative; top: 8px;" id="access_mode" data-access=1>
 							{% if article.access_mode == 1 %}
-								Edit Access
+								Publicly Editable
 							{% elif article.access_mode == 2 %}
-								Comment Access
+								Publicly Commentable
 							{% elif article.access_mode == 3 %}
-								View Access
+								Publicly Viewable
 							{% elif article.access_mode == 4 %}
-								Private Access
+								Private
 							{% endif %}
+							 | Share <span class="caret"></span>
 						</div>
 					{% else %}
-						<div class="btn btn-xs btn-primary" style="cursor: default;  position: relative; top: 7px;" id="access_mode">
+						<div class="btn btn-xs" style="cursor: default;  position: relative; top: 8px; border: 1px solid #7d8a93; color: #7d8a93;" id="access_mode" data-access=
 							{% if article.access_mode == 1 %}
-								Edit Access
+								1>Public Edit Access
 							{% elif article.access_mode == 2 %}
-								Comment Access
+								{% if permission and permission.access_level == 1 %}
+									1>Publicly Commentable | Private Edit Access
+								{% else %}
+									2>Public Comment Access
+								{% endif %}
 							{% elif article.access_mode == 3 %}
-								View Access
+								{% if permission and permission.access_level == 1 %}
+									1>Publicly Viewable | Private Edit Access
+								{% elif permission and permission.access_level == 2 %}
+									2>Publicly Viewable | Private Comment Access
+								{% else %}
+									3>Public View Access
+								{% endif %}
 							{% elif article.access_mode == 4 %}
-								Private Access
+								{% if permission and permission.access_level == 1 %}
+									1>Private Edit Access
+								{% elif permission and permission.access_level == 2 %}
+									2>Private Comment Access
+								{% elif permission and permission.access_level == 3 %}
+									3>Private View Access
+								{% endif %}
 							{% endif %}
 						</div>
 					{% endif %}

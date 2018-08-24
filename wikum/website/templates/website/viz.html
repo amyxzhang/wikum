@@ -125,6 +125,108 @@
   </div>
 </div>
 
+<div id="permission_modal_box" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+	<!-- Modal content-->
+	<div class="modal-content">
+	  <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h4 class="modal-title">Edit Permissions</h4>
+	  </div>
+	  <div class="modal-body">
+		<strong>Global Permissions: </strong>
+		
+		<div class="btn-group">
+		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    {% if article.access_mode == 1 %}
+		    	Publicly Editable
+		    {% elif article.access_mode == 2 %}
+		    	Publicly Commentable
+		    {% elif article.access_mode == 1 %}
+		    	Publicly Viewable
+		    {% else %}
+		    	Private
+		    {% endif %}
+		    
+		     <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu" id="global_perm">
+		    <li><a href="#">Publicly Editable</a></li>
+		   <!-- <li><a href="#">Public Comment Access</a></li> -->
+		    <li><a href="#">Publicly Viewable</a></li>
+		    <li><a href="#">Private Access</a></li>
+		  </ul>
+		</div>
+		
+		<BR>
+			<BR>
+				<strong>User Permissions:</strong> <BR>
+					
+					<div id="username_typeahead" style="display: inline-block;"></div>
+				
+					<div class="btn-group">
+					  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					   		Set Permission Level
+					     <span class="caret"></span>
+					  </button>
+					  <ul class="dropdown-menu permission-menu">
+					    <li><a href="#">Edit Access</a></li>
+					   <!-- <li><a href="#">Public Comment Access</a></li> -->
+					    <li><a href="#">View Access</a></li>
+					  </ul>
+					</div>
+					
+					<button id="add_user_perm" type="button" class="btn btn-default btn-success">Add</button>
+					<BR>
+					<BR>
+						
+					Existing User Permissions:
+					<table id="user_perm_table">
+						<tr><td></td><td></td><td></td><td></td></tr>
+						{% for perm in all_perms %}
+							<tr>
+								<td>{{ perm.user.username }}</td>
+								<td>
+									<div class="btn-group">
+										  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										   		{% if perm.access_level == 1 %}
+										   			Edit Access
+										   		{% elif perm.access_level == 3 %}
+										   			View Access	
+										   		{% endif %}
+										     <span class="caret"></span>
+										  </button>
+										  <ul class="dropdown-menu permission-menu">
+										    <li><a href="#">Edit Access</a></li>
+										   <!-- <li><a href="#">Public Comment Access</a></li> -->
+										    <li><a href="#">View Access</a></li>
+										  </ul>
+										</div>
+								</td>
+								<td>
+									<button type="button" class="btn btn-default btn-xs btn-success update_user_perm">Update</button>
+								</td>
+								<td>
+									<button type="button" class="btn btn-default btn-xs btn-danger delete_user_perm">Delete</button>
+								</td>
+							</tr>
+						
+						{% endfor %}
+					</table>
+					
+					
+					
+		
+	  </div>
+	  <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">{% trans "Close" %}</button>
+	  </div>
+	</div>
+
+  </div>
+</div>
+
 <div id="evaluate_summary_modal_box" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
