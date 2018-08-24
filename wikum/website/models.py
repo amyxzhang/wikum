@@ -52,6 +52,23 @@ class Article(models.Model):
     def __unicode__(self):
         return self.title
 
+class Permissions(models.Model):
+    EDIT_ACCESS = 1
+    COMMENT_ACCESS = 2
+    VIEW_ACCESS = 3
+    PRIVATE_ACCESS = 4
+    ACCESS_MODES = (
+        (EDIT_ACCESS, 'Edit'),
+        (COMMENT_ACCESS, 'Comment'),
+        (VIEW_ACCESS, 'View'),
+        (PRIVATE_ACCESS, 'Private'),
+    )
+    
+    id = models.AutoField(primary_key=True)
+    article = models.ForeignKey('Article')
+    user = models.ForeignKey(User)
+    access_level = models.IntegerField(choices=ACCESS_MODES, default=EDIT_ACCESS)
+
 class History(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
