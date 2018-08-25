@@ -163,10 +163,10 @@
 								  				<span class="updated" title="{{ a.last_updated |date:'Y-m-d H:i' }}">
 								  					{% if sort == "last_updated" or sort == "-last_updated" %}
 								  						<strong>
-								  							{{ a.last_updated | localtime | date:'Y-m-d H:i' }}
+								  							{{ a.last_updated |date:'Y-m-d H:i' }}
 								  						</strong>
 								  					{% else %}
-								  						{{ a.last_updated |localtime | date:'Y-m-d H:i' }}
+								  						{{ a.last_updated |date:'Y-m-d H:i' }}
 								  					{% endif %}
 								  				</span>
 								  				<span class="source" title="{{a.source.source_name}}">

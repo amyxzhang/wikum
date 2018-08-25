@@ -84,7 +84,7 @@
 									  						{{ a.percent_complete }}%
 								  				</span>
 								  				<span class="updated">
-								  					{{ a.last_updated |localtime | date:'Y-m-d H:i' }}
+								  					{{ a.last_updated |date:'Y-m-d H:i' }}
 								  				</span>
 								  				<span class="source">
 								  						{{a.source.source_name}}
@@ -176,7 +176,7 @@
 									  						{{ a.percent_complete }}%
 								  				</span>
 								  				<span class="updated">
-								  					{{ a.last_updated |localtime | date:'Y-m-d H:i' }}
+								  					{{ a.last_updated |date:'Y-m-d H:i' }}
 								  				</span>
 								  				<span class="source">
 								  						{{a.source.source_name}}
