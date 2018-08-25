@@ -700,6 +700,7 @@ def summarize_selected(request):
             
         for c in comments:
             h.comments.add(c)
+            h.comments.add(new_comment)
             
                 
         for node in delete_nodes:
@@ -823,6 +824,8 @@ def summarize_comments(request):
             
             d_id = new_comment.id
             
+            h.comments.add(new_comment)
+            
             recurse_down_num_subtree(new_comment)
             
         else:
@@ -848,6 +851,7 @@ def summarize_comments(request):
             delete_node(node)
         
         h.comments.add(c)
+        
         recurse_up_post(c)
         
         
