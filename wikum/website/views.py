@@ -1769,7 +1769,7 @@ def subtree_data(request):
         next = int(next)
     
     
-    if comment_id:
+    if comment_id and comment_id != 'null':
         posts = Comment.objects.filter(id=comment_id)
     else:
         if sort == 'id':
