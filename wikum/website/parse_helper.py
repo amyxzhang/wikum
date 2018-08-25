@@ -208,7 +208,6 @@ def quoteBoxHook(parser_env, namespace, body):
         print quote_head
         if quote_head == 'quote':
             quote = i[1].strip()
-            print 'here'
             return '<p style="background-color: #ffffff;">%s</p>' % quote
 
 def highlightHook(parser_env, namespace, body):
@@ -244,6 +243,7 @@ registerInternalTemplateHook('re', userHook)
 registerInternalTemplateHook('color', colorHook)
 registerInternalTemplateHook('cot', cotHook)
 registerInternalTemplateHook('tq', quoteHook)
+registerInternalTemplateHook('tq2', quoteHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)

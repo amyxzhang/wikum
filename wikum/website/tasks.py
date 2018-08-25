@@ -110,7 +110,8 @@ def generate_tags(article_id):
         for row_item, comment in zip(sorted_df.iterrows(), comments):
             index, row = row_item
             if row['suggested_tags']:
-                comment.suggested_tags.add(row['suggested_tags'])
+                if not comment.tags.filter(id=row['suggested_tags']).exists():
+                    comment.suggested_tags.add(row['suggested_tags'])
 
     except Exception, e:
         print e
