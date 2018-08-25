@@ -2334,13 +2334,13 @@ function make_stats() {
 			success: function(res) {
 				var text = '<span style="background-color: rgb(66, 220, 163); display: block; color: #333; font-weight:bold;">Top Users:</span>';
 				for (var i=0;i<res.authors.length;i++) {
-					text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=User: ' + res.authors[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.authors[i][0] + ': ' + res.authors[i][1] + '</span></a>';
+					text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner+ '&sort=' + sort + '&filter=User: ' + res.authors[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.authors[i][0] + ': ' + res.authors[i][1] + '</span></a>';
 				}
 				$('#user_stats').html(text);
 				
 				var text = '<span style="background-color: rgb(66, 220, 163); display: block; color: #333; font-weight:bold;">Top Tags:</span>';
 				for (var i=0;i<res.tags.length;i++) {
-					text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=Tag: ' + res.tags[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.tags[i][0] + ': ' + res.tags[i][1] + '</span></a>';
+					text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner+ '&sort=' + sort + '&filter=Tag: ' + res.tags[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.tags[i][0] + ': ' + res.tags[i][1] + '</span></a>';
 				}
 				$('#tag_stats').html(text);
 			}
@@ -2380,7 +2380,7 @@ function make_filter() {
 	$('#inputFilter').keypress(function(e) {
 	    if(e.which == 13) {
 		    filter = $('#inputFilter').val();
-	        window.location.href = '/visualization_flags?article=' + article_url + '&num=' + num + '&filter=' + filter + '&owner=' + owner;
+	        window.location.href = '/visualization_flags?article=' + article_url + '&num=' + num+ '&sort=' + sort + '&filter=' + filter + '&owner=' + owner;
 	    }
 	});
 }
