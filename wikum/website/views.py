@@ -1454,6 +1454,46 @@ def tags(request):
     
     return HttpResponse(json_data, content_type='application/json')
     
+def get_stats(request):
+    article_url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    num = int(request.GET.get('num', 0))
+    
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    
+    authors = {}
+    tags = {}
+    
+    for c in Comment.objects.filter(article=a).select_related('author'):
+        if c.author and c.author.username:
+            if c.author.username not in authors:
+                authors[c.author.username] = 0
+            authors[c.author.username] += 1
+        for t in c.tags.all():
+            if t.text not in tags:
+                tags[t.text] = 0
+            tags[t.text] += 1
+            
+    author_list = sorted(authors.items(), key=lambda x: x[1], reverse=True)
+    if len(author_list) > 5:
+        author_list = author_list[:5]
+        
+    tag_list = sorted(tags.items(), key=lambda x: x[1], reverse=True)
+    if len(tag_list) > 5:
+        tag_list = tag_list[:5]
+    
+    data = {'authors': author_list,
+            'tags': tag_list}
+    
+    json_data = json.dumps(data)
+    
+    return HttpResponse(json_data, content_type='application/json')
+ 
+    
 def tags_and_authors(request):
     article_url = request.GET['article']
     owner = request.GET.get('owner', None)

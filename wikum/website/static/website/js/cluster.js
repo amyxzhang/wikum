@@ -234,6 +234,8 @@ var comment_id = null;
   	}
   });
   
+    make_stats();
+  
  make_dropdown();
   
   make_filter();

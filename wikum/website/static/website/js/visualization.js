@@ -205,6 +205,8 @@ if (!filter) {
 
 var comment_id = null;
 
+  make_stats();
+
   make_dropdown();
 
   make_filter();
@@ -253,13 +255,13 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
 	var text = '';
 	if (next > 0) {
 		var prev = next - 1;
-	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort +'&filter=' + filter +  '&next=';
 	   text += '<a class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
 	
 	}
 	if (count == 15) {
 		var next_sub = next + 1;
-	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&next=';
+	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort +'&filter=' + filter + '&next=';
 	  text += ' <a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
 	 
 	}
