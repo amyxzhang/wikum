@@ -290,59 +290,62 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
         text = '\n'.join(comment['text_blocks'])
 
         author = comment.get('author')
-        if author:
-            comment_author = import_wiki_authors([author], article)[0]
-        else:
-            comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
+        
+        if not (not author and text.startswith('{{') and text.endswith('}}') and len(text) < 50 and not comment['comments']):
+            if author:
+                comment_author = import_wiki_authors([author], article)[0]
+            else:
+                comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=True)
+    
+            comments = Comment.objects.filter(article=article, author=comment_author,text=text)
+            if comments.count() > 0:
+                comment_wikum = comments[0]
+            else:
+                time = None
+                timestamp = comment.get('time_stamp')
+                if timestamp:
+                    formats = ['%H:%M, %d %B %Y (%Z)', '%H:%M, %d %b %Y (%Z)', '%H:%M %b %d, %Y (%Z)']
+                    for date_format in formats:
+                        try:
+                            time = datetime.datetime.strptime(timestamp, date_format)
+                        except ValueError:
+                            pass
+                if not time:
+                    if text.strip().endswith('(UTC)'):
+                        temp_str = text.split(':')
+                        date_str = temp_str[-2][-2:] + ':' + temp_str[-1]
+                        try:
+                            time = datetime.datetime.strptime(date_str, ' %H:%M, %d %B %Y (%Z)')
+                        except ValueError:
+                            pass
+                cosigners = [sign['author'] for sign in comment['cosigners']]
+                comment_cosigners = import_wiki_authors(cosigners, article)
+    
+                comment_wikum = Comment.objects.create(article = article,
+                                                       author = comment_author,
+                                                       text = text,
+                                                       reply_to_disqus = reply_to,
+                                                       text_len = len(text),
+                                                       )
+                if time:
+                    comment_wikum.created_at = time
+    
+                comment_wikum.save()
+                comment_wikum.disqus_id = comment_wikum.id
+                comment_wikum.save()
+    
+                for signer in comment_cosigners:
+                    comment_wikum.cosigners.add(signer)
 
-        comments = Comment.objects.filter(article=article, author=comment_author,text=text)
-        if comments.count() > 0:
-            comment_wikum = comments[0]
-        else:
-            time = None
-            timestamp = comment.get('time_stamp')
-            if timestamp:
-                formats = ['%H:%M, %d %B %Y (%Z)', '%H:%M, %d %b %Y (%Z)', '%H:%M %b %d, %Y (%Z)']
-                for date_format in formats:
-                    try:
-                        time = datetime.datetime.strptime(timestamp, date_format)
-                    except ValueError:
-                        pass
-            if not time:
-                if text.strip().endswith('(UTC)'):
-                    temp_str = text.split(')')
-                    date_str = temp_str[-2]
-                    try:
-                        time = datetime.datetime.strptime(date_str, ' %H:%M, %d %B %Y (%Z')
-                    except ValueError:
-                        pass
-            cosigners = [sign['author'] for sign in comment['cosigners']]
-            comment_cosigners = import_wiki_authors(cosigners, article)
-
-            comment_wikum = Comment.objects.create(article = article,
-                                                   author = comment_author,
-                                                   text = text,
-                                                   reply_to_disqus = reply_to,
-                                                   text_len = len(text),
-                                                   )
-            if time:
-                comment_wikum.created_at = time
-
-            comment_wikum.save()
-            comment_wikum.disqus_id = comment_wikum.id
-            comment_wikum.save()
-
-            for signer in comment_cosigners:
-                comment_wikum.cosigners.add(signer)
-
-        total_count += 1
+            total_count += 1
 
         if current_task and total_count % 3 == 0:
             current_task.update_state(state='PROGRESS',
                                       meta={'count': total_count})
 
         replies = comment['comments']
-        total_count = import_wiki_talk_posts(replies, article, comment_wikum.disqus_id, current_task, total_count)
+        if replies:
+            total_count = import_wiki_talk_posts(replies, article, comment_wikum.disqus_id, current_task, total_count)
 
     return total_count
 
