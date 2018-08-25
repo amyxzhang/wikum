@@ -217,9 +217,9 @@ var comment_id = null;
   $('#menu-view').children().first().css({'background-color': '#42dca3'});
   $('#menu-view').children().first().addClass('disabled-menu');
   
-  $('#menu-view').children().first().children().first().on('click', function() {
-	    return false;
-	});
+  // $('#menu-view').children().first().children().first().on('click', function() {
+	    // return false;
+	// });
 	
  $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
  $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
