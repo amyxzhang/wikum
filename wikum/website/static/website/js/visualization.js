@@ -215,7 +215,7 @@ var comment_id = null;
   
   
   $('#menu-view').children().first().css({'background-color': '#42dca3'});
-  $('#menu-view').children().first().addClass('disabled-menu');
+//  $('#menu-view').children().first().addClass('disabled-menu');
   
   // $('#menu-view').children().first().children().first().on('click', function() {
 	    // return false;
