@@ -1668,10 +1668,15 @@ def cluster_data(request):
     posts = a.comment_set.filter(hidden=False, reply_to_disqus=None)
     
     num_posts = posts.count()
-
-    clust_size = int(round(((float(cluster_size) * (90 - 60)) / 100.0) + 60.0))
-
-    clustval = int(round(float(num_posts)/100.0)) * clust_size
+    
+    min_num_clusters = 2.0
+    max_num_clusters = float(num_posts)/2.0
+    if max_num_clusters > 100:
+        max_num_clusters = 100
+    
+    ratio = 1.0 - (float(cluster_size)/100.0)
+    
+    num_clusters = int(int(round(float(max_num_clusters - min_num_clusters) * ratio)) + min_num_clusters)
     
     posts_vectors = []
     for post in posts:
@@ -1681,8 +1686,7 @@ def cluster_data(request):
             make_vector(post, a)
             posts_vectors.append(pickle.loads(post.vector).toarray()[0])
     
-    num_clusters = num_posts - clustval
-     
+    
     km = MiniBatchKMeans(n_clusters=num_clusters)
      
     km.fit(posts_vectors)
