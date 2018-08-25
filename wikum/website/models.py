@@ -31,6 +31,7 @@ class Article(models.Model):
     title = models.TextField()
     url = models.URLField()
     source = models.ForeignKey('Source')
+    last_updated = models.DateTimeField(null=True)
 
     num = models.IntegerField(default=0)
     highlight_authors = models.TextField()

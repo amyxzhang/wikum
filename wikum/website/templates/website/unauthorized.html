@@ -1,0 +1,27 @@
+{% extends 'website/base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block styles %}
+	<link rel="stylesheet" href={% static "website/css/accounts.css" %}>
+{% endblock %}
+
+{% block content %}
+
+     <section id="authorization" class="container content-section text-center" style="padding-top: 150px;">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+            	
+				    <p>You do not have access to see this page. Please contact the owner of the Wikum to get permission.</p>
+
+	           </div>
+	         </div>
+	      </section>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{% endblock %}

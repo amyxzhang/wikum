@@ -31,12 +31,7 @@ def index(request):
     user = request.user
 
     if user.is_authenticated():
-        sort = request.GET.get('sort', None)
-        
-        if not sort:
-            sort = '-percent_complete'
-        
-        a = Article.objects.filter(owner=user).order_by(sort).order_by('-percent_complete').select_related()
+        a = Article.objects.filter(owner=user).order_by('-last_updated').select_related()
         for art in a:
             art.url = re.sub('#', '%23', art.url)
             art.url = re.sub('&', '%26', art.url)
@@ -49,14 +44,16 @@ def index(request):
                 i.article.url = re.sub('&', '%26', i.article.url)
                 b.add(i.article)
         
+        b = list(b)
+        b = sorted(b, key=lambda x: x.last_updated, reverse=True)
+        
         resp = {'articles': a,
-                'shared_articles': list(b),
-                'user': user,
-                'sort': sort
+                'shared_articles': b,
+                'user': user
                 }
         return render(request, 'website/home.html', resp)
     else:
-        b = Article.objects.all().order_by('-created_at')[0:4]
+        b = Article.objects.all().order_by('-last_updated')[0:4]
         a = Article.objects.all().order_by('-percent_complete')[0:4]
         
         for art in a:
@@ -613,6 +610,7 @@ def summarize_comment(request):
         
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
+        a.last_updated = datetime.datetime.now()
         
         a.save()
         
@@ -716,6 +714,7 @@ def summarize_selected(request):
         
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
+        a.last_updated = datetime.datetime.now()
         
         a.save()
         
@@ -856,6 +855,7 @@ def summarize_comments(request):
         
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
+        a.last_updated = datetime.datetime.now()
         
         a.save()
         
@@ -953,7 +953,10 @@ def tag_comments(request):
                                    article=a,
                                    action='tag_comments',
                                    explanation='Add tag %s to comments' % t.text)
-            
+        
+        a.last_updated = datetime.datetime.now()
+        a.save()
+        
         for com in affected_comms:
             recurse_up_post(com)
             
@@ -998,6 +1001,7 @@ def hide_comments(request):
             
             a.comment_num = a.comment_num - affected
             a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
         
             a.save()
             
@@ -1021,6 +1025,8 @@ def move_comments(request):
             old_parent = Comment.objects.get(disqus_id=comment.reply_to_disqus)
         
         article = comment.article
+        article.last_updated = datetime.datetime.now()
+        article.save()
         
         new_parent_comment = Comment.objects.get(id=new_parent_id)
         
@@ -1123,6 +1129,9 @@ def tag_comment(request):
             
             h.comments.add(comment)
             
+            a.last_updated = datetime.datetime.now()
+            a.save()
+            
             recurse_up_post(comment)
                 
         tag_count = a.comment_set.filter(tags__isnull=False).count()
@@ -1168,6 +1177,10 @@ def rate_summary(request):
                 
                 h.comments.add(comment)
                 
+                art = comment.article
+                art.last_updated = datetime.datetime.now()
+                art.save()
+                
                 recurse_up_post(comment)
            
                 return JsonResponse({'success': True});
@@ -1197,6 +1210,8 @@ def delete_comment_summary(request):
             h.comments.add(comment)
             
             article.percent_complete = count_article(article)
+            article.last_updated = datetime.datetime.now()
+            article.save()
             
         return JsonResponse({})
 
@@ -1357,6 +1372,7 @@ def hide_comment(request):
             
             a.comment_num = a.comment_num - 1
             a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
         
             a.save()
             
@@ -1406,6 +1422,7 @@ def hide_replies(request):
             
             a.comment_num = a.comment_num - affected
             a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
         
             a.save()
             

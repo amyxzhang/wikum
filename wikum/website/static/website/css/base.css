@@ -62,7 +62,7 @@ footer p {
 
 .source {
 	position: relative;
-	width: 120px;
+	width: 100px;
 	display: inline-block;
 	margin-right: 20px;
     display: inline-block;
@@ -71,12 +71,23 @@ footer p {
     text-overflow: ellipsis;
 }
 
+.updated {
+    position: relative;
+    width: 120px;
+    display: inline-block;
+    margin-right: 20px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .owner {
 	position: relative;
-	width: 90px;
+	width: 80px;
 	display: inline-block;
 	margin-right: 20px;
-	top: -6px;
+	top: -9px;
 }
 
 .blurb {
@@ -112,7 +123,7 @@ progress::-ms-fill { background: var(--bar-background); }
 .ellipsis {
     display: inline-block;
     white-space: nowrap;
-    width: 50%;
+    width: 45%;
     overflow: hidden;
     text-overflow: ellipsis;
 }

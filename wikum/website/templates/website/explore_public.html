@@ -59,6 +59,19 @@
 								  						{% endif %}
 								  					
 								  				</span>
+								  				<span class="updated">
+								  					{% if sort == "last_updated" %}
+								  						<strong>
+								  							<a href="/explore_public?sort=-last_updated">Updated</a>
+								  						</strong>
+								  					{% elif sort == "-last_updated" %}
+								  						<strong>
+								  							<a href="/explore_public?sort=last_updated"> Updated  </a>
+								  						</strong>
+								  					{% else %}
+								  						<a href="/explore_public?sort=last_updated">Updated </a>
+								  					{% endif %}
+								  				</span>
 								  				<span class="source">
 								  					{% if sort == "source" %}
 								  						<strong>
@@ -137,7 +150,7 @@
 							  			
 							  				<div class="blurb">
 							  					
-							  					<span class="percent">
+							  					<span class="percent" title="{{ a.percent_complete }}%">
 							  						
 							  						{% if sort == "percent_complete" or sort == "-percent_complete" %}
 									  					<strong>
@@ -147,7 +160,16 @@
 									  						{{ a.percent_complete }}%
 									  				{% endif %}
 								  				</span>
-								  				<span class="source">
+								  				<span class="updated" title="{{ a.last_updated |date:'Y-m-d H:i' }}">
+								  					{% if sort == "last_updated" or sort == "-last_updated" %}
+								  						<strong>
+								  							{{ a.last_updated |date:'Y-m-d H:i' }}
+								  						</strong>
+								  					{% else %}
+								  						{{ a.last_updated |date:'Y-m-d H:i' }}
+								  					{% endif %}
+								  				</span>
+								  				<span class="source" title="{{a.source.source_name}}">
 								  					{% if sort == "source" or sort == "-source" %}
 								  						<strong>
 								  							{{a.source.source_name}}
@@ -156,7 +178,7 @@
 								  						{{a.source.source_name}}
 								  					{% endif %}
 								  				</span>
-								  				<span class="owner">
+								  				<span class="owner" title="{{a.owner}}">
 								  					{% if sort == "owner" or sort == "-owner" %}
 								  						<strong>
 								  							{% if a.owner == user %}
@@ -173,7 +195,7 @@
 								  							{% endif %}
 								  					{% endif %}
 								  				</span>
-												<span class="ellipsis">
+												<span class="ellipsis" title="{{ a.title }}">
 													{{ a.title }}
 												</span>
 												<span class="right-side">
