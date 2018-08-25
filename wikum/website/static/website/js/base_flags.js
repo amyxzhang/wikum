@@ -655,12 +655,16 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 				var text = 'Suggested tags: ';
 				for (var i=0; i<res.suggested_tags.length; i++) {
 					if (is_dark(res.suggested_tags[i].color)) {
-						text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag + '</button> ';
+						text += '<button class="btn btn-xs suggest_tag" style="color: #FFFFFF; background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag + '</button> ';
 					} else {
-						text += '<button class="btn btn-xs" style="background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag + '</button> ';
+						text += '<button class="btn btn-xs suggest_tag" style="background-color: #' + res.suggested_tags[i].color + '">' + res.suggested_tags[i].tag + '</button> ';
 					}			
 				}
 				$('#suggested_tags').html(text);
+				$('.suggest_tag').click(function() {
+					var text = $(this).text();
+					$('#tag-form').val(text);
+				}
 			}
 		}
 	});

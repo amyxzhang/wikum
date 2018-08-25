@@ -929,7 +929,7 @@ def tag_comments(request):
         tag = request.POST['tag']
         
         
-        t, created = Tag.objects.get_or_create(article=a, text=tag.lower())
+        t, created = Tag.objects.get_or_create(article=a, text=tag.lower().strip())
         if created:
             r = lambda: random.randint(0, 255)
             color = '%02X%02X%02X' % (r(), r(), r())
