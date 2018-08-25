@@ -355,7 +355,7 @@ rect.selection {
 	.summarize_comment_comment a {
 		mix-blend-mode: multiply;
 		font-weight: 500;
-		color: var(--link-color);
+		/*color: var(--link-color);*/
 	}
 
 	.comment_box footer {
