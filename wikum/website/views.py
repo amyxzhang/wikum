@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
@@ -37,12 +37,20 @@ def index(request):
             sort = '-percent_complete'
         
         a = Article.objects.filter(owner=user).order_by(sort).order_by('-percent_complete').select_related()
-        
         for art in a:
             art.url = re.sub('#', '%23', art.url)
             art.url = re.sub('&', '%26', art.url)
+            
+        b = set()
+        p = Permissions.objects.filter(user=user).select_related('article')
+        for i in p:
+            if i.article not in a:
+                i.article.url = re.sub('#', '%23', i.article.url)
+                i.article.url = re.sub('&', '%26', i.article.url)
+                b.add(i.article)
         
         resp = {'articles': a,
+                'shared_articles': list(b),
                 'user': user,
                 'sort': sort
                 }
@@ -117,6 +125,10 @@ def explore_public(request):
     return resp
 
 
+@render_to('website/unauthorized.html')
+def unauthorized(request):
+    return {}
+
 @render_to('website/visualization_upvote.html')
 def visualization_upvote(request):
     user = request.user
@@ -133,7 +145,6 @@ def visualization_upvote(request):
             'source': article.source}
 
 
-@render_to('website/visualization_flags.html')
 def visualization_flag(request):
     user = request.user
     owner = request.GET.get('owner', None)
@@ -141,6 +152,7 @@ def visualization_flag(request):
         owner = None
     else:
         owner = User.objects.get(username=owner)
+        
     url = request.GET['article']
     num = int(request.GET.get('num', 0))
     article = Article.objects.filter(url=url, owner=owner)[num]
@@ -151,16 +163,23 @@ def visualization_flag(request):
         if permission.exists():
             permission = permission[0]
         
-    if owner != None and user.is_authenticated() and owner == user:
-        all_perms = Permissions.objects.filter(article=article).select_related()
-    else:
-        all_perms = []
+    if article.access_mode < 4 or (user.is_authenticated() and permission and permission.access_level < 4) or user == owner:
+
+        if owner != None and user.is_authenticated() and owner == user:
+            all_perms = Permissions.objects.filter(article=article).select_related()
+        else:
+            all_perms = []
+            
+        context = {'article': article,
+                'user': user,
+                'source': article.source,
+                'permission': permission,
+                'all_perms': all_perms}
         
-    return {'article': article,
-            'user': user,
-            'source': article.source,
-            'permission': permission,
-            'all_perms': all_perms}
+        return render(request, 'website/visualization_flags.html', context)
+    else:
+        response = redirect('/unauthorized')
+        return response
 
 
 @render_to('website/visualization.html')

@@ -40,6 +40,8 @@ urlpatterns = [
     url(r'^add_global_perm','website.views.add_global_perm'),
     url(r'^users','website.views.users'),
     
+    url(r'^unauthorized','website.views.unauthorized'),
+    
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
