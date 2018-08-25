@@ -2328,16 +2328,9 @@ function error_noty() {
 }
 
 function make_stats() {
-	var data = {
-		article: article_url,
-		num: num,
-		owner: owner,
-		};
-
 	$.ajax({
 			type: 'GET',
-			url: '/get_stats',
-			data: data,
+			url: '/get_stats?article=' + article_url + '&num=' + num + '&owner=' +owner,
 			success: function(res) {
 				var text = '<span style="background-color: rgb(66, 220, 163); display: block; color: #333; font-weight:bold;">Top Users:</span>';
 				for (var i=0;i<res.authors.length;i++) {
