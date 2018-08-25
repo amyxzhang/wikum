@@ -69,6 +69,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.wikum.csail.mit.edu']
 
+#database connection max age
+CONN_MAX_AGE = 0
 
 # Application definition
 
