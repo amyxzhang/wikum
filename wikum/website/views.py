@@ -1433,8 +1433,24 @@ def hide_replies(request):
         print e
         return HttpResponseBadRequest()
 
-    
 def tags(request):
+    article_url = request.GET['article']
+    owner = request.GET.get('owner', None)
+    if not owner or owner == "None":
+        owner = None
+    else:
+        owner = User.objects.get(username=owner)
+    num = int(request.GET.get('num', 0))
+    
+    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    
+    tags = list(a.tag_set.all().values_list('text', flat=True))
+    
+    json_data = json.dumps(tags)
+    
+    return HttpResponse(json_data, content_type='application/json')
+    
+def tags_and_authors(request):
     article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":

@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^subtree_data','website.views.subtree_data'),
     url(r'^subtree','website.views.subtree'),
     url(r'^viz_data','website.views.viz_data'),
+    url(r'^tags_and_authors','website.views.tags_and_authors'),
     url(r'^tags','website.views.tags'),
     url(r'^cluster_data','website.views.cluster_data'),
     url(r'^cluster','website.views.cluster'),

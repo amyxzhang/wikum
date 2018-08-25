@@ -2337,7 +2337,7 @@ function make_filter() {
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  prefetch: {
-	  	url:'/tags?article=' + article_url + '&num=' + num + '&owner=' + owner,
+	  	url:'/tags_and_authors?article=' + article_url + '&num=' + num + '&owner=' + owner,
 	  	cache: false,
 	  }
 	});
