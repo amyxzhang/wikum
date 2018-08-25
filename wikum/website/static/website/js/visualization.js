@@ -291,7 +291,7 @@ function make_dropdown() {
 	    return false;
 	});
 	
-  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=';
+  var url = "/visualization_flags?article=" + article_url + '&num=' + num+ '&filter=' + filter + '&owner=' + owner + '&sort=';
   $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
   $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
   $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
