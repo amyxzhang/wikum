@@ -205,6 +205,11 @@ if (!filter) {
 	filter = '';
 }
 
+var colorby = getParameterByName('colorby');
+if (!colorby) {
+	colorby = 'summarized';
+}
+
 
 var owner = getParameterByName('owner');
 
@@ -235,6 +240,8 @@ var comment_id = null;
   });
   
     make_stats();
+    
+    make_color();
   
  make_dropdown();
   
@@ -258,7 +265,7 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num 
   
   	  make_progress_bar();
   	  
-  	    var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&size=';
+  	    var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&colorby=' + colorby  + '&sort=' + sort + '&size=';
   var text = '<a class="btn btn-xs btn-primary" href="' +url + size + '">Get another cluster &gt;&gt;</a>';
   $('#paginate').html(text);
 
@@ -288,7 +295,7 @@ function make_dropdown() {
 	    return false;
 	});
 	
-  var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&size=' + size + '&sort=';
+  var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&size=' + size + '&colorby=' + colorby + '&sort=';
   $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
   $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
   $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
@@ -296,6 +303,26 @@ function make_dropdown() {
   $('#menu-sort').children().eq(4).children().first().attr('href', String(url + 'short'));
   $('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'newest'));
   $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
-  
+
+}
+
+function make_color() {
+	var color_val = 0;
+	if (colorby == "user") {
+		 color_val = 1;
+	}
+	
+	$('#menu-color').children().eq(color_val).css({'background-color': '#42dca3'});
+		 $('#menu-color').children().eq(color_val).addClass('disabled-menu');
+
+  		$('#menu-color').children().eq(color_val).children().first().on('click', function() {
+	    	return false;
+		});
+	
+	$('#menu-color').children().eq(0).children().first().attr('href', 
+		`/cluster?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
+ 
+ 	$('#menu-color').children().eq(1).children().first().attr('href', 
+		`/cluster?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
 
 }

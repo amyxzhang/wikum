@@ -3418,7 +3418,7 @@ function construct_comment(d) {
 		 if (!summary && d.name.length > 300) {
 			text += '<footer>';
 	
-			if (!d.children && !d.replace_node) {
+			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
@@ -3436,7 +3436,7 @@ function construct_comment(d) {
 		} else if (!d.replace_node) {
 			text += '<footer>';
 	
-			if (!d.children) {
+			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 			} else {
@@ -3883,6 +3883,24 @@ function showdiv(d) {
 			}
 
 			set_expand_position(d);
+		} else {
+			text = '';
+			if (d.hid.length > 0) {
+					text += '<a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' hidden </a>';
+				}
+			if (d.hashidden) {
+					text += '<a onclick="hide_hidden(' + d.id + ')"> Rehide hidden </a>';
+				}
+
+			if (text != '') {
+				$('#expand').html(text);
+				$('#expand').show();
+			} else {
+				$('#expand').html("");
+				$('#expand').hide();
+			}
+
+			set_expand_position(d);
 		}
 
 		if (d3.select(this).classed("clicked")) {
@@ -3989,20 +4007,34 @@ function hide_hidden(id) {
 	$($('#expand').children()[$('#expand').children().length-1]).attr("onclick","show_hidden("+id+")");
 	$($('#expand').children()[$('#expand').children().length-1]).text('Show ' + d.hidconstant + ' hidden');
 	
-
-	for (var i=0; i<d.children.length; i++) {
-		
-		if (d.children[i].hiddennode) {
-			d.children[i].hiddennode = false;
-			d.hid.push(d.children[i]);
-		}	
-		else {
-			newchildren.push(d.children[i]);
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			
+			if (d.children[i].hiddennode) {
+				d.children[i].hiddennode = false;
+				d.hid.push(d.children[i]);
+			}	
+			else {
+				newchildren.push(d.children[i]);
+			}
 		}
+		d.children = newchildren;
+
+	} else if (d._children) {
+		for (var i=0; i<d._children.length; i++) {
+			
+			if (d._children[i].hiddennode) {
+				d._children[i].hiddennode = false;
+				d.hid.push(d._children[i]);
+			}	
+			else {
+				newchildren.push(d._children[i]);
+			}
+		}
+		d._children = newchildren;
 	}
 
-	d.children = newchildren;
-
+	
 	if (d.hashidden) {
 		d.hashidden = false;
 		update(d);
@@ -4085,33 +4117,67 @@ gradientorange.append("svg:stop")
     .attr("stop-color", "#ffffff")
     .attr("stop-opacity", 1);
 
+
+var stringToColour = function(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  var colour = '#';
+  for (var i = 0; i < 3; i++) {
+    var value = (hash >> (i * 8)) & 0xFF;
+    colour += ('00' + value.toString(16)).substr(-2);
+  }
+  return colour;
+}
+
 function color(d) {
-
-	if (d.parent_node) {
-		return "#cccccc";
-	}
-
-	if (d.replace_node) {
-		return "#ee7600";
-	}
-
-	if (d.article) {
-		return "#ffffff";
-	}
-
-	if (d.collapsed) {
-		if (d.summary) {
-			return "url(#gradientorange)";
+	if (colorby == "summarized") {
+		if (d.parent_node) {
+			return "#cccccc";
 		}
-		
+	
+		if (d.replace_node) {
+			return "#ee7600";
+		}
+	
+		if (d.article) {
+			return "#ffffff";
+		}
+	
+		if (d.collapsed) {
+			if (d.summary) {
+				return "url(#gradientorange)";
+			}
+			
+			if (d.hiddennode) {
+				return "#990000";
+			}
+			return "#f8c899";
+		}
+	
+		if (d.summary) {
+			return "url(#gradientblue)";
+		}
+	} else if (colorby == "user") {
+		if (d.parent_node) {
+			return "#cccccc";
+		}
+		if (d.article) {
+			return '#ffffff';
+		}
+		if (d.replace_node) {
+			return "#ee7600";
+		}
 		if (d.hiddennode) {
 			return "#990000";
 		}
-		return "#f8c899";
-	}
-
-	if (d.summary) {
-		return "url(#gradientblue)";
+			
+		if (d.author && d.author != "Anonymous") {
+			return stringToColour(d.author);
+		} else {
+			return '#cccccc';
+		}
 	}
 
 
