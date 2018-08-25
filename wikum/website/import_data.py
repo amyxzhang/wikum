@@ -308,6 +308,14 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
                         time = datetime.datetime.strptime(timestamp, date_format)
                     except ValueError:
                         pass
+            if not time:
+                if text.strip().endswith('(UTC)'):
+                    temp_str = text.split(')')
+                    date_str = temp_str[-2]
+                    try:
+                        time = datetime.datetime.strptime(date_str, ' %H:%M, %d %B %Y (%Z')
+                    except ValueError:
+                        pass
             cosigners = [sign['author'] for sign in comment['cosigners']]
             comment_cosigners = import_wiki_authors(cosigners, article)
 
