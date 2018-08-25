@@ -2211,7 +2211,7 @@ function copy_summary_node(id) {
 	if (html_str.indexOf("This summary will be removed at this location to be promoted.") == -1) {
 		delete_summary_nodes.push(d.d_id);
 		delete_summary_node_ids.push(d.id);
-		html_str = '<strong style="color:red;">This summary will be deleted.</strong> <a class="btn-xs btn-warning" onclick="undo_delete_summary(' + d.d_id + ',' + id + ');">Undo</a><BR>' + html_str;
+		html_str = '<strong style="color:red;">This summary will be removed at this location to be promoted.</strong> <a class="btn-xs btn-warning" onclick="undo_delete_summary(' + d.d_id + ',' + id + ');">Undo</a><BR>' + html_str;
 	}
 
 	$('#sum_box_' + id).html(html_str);
