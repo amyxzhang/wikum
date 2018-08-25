@@ -287,7 +287,7 @@ def import_wiki_authors(authors, article):
 
 def import_wiki_talk_posts(comments, article, reply_to, current_task, total_count):
     for comment in comments:
-        text = '\n'.join(comment['text_blocks'])
+        text = '\n'.join(comment['text_blocks']).strip()
 
         author = comment.get('author')
         
