@@ -848,8 +848,15 @@ def summarize_comments(request):
         
         
         for node in delete_nodes:
+            new_h = History.objects.create(user=req_user, 
+                           article=a,
+                           action='delete_node',
+                           from_str=node,
+                           to_str=c.id,
+                           explanation='promote summary')
             delete_node(node)
-        
+            
+      
         h.comments.add(c)
         
         recurse_up_post(c)

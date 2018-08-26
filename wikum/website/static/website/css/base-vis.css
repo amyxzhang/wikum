@@ -507,7 +507,7 @@ textarea {
 }
 
 #tag_comment_box {
-    height: 300px;
+    max-height: 300px;
     overflow-y: scroll;
     border: 1px #000000 solid;
 }
