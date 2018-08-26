@@ -1211,7 +1211,7 @@ def delete_comment_summary(request):
             recurse_up_post(comment)
             h = History.objects.create(user=req_user,
                                        article=article,
-                                       action='delete_comment_summary',
+                                       action='delete_comment_sum',
                                        explanation=explain)
             h.comments.add(comment)
             
@@ -1350,23 +1350,25 @@ def hide_comment(request):
         
         comment = Comment.objects.get(id=id)
         if comment.is_replacement:
-        
+            action = 'delete_sum'
             recurse_down_post(comment)
             
             delete_node(comment.id)
             
             affected = False
-        elif not comment.hidden:
-            comment.hidden = True
-            comment.save()
-            affected = True
         else:
-            affected = False
+            action = 'hide_comment'
+            if not comment.hidden:
+                comment.hidden = True
+                comment.save()
+                affected = True
+            else:
+                affected = False
         
         if affected:
             h = History.objects.create(user=req_user, 
                                        article=a,
-                                       action='hide_comment',
+                                       action=action,
                                        explanation=explain)
             c = Comment.objects.get(id=id)
             h.comments.add(c)

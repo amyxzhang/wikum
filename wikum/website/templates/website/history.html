@@ -49,6 +49,10 @@
 	            		<td>{% trans "Tag Comments" %}</td>
 	            	{% elif h.action == "rate_comment" %}
 	            		<td>Evaluate Summary</td>
+	            	{% elif h.action == "delete_comment_sum" %}
+	            		<td>Delete Summary of a Comment</td>
+	            	{% elif h.action == "delete_sum" %}
+	            		<td>Delete Summary Node</td>
 	            	{% endif %}
 	            	
 	            	{% if h.user %}
