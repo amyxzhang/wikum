@@ -536,15 +536,23 @@
                             </div>
 
                             <div class="footer-plan">
-                                <a
-                                    href="/account/login"
-                                    class="btn btn-md btn-outline text-uppercase"
-                                >{% trans "Login" %}</a>
-                                <a
-                                    href="/account/signup"
-                                    class="btn btn-md btn-outline text-uppercase"
-                                >
-                                {% trans "Sign Up" %}</a>
+                            	{% if user.is_authenticated %}
+                            		<a class="btn btn-md btn-outline text-uppercase"
+                               data-toggle="modal" 
+                               data-target="#createWikumModal">{% trans "Import Discussion" %}</a>
+                            	
+                            	{% else %}
+	                                <a
+	                                    href="/account/login"
+	                                    class="btn btn-md btn-outline text-uppercase"
+	                                >{% trans "Login" %}</a>
+	                                <a
+	                                    href="/account/signup"
+	                                    class="btn btn-md btn-outline text-uppercase"
+	                                >
+	                                {% trans "Sign Up" %}</a>
+                                
+                                {% endif %}
                             </div>
                         </div>
                     </div>
