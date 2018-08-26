@@ -82,12 +82,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    
     'website',
+    'tracking',
     'account',
 ]
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
+    'tracking.middleware.VisitorTrackingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -185,6 +188,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+TRACK_AJAX_REQUESTS = True
+TRACK_ANONYMOUS_USERS = True
+TRACK_PAGEVIEWS = True
+TRACK_REFERER = True
+TRACK_QUERY_STRING = True
 
 
 LANGUAGES = (

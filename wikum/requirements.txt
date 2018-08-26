@@ -14,6 +14,7 @@ distribute==0.6.24
 django-annoying==0.8.5
 django-appconf==1.0.1
 django-user-accounts==1.3.1
+django-tracking2==0.4.0
 docopt==0.6.2
 gnureadline==6.3.3
 httpretty==0.8.10
