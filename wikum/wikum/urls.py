@@ -70,6 +70,7 @@ urlpatterns = [
     url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
     
     url(r'^rate_summary','website.views.rate_summary'),
+    url(r'^log_data','website.views.log_data'),
      
     url(r'^upvote_summary','website.views.upvote_summary'),
     url(r'^downvote_summary','website.views.downvote_summary'),

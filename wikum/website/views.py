@@ -1097,6 +1097,8 @@ def auto_summarize_comment(request):
      
     return JsonResponse({"sents": sent_list})
      
+def log_data(request):
+    return JsonResponse({})
      
 def tag_comment(request):
     try:

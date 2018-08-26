@@ -173,6 +173,10 @@ $("#evaluate_summary_modal_box").draggable({
     handle: ".modal-title"
 });
 
+$("#permission_modal_box").draggable({
+    handle: ".modal-title"
+});
+
 $('#hide_modal_box').on('hidden.bs.modal', function () {
     var cnt = $(".ui-resizable").contents();
 	$(".ui-resizable").replaceWith(cnt);
@@ -222,7 +226,15 @@ function is_dark(color) {
 
 $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
+	
 	d = nodes_all[id-1];
+	
+	$.ajax({type: 'GET',
+			url: '/log_data?data=open_evaluate_summary_modal&did=' + d.d_id,
+			success: function(res) {
+			}
+	});
+	
 	
 	var text = 'Flag this summary as being problematic or exemplary in the below characteristics:';
 	$('#evaluate_text').html(text);
@@ -410,10 +422,10 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 });
 
 
-$('#tag_modal_box').on('show.bs.modal', function(e) {
+$('#tag_modal_box').on('show.bs.modal', function(e) {	
 	var id = $(e.relatedTarget).data('id');
 	var type = $(e.relatedTarget).data('type');
-
+	
 	d = nodes_all[id-1];
 	var ids = [];
 	var dids = [];
@@ -421,6 +433,12 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 	highlight_box(id);
 	if (type == "tag_one") {
+		$.ajax({type: 'GET',
+				url: '/log_data?data=open_tag_modal&did=' + d.d_id + '&type=' + type,
+				success: function(res) {
+				}
+		});
+		
 		if (d.replace_node) {
 			var text = '<div class="summary_box tag_comment_comment"><P>' + render_summary_node(d, true); + '</P></div>';
 			$('#tag_comment_text').text('Tag this summary.');
@@ -435,6 +453,8 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		var text = '';
 		var datas = [];
 		var min_level = 50;
+		
+		var did_str = '';
 
 		$('.clicked').each(function(index) {
 			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
@@ -454,10 +474,17 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 				datas.push(data);
 				dids.push(data.d_id);
+				did_str += data.d_id + ',';
 				if (data.depth < min_level) {
 					min_level = data.depth;
 				}
 			}
+		});
+		
+		$.ajax({type: 'GET',
+				url: '/log_data?data=open_tag_modal&did=' + did_str + '&type=' + type,
+				success: function(res) {
+				}
 		});
 
 		datas.sort(compare_nodes);
@@ -693,14 +720,25 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 	if (type == "hide_comment") {
 		var text = '<div class="hide_comment_comment">' + d.name + '</div>';
 		$('#hide_comment_text').text('Hide this comment from view.');
+			$.ajax({type: 'GET',
+					url: '/log_data?data=open_hide_comment_modal&did=' + d.d_id + '&type=' + type,
+					success: function(res) {
+					}
+			});
 	} else if (type == "hide_replies") {
 		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>Replies:</strong><BR>';
 		text = get_subtree(text, d, 0);
 		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
+			$.ajax({type: 'GET',
+						url: '/log_data?data=open_hide_comment_modal&did=' + d.d_id + '&type=' + type,
+						success: function(res) {
+						}
+				});
 	} else if (type == "hide_all_selected") {
 		var text = '';
 		var datas = [];
 		var min_level = 50;
+		var did_str = '';
 		$('.clicked').each(function(index) {
 			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
 			if (id_clicked != 1) {
@@ -708,11 +746,18 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 				var data = nodes_all[id_clicked-1];
 				datas.push(data);
 				dids.push(data.d_id);
+				did_str += data.d_id + ',';
 				if (data.depth < min_level) {
 					min_level = data.depth;
 				}
 			}
 		});
+		
+			$.ajax({type: 'GET',
+						url: '/log_data?data=open_hide_comment_modal&did=' + did_str + '&type=' + type,
+						success: function(res) {
+						}
+				});
 
 		datas.sort(compare_nodes);
 		for (var i in datas) {
@@ -903,6 +948,13 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	var did = $(e.relatedTarget).data('did');
 
 	d = nodes_all[id-1];
+	
+				$.ajax({type: 'GET',
+						url: '/log_data?data=open_summarize_one_modal&did=' + did + '&type=' + type,
+						success: function() {
+						}
+				});
+	
 	current_summarize_d_id.push(d.d_id);
 
 	highlight_box(id);
@@ -1070,14 +1122,22 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 	if (type == "summarize_selected") {
 		var objs = [];
 		var min_level = 50;
+		var did_str = '';
 		d3.selectAll('.clicked').each( function(data) {
 			if (!data.article) {
 				objs.push(data);
 				if (data.depth < min_level) {
 					min_level = data.depth;
 				}
+				did_str += data.d_id + ',';
 			}
 		});
+		
+				$.ajax({type: 'GET',
+						url: '/log_data?data=open_summarize_multiple_modal&did=' + did_str + '&type=' + type,
+						success: function() {
+						}
+				});
 
 		objs.sort(compare_nodes);
 		var text = '';
@@ -1128,6 +1188,12 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		var id = $(e.relatedTarget).data('id');
 		var did = $(e.relatedTarget).data('did');
+		
+				$.ajax({type: 'GET',
+						url: '/log_data?data=open_summarize_multiple_modal&did=' + did + '&type=' + type,
+						success: function() {
+						}
+				});
 
 		d = nodes_all[id-1];
 

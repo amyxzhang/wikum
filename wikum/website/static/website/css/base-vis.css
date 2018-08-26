@@ -389,7 +389,7 @@ rect.selection {
 	}
 
 .summary_box {
-	background-color: hsl(30, 100%, 95%);
+	background-color: hsl(30, 100%, 95%) !important;
     border: 1px solid hsla(30, 100%, 50%, .7);
 	white-space: pre-wrap;
 	--link-color: hsl(30, 100%, 60%);
@@ -525,6 +525,7 @@ textarea {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 5px;
+	background-color: #eef7fa;
 }
 
 .score {

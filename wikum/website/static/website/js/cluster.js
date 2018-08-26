@@ -251,7 +251,7 @@ var comment_id = null;
   
  make_username_typeahead();
 
-d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num' + num + '&owner' + owner, function(error, flare) {
+d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num=' + num + '&owner=' + owner, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
