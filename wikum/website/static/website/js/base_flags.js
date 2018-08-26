@@ -153,10 +153,6 @@ $("#hide_modal_box").draggable({
     handle: ".modal-title"
 });
 
-$("#unhide_comment").draggable({
-    handle: ".modal-title"
-});
-
 $("#summarize_modal_box").draggable({
     handle: ".modal-title"
 });
@@ -177,12 +173,36 @@ $("#permission_modal_box").draggable({
     handle: ".modal-title"
 });
 
+
+$('#evaluate_summary_modal_box').on('hidden.bs.modal', function () {
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_evaluate_summary_modal',
+						success: function(res) {
+						}
+				});
+});
+
+
+$('#tag_modal_box').on('hidden.bs.modal', function () {
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_tag_modal',
+						success: function(res) {
+						}
+				});
+});
+
 $('#hide_modal_box').on('hidden.bs.modal', function () {
     var cnt = $(".ui-resizable").contents();
 	$(".ui-resizable").replaceWith(cnt);
 	$(".ui-resizable-handle").remove();
 	$('#hide_comment_box').attr('style', '');
 	$('#hide_comment_box').text('');
+	
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_hide_comment_modal',
+						success: function(res) {
+						}
+				});
 });
 
 $('#summarize_modal_box').on('hidden.bs.modal', function () {
@@ -193,6 +213,12 @@ $('#summarize_modal_box').on('hidden.bs.modal', function () {
 	$('#summarize_comment_box').text('');
 	current_summarize_d_id = [];
 	unhighlight_sents();
+	
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_summarize_one_modal',
+						success: function(res) {
+						}
+				});
 });
 
 $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
@@ -201,6 +227,12 @@ $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
 	delete_summary_node_ids = [];
 	current_summarize_d_id = [];
 	unhighlight_sents();
+	
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_summarize_multiple_modal',
+						success: function(res) {
+						}
+				});
 });
 
 
@@ -696,14 +728,6 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		}
 	});
 });
-
-$("#unhide_comment").on('show.bs.modal', function(e) {
-	var id = $(e.relatedTarget).data('id');
-	var type = $(e.relatedTarget).data('type');
-	d = nodes_all[id-1];
-
-	d.hiddennode = false;
-})
 
 
 $('#hide_modal_box').on('show.bs.modal', function(e) {
