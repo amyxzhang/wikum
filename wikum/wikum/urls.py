@@ -26,10 +26,10 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$','website.views.index'),
     
-    url(r'^visualization_upvote','website.views.visualization_upvote'),
+#    url(r'^visualization_upvote','website.views.visualization_upvote'),
     url(r'^visualization_flag','website.views.visualization_flag'),
     
-    url(r'^visualization','website.views.visualization'),
+#    url(r'^visualization','website.views.visualization'),
     
     url(r'^author_info','website.views.author_info'),
     
