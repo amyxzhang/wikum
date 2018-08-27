@@ -1125,8 +1125,11 @@ def auto_summarize_comment(request):
         for sent in sents:
             if 'https://en.wikipedia.org/wiki/' in comment.article.url:
                 text = parse(sent._text)
-                text = re.sub('<[^<]+?>', '', text)
-                sent_list.append(text.strip())
+                text = re.split(r'(?<=>)(.+?)(?=<)', text)
+                for item in text:
+                    item = item.strip()
+                    if not item.startswith('<') and not item.endswith('>'):
+                        sent_list.append(item)
             else:
                 sent_list.append(sent._text)
      
