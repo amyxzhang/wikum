@@ -284,7 +284,7 @@ div.selected {
 
 textarea {
 	font-size: 12px;
-	min-height: 100px;
+	min-height: 50px;
 }
 
 #box {
@@ -644,12 +644,12 @@ a.btn-edit {
 
 #summarize_multiple_comment_textarea {
 	width: 100%;
-	height: 400px;
+	min-height: 250px;
 	resize: vertical;
 }
 
 #evaluate_summary_box {
-	height: 200px;
+	height: 140px;
     overflow-y: scroll;
     border: 1px #000000 solid;
     display: block;
