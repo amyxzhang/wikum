@@ -218,8 +218,6 @@ if (!colorby) {
 
 var owner = getParameterByName('owner');
 
-var comment_id = null;
-
   make_stats();
   
   make_color();
