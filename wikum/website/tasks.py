@@ -46,7 +46,7 @@ def import_article(url, owner):
         return 'FAILURE-SOURCE'
 
 
-@shared_task()
+@shared_task(ignore_result=True)
 def generate_tags(article_id):
     try:
         import pandas as pd
