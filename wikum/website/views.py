@@ -1130,10 +1130,10 @@ def auto_summarize_comment(request):
                 in_tag = False
                 for c in text:
                     if c == '<':
-                        if len(sent) > 0:
+                        if len(sent.strip()) > 0:
                             sent_list.append(sent.strip())
-                            sent = ''
-                            in_tag = True
+                        sent = ''
+                        in_tag = True
                     elif c == '>':
                         in_tag = False
                     else:
