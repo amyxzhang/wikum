@@ -653,32 +653,28 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 				url: '/tag_comments',
 				data: data,
 				success: function(res) {
-
 					if (res.color) {
-
-						d_text = '';
+						var list_ids = evt.data.ids;
+						var d_text = '';
 						if (is_dark(res.color)) {
 							d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						} else {
 							d_text += '<button class="btn btn-xs" style="background-color: #' + res.color + '">' + tag + '</button> ';
 						}
 
-						text = $('#current_tags').html();
-						if (text == "") {
+						if ($('#current_tags').html() == "") {
 							$('#current_tags').html('Current tags: ' + d_text);
 						} else {
 							$('#current_tags').append(d_text);
 						}
-
-						for (var i=0; i<evt.data.ids; i++) {
-							d = nodes_all[evt.data.ids[i] -1];
-							d.tags.push([tag, res.color]);
-
-							text = $('#tags_' + d.id).html();
-							if (text == "") {
-								$('#tags_' + d.id).html('Tags: ' + d_text);
+						
+						for (var i=0; i<list_ids.length; i++) {
+							var c = nodes_all[list_ids[i] -1];
+							c.tags.push([tag, res.color]);
+							if ($('#tags_' + c.id).html() == "") {
+								$('#tags_' + c.id).html('Tags: ' + d_text);
 							} else {
-								$('#tags_' + d.id).append(d_text);
+								$('#tags_' + c.id).append(d_text);
 							}
 						}
 					}

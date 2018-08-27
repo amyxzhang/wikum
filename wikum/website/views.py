@@ -979,18 +979,18 @@ def tag_comments(request):
             if tag_exists.count() == 0:
                 comment.tags.add(t)
                 affected_comms.append(comment)
-
-            
-        h = History.objects.create(user=req_user, 
-                                   article=a,
-                                   action='tag_comments',
-                                   explanation='Add tag %s to comments' % t.text)
         
-        a.last_updated = datetime.datetime.now()
-        a.save()
+        if affected_comms:
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='tag_comments',
+                                       explanation='Add tag %s to comments' % t.text)
+            a.last_updated = datetime.datetime.now()
+            a.save()
         
-        for com in affected_comms:
-            recurse_up_post(com)
+            for com in affected_comms:
+                recurse_up_post(com)
+                h.comments.add(com)
             
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
