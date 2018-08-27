@@ -454,6 +454,26 @@ def recurse_down_num_subtree(post):
         child.save()
         recurse_down_num_subtree(child)
 
+def strip_tag(text):
+    val = text.split('>')
+    t = ''.join(val[1:])
+    val2 = t.split('<')
+    t = ''.join(val2[:-1])
+    if val[0][1:] == val2[-1][1:-1]:
+        return t
+    else:
+        return text
+    
+def clean_parse(text):
+    text = parse(text).strip()
+    while text.startswith('<dl') or text.startswith('<dd') or text.startswith('<ul') or text.startswith('<li'):
+        t = strip_tag(text)
+        if t == text:
+            break
+        else:
+            text = t
+    return text
+
 def recurse_viz(parent, posts, replaced, article, is_collapsed):
     children = []
     hid_children = []
@@ -507,20 +527,22 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                              }
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
-                v1['name'] = parse(post.text)
+                
+                
+                v1['name'] = clean_parse(post.text)
                 v1['wikitext'] = post.text
                 
                 if post.summary.strip() == '':
                     v1['summary'] = ''
                 else:
-                    v1['summary'] = parse(post.summary)
+                    v1['summary'] = clean_parse(post.summary)
                 
                 v1['sumwiki'] = post.summary
                     
                 if post.extra_summary.strip() == '':
                     v1['extra_summary'] = ''
                 else:
-                    v1['summary'] = parse(post.extra_summary)
+                    v1['summary'] = clean_parse(post.extra_summary)
                 
                 v1['extrasumwiki'] = post.extra_summary
                 
@@ -617,14 +639,14 @@ def summarize_comment(request):
         if 'wikipedia.org' in a.url:
             res = {}
             if top_summary.strip() != '':
-                res['top_summary'] = parse(top_summary)
+                res['top_summary'] = clean_parse(top_summary)
             else:
                 res['top_summary'] = ''
             
             res['top_summary_wiki'] = top_summary
             
             if bottom_summary.strip() != '':
-                res['bottom_summary'] = parse(bottom_summary)
+                res['bottom_summary'] = clean_parse(bottom_summary)
             else:
                 res['bottom_summary'] = ''
             
@@ -723,14 +745,14 @@ def summarize_selected(request):
         if 'wikipedia.org' in a.url:
             res = {'d_id': new_comment.id}
             if top_summary.strip() != '':
-                res['top_summary'] = parse(top_summary)
+                res['top_summary'] = clean_parse(top_summary)
             else:
                 res['top_summary'] = ''
             
             res['top_summary_wiki'] = top_summary
             
             if bottom_summary.strip() != '':
-                res['bottom_summary'] = parse(bottom_summary)
+                res['bottom_summary'] = clean_parse(bottom_summary)
             else:
                 res['bottom_summary'] = ''
             
@@ -873,14 +895,14 @@ def summarize_comments(request):
         if 'wikipedia.org' in a.url:
             res = {'d_id': d_id}
             if top_summary.strip() != '':
-                res['top_summary'] = parse(top_summary)
+                res['top_summary'] = clean_parse(top_summary)
             else:
                 res['top_summary'] = ''
             
             res['top_summary_wiki'] = top_summary
             
             if bottom_summary.strip() != '':
-                res['bottom_summary'] = parse(bottom_summary)
+                res['bottom_summary'] = clean_parse(bottom_summary)
             else:
                 res['bottom_summary'] = ''
             
@@ -1103,7 +1125,7 @@ def auto_summarize_comment(request):
             if 'https://en.wikipedia.org/wiki/' in comment.article.url:
                 text = parse(sent._text)
                 text = re.sub('<[^<]+?>', '', text)
-                sent_list.append(text)
+                sent_list.append(text.strip())
             else:
                 sent_list.append(sent._text)
      
