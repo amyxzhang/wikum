@@ -458,19 +458,17 @@ def recurse_down_num_subtree(post):
 def clean_parse(text):
     text = parse(text).strip()
     
-    while text.startswith('<dl>') and text.endswith('</dl>'):
-        text = text[4:-5].strip()
-        if text.startswith('<dd>') and text.endswith('</dd>'):
-            text = text[4:-5].strip()
-        print text
+    text2 = re.sub('<dl>', '', text)
+    text2 = re.sub('</dl>', '', text2)
+    text2 = re.sub('<dd>', '', text2)
+    text2 = re.sub('</dd>', '', text2)
+    text2 = re.sub('<ul>', '', text2)
+    text2 = re.sub('</ul>', '', text2)
+    text2 = re.sub('<li>', '', text2)
+    text2 = re.sub('</li>', '', text2)
     
-    while text.startswith('<ul>') and text.endswith('</ul>'):
-        text = text[4:-5].strip()
-        if text.startswith('<li>') and text.endswith('</li>'):
-            text = text[4:-5].strip()
-        print text
-            
     print text
+    print text2
     return '<p>' + text + '</p>'
 
 def recurse_viz(parent, posts, replaced, article, is_collapsed):
