@@ -457,22 +457,16 @@ def recurse_down_num_subtree(post):
     
 def clean_parse(text):
     text = parse(text).strip()
-    if text.startswith('<dl>') and text.endswith('</dl>'):
+    
+    while text.startswith('<dl>') and text.endswith('</dl>'):
         text = text[4:-5].strip()
-    if text.startswith('<dd>') and text.endswith('</dd>'):
+        if text.startswith('<dd>') and text.endswith('</dd>'):
+            text = text[4:-5].strip()
+    
+    while text.startswith('<ul>') and text.endswith('</ul>'):
         text = text[4:-5].strip()
-    if text.startswith('<dl>') and text.endswith('</dl>'):
-        text = text[4:-5].strip()
-    if text.startswith('<dd>') and text.endswith('</dd>'):
-        text = text[4:-5].strip()
-    if text.startswith('<dl>') and text.endswith('</dl>'):
-        text = text[4:-5].strip()
-    if text.startswith('<dd>') and text.endswith('</dd>'):
-        text = text[4:-5].strip()
-    if text.startswith('<ul>') and text.endswith('</ul>'):
-        text = text[4:-5].strip()
-    if text.startswith('<li>') and text.endswith('</li>'):
-        text = text[4:-5].strip()
+        if text.startswith('<li>') and text.endswith('</li>'):
+            text = text[4:-5].strip()
     return '<p>' + text + '</p>'
 
 def recurse_viz(parent, posts, replaced, article, is_collapsed):
