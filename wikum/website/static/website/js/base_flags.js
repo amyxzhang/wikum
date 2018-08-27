@@ -1057,7 +1057,12 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		if (!isClick) {
 			highlighted_text = window.getSelection().toString();
 	   		if (highlighted_text.length > 10) {
-	   			highlighted_comm = parseInt(evt.target.parentNode.id.substring(8));
+	   			
+	   			if (evt.target.parentNode.id.indexOf('sum_box') != -1) {
+	   				highlighted_comm = parseInt(evt.target.parentNode.id.substring(8));
+	   			} else {
+	   				highlighted_comm = parseInt(evt.target.parentNode.parentNode.id.substring(8));
+	   			}
 	   			var offset = $("#summarize_comment_box").offset();
 	   			var scroll = $("#summarize_comment_box").scrollTop();
 	   			$('#tooltip_sum').css({'top': evt.pageY - offset.top + scroll + 'px', 'left': evt.pageX - offset.left + 'px'});
@@ -1330,7 +1335,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		if (!isClick2) {
 			highlighted_text = window.getSelection().toString();
 	   		if (highlighted_text.length > 10) {
-	   			highlighted_comm = parseInt(evt.target.parentNode.id.substring(8));
+	   			if (evt.target.parentNode.id.indexOf('sum_box') != -1) {
+	   				highlighted_comm = parseInt(evt.target.parentNode.id.substring(8));
+	   			} else {
+	   				highlighted_comm = parseInt(evt.target.parentNode.parentNode.id.substring(8));
+	   			}
 	   			d = nodes_all[highlighted_comm-1];
 	   			if (!d.replace_node && d.summary == '' && d.extra_summary == '') {
 		   			var offset = $("#summarize_multiple_comment_box").offset();
