@@ -1100,7 +1100,10 @@ def auto_summarize_comment(request):
          
         
         for sent in sents:
-            sent_list.append(sent._text)
+            if 'https://en.wikipedia.org/wiki/' in comment.article.url:
+                sent_list.append(parse(sent._text))
+            else:
+                sent_list.append(sent._text)
      
     return JsonResponse({"sents": sent_list})
      
