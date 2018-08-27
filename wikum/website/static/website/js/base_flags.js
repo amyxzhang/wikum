@@ -716,10 +716,10 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 					}			
 				}
 				$('#suggested_tags').html(text);
-				$('.suggest_tag').click(function() {
-					var text = $(this).text();
-					$('#tag-form').val(text);
-				});
+				// $('.suggest_tag').click(function() {
+					// var text = $(this).text();
+					// $('#tag-form').val(text);
+				// });
 			}
 		}
 	});
