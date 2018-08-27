@@ -169,7 +169,7 @@ BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 CELERY_IMPORTS = ("website.tasks",)
 CELERY_RESULT_BACKEND = "db+mysql://root:koob@localhost/celery"
 CELERY_IGNORE_RESULT = False
-
+CELERY_RESULT_DB_SHORT_LIVED_SESSIONS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
