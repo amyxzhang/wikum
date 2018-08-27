@@ -1202,39 +1202,39 @@ def tag_comment(request):
 def rate_summary(request):
     try:
         req_user = request.user if request.user.is_authenticated() else None
-        if req_user:
-            id = request.POST['id']
-            neutral_rating = request.POST['neu']
-            coverage_rating = request.POST['cov']
-            quality_rating = request.POST['qual']
-        
-            comment = Comment.objects.get(id=id)
-        
-            if comment.summary != '':
-        
-                r,_ = CommentRating.objects.get_or_create(comment=comment, user=req_user)
-                r.neutral_rating = neutral_rating
-                r.coverage_rating = coverage_rating
-                r.quality_rating = quality_rating
-                r.save()
-                
-                h = History.objects.create(user=req_user, 
-                                           article=comment.article,
-                                           action='rate_comment',
-                                           explanation="Add Rating %s (neutral), %s (coverage), %s (quality) to a comment" % (neutral_rating,
-                                                                                                                              coverage_rating,
-                                                                                                                              quality_rating)
-                                           )
-                
-                h.comments.add(comment)
-                
-                art = comment.article
-                art.last_updated = datetime.datetime.now()
-                art.save()
-                
-                recurse_up_post(comment)
-           
-                return JsonResponse({'success': True});
+        id = request.POST['id']
+        neutral_rating = request.POST['neu']
+        coverage_rating = request.POST['cov']
+        quality_rating = request.POST['qual']
+    
+        comment = Comment.objects.get(id=id)
+    
+        if comment.summary != '':
+    
+            r,_ = CommentRating.objects.get_or_create(comment=comment)
+            r.user = req_user
+            r.neutral_rating = neutral_rating
+            r.coverage_rating = coverage_rating
+            r.quality_rating = quality_rating
+            r.save()
+            
+            h = History.objects.create(user=req_user, 
+                                       article=comment.article,
+                                       action='rate_comment',
+                                       explanation="Add Rating %s (neutral), %s (coverage), %s (quality) to a comment" % (neutral_rating,
+                                                                                                                          coverage_rating,
+                                                                                                                          quality_rating)
+                                       )
+            
+            h.comments.add(comment)
+            
+            art = comment.article
+            art.last_updated = datetime.datetime.now()
+            art.save()
+            
+            recurse_up_post(comment)
+       
+            return JsonResponse({'success': True});
         return JsonResponse({'success': False});
     except Exception, e:
         print e
