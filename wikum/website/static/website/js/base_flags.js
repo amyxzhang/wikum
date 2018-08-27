@@ -3818,6 +3818,8 @@ function construct_box_top(objs) {
 
 	accepted = true;
 	count = 0;
+	
+	accepted2 = true;
 
 	for (var i=0; i<objs.length; i++) {
 		parent = objs[i].parent;
@@ -3857,14 +3859,24 @@ function construct_box_top(objs) {
 		accepted = false;
 		break;
 	}
-
-	if (accepted && count > 1 && !parent_node.replace_node) {
-		 var text = '<BR> <a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a><BR>';
-		 text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a><BR>';
-		 text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
-
-		$('#box_top').html(text);
+	
+	for (var i=0; i<objs.length; i++) {
+		if ((objs[i].children && objs[i].children.length > 0) || (objs[i]._children && objs[i]._children.length > 0)) {
+			accepted2 = false;
+			break;
+		}
 	}
+
+	var text = '';
+	if (accepted && count > 1 && !parent_node.replace_node) {
+		text += '<BR> <a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a><BR>';
+	}
+	if (accepted || accepted2) {
+		text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a><BR>';
+	}
+	text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
+
+	$('#box_top').html(text);
 }
 
 function compare_nodes(a,b) {
