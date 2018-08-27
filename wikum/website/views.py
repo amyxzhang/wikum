@@ -454,29 +454,21 @@ def recurse_down_num_subtree(post):
         child.save()
         recurse_down_num_subtree(child)
 
-def strip_tag(text):
-    print text
-    val = text.split('>')
-    t = '>'.join(val[1:])
-    val2 = t.split('<')
-    t = '<'.join(val2[:-1])
-    print val[0][1:]
-    print val2[-1][1:-1]
-    print t
-    print '---'
-    if val[0][1:] == val2[-1][1:-1]:
-        return t
-    else:
-        return text
     
 def clean_parse(text):
     text = parse(text).strip()
-    while text.startswith('<dl') or text.startswith('<dd') or text.startswith('<ul') or text.startswith('<li'):
-        t = strip_tag(text)
-        if t == text:
-            break
-        else:
-            text = t
+    if text.startswith('<dl>') and text.endswith('</dl>'):
+        text = text[4:-5].strip()
+    if text.startswith('<dd>') and text.endswith('</dd>'):
+        text = text[4:-5].strip()
+    if text.startswith('<dl>') and text.endswith('</dl>'):
+        text = text[4:-5].strip()
+    if text.startswith('<dd>') and text.endswith('</dd>'):
+        text = text[4:-5].strip()
+    if text.startswith('<ul>') and text.endswith('</ul>'):
+        text = text[4:-5].strip()
+    if text.startswith('<li>') and text.endswith('</li>'):
+        text = text[4:-5].strip()
     return text
 
 def recurse_viz(parent, posts, replaced, article, is_collapsed):
