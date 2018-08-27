@@ -1125,13 +1125,13 @@ def auto_summarize_comment(request):
         for sent in sents:
             if 'https://en.wikipedia.org/wiki/' in comment.article.url:
                 text = parse(sent._text)
-                print text
                 sent = ''
                 in_tag = False
                 for c in text:
                     if c == '<':
                         if len(sent.strip()) > 0:
-                            sent_list.append(sent.strip())
+                            if sent.strip() != 'Comment':
+                                sent_list.append(sent.strip())
                         sent = ''
                         in_tag = True
                     elif c == '>':
