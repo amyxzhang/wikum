@@ -455,10 +455,15 @@ def recurse_down_num_subtree(post):
         recurse_down_num_subtree(child)
 
 def strip_tag(text):
+    print text
     val = text.split('>')
     t = ''.join(val[1:])
     val2 = t.split('<')
     t = ''.join(val2[:-1])
+    print val[0][1:]
+    print val2[-1][1:-1]
+    print t
+    print '---'
     if val[0][1:] == val2[-1][1:-1]:
         return t
     else:
