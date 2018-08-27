@@ -462,11 +462,15 @@ def clean_parse(text):
         text = text[4:-5].strip()
         if text.startswith('<dd>') and text.endswith('</dd>'):
             text = text[4:-5].strip()
+        print text
     
     while text.startswith('<ul>') and text.endswith('</ul>'):
         text = text[4:-5].strip()
         if text.startswith('<li>') and text.endswith('</li>'):
             text = text[4:-5].strip()
+        print text
+            
+    print text
     return '<p>' + text + '</p>'
 
 def recurse_viz(parent, posts, replaced, article, is_collapsed):
