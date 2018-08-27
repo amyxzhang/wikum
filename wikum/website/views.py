@@ -467,9 +467,7 @@ def clean_parse(text):
     text2 = re.sub('<li>', '', text2)
     text2 = re.sub('</li>', '', text2)
     
-    print text
-    print text2
-    return '<p>' + text + '</p>'
+    return '<p>' + text2 + '</p>'
 
 def recurse_viz(parent, posts, replaced, article, is_collapsed):
     children = []
