@@ -180,7 +180,7 @@ class CommentAuthor(models.Model):
 class CommentRating(models.Model):
     id = models.AutoField(primary_key=True)
     comment = models.ForeignKey('Comment')
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     neutral_rating = models.IntegerField(null=True)
     coverage_rating = models.IntegerField(null=True)
     quality_rating = models.IntegerField(null=True)
