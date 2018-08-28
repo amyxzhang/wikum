@@ -995,7 +995,7 @@ def tag_comments(request):
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
             from tasks import generate_tags
-            generate_tags.delay(article_id, ignore_result=True)
+            generate_tags.delay(article_id)
             
         if len(affected_comms) > 0:
             return JsonResponse({'color': color})
@@ -1188,7 +1188,7 @@ def tag_comment(request):
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
             from tasks import generate_tags
-            generate_tags.delay(article_id, ignore_result=True)
+            generate_tags.delay(article_id)
             
         if affected:
             return JsonResponse({'color': color})
@@ -1243,7 +1243,7 @@ def delete_tags(request):
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
             from tasks import generate_tags
-            generate_tags.delay(a.id, ignore_result=True)
+            generate_tags.delay(a.id)
             
         if affected:
             return JsonResponse({'affected': 1})
