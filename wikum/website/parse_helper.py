@@ -245,6 +245,9 @@ def talkquoteHook(parser_env, namespace, body):
     text += '</blockquote>'
     return text;
 
+def emphHook(parser_env, namespace, body):
+    return '<i>' + body + '</i>'
+
 def passThroughHook(parser_env, namespace, body):
     return body
     
@@ -263,6 +266,7 @@ registerInternalTemplateHook('color', colorHook)
 registerInternalTemplateHook('cot', cotHook)
 registerInternalTemplateHook('tq2', quoteHook)
 registerInternalTemplateHook('tq', quoteHook)
+registerInternalTemplateHook('em', emphHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)

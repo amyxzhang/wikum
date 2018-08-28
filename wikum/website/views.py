@@ -462,11 +462,21 @@ def clean_parse(text):
     text = re.sub('</dl>', '', text)
     text = re.sub('<dd>', '', text)
     text = re.sub('</dd>', '', text)
-#     text = re.sub('<ul>', '', text)
-#     text = re.sub('</ul>', '', text)
-#     text = re.sub('<li>', '', text)
-#     text = re.sub('</li>', '', text)
+    text = re.sub('<ul>', '', text)
+    text = re.sub('</ul>', '', text)
+    text = re.sub('<li>', '', text)
+    text = re.sub('</li>', '', text)
     
+    print text
+    sp = text.split('\n\n')
+    
+    if len(sp) > 1:
+        v = ''
+        for i in sp:
+            v += '<p>' + i + '</p>'
+        text = v
+        
+    print text
     text = text.strip()
     if text.startswith('<p>') and text.endswith('</p>'):
         return text
