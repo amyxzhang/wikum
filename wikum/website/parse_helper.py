@@ -230,12 +230,14 @@ def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
     res = body[5:]
     res = res.split('|')
+    print res
     
     text_lines = res[0].split('\n')
     for i in text_lines:
         text += '<p>' + i + '</p>'
     if len(res) == 2:
         info = res[1].split('=')
+        print info
         if info[0] == 'by':
             text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; User:' + info[1]
         elif info[0] == 'source':
