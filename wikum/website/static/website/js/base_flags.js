@@ -462,11 +462,15 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	var ids = [];
 	var dids = [];
 	var overlapping_tags = [];
+	var did_str = '';
+	var id_str = '';
 
 	highlight_box(id);
 	if (type == "tag_one") {
+		did_str += d.d_id;
+		id_str += d.id;
 		$.ajax({type: 'GET',
-				url: '/log_data?data=open_tag_modal&did=' + d.d_id + '&type=' + type,
+				url: '/log_data?data=open_tag_modal&did=' + did_str + '&type=' + type,
 				success: function(res) {
 				}
 		});
@@ -485,8 +489,6 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		var text = '';
 		var datas = [];
 		var min_level = 50;
-		
-		var did_str = '';
 
 		$('.clicked').each(function(index) {
 			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
@@ -507,6 +509,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 				datas.push(data);
 				dids.push(data.d_id);
 				did_str += data.d_id + ',';
+				id_str += data.id + ',';
 				if (data.depth < min_level) {
 					min_level = data.depth;
 				}
@@ -553,9 +556,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		d_text += '<BR><div id="current_tags">Current tags: ';
 		for (var i=0; i<overlapping_tags.length; i++) {
 			if (is_dark(overlapping_tags[i][1])) {
-				d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + '</button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +overlapping_tags[i][0] + '\')" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" style="background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + '</button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +overlapping_tags[i][0] + '\')" style="background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
 			}
 		}
 		d_text += '</div><BR>';
@@ -616,10 +619,13 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 						d.tags.push([tag, res.color]);
 
 						d_text = '';
+						d_text2 = '';
 						if (is_dark(res.color)) {
-							d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
+							d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+							d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						} else {
-							d_text += '<button class="btn btn-xs" style="background-color: #' + res.color + '">' + tag + '</button> ';
+							d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+							d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						}
 
 						text = $('#current_tags').html();
@@ -631,9 +637,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 						text = $('#tags_' + d.id).html();
 						if (text == "") {
-							$('#tags_' + d.id).html('Tags: ' + d_text);
+							$('#tags_' + d.id).html('Tags: ' + d_text2);
 						} else {
-							$('#tags_' + d.id).append(d_text);
+							$('#tags_' + d.id).append(d_text2);
 						}
 					}
 
@@ -656,10 +662,13 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 					if (res.color) {
 						var list_ids = evt.data.ids;
 						var d_text = '';
+						var d_text2 = '';
 						if (is_dark(res.color)) {
-							d_text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
+							d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' + tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+							d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						} else {
-							d_text += '<button class="btn btn-xs" style="background-color: #' + res.color + '">' + tag + '</button> ';
+							d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' + tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+							d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 						}
 
 						if ($('#current_tags').html() == "") {
@@ -672,9 +681,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 							var c = nodes_all[list_ids[i] -1];
 							c.tags.push([tag, res.color]);
 							if ($('#tags_' + c.id).html() == "") {
-								$('#tags_' + c.id).html('Tags: ' + d_text);
+								$('#tags_' + c.id).html('Tags: ' + d_text2);
 							} else {
-								$('#tags_' + c.id).append(d_text);
+								$('#tags_' + c.id).append(d_text2);
 							}
 						}
 					}
@@ -921,6 +930,61 @@ function cite_para(did, para_num) {
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + '[[comment_' + did + '_p' +  para_num + ']]\n' + textAfter );
+}
+
+function delete_tags(evt, dids, ids, tag) {
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+		ids: dids,
+		tag: tag};
+
+		$.ajax({
+			type: 'POST',
+			url: '/delete_tags',
+			data: data,
+			success: function(res) {
+				success_noty();
+				$('#current_tags').children().each(function(index, element) {
+					var btn_text = $(this).text().trim().slice(0, -3);
+					
+					if (btn_text.trim() === tag) {
+						$(this).remove();
+					}
+				});
+				
+				var list_ids = ids.split(',');
+				
+				for (var i=0; i<list_ids.length; i++) {
+					if (list_ids[i].trim() != '') {
+						var i_x = list_ids[i].trim();
+						
+						$('#tags_' + i_x).children().each(function(index, element) {
+							var c = nodes_all[i_x -1];
+							var index = -1;
+							for (var i=0;i<c.tags.length;i++) {
+								if (c.tags[i][0] === tag) {
+									index = i;
+								}
+							}
+							if (index > -1) {
+								c.tags.splice(index, 1);
+							}
+							var btn_text = $(this).text().trim();
+							if (btn_text === tag) {
+								$(this).remove();
+							}
+						});
+						if ($('#tags_' + i_x).text().trim() === "Tags:") {
+							$('#tags_' + i_x).html('');
+						}
+					}
+				}
+			},
+			error: function() {
+				error_noty();
+			}
+		});
+		evt.preventDefault();
 }
 
 function show_comment_text(text, did) {

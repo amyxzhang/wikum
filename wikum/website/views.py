@@ -1198,6 +1198,61 @@ def tag_comment(request):
         print e
         return HttpResponseBadRequest()
     
+def delete_tags(request):
+    try:
+        comment_ids = request.POST['ids']
+        
+        comment_ids = comment_ids.split(',')
+        
+        ids = []
+        for idx in comment_ids:
+            if idx:
+                ids.append(int(idx))
+                
+        tag = request.POST['tag']
+        req_user = request.user if request.user.is_authenticated() else None
+        
+        comments = Comment.objects.filter(id__in=ids)
+        
+        affected_comments = []
+        affected= False
+        a = None
+        
+        for comment in comments:
+            a = comment.article
+            tag_exists = comment.tags.filter(text=tag)
+            
+            if tag_exists.count() == 1:
+                comment.tags.remove(tag_exists[0])
+                affected_comments.append(comment)
+                affected = True
+            
+        if affected:
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='delete_tag',
+                                       explanation="Deleted tag %s from comments" % tag)
+            for comment in affected_comments:
+                h.comments.add(comment)
+            
+            a.last_updated = datetime.datetime.now()
+            a.save()
+            
+            recurse_up_post(comment)
+                
+        tag_count = a.comment_set.filter(tags__isnull=False).count()
+        if tag_count % 2 == 0:
+            from tasks import generate_tags
+            generate_tags.delay(a.id, ignore_result=True)
+            
+        if affected:
+            return JsonResponse({'affected': 1})
+        else:
+            return JsonResponse({'affected': 0})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+    
 
 def rate_summary(request):
     try:

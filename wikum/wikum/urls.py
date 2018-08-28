@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^history','website.views.history'),
     
     url(r'^move_comments','website.views.move_comments'),
+    url(r'^delete_tags','website.views.delete_tags'),
     
     url(r'^auto_summarize_comment','website.views.auto_summarize_comment'),
     
