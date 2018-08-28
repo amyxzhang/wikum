@@ -226,6 +226,10 @@ def colorHook(parser_env, namespace, body):
     (color, pipe, text) = body.partition('|') 
     return '<span style="color: %s">%s</span>' % (color, text)
 
+def talkquoteHook(parser_env, namespace, body):
+    return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
+
+
 def passThroughHook(parser_env, namespace, body):
     return body
     
@@ -248,5 +252,6 @@ registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)
 registerInternalTemplateHook('rfc top', passThroughHook)
+registerInternalTemplateHook('talkquote', talkquoteHook)
 
 
