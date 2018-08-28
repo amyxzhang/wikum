@@ -229,9 +229,17 @@ def colorHook(parser_env, namespace, body):
 def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
     res = body[5:]
-    res = res.split('\n');
-    for i in res:
+    res = res.split('|')
+    
+    text_lines = res[0].split('\n')
+    for i in text_lines:
         text += '<p>' + i + '</p>'
+    if len(res) == 2:
+        info = res[1].split('=')
+        if info[0] == 'by':
+            text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; User:' + info[1]
+        elif info[0] == 'source':
+            text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; <i>' + info[1] + '</i>'
     text += '</blockquote>'
     return text;
 
