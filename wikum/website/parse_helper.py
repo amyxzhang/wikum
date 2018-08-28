@@ -227,11 +227,10 @@ def colorHook(parser_env, namespace, body):
     return '<span style="color: %s">%s</span>' % (color, text)
 
 def talkquoteHook(parser_env, namespace, body):
-    print parser_env
-    print namespace
-    print body
-    return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
-
+    text = '<blockquote>'
+    text += body[5:]
+    text += '</blockquote>'
+    return text;
 
 def passThroughHook(parser_env, namespace, body):
     return body
