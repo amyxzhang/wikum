@@ -239,7 +239,7 @@ def talkquoteHook(parser_env, namespace, body):
         if info[0] == 'by':
             text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; User:' + info[1]
         elif info[0] == 'source':
-            text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; <i>' + info[1] + '</i>'
+            text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; ' + info[1]
     text += '</blockquote>'
     return text;
 
