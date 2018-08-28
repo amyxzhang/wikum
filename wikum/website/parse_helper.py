@@ -228,7 +228,10 @@ def colorHook(parser_env, namespace, body):
 
 def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
-    text += body[5:]
+    res = body[5:]
+    res = res.split('\n');
+    for i in res:
+        text += '<p>' + i + '</p>'
     text += '</blockquote>'
     return text;
 
