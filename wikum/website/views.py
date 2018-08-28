@@ -1637,16 +1637,15 @@ def tags_and_authors(request):
 def add_global_perm(request):
     try:
         user = request.user
-        article_url = request.POST['article']
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        
         owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
             owner = User.objects.get(username=owner)
-        num = int(request.POST.get('num', 0))
-        
-        a = Article.objects.filter(url=article_url, owner=owner)[num]
-        
+
         if user == owner:
             access = request.POST.get('access', None).strip()
            
@@ -1664,42 +1663,44 @@ def add_global_perm(request):
         return HttpResponseBadRequest()
 
 def add_user_perm(request):
-    data = {'created': None}
-    user = request.user
-    print request.POST
-    article_url = request.POST['article']
-    owner = request.POST.get('owner', None)
-    if not owner or owner == "None":
-        owner = None
-    else:
-        owner = User.objects.get(username=owner)
-    num = int(request.POST.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
-    
-    if user == owner:
-        access = request.POST.get('access', None).strip()
-        access_user = request.POST.get('username', None)
-        delete_perm = request.POST.get('delete_perm', False)
-       
-        a_user = User.objects.get(username=access_user)
+    try:
+        data = {'created': None}
+        user = request.user
         
-        if delete_perm == 'true':
-            Permissions.objects.filter(article=a, user=a_user).delete()
-        elif access:
-            if access == "Edit Access":
-                p, created = Permissions.objects.get_or_create(article=a, user=a_user)
-                p.access_level = 1
-                p.save()
-                data['created'] = created
-            elif access == "View Access":
-                p, created = Permissions.objects.get_or_create(article=a, user=a_user)
-                p.access_level = 3
-                p.save()
-                data['created'] = created
-    
-    return JsonResponse(data)
-
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        
+        owner = request.POST.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
+        
+        if user == owner:
+            access = request.POST.get('access', None).strip()
+            access_user = request.POST.get('username', None)
+            delete_perm = request.POST.get('delete_perm', False)
+           
+            a_user = User.objects.get(username=access_user)
+            
+            if delete_perm == 'true':
+                Permissions.objects.filter(article=a, user=a_user).delete()
+            elif access:
+                if access == "Edit Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 1
+                    p.save()
+                    data['created'] = created
+                elif access == "View Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 3
+                    p.save()
+                    data['created'] = created
+        
+        return JsonResponse(data)
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
 
 def users(request):
     users = list(User.objects.all().values_list('username', flat=True))

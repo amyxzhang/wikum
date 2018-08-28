@@ -2556,11 +2556,12 @@ function make_filter() {
 
 function add_global_perm(access) {
 	var csrf = $('#csrf').text();
+	var article_id = $('#article_id').text();
+	
 	var data = {
 		csrfmiddlewaretoken: csrf,
 		access: access,
-		article: article_url,
-		num: num,
+		article: article_id,
 		owner: owner,
 		};
 
@@ -2588,12 +2589,12 @@ function add_global_perm(access) {
 
 function add_user_perm(username, access, delete_perm, delete_row) {
 	var csrf = $('#csrf').text();
+	var article_id = $('#article_id').text();
 	var data = {
 		csrfmiddlewaretoken: csrf,
 		username: username,
 		access: access,
-		article: article_url,
-		num: num,
+		article: article_id,
 		owner: owner,
 		delete_perm: delete_perm,
 		};
