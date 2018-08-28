@@ -494,10 +494,6 @@ textarea {
 	width: 100%;
 }
 
-.modal-body {
-    min-height: 160px;
-}
-
 
 #hide_comment_box, #tag_comment_box {
 	display: block;

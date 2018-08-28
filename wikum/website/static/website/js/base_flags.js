@@ -173,6 +173,10 @@ $("#permission_modal_box").draggable({
     handle: ".modal-title"
 });
 
+$("#confirm_delete_modal_box").draggable({
+    handle: ".modal-title"
+});
+
 
 $('#evaluate_summary_modal_box').on('hidden.bs.modal', function () {
 				$.ajax({type: 'GET',
@@ -1008,6 +1012,63 @@ function show_comment_text(text, did) {
 	return text;
 }
 
+$('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
+		var $modalDiv = $(e.delegateTarget);
+  		var id = $(this).data('id');
+  		
+  		d = nodes_all[id-1];
+		if (d.replace_node) {
+			var article_id = $('#article_id').text();
+			var csrf = $('#csrf').text();
+			var data = {csrfmiddlewaretoken: csrf,
+				comment: '',
+				article: article_id,
+				id: d.d_id};
+
+			$.ajax({
+					type: 'POST',
+					url: '/hide_comment',
+					data: data,
+					success: function() {
+						delete_summary_node(id);
+						success_noty();
+						make_progress_bar();
+						$("#confirm_delete_modal_box .close").click();
+					},
+					error: function() {
+						error_noty();
+					}
+			});
+		} else {
+			var article_id = $('#article_id').text();
+			var csrf = $('#csrf').text();
+			var data = {csrfmiddlewaretoken: csrf,
+				comment: '',
+				article: article_id,
+				id: d.d_id};
+			$.ajax({
+					type: 'POST',
+					url: '/delete_comment_summary',
+					data: data,
+					success: function() {
+						delete_comment_summary(id);
+						success_noty();
+						make_progress_bar();
+						$("#confirm_delete_modal_box .close").click();
+					},
+					error: function() {
+						error_noty();
+					}
+			});
+		}
+	});
+
+$('#confirm_delete_modal_box').on('show.bs.modal', function(e) {
+	var id = $(e.relatedTarget).data('id');
+  	$('.btn-ok', this).data('id', id);
+});
+
+
 function insert_quote(highlighted_text, did) {
 	var box = $('#' + activeBox + '_comment_textarea');
 	var cursorPos = box.prop('selectionStart');
@@ -1539,7 +1600,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					if ($('#access_mode').attr('data-access') == "1") {
 						text += `<footer>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-							<a onclick="post_delete_summary_node(${new_d.id});">Delete Summary</a>
+							<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
@@ -1658,7 +1719,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					if ($('#access_mode').attr('data-access') == "1") {
 						text += `<footer>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-							<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
+							<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
@@ -1677,31 +1738,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 	});
 });
-
-function post_delete_comment_summary(id){
-	d = nodes_all[id-1];
-	if (!d.replace_node) {
-		var article_id = $('#article_id').text();
-		var csrf = $('#csrf').text();
-		var data = {csrfmiddlewaretoken: csrf,
-			comment: '',
-			article: article_id,
-			id: d.d_id};
-		$.ajax({
-				type: 'POST',
-				url: '/delete_comment_summary',
-				data: data,
-				success: function() {
-					delete_comment_summary(id);
-					success_noty();
-					make_progress_bar();
-				},
-				error: function() {
-					error_noty();
-				}
-		});
-	}
-}
 
 function upvote_summary(did, id) {
 	var csrf = $('#csrf').text();
@@ -1824,32 +1860,6 @@ function delete_comment_summary(id){
 	author_hover();
 }
 
-function post_delete_summary_node(id) {
-	d = nodes_all[id-1];
-	if (d.replace_node) {
-		var article_id = $('#article_id').text();
-		var csrf = $('#csrf').text();
-		var data = {csrfmiddlewaretoken: csrf,
-			comment: '',
-			article: article_id,
-			id: d.d_id};
-
-		$.ajax({
-				type: 'POST',
-				url: '/hide_comment',
-				data: data,
-				success: function() {
-					delete_summary_node(id);
-					success_noty();
-					make_progress_bar();
-				},
-				error: function() {
-					error_noty();
-				}
-		});
-
-	}
-}
 
 function delete_summary_node(id) {
 
@@ -3556,7 +3566,7 @@ function construct_comment(d) {
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
 			if ($('#access_mode').attr('data-access') == "1") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
-				text += '<a onclick="post_delete_comment_summary('+d.id+');">Delete Comment Summary</a> | ';
+				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '">Delete Comment Summary</a> | ';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate Summary</a></P>';
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
@@ -3565,7 +3575,7 @@ function construct_comment(d) {
 				
 				text += `<footer>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
-					<a onclick="post_delete_summary_node(${d.id});">Delete Summary</a>
+					<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 				</footer>`;
