@@ -22,7 +22,7 @@ function highlight_sents() {
 		data: data,
 		success: function(res) {
 			for (var i=0; i<res.sents.length; i++) {
-				if (res.sents[i].length > 6) {
+				if (res.sents[i].length > 8) {
 					if (d_ids.length == 1) {
 						$('#summarize_comment_box').highlight(res.sents[i]);
 					} else {

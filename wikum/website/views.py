@@ -467,7 +467,6 @@ def clean_parse(text):
     text = re.sub('<li>', '', text)
     text = re.sub('</li>', '', text)
     
-    print text
     sp = text.split('\n\n')
     
     if len(sp) > 1:
@@ -476,7 +475,6 @@ def clean_parse(text):
             v += '<p>' + i + '</p>'
         text = v
         
-    print text
     text = text.strip()
     if text.startswith('<p>') and text.endswith('</p>'):
         return text
@@ -1669,6 +1667,7 @@ def add_user_perm(request):
     try:
         data = {'created': None}
         user = request.user
+        print request.POST
         article_url = request.POST['article']
         owner = request.POST.get('owner', None)
         if not owner or owner == "None":

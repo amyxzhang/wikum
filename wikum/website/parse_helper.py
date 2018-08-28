@@ -205,7 +205,6 @@ def quoteBoxHook(parser_env, namespace, body):
     for item in res:
         i = item.split('=')
         quote_head = re.sub('\|', '', i[0]).strip().lower()
-        print quote_head
         if quote_head == 'quote':
             quote = i[1].strip()
             return '<p style="background-color: #ffffff;">%s</p>' % quote
@@ -230,14 +229,12 @@ def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
     res = body[5:]
     res = res.split('|')
-    print res
     
     text_lines = res[0].split('\n')
     for i in text_lines:
         text += '<p>' + i + '</p>'
     if len(res) == 2:
         info = res[1].split('=')
-        print info
         if info[0] == 'by':
             text += '&nbsp;&nbsp;&nbsp;&nbsp; &mdash; User:' + '='.join(info[1:])
         elif info[0] == 'source':
