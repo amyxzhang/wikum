@@ -706,6 +706,10 @@ def summarize_selected(request):
         children = [c for c in comments if c.id in children_ids]
         child = Comment.objects.get(id=child_id)
         
+        lowest_child = children[0]
+        for c in children:
+            if c.import_order < lowest_child.import_order:
+                lowest_child = c
 
         new_id = random_with_N_digits(10)
             
@@ -716,7 +720,8 @@ def summarize_selected(request):
                                              extra_summary=bottom_summary,
                                              disqus_id=new_id,
                                              points=child.points,
-                                             text_len=len(summary))
+                                             text_len=len(summary),
+                                             import_order=lowest_child.import_order)
 
         h = History.objects.create(user=req_user, 
                                    article=a,
@@ -840,7 +845,8 @@ def summarize_comments(request):
                                                  extra_summary=bottom_summary,
                                                  disqus_id=new_id,
                                                  points=c.points,
-                                                 text_len=len(summary))
+                                                 text_len=len(summary),
+                                                 import_order=c.import_order)
         
             c.reply_to_disqus = new_id
             c.save()
