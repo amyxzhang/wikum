@@ -98,6 +98,8 @@ class Tag(models.Model):
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
+    
+    import_order = models.IntegerField(default=0)
     article = models.ForeignKey('Article')
     author = models.ForeignKey('CommentAuthor', null=True)
 

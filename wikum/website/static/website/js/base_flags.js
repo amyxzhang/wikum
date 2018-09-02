@@ -1506,7 +1506,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 			children = [];
 			children_dids = [];
-			lowest_id = 500;
+			lowest_id = 50000;
 			lowest_d = null;
 			size = 0;
 			for (var i=0; i<objs.length; i++) {

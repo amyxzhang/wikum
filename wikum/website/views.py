@@ -371,7 +371,7 @@ def summary_data(request):
     
     
     if sort == 'id':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('id')[start:end]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('import_order')[start:end]
     else:
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
     
@@ -705,8 +705,9 @@ def summarize_selected(request):
         comments = Comment.objects.filter(id__in=ids)
         children = [c for c in comments if c.id in children_ids]
         child = Comment.objects.get(id=child_id)
+        
 
-        new_id = random_with_N_digits(10);
+        new_id = random_with_N_digits(10)
             
         new_comment = Comment.objects.create(article=a, 
                                              is_replacement=True, 
@@ -726,10 +727,9 @@ def summarize_selected(request):
         for c in children:
             c.reply_to_disqus = new_id
             c.save()
-            
-        for c in comments:
             h.comments.add(c)
-            h.comments.add(new_comment)
+            
+        h.comments.add(new_comment)
             
                 
         for node in delete_nodes:
@@ -1749,7 +1749,7 @@ def viz_data(request):
         if filter.startswith("Tag: "):
             filter = filter[5:]
             if sort == 'id':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('id')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
             elif sort == "replies":
@@ -1766,7 +1766,7 @@ def viz_data(request):
         else:
             filter = filter[6:]
             if sort == 'id':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('id')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')[start:end]
             elif sort == "replies":
@@ -1795,7 +1795,7 @@ def viz_data(request):
         
     else:
         if sort == 'id':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('id')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
         elif sort == 'likes':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
         elif sort == "replies":
@@ -1949,7 +1949,7 @@ def subtree_data(request):
         posts = Comment.objects.filter(id=comment_id)
     else:
         if sort == 'id':
-            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('id')
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('import_order')
         elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
         elif sort == "replies":

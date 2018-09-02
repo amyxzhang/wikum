@@ -98,9 +98,8 @@ def get_article(url, user, source, num):
             title = r.json()['result'][0]['board']['title']
 
         article, created = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, owner=user)
-        if created:
-            article.last_updated = datetime.datetime.now()
-            article.save()
+        article.last_updated = datetime.datetime.now()
+        article.save()
     else:
         article = article[num]
 
@@ -335,6 +334,7 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
     
                 comment_wikum.save()
                 comment_wikum.disqus_id = comment_wikum.id
+                comment_wikum.import_order = comment_wikum.id
                 comment_wikum.save()
     
                 for signer in comment_cosigners:
@@ -521,6 +521,8 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
                                              deleted = comment.banned_by != None,
                                              approved = comment.approved_by != None,
                                              )
+            comment_wikum.import_order = comment_wikum.id
+            comment_wikum.save()
             replies = comment.replies
             total_count = import_reddit_posts(replies, article, comment.id, current_task, total_count)
 
@@ -576,6 +578,8 @@ def import_disqus_posts(result, article):
                                              deleted = response['isDeleted'],
                                              approved = response['isApproved']
                                              )
+            comment.import_order = comment.id
+            comment.save()
 
     return count
 
@@ -638,6 +642,8 @@ def import_decide_proposal_posts(result, article):
                                              points = response['cached_votes_up']-response['cached_votes_down'],
                                              created_at = datetime.datetime.strptime(response['public_created_at'].split(' +')[0], '%Y-%m-%d %H:%M:%S')
                                              )
+            comment.import_order = comment.id
+            comment.save()
 
     return count
 
@@ -666,6 +672,7 @@ def import_join_taiwan_posts(result, article, current_task, total_count):
                                                        author = author,
                                                        )
             author.save()
+            comment.import_order = comment.id
             comment.save()
             total_count += 1
             count += 1
