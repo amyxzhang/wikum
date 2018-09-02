@@ -16,6 +16,7 @@ This repository contains:
 
 
 1. The instructions for how locally install and run Wikum.
+2. All code for the Wikum back-end and front-end.
 
 
 
@@ -32,7 +33,6 @@ This repository contains:
 ## Usage
 
 Once you have Wikum locally installed you can start developing. 
-Follow this link to find a [video](#usage) description of the Wikum project.
 
 
 ## Maintainers
