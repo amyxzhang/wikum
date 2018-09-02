@@ -279,6 +279,7 @@
                     			
                     		</a>
                     		<ul class="dropdown-menu">
+                    			<li><a href="{{ BASE_URL }}/">My Wikums</a></li>
                     			<li><a href="/account/password/reset/">{% trans "Change Password" %}</a></li>
                     			<li><a href="/account/logout">{% trans "Logout" %}</a></li>
                     			<li><a href="/account/delete">{% trans "Delete Account" %}</a></li>
@@ -296,14 +297,9 @@
 					         <img src={% static "website/assets/img/logobutton.png" %} width=40>
 					     </a>
 					      <ul class="dropdown-menu">
-					      		{% if user.is_authenticated %}
-					      		<li><a href="{{ BASE_URL }}/">My Wikums</a></li>
-					      		<li><a href="{{ BASE_URL }}/explore_public">Explore Public Wikums</a></li>
-					      		<li><a href="{{ BASE_URL }}/about#about">{% trans "About" %} Wikum</a></li>
-					      		{% else %}
 					      		<li><a href="{{ BASE_URL }}/explore_public">Explore Public Wikums</a></li>
                     			<li><a href="{{ BASE_URL }}/#about">{% trans "About" %} Wikum</a></li>
-                    			{% endif %}
+                    		
                     		</ul>
 					      </li> 
                     
