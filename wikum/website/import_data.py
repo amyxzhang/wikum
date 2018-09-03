@@ -323,12 +323,12 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
                 cosigners = [sign['author'] for sign in comment['cosigners']]
                 comment_cosigners = import_wiki_authors(cosigners, article)
     
+    
                 comment_wikum = Comment.objects.create(article = article,
                                                        author = comment_author,
                                                        text = text,
                                                        reply_to_disqus = reply_to,
                                                        text_len = len(text),
-                                                       import_order=0,
                                                        )
                 if time:
                     comment_wikum.created_at = time
@@ -521,7 +521,6 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count):
                                              flagged = len(comment.user_reports) > 0,
                                              deleted = comment.banned_by != None,
                                              approved = comment.approved_by != None,
-                                             import_order=0
                                              )
             comment_wikum.import_order = comment_wikum.id
             comment_wikum.save()
@@ -578,8 +577,7 @@ def import_disqus_posts(result, article):
                                              highlighted = response['isHighlighted'],
                                              flagged = response['isFlagged'],
                                              deleted = response['isDeleted'],
-                                             approved = response['isApproved'],
-                                             import_order=0
+                                             approved = response['isApproved']
                                              )
             comment.import_order = comment.id
             comment.save()
@@ -643,8 +641,7 @@ def import_decide_proposal_posts(result, article):
                                              likes = response['cached_votes_up'],
                                              dislikes = response['cached_votes_down'],
                                              points = response['cached_votes_up']-response['cached_votes_down'],
-                                             created_at = datetime.datetime.strptime(response['public_created_at'].split(' +')[0], '%Y-%m-%d %H:%M:%S'),
-                                             import_order=0
+                                             created_at = datetime.datetime.strptime(response['public_created_at'].split(' +')[0], '%Y-%m-%d %H:%M:%S')
                                              )
             comment.import_order = comment.id
             comment.save()
@@ -674,7 +671,6 @@ def import_join_taiwan_posts(result, article, current_task, total_count):
                                                        article = article,
                                                        reply_to_disqus = parent,
                                                        author = author,
-                                                       import_order=0
                                                        )
             author.save()
             comment.import_order = comment.id

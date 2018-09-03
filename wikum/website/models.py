@@ -98,8 +98,6 @@ class Tag(models.Model):
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
-    
-    import_order = models.IntegerField(default=0)
     article = models.ForeignKey('Article')
     author = models.ForeignKey('CommentAuthor', null=True)
 
@@ -110,6 +108,8 @@ class Comment(models.Model):
     reply_to_disqus = models.CharField(max_length=70, null=True, blank=True)
     num_replies = models.IntegerField(default=0)
     text_len = models.IntegerField(default=0)
+    
+    import_order = models.IntegerField(default=0)
 
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
