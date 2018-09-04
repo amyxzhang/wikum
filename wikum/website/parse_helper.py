@@ -144,6 +144,12 @@ def galleryTagHook(parser_env, body, attributes={}):
             
 registerTagHook('gallery', galleryTagHook)
 
+def slinkHook(parser_env, namespace, body):
+    vals = body.split('|')
+    href = vals[1].strip()
+    text = href[1:]
+    return '<a href="%s">&#167; %s</a>' % (vals[1], text)
+    
 def linkHook(parser_env, namespace, body):
     (article, pipe, text) = body.partition('|') 
     href = article.strip().capitalize().replace(' ', '_') 
@@ -197,6 +203,10 @@ def pingTempHook(parser_env, namespace, body):
 def quoteHook(parser_env, namespace, body):
     return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #008560;">%s</span>' % body
 
+def quote2Hook(parser_env, namespace, body):
+    return '<span class="inline-quote-talk" style="font-family: Georgia, \'DejaVu Serif\', serif; color: #8B0000;">%s</span>' % body
+
+
 def archiveHook(parser_env, namespace, body):
     return 'Archived: <p style="background-color: #ffffff;">%s</p>' % body
 
@@ -227,6 +237,7 @@ def colorHook(parser_env, namespace, body):
 
 def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
+    print body
     res = body[5:]
     res = res.split('|')
     
@@ -245,6 +256,18 @@ def talkquoteHook(parser_env, namespace, body):
 def emphHook(parser_env, namespace, body):
     return '<i>' + body + '</i>'
 
+def pbHook(parser_env, namespace, body):
+    print parser_env
+    print namespace
+    print body
+    return '<br><br>'
+
+def sndHook(parser_env, namespace, body):
+    print parser_env
+    print namespace
+    print body
+    return ' - '
+
 def passThroughHook(parser_env, namespace, body):
     return body
     
@@ -253,6 +276,7 @@ registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
 registerInternalLinkHook('file', fileHook)
+registerInternalLinkHook('slink', slinkHook)
 
 registerInternalTemplateHook('ping', pingTempHook)
 registerInternalTemplateHook('reply to', userHook)
@@ -263,6 +287,10 @@ registerInternalTemplateHook('color', colorHook)
 registerInternalTemplateHook('cot', cotHook)
 registerInternalTemplateHook('tq2', quoteHook)
 registerInternalTemplateHook('tq', quoteHook)
+registerInternalTemplateHook('xt', quoteHook)
+registerInternalTemplateHook('!xt', quote2Hook)
+registerInternalTemplateHook('pb', pbHook)
+registerInternalTemplateHook('snd', sndHook)
 registerInternalTemplateHook('em', emphHook)
 registerInternalTemplateHook('archivetop', archiveHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
