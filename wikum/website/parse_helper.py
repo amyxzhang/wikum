@@ -145,6 +145,7 @@ def galleryTagHook(parser_env, body, attributes={}):
 registerTagHook('gallery', galleryTagHook)
 
 def slinkHook(parser_env, namespace, body):
+    print body
     vals = body.split('|')
     href = vals[1].strip()
     text = href[1:]
@@ -238,7 +239,8 @@ def colorHook(parser_env, namespace, body):
 def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
     print body
-    res = body[5:]
+    res = body.split('=')
+    res = '='.join(res[1:])
     res = res.split('|')
     
     text_lines = res[0].split('\n')
@@ -275,6 +277,7 @@ def passThroughHook(parser_env, namespace, body):
 registerInternalLinkHook('*', linkHook)
 registerInternalLinkHook('user talk', userTalkHook)
 registerInternalLinkHook('user', userHook)
+registerInternalLinkHook('userlink', userHook)
 registerInternalLinkHook('file', fileHook)
 registerInternalLinkHook('slink', slinkHook)
 
@@ -293,9 +296,11 @@ registerInternalTemplateHook('pb', pbHook)
 registerInternalTemplateHook('snd', sndHook)
 registerInternalTemplateHook('em', emphHook)
 registerInternalTemplateHook('archivetop', archiveHook)
+registerInternalTemplateHook('Quote', quoteBoxHook)
 registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)
 registerInternalTemplateHook('rfc top', passThroughHook)
+registerInternalTemplateHook('outdent', passThroughHook)
 registerInternalTemplateHook('talkquote', talkquoteHook)
 
 
