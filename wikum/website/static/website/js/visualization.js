@@ -253,11 +253,9 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
   
   
 	count = 0;
-	for (var i=0;i<nodes_all.length;i++) {
-		if (nodes_all[i].depth == 1) {
-			count += 1;
-		}
-	}
+	count += nodes_all[0].children.length;
+	count += nodes_all[0].hid.length;
+	
 	var text = '';
 	if (next > 0) {
 		var prev = next - 1;

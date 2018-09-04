@@ -301,6 +301,7 @@ registerInternalTemplateHook('quote box', quoteBoxHook)
 registerInternalTemplateHook('highlight round', highlightHook)
 registerInternalTemplateHook('rfc top', passThroughHook)
 registerInternalTemplateHook('outdent', passThroughHook)
+registerInternalTemplateHook('outindent', passThroughHook)
 registerInternalTemplateHook('talkquote', talkquoteHook)
 
 
