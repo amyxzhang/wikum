@@ -8,7 +8,7 @@ var highlighted_comm = null;
 var highlight_text = null;
 
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
-    width = 600 - margin.left - margin.right,
+    width = 550 - margin.left - margin.right,
     barHeight = 27;
 
 var i = 0,

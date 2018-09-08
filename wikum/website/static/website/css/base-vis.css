@@ -291,10 +291,10 @@ textarea {
 	padding-top: 15px;
 	position: fixed;
 	max-height: calc(100vh - 80px);
-	margin: 80px 15px 15px 600px;
+	margin: 80px 15px 15px 550px;
 	overflow: auto;
-	min-width: 55%;
-	max-width: 680px;
+	min-width: 45%;
+	max-width: calc(100vw - 550px);
 	overflow-x: scroll;
 }
 
@@ -785,7 +785,7 @@ form.modal-content {
 
 #controldiv {
 	position: fixed;
-	left:380px;
+	left:330px;
 	top: 100px;
 }
 
