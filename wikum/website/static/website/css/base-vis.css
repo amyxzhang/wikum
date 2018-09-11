@@ -662,7 +662,7 @@ a.btn-edit {
 #summarize_multiple_comment_box {
 	padding: 5px;
 	width: 100%;
-	height: calc(100% - 10px);
+	height: 300px;
 	overflow-y: scroll;
     border: 1px solid #000000;
 }
