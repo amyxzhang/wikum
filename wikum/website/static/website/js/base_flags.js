@@ -226,6 +226,10 @@ $('#summarize_modal_box').on('hidden.bs.modal', function () {
 });
 
 $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
+	 var cnt = $(".ui-resizable").contents();
+	$(".ui-resizable").replaceWith(cnt);
+	$(".ui-resizable-handle").remove();
+	$('#summarize_multiple_comment_box').attr('style','');
 	$('#summarize_multiple_comment_box').text('');
 	delete_summary_nodes = [];
 	delete_summary_node_ids = [];
@@ -1436,6 +1440,22 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 	text = '<div class="img-rounded" id="tooltip_sum2">Quote</div>' + text;
 
 	$('#summarize_multiple_comment_box').html(text);
+	
+	$('#summarize_multiple_comment_box').wrap('<div/>')
+        .css({'overflow':'hidden'})
+          .parent()
+            .css({'display':'inline-block',
+                  'overflow':'hidden',
+                  'height':function(){return $('.resizable',this).height();},
+                  'width':  function(){return $('.resizable',this).width();},
+                  'paddingBottom':'12px',
+                  'paddingRight':'12px',
+                  'border': '1px solid #000000',
+                 }).resizable()
+                    .find('.resizable')
+                      .css({overflow:'auto',
+                            width:'100%',
+                            height:'100%'});
 
 	$("#summarize_multiple_comment_box").off("mouseup");
 	$("#summarize_multiple_comment_box").off("mousedown");
