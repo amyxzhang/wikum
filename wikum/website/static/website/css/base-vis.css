@@ -13,6 +13,11 @@ body {
     font-family: "Helvetica Neue", Helvetica;
 }
 
+html,
+body {
+	height: 100%;
+}
+
 #chart, #header, #footer {
     position: absolute;
     top: 0;
