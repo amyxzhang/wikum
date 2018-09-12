@@ -4477,7 +4477,7 @@ function make_progress_bar() {
 		if (value > 100) {
 			value = 100;
 		}
-	else {
+	} else {
 		value = 100;
 	}
 
