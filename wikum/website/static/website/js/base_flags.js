@@ -4461,10 +4461,7 @@ function count_all_words(d) {
 
 function make_progress_bar() {
 	num_words_all = count_all_words(nodes_all[0]);
-	console.log(num_words_all);
-
 	num_words_still = count_unsummarized_words(nodes_all[0]);
-	console.log(num_words_still);
 
 	if (num_words_all >= 250) {
 		num_words_all = num_words_all - 250;
@@ -4475,8 +4472,12 @@ function make_progress_bar() {
 		num_words_still = num_words_still - half;
 	}
 
-	value = Math.round((1 - (num_words_still/num_words_all)) * 100);
-	if (value > 100) {
+	if (num_words_all != 0) {
+		value = Math.round((1 - (num_words_still/num_words_all)) * 100);
+		if (value > 100) {
+			value = 100;
+		}
+	else {
 		value = 100;
 	}
 
