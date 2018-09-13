@@ -249,8 +249,7 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
 
   show_text(nodes_all[0]);
 
-  make_progress_bar();
-  
+	make_progress_bar();
   
 	count = 0;
 	if (nodes_all[0].children) {

@@ -4456,6 +4456,13 @@ function count_all_words(d) {
 			count += wordCount(d.name);
 		}
 	}
+	
+	if (d.hid) {
+		for (var i=0; i<d.hid.length; i++) {
+				count += count_all_words(d.hid[i]);
+			}
+	}
+	
 	return count;
 }
 
