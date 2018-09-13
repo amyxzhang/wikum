@@ -409,7 +409,7 @@ def history(request):
     
     article = Article.objects.filter(url=url, owner=owner)[num]
     
-    hist = History.objects.filter(article_id=article.id).order_by('-datetime').select_related()[0:20]
+    hist = History.objects.filter(article_id=article.id).order_by('-datetime').select_related()[0:100]
     
     return {'history': hist,
             'article': article,
