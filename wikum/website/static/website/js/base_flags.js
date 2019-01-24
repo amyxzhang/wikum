@@ -2538,7 +2538,7 @@ function make_stats() {
 }
 
 function make_filter() {
-	text = '<div style="display: inline-block; width: 160px;" id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by tag or username"></div>';
+	text = '<div style="display: inline-block; width: 220px;" id="filter_typeahead"><input required class="typeahead form-control input-sm" id="inputFilter" placeholder="Filter by text, tag, or username"></div>';
 
 	$('#filter').html(text);
 
@@ -2555,7 +2555,6 @@ function make_filter() {
 	  	cache: false,
 	  }
 	});
-
 
 	$('#filter_typeahead .typeahead').typeahead({
 		hint: true,

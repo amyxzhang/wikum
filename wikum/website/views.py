@@ -1768,8 +1768,7 @@ def viz_data(request):
                 posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')[start:end]
             elif sort == 'oldest':
                 posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end] 
-                
-        else:
+        elif filter.startswith("User: "):
             filter = filter[6:]
             if sort == 'id':
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')[start:end]
@@ -1785,6 +1784,22 @@ def viz_data(request):
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-created_at')[start:end]
             elif sort == 'oldest':
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
+        else:
+            if sort == 'id':
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')[start:end]
+            elif sort == 'likes':
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')[start:end]
+            elif sort == "replies":
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-num_replies')[start:end]
+            elif sort == "long":
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-text_len')[start:end]
+            elif sort == "short":
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('text_len')[start:end]
+            elif sort == 'newest':
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-created_at')[start:end]
+            elif sort == 'oldest':
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('created_at')[start:end] 
+
             
         val['children'] = []
         val['hid'] = []
