@@ -29,7 +29,11 @@ class Command(BaseCommand):
             if user.strip() != '':
                 author,_ = CommentAuthor.objects.get_or_create(username=user)
             else:
-                author = CommentAuthor.objects.get(disqus_id='anonymous')
+                author = CommentAuthor.objects.get(disqus_id='anonymous',
+                                                   is_wikipedia=False,
+                                                   is_reddit=False,
+                                                   is_decide=False,
+                                                   is_join=False)
              
             c,_ = Comment.objects.get_or_create(disqus_id=message_id,
                                               text=text,
