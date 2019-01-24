@@ -11,14 +11,14 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
 
-        f = open('orangetown.csv', 'r')
+        f = open('newton.csv', 'r')
         
         reader = csv.DictReader(f)
         
         s,_ = Source.objects.get_or_create(source_name="Involved.vote")
         
         a,_ = Article.objects.get_or_create(url="https://involved.vote",
-                                  title="Would you like to see a fenced off-leash dog park? - Town of Orangetown, NY",
+                                  title="Would you be willing to pay extra for additional renewable energy? - City of Newton",
                                   source=s)
 
         message_id = 0
