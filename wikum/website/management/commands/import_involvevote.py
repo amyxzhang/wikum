@@ -26,7 +26,10 @@ class Command(BaseCommand):
         for row in reader:
             text = row['Comment']
             user = row['Email Address']
-            author,_ = CommentAuthor.objects.get_or_create(username=user)
+            if user.strip() != '':
+                author,_ = CommentAuthor.objects.get_or_create(username=user)
+            else:
+                author = CommentAuthor.objects.get(disqus_id='anonymous')
              
             c,_ = Comment.objects.get_or_create(disqus_id=message_id,
                                               text=text,
