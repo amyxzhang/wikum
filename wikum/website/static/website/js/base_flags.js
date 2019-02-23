@@ -1624,7 +1624,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
-					
+
+					// TODO(stian8): add options for commenting: Reply
 
 					for (var i=0; i<children.length; i++) {
 						if (children[i] == lowest_d) {
@@ -1743,6 +1744,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
+					// TODO(stian8): add options for commenting: Reply
 
 					$('#comment_' + d.id).html(text);
 
@@ -2593,6 +2595,8 @@ function add_global_perm(access) {
 				$('#access_mode').text(access + ' | Share');
 				if (access == "Publicly Editable") {
 					$('#access_mode').attr('data-access', '1');
+				} else if (access == "Publicly Commentable") {
+					$('#access_mode').attr('data-access', '2');
 				} else if (access == "Publicly Viewable") {
 					$('#access_mode').attr('data-access', '3');
 				} else if (access == "Private") {
@@ -2617,7 +2621,6 @@ function add_user_perm(username, access, delete_perm, delete_row) {
 		owner: owner,
 		delete_perm: delete_perm,
 		};
-
 	$.ajax({
 			type: 'POST',
 			url: '/add_user_perm',
@@ -2632,6 +2635,7 @@ function add_user_perm(username, access, delete_perm, delete_row) {
 					text += '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
 					text += access + '<span class="caret"></span></button>';
 					text += '<ul class="dropdown-menu permission-menu"><li><a href="#">Edit Access</a></li>';
+					text += '<li><a href="#">Comment Access</a></li></ul></div></td>';
 					text += '<li><a href="#">View Access</a></li></ul></div></td>';
 					text += '<td><button type="button" class="btn btn-default btn-xs btn-success update_user_perm">Update</button>';
 					text += '</td><td><button type="button" class="btn btn-default btn-xs btn-danger delete_user_perm">Delete</button></td></tr>';
@@ -3584,6 +3588,7 @@ function construct_comment(d) {
 		if (!d.replace_node) {
 			text += '<P>';
 			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
+			// comment summary
 			if ($('#access_mode').attr('data-access') == "1") {
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
 				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '">Delete Comment Summary</a> | ';
@@ -3591,8 +3596,9 @@ function construct_comment(d) {
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
+			// TODO(stian8): comment access only
 			if ($('#access_mode').attr('data-access') == "1") {
-				
+				// thread summary
 				text += `<footer>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
@@ -3609,11 +3615,15 @@ function construct_comment(d) {
 	
 			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 				}
 			} else if (!d.replace_node) {
+				if (!d.hiddennode) {
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
+				}
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
 				}
@@ -3623,28 +3633,31 @@ function construct_comment(d) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 				}
 			}
-	
 			text += '</footer>';
 		} else if (!d.replace_node) {
 			text += '<footer>';
-	
 			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 				}
 			} else {
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
 				}
-	
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_replies" data-id="' + d.id + '">Mark Replies Unimportant</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 			}
-	
 			text += '</footer>';
 		}
 
+	}
+	else if ($('#access_mode').attr('data-access') == "2") {
+		text += '<footer>';
+		text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#" data-type="" data-id="' + d.id + '">Reply</a>';
+		text += '</footer>';
 	}
 
 	return text;

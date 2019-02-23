@@ -1657,6 +1657,8 @@ def add_global_perm(request):
            
             if access == "Publicly Editable":
                 a.access_mode = 1
+            elif access == "Publicly Commentable":
+                a.access_mode = 2
             elif access == "Publicly Viewable":
                 a.access_mode = 3
             elif access == "Private Access":
@@ -1695,6 +1697,11 @@ def add_user_perm(request):
                 if access == "Edit Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 1
+                    p.save()
+                    data['created'] = created
+                elif access == "Comment Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 2
                     p.save()
                     data['created'] = created
                 elif access == "View Access":
