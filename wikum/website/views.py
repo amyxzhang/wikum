@@ -600,6 +600,51 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
     return children, hid_children, replace_children, num_subtree_children
         
+def reply_comment(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        id = request.POST['id']
+        comment = request.POST['comment']
+        print(request.POST)
+        req_user = request.user if request.user.is_authenticated() else None
+        # request post: <QueryDict: <QueryDict: {u'comment': [u'thoughts'], u'article': [u'3'],
+        #  u'csrfmiddlewaretoken': [u'gw9Q3qho1cciXVO8tRzR9MTs6LNCObGL'], u'id': [u'228']}>
+        req_username = request.user.username if request.user.is_authenticated() else None
+
+        c = Comment.objects.get(id=id)
+        new_id = random_with_N_digits(10);
+        new_comment = Comment.objects.create(article=a,
+                                             is_replacement=False,
+                                             reply_to_disqus=c.disqus_id,
+                                             disqus_id=new_id,
+                                             text=comment,
+                                             text_len=len(comment),
+                                             import_order=c.import_order)
+        c.save()
+        new_comment.save()
+
+        action = 'reply_comment'
+        explanation = 'reply to comment'
+
+        h = History.objects.create(user=req_user,
+                                   article=a,
+                                   action=action,
+                                   explanation=explanation)
+
+        h.comments.add(new_comment)
+        recurse_up_post(c)
+
+        a.percent_complete = count_article(a)
+        a.last_updated = datetime.datetime.now()
+
+        a.save()
+
+        return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
 
 def summarize_comment(request):
     try:
@@ -816,7 +861,6 @@ def get_summary(summary):
     
     if len(summary_split) > 1:
         bottom_summary = ' '.join(summary_split[2:]).strip()
-        
     return top_summary, bottom_summary
     
     

@@ -89,6 +89,7 @@ urlpatterns = [
     url(r'^summarize_selected','website.views.summarize_selected'),
     url(r'^summarize_comments','website.views.summarize_comments'),
     url(r'^summarize_comment','website.views.summarize_comment'),
+    url(r'^reply_comment','website.views.reply_comment'),
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),

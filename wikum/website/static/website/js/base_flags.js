@@ -153,6 +153,10 @@ $("#hide_modal_box").draggable({
     handle: ".modal-title"
 });
 
+$("#reply_modal_box").draggable({
+    handle: ".modal-title"
+});
+
 $("#summarize_modal_box").draggable({
     handle: ".modal-title"
 });
@@ -190,6 +194,16 @@ $('#evaluate_summary_modal_box').on('hidden.bs.modal', function () {
 $('#tag_modal_box').on('hidden.bs.modal', function () {
 				$.ajax({type: 'GET',
 						url: '/log_data?data=close_tag_modal',
+						success: function(res) {
+						}
+				});
+});
+
+$('#reply_modal_box').on('hidden.bs.modal', function () {
+	$('#reply_comment_box').attr('style', '');
+	$('#reply_comment_box').text('');
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_reply_modal',
 						success: function(res) {
 						}
 				});
@@ -262,6 +276,101 @@ function luminance(color) {
 function is_dark(color) {
 	return luminance(color) < 50;
 }
+
+$('#reply_modal_box').on('show.bs.modal', function(e) {
+	var id = $(e.relatedTarget).data('id');
+
+	d = nodes_all[id-1];
+	var ids = [];
+	var dids = [];
+	var did_str = '';
+	var id_str = '';
+
+	highlight_box(id);
+	did_str += d.d_id;
+	id_str += d.id;
+	$.ajax({type: 'GET',
+			url: '/log_data?data=open_reply_modal&did=' + did_str,
+			success: function(res) {
+			}
+	});
+
+	if (d.replace_node) {
+		//TODO(stian8): replies/commenting not yet implemented for summaries
+	} else {
+		var text = '<div class="reply_comment_comment reply_comment">' + d.name + '</div>';
+		$('#reply_comment_text').text('Reply to this comment.');
+	}
+
+	$('#reply_comment_box').html(text);
+
+	// id of node to reply to
+	var did = $(e.relatedTarget).data('did');
+
+	$('#reply_modal_box form').off("submit");
+
+	$('#reply_modal_box form').submit({data_id: did, id: id, ids: ids, dids: dids}, function(evt) {
+		evt.preventDefault();
+		$('#reply_modal_box').modal('toggle');
+		success_noty();
+		var comment = $('#reply_comment_textarea').val().trim();
+		var article_id = $('#article_id').text();
+		var csrf = $('#csrf').text();
+		var data = {csrfmiddlewaretoken: csrf,
+			comment: comment,
+			article: article_id};
+
+		data.id = evt.data.data_id;
+		$.ajax({
+			type: 'POST',
+			url: '/reply_comment',
+			data: data,
+			success: function(res) {
+				d = nodes_all[evt.data.id-1];
+				new_d = {d_id: res.d_id,
+							 name: res.comment,
+							 summary: "",
+							 extra_summary: "",
+							 parent: d,
+							 replace: [],
+							 author: res.author,
+							 tags: [],
+							 collapsed: false,
+							 replace_node: false,
+							 size: d.size,
+							 hid: d.hid,
+							 depth: d.depth+1,
+							 x: d.x,
+							 x0: d.x0,
+							 y: d.y,
+							 y0: d.y0,
+							};
+				if (!d.children) {
+					d.children = [];
+					d._children = [];
+				}
+				d.children.push(new_d);
+				d._children.push(new_d);
+				update(d.parent);
+
+				var text = construct_comment(new_d);
+				$('#comment_' + new_d.d_id).html(text);
+				$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
+				author_hover();
+				
+				d3.select("#node_" + new_d.d_id).style("fill",color);
+
+				highlight_box(new_d.d_id);
+				make_progress_bar();
+
+			},
+			error: function() {
+				error_noty();
+			}
+		});
+	});
+
+});
 
 
 $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
@@ -1542,7 +1651,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-
 			data.children = children_dids;
 			data.child = lowest_d.d_id;
 
@@ -3615,14 +3723,14 @@ function construct_comment(d) {
 	
 			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
-					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 				}
 			} else if (!d.replace_node) {
 				if (!d.hiddennode) {
-					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" -type="tag_one" data-id="' + d.id + '">Reply</a>';
 				}
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
@@ -3638,12 +3746,12 @@ function construct_comment(d) {
 			text += '<footer>';
 			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
-					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 				}
 			} else {
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Reply</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_multiple_modal_box" data-type="summarize" data-id="' + d.id + '">Summarize Comment + Replies</a>';
 				}
@@ -3656,7 +3764,7 @@ function construct_comment(d) {
 	}
 	else if ($('#access_mode').attr('data-access') == "2") {
 		text += '<footer>';
-		text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#" data-type="" data-id="' + d.id + '">Reply</a>';
+		text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 		text += '</footer>';
 	}
 

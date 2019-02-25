@@ -342,6 +342,22 @@ rect.selection {
 }
 
 .comment_box,
+.reply_comment_comment {
+    background-color: hsl(195, 59%, 96%);
+    margin-bottom: 10px;
+    padding: 1.2em;
+    padding-bottom: .2em;
+    border: 1px hsl(195, 59%, 85%) solid;
+    --link-color: hsl(195, 59%, 60%);
+}
+
+.reply_comment_comment a {
+		mix-blend-mode: multiply;
+		font-weight: 500;
+		/*color: var(--link-color);*/
+	}
+
+.comment_box,
 .summarize_comment_comment {
 	background-color: hsl(195, 59%, 96%);
 	margin-bottom: 10px;
@@ -390,6 +406,15 @@ rect.selection {
 }
 
 	.summarize_comment_comment > p {
+		padding-bottom: 15px;
+	}
+
+.reply_comment_comment {
+	font-size: 12px;
+	display: block;
+}
+
+	.reply_comment_comment > p {
 		padding-bottom: 15px;
 	}
 
@@ -519,6 +544,17 @@ textarea {
 	padding-right: 8px;
     padding-top: 5px;
     position: relative;
+}
+
+#reply_comment_box {
+	display: block;
+	padding-left: 8px;
+	padding-right: 8px;
+    padding-top: 5px;
+    position: relative;
+    max-height: 300px;
+    overflow-y: scroll;
+    border: 1px #000000 solid;
 }
 
 .hide_comment_comment, .tag_comment_comment {
