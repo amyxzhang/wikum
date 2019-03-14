@@ -1,11 +1,11 @@
 MYSQL_PROD = {
         'NAME' : 'wikum',
-        'USER' : 'stian8',
-        'PASSWORD' : 'password8',
+        'USER' : 'myUSer',
+        'PASSWORD' : 'myPassword',
         'HOST' : 'localhost',  
     }
 
-SECRET_KEY = 'qwpeh2389hofnqeugv832'
+SECRET_KEY = ''
 DISQUS_API_KEY = ''
 PRAW_CLIENT_SECRET = ''
 PRAW_CLIENT_ID = ''
