@@ -606,15 +606,14 @@ def reply_comment(request):
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         comment = request.POST['comment']
-        print(request.POST)
         req_user = request.user if request.user.is_authenticated() else None
-        # request post: <QueryDict: <QueryDict: {u'comment': [u'thoughts'], u'article': [u'3'],
-        #  u'csrfmiddlewaretoken': [u'gw9Q3qho1cciXVO8tRzR9MTs6LNCObGL'], u'id': [u'228']}>
         req_username = request.user.username if request.user.is_authenticated() else None
+        author = CommentAuthor.objects.get(username=req_username)
 
         c = Comment.objects.get(id=id)
         new_id = random_with_N_digits(10);
         new_comment = Comment.objects.create(article=a,
+                                             author=author,
                                              is_replacement=False,
                                              reply_to_disqus=c.disqus_id,
                                              disqus_id=new_id,
