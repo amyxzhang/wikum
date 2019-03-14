@@ -134,6 +134,7 @@ class Comment(models.Model):
     summary = models.TextField()
     extra_summary = models.TextField()
     is_replacement = models.BooleanField(default=False)
+    summarized = models.BooleanField(default=False)
 
     vector = models.BinaryField()
 

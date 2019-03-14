@@ -24,6 +24,10 @@ except IOError:
 
 _ENV_FILE_PATH = '/opt/wikum/env'
 _DEBUG_FILE_PATH = '/opt/wikum/debug'
+PRAW_USERNAME = ''
+PRAW_PASSWORD = ''
+PRAW_CLIENT_ID = ''
+PRAW_CLIENT_SECRET = ''
 
 def _get_env():
     f = open(_ENV_FILE_PATH)
@@ -170,6 +174,7 @@ CELERY_IMPORTS = ("website.tasks",)
 CELERY_RESULT_BACKEND = "db+mysql://root:koob@localhost/celery"
 CELERY_IGNORE_RESULT = False
 CELERY_RESULT_DB_SHORT_LIVED_SESSIONS = True
+CELERY_RESULT_BACKEND = "db+mysql://celery:koob@localhost/celery"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

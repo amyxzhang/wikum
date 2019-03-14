@@ -2,4 +2,5 @@
 *.pyc 
 requirements.txt
 private.py
+wikum/env/
 
