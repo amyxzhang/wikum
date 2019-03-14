@@ -295,12 +295,17 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 			}
 	});
 
+	var class_sum = "";
 	if (d.replace_node) {
-		//TODO(stian8): replies/commenting not yet implemented for summaries
+		var node_text = '<strong>Summary Node:</strong><BR>' + render_summary_node(d, false);
+		var class_sum = "summary_box";
+	} else if (d.summary != '') {
+		var node_text = '<strong>Summary:</strong> ' + render_summary_node(d, false);
 	} else {
-		var text = '<div class="reply_comment_comment reply_comment">' + d.name + '</div>';
-		$('#reply_comment_text').text('Reply to this comment.');
+		var node_text = d.name;
 	}
+	
+	var text = '<div class="reply_comment_comment' + ' ' + class_sum + '">' + node_text+ '</div>';
 
 	$('#reply_comment_box').html(text);
 
@@ -1727,6 +1732,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					if ($('#access_mode').attr('data-access') == "1") {
 						text += `<footer>
+							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
 							<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
@@ -1847,12 +1853,12 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					
 					if ($('#access_mode').attr('data-access') == "1") {
 						text += `<footer>
+							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 							<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
 							<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 						</footer>`;
 					}
-					// TODO(stian8): add options for commenting: Reply
 
 					$('#comment_' + d.id).html(text);
 
@@ -3704,10 +3710,10 @@ function construct_comment(d) {
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
-			// TODO(stian8): comment access only
 			if ($('#access_mode').attr('data-access') == "1") {
 				// thread summary
 				text += `<footer>
+					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
 					<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
