@@ -429,6 +429,35 @@ rect.selection {
 		--background: hsl(30, 100%, 86%);
 	}
 
+.summarized.collapsed {
+	background-color: hsl(195, 59%, 96%);
+    margin-bottom: 10px;
+    padding: 1.2em;
+    padding-bottom: .2em;
+    border: 1px hsl(195, 59%, 85%) solid;
+    --link-color: hsl(195, 59%, 60%);
+}
+
+	.summarized.collapsed.comment_box footer {
+		padding: 0;
+		margin: -.2em -1.2em;
+		background: var(--background);
+		--background: hsl(195, 59%, 90%);
+		white-space: normal;
+	}
+
+		.summarized.collapsed.comment_box footer a {
+			padding: .5em;
+			color: var(--link-color);
+			font-weight: 500;
+			font-size: 13px;
+			display: inline-block;
+		}
+
+		.summarized.collapsed.comment_box footer a:hover {
+			color: hsla(0,0%,100%,.9);
+			background: var(--link-color);
+		}
 
 .collapsed {
 	background-color: hsl(50, 100%, 95%);

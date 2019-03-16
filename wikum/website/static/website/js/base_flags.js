@@ -335,6 +335,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 				new_d = {d_id: res.d_id,
 							 name: res.comment,
 							 summary: "",
+							 summarized: false,
 							 extra_summary: "",
 							 parent: d,
 							 replace: [],
@@ -343,7 +344,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 							 collapsed: false,
 							 replace_node: false,
 							 size: d.size,
-							 hid: d.hid,
+							 hid: [],
 							 depth: d.depth+1,
 							 x: d.x,
 							 x0: d.x0,
@@ -352,6 +353,8 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 							};
 				if (!d.children) {
 					d.children = [];
+				}
+				if (!d._children) {
 					d._children = [];
 				}
 				d.children.push(new_d);
@@ -1668,6 +1671,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					new_d = {d_id: res.d_id,
 							 name: "",
 							 summary: res.top_summary,
+							 summarized: true,
 							 extra_summary: res.bottom_summary,
 							 parent: lowest_d.parent,
 							 replace: children,
@@ -1771,6 +1775,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						new_d = {d_id: res.d_id,
 							 name: "",
 							 parent: d.parent,
+							 summarized: true,
 							 replace: [d],
 							 tags: [],
 							 summary: res.top_summary,
@@ -3795,12 +3800,13 @@ function get_subtree_box(text, d, level) {
 		for (var i=0; i<d.children.length; i++) {
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = d.children[i].replace_node? "summary_box" : "";
+			var summarized = d.children[i].summarized!=null && !d.children[i].summarized? "summarized" : "";
 			var collapsed = d.children[i].collapsed && !d.children[i].replace_node? "collapsed" : "";
 			var summary = d.children[i].summary && !d.children[i].replace_node? "summary" : "";
 			var hiddennode = d.children[i].hiddennode && !d.children[i].replace_node? "hiddennode" : "";
 
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.children[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${summarized} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.children[i].id}">`;
 
 			text +=  construct_comment(d.children[i]);
 			text += '</article>';
@@ -3876,11 +3882,12 @@ function show_text(d) {
 			text = get_subtree_box(text, d, 0);
 		} else {
 			var summaryClass = d.replace_node? "summary_box" : "";
+			var summarized = d.summarized!=null && !d.summarized? "summarized" : "";
 			var collapsed = d.collapsed && !d.replace_node? "collapsed" : "";
 			var summary = d.summary && !d.replace_node? "summary" : "";
 			var hiddennode = d.hiddennode && !d.replace_node? "hiddennode" : "";
 
-			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.id}">`;
+			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" id="comment_${d.id}">`;
 
 			if (d.depth > 1
                 	) {
@@ -3934,10 +3941,11 @@ function show_text(d) {
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
 			var collapsed = objs[i].collapsed && !objs[i].replace_node? "collapsed" : "";
+			var summarized = objs[i].summarized!=null && !objs[i].summarized? "summarized" : "";
 			var summary = objs[i].summary && !objs[i].replace_node? "summary" : "";
 			var hiddennode = objs[i].hiddennode && !objs[i].replace_node? "hiddennode" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${objs[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
 			    if (!summary)
@@ -4478,7 +4486,7 @@ function color(d) {
 			return "#ffffff";
 		}
 	
-		if (d.collapsed) {
+		if (d.collapsed && d.summarized) {
 			if (d.summary) {
 				return "url(#gradientorange)";
 			}

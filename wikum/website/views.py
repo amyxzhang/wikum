@@ -454,6 +454,14 @@ def recurse_down_num_subtree(post):
         child.save()
         recurse_down_num_subtree(child)
 
+def mark_children_summarized(post):
+    post.summarized = True
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+    for child in children:
+        child.summarized = True
+        print(child.text)
+        child.save()
+        mark_children_summarized(child)
     
 def clean_parse(text):
     text = parse(text).strip()
@@ -511,6 +519,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'author': author,
                   'replace_node': post.is_replacement,
                   'collapsed': is_collapsed,
+                  'summarized': post.summarized,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()],
                   }
             
@@ -618,9 +627,9 @@ def reply_comment(request):
                                              reply_to_disqus=c.disqus_id,
                                              disqus_id=new_id,
                                              text=comment,
+                                             summarized=False,
                                              text_len=len(comment),
                                              import_order=c.import_order)
-        c.save()
         new_comment.save()
 
         action = 'reply_comment'
@@ -632,7 +641,11 @@ def reply_comment(request):
                                    explanation=explanation)
 
         h.comments.add(new_comment)
-        recurse_up_post(c)
+        recurse_up_post(new_comment)
+
+        recurse_down_num_subtree(new_comment)
+
+        make_vector(new_comment, a)
 
         a.percent_complete = count_article(a)
         a.last_updated = datetime.datetime.now()
@@ -760,6 +773,7 @@ def summarize_selected(request):
         new_comment = Comment.objects.create(article=a, 
                                              is_replacement=True, 
                                              reply_to_disqus=child.reply_to_disqus,
+                                             summarized=True,
                                              summary=top_summary,
                                              extra_summary=bottom_summary,
                                              disqus_id=new_id,
@@ -783,14 +797,15 @@ def summarize_selected(request):
                 
         for node in delete_nodes:
             delete_node(node)
-        
-        
+
+        mark_children_summarized(new_comment)
+
         recurse_up_post(new_comment)
-        
+
         recurse_down_num_subtree(new_comment)
-        
+
         make_vector(new_comment, a)
-        
+
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
         a.last_updated = datetime.datetime.now()
@@ -861,7 +876,7 @@ def get_summary(summary):
     if len(summary_split) > 1:
         bottom_summary = ' '.join(summary_split[2:]).strip()
     return top_summary, bottom_summary
-    
+
     
 def summarize_comments(request):
     try:
@@ -885,12 +900,13 @@ def summarize_comments(request):
                                                  is_replacement=True, 
                                                  reply_to_disqus=c.reply_to_disqus,
                                                  summary=top_summary,
+                                                 summarized=True,
                                                  extra_summary=bottom_summary,
                                                  disqus_id=new_id,
                                                  points=c.points,
                                                  text_len=len(summary),
                                                  import_order=c.import_order)
-        
+
             c.reply_to_disqus = new_id
             c.save()
 
@@ -903,7 +919,7 @@ def summarize_comments(request):
             d_id = new_comment.id
             
             h.comments.add(new_comment)
-            
+
             recurse_down_num_subtree(new_comment)
             
         else:
@@ -922,7 +938,7 @@ def summarize_comments(request):
             d_id = c.id
             
             new_comment = c
-        
+            recurse_down_num_subtree(new_comment)
         
         
         for node in delete_nodes:
@@ -933,13 +949,12 @@ def summarize_comments(request):
                            to_str=c.id,
                            explanation='promote summary')
             delete_node(node)
-            
+
       
         h.comments.add(c)
-        
         recurse_up_post(c)
         
-        
+        mark_children_summarized(c)
         make_vector(new_comment, a)
         
         a.summary_num = a.summary_num + 1
@@ -2077,6 +2092,7 @@ def recurse_get_parents(parent_dict, post, article):
         parent_dict['d_id'] = parent.id
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
+        parent_dict['summarized'] = parent.summarized
         parent_dict['parent_node'] = True
         parent_dict['summary'] = parent.summary
         parent_dict['extra_summary'] = parent.extra_summary
@@ -2120,6 +2136,7 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
         parent_dict['d_id'] = parent.id
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
+        parent_dict['summarized'] = parent.summarized
         parent_dict['parent_node'] = True
         parent_dict['summary'] = parent.summary
         parent_dict['extra_summary'] = parent.extra_summary
