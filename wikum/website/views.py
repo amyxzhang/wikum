@@ -462,6 +462,16 @@ def mark_children_summarized(post):
         print(child.text)
         child.save()
         mark_children_summarized(child)
+
+def remove_summarized(post):
+    post.summarized = False
+    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+    for child in children:
+        if not child.is_replacement:
+            child.summarized = False
+            print(child.text)
+            child.save()
+            mark_children_summarized(child)
     
 def clean_parse(text):
     text = parse(text).strip()

@@ -351,6 +351,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 							 y: d.y,
 							 y0: d.y0,
 							};
+				recurse_expand_all(d);
 				if (!d.children) {
 					d.children = [];
 				}
@@ -359,7 +360,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 				}
 				d.children.push(new_d);
 				d._children.push(new_d);
-				update(d.parent);
+				update(d);
 
 				var text = construct_comment(new_d);
 				$('#comment_' + new_d.d_id).html(text);
@@ -3182,7 +3183,6 @@ function check_clicked_node(d, clicked_ids) {
 }
 
 function update(source) {
-  
 
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
   var nodes = tree.nodes(root);
@@ -4486,7 +4486,11 @@ function color(d) {
 			return "#ffffff";
 		}
 	
-		if (d.collapsed && d.summarized) {
+		if (d.collapsed) {
+			if (d.summarized==false) {
+				return "#a1c5d1";
+			}
+
 			if (d.summary) {
 				return "url(#gradientorange)";
 			}
