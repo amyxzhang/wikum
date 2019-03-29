@@ -26,7 +26,6 @@ var svg = d3.select("#viz").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
 svg.append('svg:rect')
   .attr('width',  width + margin.left + margin.right) // the whole width of g/svg
   .attr('fill', 'none')
@@ -237,17 +236,68 @@ var comment_id = null;
 
  make_username_typeahead();
 
+unsummarized_children = [];
+function recurse_get_unsummarized(d) {
+	if (d.summarized == false) {
+		unsummarized_children.push(d);
+	}
+	if (d.replace_node && d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			unsummarized_children.concat(recurse_get_unsummarized(d.replace[i]));
+		}
+	}
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			unsummarized_children.concat(recurse_get_unsummarized(d.children[i]));
+		}
+	}
+	return unsummarized_children;
+}
+
+
 d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
-  if (error) throw error;
+	if (error) throw error;
 
-  flare.x0 = 100;
-  flare.y0 = 100;
+  	flare.x0 = 100;
+  	flare.y0 = 100;
 
-  nodes_all = tree.nodes(flare);
+  	nodes_all = tree.nodes(flare);
 
-  update(root = flare);
+  	update(root = flare);
 
-  show_text(nodes_all[0]);
+  	show_text(nodes_all[0]);
+
+  	// if (nodes_all[0].children) {
+  	// 	for (var i=0; i<nodes_all[0].children.length; i++) {
+  	// 		if (nodes_all[0].children[i].replace_node && nodes_all[0].children[i].replace) {
+  	// 			for (var j=0; j<nodes_all[0].children[i].replace.length; j++) {
+  	// 				if (!nodes_all[0].children[i].children) {
+  	// 					nodes_all[0].children[i].children = [];
+  	// 				}
+  	// 				unsummarized_children = [];
+	  // 				if (recurse_get_unsummarized(nodes_all[0].children[i].replace[j]) > 0) {
+	  // 					nodes_all[0].children[i].children.push(nodes_all[0].children[i].replace[j]);
+	  // 				} else {
+	  // 					nodes_all[0].children[i].replace.splice(nodes_all[0].children[i].replace[j], 1);
+	  // 				}
+  	// 			}
+  	// 		}
+  	// 	}
+  	// }
+
+  // 	console.log(nodes_all[0].children);
+  // 	if (nodes_all[0].children) {
+  // 		console.log("reached here");
+		// for (var i=0; i<nodes_all[0].children.length; i++) {
+		// 	if (nodes_all[0].children[i].replace_node) {
+		// 		unsummarized_children = [];
+		// 		recurse_get_unsummarized(nodes_all[0].children[i]);
+		// 		for (var i=0; i<unsummarized_children.length; i++) {
+		// 			nodes_all[0].children[i].
+		// 		}
+		// 	}
+		// }
+  // 	}
 
 	make_progress_bar();
   

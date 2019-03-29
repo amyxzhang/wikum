@@ -1693,6 +1693,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 						 new_d.extrasumwiki = res.bottom_summary_wiki;
 					}
 
+					mark_children_summarized(new_d);
+
 					for (var d=0; d<children.length; d++) {
 						for (var i=0; i<children[d].parent.children.length; i++) {
 							if (children[d].parent.children[i] == children[d]) {
@@ -1796,6 +1798,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 							 new_d.sumwiki = res.top_summary_wiki;
 							 new_d.extrasumwiki = res.bottom_summary_wiki;
 						}
+
+						mark_children_summarized(new_d);
 
 						for (var i=0; i<d.parent.children.length; i++) {
 							if (d.parent.children[i] == d) {
@@ -2072,6 +2076,7 @@ function cascade_undo_collapses(d) {
 	console.log(d.id);
 	console.log('collapse false');
 	d.collapsed = false;
+	d.summarized = false;
 
 	if (!d.replace_node) {
 		d3.select("#node_" + d.id)
@@ -2096,6 +2101,7 @@ function cascade_collapses(d) {
 	console.log(d.id);
 	console.log('collapse true');
 	d.collapsed = true;
+	d.summarized = true;
 
 	if (!d.replace_node) {
 		d3.select("#node_" + d.id)
@@ -2598,8 +2604,10 @@ function cite_comment(did) {
 function delete_children_boxes(node) {
 	if (node.children) {
 		for (var i=0; i<node.children.length; i++) {
-			$('#comment_' + node.children[i].id).remove();
-			delete_children_boxes(node.children[i]);
+			if (!node.summarized == false) {
+				$('#comment_' + node.children[i].id).remove();
+				delete_children_boxes(node.children[i]);
+			}
 		}
 	}
 }
@@ -2997,6 +3005,7 @@ function dragmove(d) {
         	});
         }
 };
+
 
 function expand(d) {
 	if (d.replace_node) {
@@ -3795,7 +3804,6 @@ function clear_box_top() {
 
 
 function get_subtree_box(text, d, level) {
-
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
 			var levelClass = level > 2? "level3" : `level${level}`;
@@ -4254,7 +4262,6 @@ function showdiv(d) {
 	}
 }
 
-
 function hide_replace_nodes(id) {
 	d = nodes_all[id-1];
 
@@ -4280,6 +4287,37 @@ function hide_replace_nodes(id) {
 		$('#expand').html("");
 	}
 }
+// function hide_replace_nodes(id) {
+// 	console.log("collapse summary");
+// 	d = nodes_all[id-1];
+
+// 	delete_children_boxes(d);
+// 	if (d.children) {
+// 		if (!d.replace) {
+// 			d.replace = [];
+// 		}
+// 		var newchildren = [];
+// 		for (var i=0; i<d.children.length; i++) {
+// 			if (!d.children[i].summarized==false) {
+// 				d.replace.push(d.children[i]);
+// 			} else {
+// 				newchildren.push(d.children[i]);
+// 			}
+// 		}
+// 		d.children = newchildren;
+// 		update(d);
+// 	}
+// 	text = '';
+// 	if (comment_id != d.d_id) {
+// 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+// 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+// 	}
+// 	if (text != '') {
+// 		$('#expand').html(text);
+// 	} else {
+// 		$('#expand').html("");
+// 	}
+// }
 
 function show_replace_nodes(id) {
 	d = nodes_all[id-1];
@@ -4287,6 +4325,7 @@ function show_replace_nodes(id) {
 		if (!d.children) {
 			d.children = [];
 		}
+
 		for (var i=0; i<d.replace.length; i++) {
 			d.children.push(d.replace[i]);
 		}
@@ -4313,6 +4352,22 @@ function recurse_mark_hiddennode(d) {
 		for (var i=0; i<d.children.length; i++) {
 			d.children[i].hiddennode = true;
 			recurse_mark_hiddennode(d.children[i]);
+		}
+	}
+}
+
+function mark_children_summarized(d) {
+	d.summarized = true;
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			d.children[i].summarized = true;
+			mark_children_summarized(d.children[i]);
+		}
+	}
+	if (d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			d.replace[i].summarized = true;
+			mark_children_summarized(d.replace[i]);
 		}
 	}
 }

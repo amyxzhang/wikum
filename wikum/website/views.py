@@ -377,6 +377,7 @@ def summary_data(request):
     
     
     val2 = {}
+    # recurse_viz(parent, posts, replaced, article, is_collapsed)
     val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     
     return JsonResponse({'posts': val2})
@@ -464,6 +465,7 @@ def mark_children_summarized(post):
         mark_children_summarized(child)
 
 def remove_summarized(post):
+    print("remove summarized")
     post.summarized = False
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
@@ -471,7 +473,7 @@ def remove_summarized(post):
             child.summarized = False
             print(child.text)
             child.save()
-            mark_children_summarized(child)
+            remove_summarized(child)
     
 def clean_parse(text):
     text = parse(text).strip()
@@ -589,12 +591,15 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
             c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
             if c1.count() == 0:
+                print('OTHER HERE')
                 vals = []
                 hid = []
                 rep = []
                 num_subchildren = 0
             else:
+                print('RECURSE HERE')
                 replace_future = replaced or post.is_replacement
+                # recurse_viz(parent, posts, replaced, article, is_collapsed)
                 vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement)
             v1['children'] = vals
             v1['hid'] = hid
@@ -611,10 +616,13 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             v1 = json.loads(post.json_flatten)
         
         if post.hidden:
+            print("hidden")
             hid_children.append(v1)
-        elif parent and parent.is_replacement:
+        elif parent and parent.is_replacement and post.summarized:
+            print("summarized and collapsed")
             replace_children.append(v1)
         else:
+            print("shown children")
             children.append(v1)
             
     return children, hid_children, replace_children, num_subtree_children
@@ -856,6 +864,7 @@ def delete_node(did):
         article = c.article
         
         if c.is_replacement:
+            remove_summarized(c)
             parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
             
             if parent.count() > 0:
@@ -927,8 +936,12 @@ def summarize_comments(request):
                                        explanation='initial summary of subtree')
             
             d_id = new_comment.id
-            
+
             h.comments.add(new_comment)
+
+            mark_children_summarized(new_comment)
+
+            recurse_up_post(new_comment)
 
             recurse_down_num_subtree(new_comment)
             
@@ -949,6 +962,7 @@ def summarize_comments(request):
             
             new_comment = c
             recurse_down_num_subtree(new_comment)
+            recurse_up_post(c)
         
         
         for node in delete_nodes:
@@ -962,9 +976,8 @@ def summarize_comments(request):
 
       
         h.comments.add(c)
-        recurse_up_post(c)
         
-        mark_children_summarized(c)
+        
         make_vector(new_comment, a)
         
         a.summary_num = a.summary_num + 1
@@ -1792,7 +1805,7 @@ def users(request):
 def determine_is_collapsed(post, article):
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
     if parent.count() > 0:
-        if parent[0].is_replacement:
+        if parent[0].is_replacement and post.summarized:
             return True
         else:
             return determine_is_collapsed(parent[0], article)
@@ -1883,7 +1896,8 @@ def viz_data(request):
             val2 = {}
             
             is_collapsed = determine_is_collapsed(post, a)
-            
+
+            # recurse_viz(parent, posts, replaced, article, is_collapsed)
             val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a, is_collapsed)
             
             val_child = recurse_get_parents(val2, post, a)
@@ -1905,6 +1919,7 @@ def viz_data(request):
         elif sort == 'oldest':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')[start:end]
         
+        # recurse_viz(parent, posts, replaced, article, is_collapsed)
         val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
         
     return JsonResponse(val)
@@ -2010,6 +2025,7 @@ def cluster_data(request):
         if cluster == min_cluster:
             posts_cluster.append(post)
     
+    # recurse_viz(parent, posts, replaced, article, is_collapsed)
     val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts_cluster, False, a, False)
     
     return JsonResponse(val)
@@ -2073,7 +2089,8 @@ def subtree_data(request):
         val2 = {}
         
         is_collapsed = determine_is_collapsed(posts[0], a)
-        
+
+        # recurse_viz(parent, posts, replaced, article, is_collapsed)        
         val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, is_collapsed)
         
         val = recurse_get_parents(val2, posts[0], a)
