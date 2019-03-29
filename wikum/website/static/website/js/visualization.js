@@ -246,11 +246,8 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
 
   	update(root = flare);
   	
-  	if (nodes_all[0].children) {
-  		for (var i=0; i<nodes_all[0].children.length; i++) {
-  			expand_unsummarized_children(nodes_all[0].children[i]);
-  		}
-  	}
+	show_all_unsummarized(nodes_all[0]);
+
   	show_text(nodes_all[0]);
 
 	make_progress_bar();

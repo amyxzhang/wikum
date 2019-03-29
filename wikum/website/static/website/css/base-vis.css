@@ -348,6 +348,17 @@ rect.selection {
 	color: gray;
 }
 
+#unsummarized_children {
+	margin-top: 15px;
+}
+
+#unsummarized_id_list {
+	height: 100px;
+    max-height: 100px;
+    overflow-y: scroll;
+    border: 1px gray solid;
+}
+
 .comment_box,
 .reply_comment_comment {
 	position: relative;
@@ -438,7 +449,7 @@ rect.selection {
 		--background: hsl(30, 100%, 86%);
 	}
 
-.summarized.collapsed {
+.unsummarized.collapsed {
 	background-color: hsl(195, 59%, 96%);
     margin-bottom: 10px;
     padding: 1.2em;
@@ -447,7 +458,7 @@ rect.selection {
     --link-color: hsl(195, 59%, 60%);
 }
 
-	.summarized.collapsed.comment_box footer {
+	.unsummarized.collapsed.comment_box footer {
 		padding: 0;
 		margin: -.2em -1.2em;
 		background: var(--background);
@@ -455,7 +466,7 @@ rect.selection {
 		white-space: normal;
 	}
 
-		.summarized.collapsed.comment_box footer a {
+		.unsummarized.collapsed.comment_box footer a {
 			padding: .5em;
 			color: var(--link-color);
 			font-weight: 500;
@@ -463,7 +474,7 @@ rect.selection {
 			display: inline-block;
 		}
 
-		.summarized.collapsed.comment_box footer a:hover {
+		.unsummarized.collapsed.comment_box footer a:hover {
 			color: hsla(0,0%,100%,.9);
 			background: var(--link-color);
 		}
@@ -526,6 +537,10 @@ rect.selection {
 
 .highlighted.summary{
 	border: 1.8px #000000 solid;
+}
+
+.highlighted.unsummarized.collapsed{
+	border: 1px #000000 solid;
 }
 
 .highlighted {
@@ -682,6 +697,10 @@ textarea {
 .input-sm {
     height: 25px;
     line-height: 1.2;
+}
+
+input[type=checkbox] {
+    margin: 5px;
 }
 
 #count_result {

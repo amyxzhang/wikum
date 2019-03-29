@@ -532,6 +532,17 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
     
     $('#quality_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
 
+    var unsummarized_list_text = '<p>Unsummarized list (add or mark as summarized):</p>';
+    unsummarized_list_text += '<div id="unsummarized_id_list">';
+    var d_unsummarized_children = recurse_get_unsummarized(d);
+    for (var i = 0; i < d_unsummarized_children.length; i++) {
+		var unsummarized_child = d_unsummarized_children[i];
+		unsummarized_list_text +='<input type="checkbox" id="'+unsummarized_child.id+'" name="'+unsummarized_child.id+'">';
+		unsummarized_list_text += '<label for="'+unsummarized_child.id+'">'+unsummarized_child.id+'</label><br>';
+	}
+    unsummarized_list_text += '</div>';
+    $('#unsummarized_children').html(unsummarized_list_text);
+
 
 	var did = $(e.relatedTarget).data('did');
 
@@ -543,12 +554,21 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var neu = $( "#neutral_rating" ).slider('value');
 		var cov = $( "#coverage_rating" ).slider('value');
 		var qual = $( "#quality_rating" ).slider('value');
+
+		var selected = [];
+		var selected_dids = [];
+		$('#unsummarized_children input:checked').each(function() {
+			var id = parseInt($(this).attr('name'));
+		    selected.push(id);
+		    selected_dids.push(nodes_all[id-1].d_id);
+		});
 		
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
 			neu: neu,
 			cov: cov,
-			qual: qual
+			qual: qual,
+			selected_dids: selected_dids
 			};
 		data.id = evt.data.data_id;
 		$.ajax({
@@ -568,7 +588,12 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 					d.rating_flag.quality = qual;
 					
 					show_text(d);
-					
+
+					for (var i=0; i < selected.length; i++) {
+						nodes_all[selected[i]-1].summarized = true;
+						$('#comment_' + selected[i]).removeClass('unsummarized');
+						d3.select('#node_' + selected[i]).style('fill', color(nodes_all[selected[i]-1]));
+					}
 				}
 			},
 			error: function() {
@@ -3192,7 +3217,6 @@ function check_clicked_node(d, clicked_ids) {
 }
 
 function update(source) {
-
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
   var nodes = tree.nodes(root);
 
@@ -3809,7 +3833,7 @@ function get_subtree_box(text, d, level) {
 		for (var i=0; i<d.children.length; i++) {
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = d.children[i].replace_node? "summary_box" : "";
-			var summarized = d.children[i].summarized!=null && !d.children[i].summarized? "summarized" : "";
+			var summarized = d.children[i].summarized!=null && !d.children[i].summarized? "unsummarized" : "";
 			var collapsed = d.children[i].collapsed && !d.children[i].replace_node? "collapsed" : "";
 			var summary = d.children[i].summary && !d.children[i].replace_node? "summary" : "";
 			var hiddennode = d.children[i].hiddennode && !d.children[i].replace_node? "hiddennode" : "";
@@ -3891,7 +3915,7 @@ function show_text(d) {
 			text = get_subtree_box(text, d, 0);
 		} else {
 			var summaryClass = d.replace_node? "summary_box" : "";
-			var summarized = d.summarized!=null && !d.summarized? "summarized" : "";
+			var summarized = d.summarized!=null && !d.summarized? "unsummarized" : "";
 			var collapsed = d.collapsed && !d.replace_node? "collapsed" : "";
 			var summary = d.summary && !d.replace_node? "summary" : "";
 			var hiddennode = d.hiddennode && !d.replace_node? "hiddennode" : "";
@@ -3950,7 +3974,7 @@ function show_text(d) {
 			var levelClass = level > 2? "level3" : `level${level}`;
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
 			var collapsed = objs[i].collapsed && !objs[i].replace_node? "collapsed" : "";
-			var summarized = objs[i].summarized!=null && !objs[i].summarized? "summarized" : "";
+			var summarized = objs[i].summarized!=null && !objs[i].summarized? "unsummarized" : "";
 			var summary = objs[i].summary && !objs[i].replace_node? "summary" : "";
 			var hiddennode = objs[i].hiddennode && !objs[i].replace_node? "hiddennode" : "";
 
@@ -4342,6 +4366,7 @@ function mark_children_summarized(d) {
 	}
 }
 
+// only works if d showing in nodes_all
 function has_unsummarized_children(d) {
 	if (d.summarized == false) {
 		return true;
@@ -4366,12 +4391,29 @@ function expand_unsummarized_children(d) {
 			if (!d.children) {
 				d.children = [];
 			}
-			if (has_unsummarized_children(d.replace[i])) {
+			if (recurse_get_unsummarized(d.replace[i]).length > 0) {
 				d.children.push(d.replace[i]);
 				d.replace.splice(i, 1);
 			}
 		}
 		update(d);
+	}
+}
+
+// expands all branches with unsummarized comments
+function show_all_unsummarized(d) {
+	if (d.replace_node) {
+		expand_unsummarized_children(d);
+	}
+	if (d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			show_all_unsummarized(d.replace[i]);
+		}
+	}
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			show_all_unsummarized(d.children[i]);
+		}
 	}
 }
 
@@ -4446,15 +4488,15 @@ function recurse_get_unsummarized(d, unsummarized_children=[]) {
 	}
 	if (d.replace_node && d.replace) {
 		for (var i=0; i<d.replace.length; i++) {
-			unsummarized_children = unsummarized_children.concat(recurse_get_unsummarized(d.replace[i]), unsummarized_children);
+			recurse_get_unsummarized(d.replace[i], unsummarized_children);
 		}
 	}
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			unsummarized_children = unsummarized_children.concat(recurse_get_unsummarized(d.children[i]), unsummarized_children);
+			recurse_get_unsummarized(d.children[i], unsummarized_children);
 		}
 	}
-	return [...new Set(unsummarized_children)];
+	return unsummarized_children;
 }
 
 function hidediv(d) {
