@@ -341,8 +341,16 @@ rect.selection {
     fill            : transparent;
 }
 
+.id_val {
+	position: absolute;
+	top: 2px;
+	left: 8px;
+	color: gray;
+}
+
 .comment_box,
 .reply_comment_comment {
+	position: relative;
     background-color: hsl(195, 59%, 96%);
     margin-bottom: 10px;
     padding: 1.2em;
@@ -359,6 +367,7 @@ rect.selection {
 
 .comment_box,
 .summarize_comment_comment {
+	position: relative;
 	background-color: hsl(195, 59%, 96%);
 	margin-bottom: 10px;
 	padding: 1.2em;

@@ -3568,6 +3568,7 @@ function construct_comment(d) {
 	var summary = !!(d.summary != '' || d.extra_summary != '');
 
 	text += `<div id="comment_text_${d.id}">`;
+	text += `<div class="id_val">#${d.id}</div>`;
 
 	if (summary) {
 		if (d.replace_node) {
