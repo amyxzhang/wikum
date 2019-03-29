@@ -236,25 +236,6 @@ var comment_id = null;
 
  make_username_typeahead();
 
-unsummarized_children = [];
-function recurse_get_unsummarized(d) {
-	if (d.summarized == false) {
-		unsummarized_children.push(d);
-	}
-	if (d.replace_node && d.replace) {
-		for (var i=0; i<d.replace.length; i++) {
-			unsummarized_children.concat(recurse_get_unsummarized(d.replace[i]));
-		}
-	}
-	if (d.children) {
-		for (var i=0; i<d.children.length; i++) {
-			unsummarized_children.concat(recurse_get_unsummarized(d.children[i]));
-		}
-	}
-	return unsummarized_children;
-}
-
-
 d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
 	if (error) throw error;
 

@@ -4440,6 +4440,22 @@ function hide_hidden(id) {
 	}
 }
 
+function recurse_get_unsummarized(d, unsummarized_children=[]) {
+	if (d.summarized == false) {
+		unsummarized_children.push(d);
+	}
+	if (d.replace_node && d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			unsummarized_children = unsummarized_children.concat(recurse_get_unsummarized(d.replace[i]), unsummarized_children);
+		}
+	}
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			unsummarized_children = unsummarized_children.concat(recurse_get_unsummarized(d.children[i]), unsummarized_children);
+		}
+	}
+	return [...new Set(unsummarized_children)];
+}
 
 function hidediv(d) {
 	if (!isMouseDown && d3.select(this).classed("clicked")) {
