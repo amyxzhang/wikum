@@ -4287,37 +4287,6 @@ function hide_replace_nodes(id) {
 		$('#expand').html("");
 	}
 }
-// function hide_replace_nodes(id) {
-// 	console.log("collapse summary");
-// 	d = nodes_all[id-1];
-
-// 	delete_children_boxes(d);
-// 	if (d.children) {
-// 		if (!d.replace) {
-// 			d.replace = [];
-// 		}
-// 		var newchildren = [];
-// 		for (var i=0; i<d.children.length; i++) {
-// 			if (!d.children[i].summarized==false) {
-// 				d.replace.push(d.children[i]);
-// 			} else {
-// 				newchildren.push(d.children[i]);
-// 			}
-// 		}
-// 		d.children = newchildren;
-// 		update(d);
-// 	}
-// 	text = '';
-// 	if (comment_id != d.d_id) {
-// 		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
-// 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
-// 	}
-// 	if (text != '') {
-// 		$('#expand').html(text);
-// 	} else {
-// 		$('#expand').html("");
-// 	}
-// }
 
 function show_replace_nodes(id) {
 	d = nodes_all[id-1];
@@ -4369,6 +4338,39 @@ function mark_children_summarized(d) {
 			d.replace[i].summarized = true;
 			mark_children_summarized(d.replace[i]);
 		}
+	}
+}
+
+function has_unsummarized_children(d) {
+	if (d.summarized == false) {
+		return true;
+	} else {
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				return false || has_unsummarized_children(d.children[i]);
+			}
+		}
+		if (d.replace) {
+			for (var i=0; i<d.replace.length; i++) {
+				return false || has_unsummarized_children(d.replace[i]);
+			}
+		}
+		return false;
+	}
+}
+
+function expand_unsummarized_children(d) {
+	if (d.replace_node && d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			if (!d.children) {
+				d.children = [];
+			}
+			if (has_unsummarized_children(d.replace[i])) {
+				d.children.push(d.replace[i]);
+				d.replace.splice(i, 1);
+			}
+		}
+		update(d);
 	}
 }
 

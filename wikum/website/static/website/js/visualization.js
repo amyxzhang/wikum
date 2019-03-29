@@ -264,40 +264,13 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
   	nodes_all = tree.nodes(flare);
 
   	update(root = flare);
-
+  	
+  	if (nodes_all[0].children) {
+  		for (var i=0; i<nodes_all[0].children.length; i++) {
+  			expand_unsummarized_children(nodes_all[0].children[i]);
+  		}
+  	}
   	show_text(nodes_all[0]);
-
-  	// if (nodes_all[0].children) {
-  	// 	for (var i=0; i<nodes_all[0].children.length; i++) {
-  	// 		if (nodes_all[0].children[i].replace_node && nodes_all[0].children[i].replace) {
-  	// 			for (var j=0; j<nodes_all[0].children[i].replace.length; j++) {
-  	// 				if (!nodes_all[0].children[i].children) {
-  	// 					nodes_all[0].children[i].children = [];
-  	// 				}
-  	// 				unsummarized_children = [];
-	  // 				if (recurse_get_unsummarized(nodes_all[0].children[i].replace[j]) > 0) {
-	  // 					nodes_all[0].children[i].children.push(nodes_all[0].children[i].replace[j]);
-	  // 				} else {
-	  // 					nodes_all[0].children[i].replace.splice(nodes_all[0].children[i].replace[j], 1);
-	  // 				}
-  	// 			}
-  	// 		}
-  	// 	}
-  	// }
-
-  // 	console.log(nodes_all[0].children);
-  // 	if (nodes_all[0].children) {
-  // 		console.log("reached here");
-		// for (var i=0; i<nodes_all[0].children.length; i++) {
-		// 	if (nodes_all[0].children[i].replace_node) {
-		// 		unsummarized_children = [];
-		// 		recurse_get_unsummarized(nodes_all[0].children[i]);
-		// 		for (var i=0; i<unsummarized_children.length; i++) {
-		// 			nodes_all[0].children[i].
-		// 		}
-		// 	}
-		// }
-  // 	}
 
 	make_progress_bar();
   
