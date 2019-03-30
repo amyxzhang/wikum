@@ -532,7 +532,17 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
     
     $('#quality_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
 
-    var unsummarized_list_text = '<p>Unsummarized list (add or mark as summarized):</p>';
+    var unsummarized_list_text = 'Unsummarized list (check to mark as summarized):';
+    unsummarized_list_text += '<select name="summarized_list" id="summarized_list">';
+    unsummarized_list_text += '<option selected disabled>Add</option>';
+    var d_summarized_children = recurse_get_summarized(d);
+    for (var i = 0; i < d_summarized_children.length; i++) {
+		var summarized_child = d_summarized_children[i];
+		if (summarized_child.id) {
+			unsummarized_list_text += '<option value="'+summarized_child.id+'">'+summarized_child.id+'</option>';
+		}
+	}
+    unsummarized_list_text += '</select><br>';
     unsummarized_list_text += '<div id="unsummarized_id_list">';
     var d_unsummarized_children = recurse_get_unsummarized(d);
     for (var i = 0; i < d_unsummarized_children.length; i++) {
@@ -542,7 +552,6 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 	}
     unsummarized_list_text += '</div>';
     $('#unsummarized_children').html(unsummarized_list_text);
-
 
 	var did = $(e.relatedTarget).data('did');
 
@@ -555,6 +564,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var cov = $( "#coverage_rating" ).slider('value');
 		var qual = $( "#quality_rating" ).slider('value');
 
+		// get list unsummarized children that should be summarized
 		var selected = [];
 		var selected_dids = [];
 		$('#unsummarized_children input:checked').each(function() {
@@ -562,13 +572,24 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		    selected.push(id);
 		    selected_dids.push(nodes_all[id-1].d_id);
 		});
-		
+
+		// get child to mark as unsummarized
+		var mark_selected = [];
+		var mark_dids = [];
+		var mark_unsummarized_childID = $('#summarized_list').find(":selected").text();
+		if (mark_unsummarized_childID != "Add") {
+			mark_selected.push(mark_unsummarized_childID);
+			var mark_unsummarized_child = nodes_all[mark_unsummarized_childID-1];
+			mark_dids.push(mark_unsummarized_child.d_id);
+		}
+
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
 			neu: neu,
 			cov: cov,
 			qual: qual,
-			selected_dids: selected_dids
+			selected_dids: selected_dids,
+			mark_dids: mark_dids
 			};
 		data.id = evt.data.data_id;
 		$.ajax({
@@ -593,6 +614,12 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 						nodes_all[selected[i]-1].summarized = true;
 						$('#comment_' + selected[i]).removeClass('unsummarized');
 						d3.select('#node_' + selected[i]).style('fill', color(nodes_all[selected[i]-1]));
+					}
+
+					for (var i=0; i < mark_selected.length; i++) {
+						nodes_all[mark_selected[i]-1].summarized = false;
+						$('#comment_' + mark_selected[i]).addClass('unsummarized');
+						d3.select('#node_' + mark_selected[i]).style('fill', color(nodes_all[mark_selected[i]-1]));
 					}
 				}
 			},
@@ -4497,6 +4524,23 @@ function recurse_get_unsummarized(d, unsummarized_children=[]) {
 		}
 	}
 	return unsummarized_children;
+}
+
+function recurse_get_summarized(d, summarized_children=[]) {
+	if ((!d.replace_node == true) && d.summarized) {
+		summarized_children.push(d);
+	}
+	if (d.replace_node && d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			recurse_get_summarized(d.replace[i], summarized_children);
+		}
+	}
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			recurse_get_summarized(d.children[i], summarized_children);
+		}
+	}
+	return summarized_children;
 }
 
 function hidediv(d) {

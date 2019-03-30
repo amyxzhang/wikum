@@ -1352,6 +1352,12 @@ def rate_summary(request):
             c.summarized = True
             c.save()
             recurse_up_post(c)
+        mark_dids = request.POST.getlist('mark_dids[]')
+        mark_selected = Comment.objects.filter(id__in=mark_dids)
+        for c in mark_selected:
+            c.summarized = False
+            c.save()
+            recurse_up_post(c)
     
         comment = Comment.objects.get(id=id)
     

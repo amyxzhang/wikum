@@ -353,7 +353,6 @@ rect.selection {
 }
 
 #unsummarized_id_list {
-	height: 100px;
     max-height: 100px;
     overflow-y: scroll;
     border: 1px gray solid;
@@ -685,6 +684,9 @@ textarea {
 	cursor: pointer;
 }
 
+select {
+	margin: 5px;
+}
 
 #button_subtree {
     position: absolute;
@@ -701,6 +703,14 @@ textarea {
 
 input[type=checkbox] {
     margin: 5px;
+}
+
+#unsummarized_textbox {
+	width:50px;
+}
+
+#mark_unsummarized {
+	margin: 5px;
 }
 
 #count_result {
