@@ -237,6 +237,7 @@ def poll_status(request):
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
 
+
 def author_info(request):
     username = request.GET.get('username', None)
     url = request.GET.get('article', None)
