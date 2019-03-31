@@ -348,11 +348,11 @@ rect.selection {
 	color: gray;
 }
 
-#unsummarized_children {
+#summarized_children {
 	margin-top: 15px;
 }
 
-#unsummarized_id_list {
+#summarized_id_list {
     max-height: 100px;
     overflow-y: scroll;
     border: 1px gray solid;
