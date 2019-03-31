@@ -4618,6 +4618,20 @@ gradientorange.append("svg:stop")
     .attr("stop-color", "#ffffff")
     .attr("stop-opacity", 1);
 
+var half_orange_blue = svg.append("svg:defs")
+	.append("svg:linearGradient")
+	.attr("id", "half_orange_blue")
+	.attr("x1", "100%")
+    .attr("y1", "100%")
+    .attr("x2", "0%")
+    .attr("y2", "0%");
+half_orange_blue.append("svg:stop")
+    .attr("offset", "50%")
+    .attr("stop-color", "#a1c5d1");
+half_orange_blue.append("svg:stop")
+    .attr("offset", "50%")
+    .attr("stop-color", "#ee7600");
+
 
 var stringToColour = function(str) {
   var hash = 0;
@@ -4639,7 +4653,11 @@ function color(d) {
 		}
 	
 		if (d.replace_node) {
-			return "#ee7600";
+			if (recurse_get_unsummarized(d).length > 0) {
+				return "url(#half_orange_blue)";
+			} else {
+				return "#ee7600";
+			}
 		}
 	
 		if (d.article) {

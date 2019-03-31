@@ -246,7 +246,7 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
 
   	update(root = flare);
   	
-	show_all_unsummarized(nodes_all[0]);
+	// show_all_unsummarized(nodes_all[0]);
 
   	show_text(nodes_all[0]);
 
