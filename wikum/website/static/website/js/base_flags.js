@@ -542,9 +542,9 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var child = d_all_children[i];
 		if (!child.replace_node) {
 			if (child.summarized == false) {
-				summarized_list_text +='<input type="checkbox" id="'+child.id+'" name="'+child.id+'">';
+				summarized_list_text +='<input type="checkbox" id="check_'+child.id+'" name="'+child.id+'">';
 			} else {
-				summarized_list_text +='<input type="checkbox" id="'+child.id+'" name="'+child.id+'" checked>';
+				summarized_list_text +='<input type="checkbox" id="check_'+child.id+'" name="'+child.id+'" checked>';
 			}
 			summarized_list_text += '<label for="'+child.id+'">'+child.id+'</label><br>';
 		}
@@ -563,21 +563,32 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var cov = $( "#coverage_rating" ).slider('value');
 		var qual = $( "#quality_rating" ).slider('value');
 
-		// get list unsummarized children that should be summarized
-		var selected = [];
-		var selected_dids = [];
-		$('#summarized_children input:checked').each(function() {
-			var id = parseInt($(this).attr('name'));
-		    selected.push(id);
-		    selected_dids.push(nodes_all[id-1].d_id);
-		});
+		var to_summarize = [];
+		var to_summarize_dids = [];
+		var to_unsummarize = [];
+		var to_unsummarize_dids = [];
+		for (var i=0; i < d_all_children.length; i++) {
+			if (!d_all_children[i].replace_node) {
+				// checked as summarized and currently unsummarized
+				if ($('#check_' + d_all_children[i].id).is(":checked") && d_all_children[i].summarized==false) {
+					to_summarize.push(d_all_children[i]);
+					to_summarize_dids.push(d_all_children[i].d_id);
+				}
+				// unchecked and currently summarized
+				if (!$('#check_' + d_all_children[i].id).is(":checked") && !d_all_children[i].summarized==false) {
+					to_unsummarize.push(d_all_children[i]);
+					to_unsummarize_dids.push(d_all_children[i].d_id);
+				}
+			}
+		}
 
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
 			neu: neu,
 			cov: cov,
 			qual: qual,
-			selected_dids: selected_dids
+			to_summarize_dids: to_summarize_dids,
+			to_unsummarize_dids: to_unsummarize_dids
 			};
 		data.id = evt.data.data_id;
 		$.ajax({
@@ -598,11 +609,19 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 					
 					show_text(d);
 
-					for (var i=0; i < selected.length; i++) {
-						nodes_all[selected[i]-1].summarized = true;
-						$('#comment_' + selected[i]).removeClass('unsummarized');
-						d3.select('#node_' + selected[i]).style('fill', color(nodes_all[selected[i]-1]));
+					for (var i=0; i < to_summarize.length; i++) {
+						to_summarize[i].summarized = true;
+						$('#comment_' + to_summarize[i].id).removeClass('unsummarized');
+						d3.select('#node_' + to_summarize[i].id).style('fill', color);
 					}
+
+					for (var i=0; i < to_unsummarize.length; i++) {
+						to_unsummarize[i].summarized = false;
+						$('#comment_' + to_unsummarize[i].id).addClass('unsummarized');
+						d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
+					}
+
+					d3.select('#node_' + d.id).style('fill', color);
 
 				}
 			},

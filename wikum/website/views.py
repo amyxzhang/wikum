@@ -1346,15 +1346,15 @@ def rate_summary(request):
         neutral_rating = request.POST['neu']
         coverage_rating = request.POST['cov']
         quality_rating = request.POST['qual']
-        selected_dids = request.POST.getlist('selected_dids[]')
-        selected = Comment.objects.filter(id__in=selected_dids)
-        for c in selected:
+        to_summarize_dids = request.POST.getlist('to_summarize_dids[]')
+        to_unsummarize_dids = request.POST.getlist('to_unsummarize_dids[]')
+        summarize_dids = Comment.objects.filter(id__in=to_summarize_dids)
+        for c in summarize_dids:
             c.summarized = True
             c.save()
             recurse_up_post(c)
-        mark_dids = request.POST.getlist('mark_dids[]')
-        mark_selected = Comment.objects.filter(id__in=mark_dids)
-        for c in mark_selected:
+        unsummarize_dids = Comment.objects.filter(id__in=to_unsummarize_dids)
+        for c in unsummarize_dids:
             c.summarized = False
             c.save()
             recurse_up_post(c)
