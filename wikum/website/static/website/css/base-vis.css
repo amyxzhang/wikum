@@ -752,14 +752,20 @@ a.btn-edit {
 	resize: vertical;
 }
 
+#evaluate_summary_modal_box{
+	width: 70%;
+	height: 80%;
+}
+
 #evaluate_summary_box {
-	height: 140px;
+	height: 350px;
     overflow-y: scroll;
     border: 1px #000000 solid;
     display: block;
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 5px;
+    resize: vertical;
 }
 
 #summarize_multiple_comment_box {
