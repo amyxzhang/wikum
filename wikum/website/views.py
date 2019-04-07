@@ -616,6 +616,51 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             children.append(v1)
             
     return children, hid_children, replace_children, num_subtree_children
+
+def new_node(request):
+    try:
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        comment = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
+        req_username = request.user.username if request.user.is_authenticated() else None
+        author = CommentAuthor.objects.get(username=req_username)
+
+        new_id = random_with_N_digits(10);
+        new_comment = Comment.objects.create(article=a,
+                                             author=author,
+                                             is_replacement=False,
+                                             disqus_id=new_id,
+                                             text=comment,
+                                             summarized=False,
+                                             text_len=len(comment))
+        new_comment.save()
+
+        action = 'new_node'
+        explanation = 'new comment'
+
+        h = History.objects.create(user=req_user,
+                                   article=a,
+                                   action=action,
+                                   explanation=explanation)
+
+        h.comments.add(new_comment)
+        recurse_up_post(new_comment)
+
+        recurse_down_num_subtree(new_comment)
+
+        make_vector(new_comment, a)
+
+        a.percent_complete = count_article(a)
+        a.last_updated = datetime.datetime.now()
+
+        a.save()
+
+        return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
         
 def reply_comment(request):
     try:

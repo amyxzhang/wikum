@@ -120,8 +120,15 @@ a:hover {
 	line-height: 1.4;
 	border-radius: 15px;
 }
+
 #new_comment:hover{
 	cursor: pointer;
+}
+
+#new_node_textarea {
+	height: 100px;
+	max-height: 100px;
+    overflow-y: scroll;
 }
 
 path.link {
