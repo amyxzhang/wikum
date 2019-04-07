@@ -105,6 +105,25 @@ a:hover {
     font-size: 11px;
 }
 
+#new_node {
+	position: absolute;
+	top: 120px;
+	left: 70px;
+}
+#create_new{
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	padding: 1px 0;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 1.4;
+	border-radius: 15px;
+}
+#new_comment:hover{
+	cursor: pointer;
+}
+
 path.link {
     fill: none;
     stroke: #ccc;
