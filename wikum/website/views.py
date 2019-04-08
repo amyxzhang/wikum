@@ -150,10 +150,11 @@ def visualization_flag(request):
     else:
         owner = User.objects.get(username=owner)
         
-    url = request.GET['article']
-    num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url, owner=owner)[num]
-    
+    id = int(request.GET['id'])
+    print(id)
+    print(type(id))
+    article = Article.objects.filter(id=id, owner=owner)
+
     permission = None
     if user.is_authenticated():
         permission = Permissions.objects.filter(user=user, article=article)

@@ -1401,6 +1401,7 @@
 
 
 <script>
+	var article_id = $('#articleUrl').val();
 	var PollState = function(task_id) {
 		$.ajax({
  			url: "poll_status",
@@ -1427,20 +1428,15 @@
  					if (!owner) {
  						owner = "None";
  					}
-  					$('.status').html(task.state + '!  <a href="/visualization_flags?article=' + article + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+  					$('.status').html(task.state + '!  <a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
   				} else {
   					$('.status').html(task.state + ' - ' + task.result);
   				}
  			};
 		});
 	};
-	</script>
-
-
-    <script>
-    
+    	
     	function submiturl() {
-    		var article = $('#articleUrl').val();
     		var owner = $('#owner').text();
 			if (!owner) {
 				owner = "None";
@@ -1484,7 +1480,7 @@
 					$('.status').text('');
 					$('.result').text('');
 					wikumTitle = wikumTitle.replace('#', '%23').replace('&', '%26');
-					$('.status').html('Success!  <a href="/visualization_flags?article=' + wikumTitle + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+					$('.status').html('Success!  <a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
 				}
 			});
 		}
