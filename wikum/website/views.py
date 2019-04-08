@@ -672,7 +672,7 @@ def new_node(request):
 
         recurse_down_num_subtree(new_comment)
 
-        make_vector(new_comment, a)
+        # make_vector(new_comment, a)
 
         a.percent_complete = count_article(a)
         a.last_updated = datetime.datetime.now()
