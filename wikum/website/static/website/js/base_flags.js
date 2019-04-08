@@ -7,13 +7,9 @@ delete_summary_node_ids = [];
 
 current_summarize_d_id = [];
 
-var article_url = get_article_url();
+var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
-
-function get_article_url() {
-	
-}
-
+var article_id = $('#article_id').text();
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;

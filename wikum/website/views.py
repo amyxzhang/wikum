@@ -151,9 +151,7 @@ def visualization_flag(request):
         owner = User.objects.get(username=owner)
         
     id = int(request.GET['id'])
-    print(id)
-    print(type(id))
-    article = Article.objects.filter(id=id, owner=owner)
+    article = Article.objects.filter(id=id, owner=owner)[0]
 
     permission = None
     if user.is_authenticated():
@@ -641,6 +639,17 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
     return children, hid_children, replace_children, num_subtree_children
 
+def get_article_url(request):
+    try:
+        print("GET ARTICLE URL")
+        article_id = request.POST['article']
+        a = Article.objects.get(id=article_id)
+        print(a)
+        return JsonResponse({article_url: a.url})
+    except Exception, e:
+        print e
+        return HttpResponseBadRequest()
+
 def new_node(request):
     try:
         article_id = request.POST['article']
@@ -944,7 +953,8 @@ def delete_node(did):
                 recurse_up_post(parent[0])
     except Exception, e:
         print e
-    
+
+
 def get_summary(summary):
     
     summary_split = re.compile("([-=]){5,}").split(summary)
@@ -1725,6 +1735,7 @@ def tags(request):
     return HttpResponse(json_data, content_type='application/json')
     
 def get_stats(request):
+    article_id = request.GET['article']
     article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":

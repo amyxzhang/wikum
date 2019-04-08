@@ -6,6 +6,7 @@ var hover_timer = null;
 var highlighted_text = null;
 var highlighted_comm = null;
 var highlight_text = null;
+var article_id = $('#article_id').text();
 
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     width = 550 - margin.left - margin.right,
@@ -177,7 +178,7 @@ svg.append('svg:rect')
 
 var nodes_all = null;
 
-var article_url = get_article_url();
+var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
 article_url = article_url.replace('#','%23');
 
