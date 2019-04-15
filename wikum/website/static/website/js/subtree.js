@@ -178,7 +178,7 @@ svg.append('svg:rect')
 
 var nodes_all = null;
 
-var article_url = getParameterByName('article');
+var article_url = $('#article_url').text();
 article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
@@ -237,15 +237,15 @@ var owner = getParameterByName('owner');
 	    return false;
 	});
 
- $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
-	   $('#menu-view').children().eq(4).children().first().attr('href', article_url);
+ $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(3).children().first().attr('href', `/history?id=${article_id}&owner=${owner}`);
+	   $('#menu-view').children().eq(4).children().first().attr('href', article_id);
 
  make_username_typeahead();
 
-d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + next + '&num=' + num + '&owner=' + owner + '&comment_id=' + comment_id, function(error, flare) {
+d3.json('/subtree_data?id=' + article_id + '&sort=' + sort + '&next=' + next + '&owner=' + owner + '&comment_id=' + comment_id, function(error, flare) {
   if (error) throw error;
 
   if (!flare.no_subtree) {
@@ -277,7 +277,7 @@ d3.json('/subtree_data?article=' + article_url + '&sort=' + sort + '&next=' + ne
 	  make_progress_bar();
 	  
 	  var next_sub = next + 1;
-	  var url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  + '&next=';
+	  var url = "/subtree?id=" + article_id + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  + '&next=';
 	  var text = '<a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Get another subtree &gt;&gt;</a>';
 	  $('#paginate').html(text);
 
@@ -312,7 +312,7 @@ function make_dropdown() {
 	    return false;
 	});
 	
-  var url = "/subtree?article=" + article_url + '&num=' + num + '&owner=' + owner + '&colorby=' + colorby  + '&sort=';
+  var url = "/subtree?id=" + article_id + '&owner=' + owner + '&colorby=' + colorby  + '&sort=';
   $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
   $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
   $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
@@ -337,9 +337,9 @@ function make_color() {
 		});
 	
 	$('#menu-color').children().eq(0).children().first().attr('href', 
-		`/subtree?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
+		`/subtree?id=${article_id}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
  
  	$('#menu-color').children().eq(1).children().first().attr('href', 
-		`/subtree?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
+		`/subtree?id=${article_id}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
 
 }
