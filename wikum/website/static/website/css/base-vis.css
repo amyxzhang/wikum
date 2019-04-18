@@ -105,6 +105,32 @@ a:hover {
     font-size: 11px;
 }
 
+#new_node {
+	position: absolute;
+	top: 120px;
+	left: 70px;
+}
+#create_new{
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	padding: 1px 0;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 1.4;
+	border-radius: 15px;
+}
+
+#new_comment:hover{
+	cursor: pointer;
+}
+
+#new_node_textarea {
+	height: 100px;
+	max-height: 100px;
+    overflow-y: scroll;
+}
+
 path.link {
     fill: none;
     stroke: #ccc;
@@ -341,8 +367,26 @@ rect.selection {
     fill            : transparent;
 }
 
+.id_val {
+	position: absolute;
+	top: 2px;
+	left: 8px;
+	color: gray;
+}
+
+#summarized_children {
+	margin-top: 15px;
+}
+
+#summarized_id_list {
+    max-height: 100px;
+    overflow-y: scroll;
+    border: 1px gray solid;
+}
+
 .comment_box,
 .reply_comment_comment {
+	position: relative;
     background-color: hsl(195, 59%, 96%);
     margin-bottom: 10px;
     padding: 1.2em;
@@ -359,6 +403,7 @@ rect.selection {
 
 .comment_box,
 .summarize_comment_comment {
+	position: relative;
 	background-color: hsl(195, 59%, 96%);
 	margin-bottom: 10px;
 	padding: 1.2em;
@@ -429,6 +474,35 @@ rect.selection {
 		--background: hsl(30, 100%, 86%);
 	}
 
+.unsummarized.collapsed {
+	background-color: hsl(195, 59%, 96%);
+    margin-bottom: 10px;
+    padding: 1.2em;
+    padding-bottom: .2em;
+    border: 1px hsl(195, 59%, 85%) solid;
+    --link-color: hsl(195, 59%, 60%);
+}
+
+	.unsummarized.collapsed.comment_box footer {
+		padding: 0;
+		margin: -.2em -1.2em;
+		background: var(--background);
+		--background: hsl(195, 59%, 90%);
+		white-space: normal;
+	}
+
+		.unsummarized.collapsed.comment_box footer a {
+			padding: .5em;
+			color: var(--link-color);
+			font-weight: 500;
+			font-size: 13px;
+			display: inline-block;
+		}
+
+		.unsummarized.collapsed.comment_box footer a:hover {
+			color: hsla(0,0%,100%,.9);
+			background: var(--link-color);
+		}
 
 .collapsed {
 	background-color: hsl(50, 100%, 95%);
@@ -488,6 +562,10 @@ rect.selection {
 
 .highlighted.summary{
 	border: 1.8px #000000 solid;
+}
+
+.highlighted.unsummarized.collapsed{
+	border: 1px #000000 solid;
 }
 
 .highlighted {
@@ -632,6 +710,9 @@ textarea {
 	cursor: pointer;
 }
 
+select {
+	margin: 5px;
+}
 
 #button_subtree {
     position: absolute;
@@ -644,6 +725,18 @@ textarea {
 .input-sm {
     height: 25px;
     line-height: 1.2;
+}
+
+input[type=checkbox] {
+    margin: 5px;
+}
+
+#unsummarized_textbox {
+	width:50px;
+}
+
+#mark_unsummarized {
+	margin: 5px;
 }
 
 #count_result {
@@ -685,14 +778,20 @@ a.btn-edit {
 	resize: vertical;
 }
 
+#evaluate_summary_modal_box{
+	width: 70%;
+	height: 80%;
+}
+
 #evaluate_summary_box {
-	height: 140px;
+	height: 350px;
     overflow-y: scroll;
     border: 1px #000000 solid;
     display: block;
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 5px;
+    resize: vertical;
 }
 
 #summarize_multiple_comment_box {

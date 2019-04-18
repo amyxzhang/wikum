@@ -26,7 +26,6 @@ var svg = d3.select("#viz").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
 svg.append('svg:rect')
   .attr('width',  width + margin.left + margin.right) // the whole width of g/svg
   .attr('fill', 'none')
@@ -238,16 +237,18 @@ var comment_id = null;
  make_username_typeahead();
 
 d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
-  if (error) throw error;
+	if (error) throw error;
 
-  flare.x0 = 100;
-  flare.y0 = 100;
+  	flare.x0 = 100;
+  	flare.y0 = 100;
 
-  nodes_all = tree.nodes(flare);
+  	nodes_all = tree.nodes(flare);
 
-  update(root = flare);
+  	update(root = flare);
+  	
+	// show_all_unsummarized(nodes_all[0]);
 
-  show_text(nodes_all[0]);
+  	show_text(nodes_all[0]);
 
 	make_progress_bar();
   
