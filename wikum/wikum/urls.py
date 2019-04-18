@@ -95,7 +95,7 @@ urlpatterns = [
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
-
+    
     url(r"^i18n/", include("django.conf.urls.i18n")),
     
     url(r'^tracking/', include('tracking.urls')),

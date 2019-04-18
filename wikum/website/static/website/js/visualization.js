@@ -6,6 +6,7 @@ var hover_timer = null;
 var highlighted_text = null;
 var highlighted_comm = null;
 var highlight_text = null;
+var article_id = $('#article_id').text();
 
 var margin = {top: 30, right: 20, bottom: 30, left: 20},
     width = 550 - margin.left - margin.right,
@@ -177,7 +178,7 @@ svg.append('svg:rect')
 
 var nodes_all = null;
 
-var article_url = getParameterByName('article');
+var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
 article_url = article_url.replace('#','%23');
 
@@ -228,15 +229,15 @@ var comment_id = null;
 	    // return false;
 	// });
 	
- $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(4).children().first().attr('href', article_url);
+ $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(3).children().first().attr('href', `/history?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(4).children().first().attr('href', article_id);
 
  make_username_typeahead();
 
-d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&filter=${filter}&owner=${owner}`, function(error, flare) {
+d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`, function(error, flare) {
 	if (error) throw error;
 
   	flare.x0 = 100;
@@ -261,13 +262,13 @@ d3.json(`/viz_data?article=${article_url}&sort=${sort}&next=${next}&num=${num}&f
 	var text = '';
 	if (next > 0) {
 		var prev = next - 1;
-	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter +  '&next=';
+	  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter +  '&next=';
 	   text += '<a class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
 	
 	}
 	if (count == 15) {
 		var next_sub = next + 1;
-	  var url = "/visualization_flags?article=" + article_url + '&num=' + num + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter + '&next=';
+	  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter + '&next=';
 	  text += ' <a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
 	 
 	}
@@ -297,7 +298,7 @@ function make_dropdown() {
 	    return false;
 	});
 	
-  var url = "/visualization_flags?article=" + article_url + '&num=' + num+ '&filter=' + filter + '&owner=' + owner + '&colorby=' + colorby  + '&sort=';
+  var url = "/visualization_flags?id=" + article_id + '&filter=' + filter + '&owner=' + owner + '&colorby=' + colorby  + '&sort=';
   $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
   $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
   $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
@@ -321,9 +322,9 @@ function make_color() {
 		});
 	
 	$('#menu-color').children().eq(0).children().first().attr('href', 
-		`/visualization_flags?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
+		`/visualization_flags?id=${article_id}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
  
  	$('#menu-color').children().eq(1).children().first().attr('href', 
-		`/visualization_flags?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
+		`/visualization_flags?id=${article_id}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
 
 }

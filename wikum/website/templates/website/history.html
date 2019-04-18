@@ -6,7 +6,8 @@
 {% endblock %}
 
 {% block content %}
-
+	<span id="article_id" style="display:none;">{{ article.id }}</span>
+	<span id="article_url" style="display:none;">{{ article.url }}</span>
 	<section class="container text-center" style="padding-top: 150px;">
 	        <div class="row">
 	        	
@@ -124,9 +125,10 @@
 		    return decodeURIComponent(results[2].replace(/\+/g, " "));
 		}
 	
-		var article_url = getParameterByName('article');
+		var article_url = $('#article_url').text();
 		var owner = getParameterByName('owner');
 		article_url = article_url.replace('#','%23');
+		var article_id = $('#article_id').text();
 		
 		var num = parseInt(getParameterByName('num'));
 		if (!num) {
@@ -141,10 +143,10 @@
 		    return false;
 		});
 	
-	 $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
-	 $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
-	 $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
-	 $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
+	 $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?id=${article_id}&owner=${owner}`);
+	 $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?id=${article_id}&owner=${owner}`);
+	 $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?id=${article_id}&owner=${owner}`);
+	 $('#menu-view').children().eq(3).children().first().attr('href', `/history?id=${article_id}&owner=${owner}`);
 	  
 	 $('#menu-sort').parent().html('');
   

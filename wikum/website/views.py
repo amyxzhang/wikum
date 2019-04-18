@@ -150,10 +150,9 @@ def visualization_flag(request):
     else:
         owner = User.objects.get(username=owner)
         
-    url = request.GET['article']
-    num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url, owner=owner)[num]
-    
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
+
     permission = None
     if user.is_authenticated():
         permission = Permissions.objects.filter(user=user, article=article)
@@ -187,9 +186,8 @@ def visualization(request):
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    url = request.GET['article']
-    num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     return {'article': article,
             'user': user,
             'source': article.source}
@@ -369,19 +367,16 @@ def summary4(request):
     return summary_page(request)
     
 def summary_data(request):
-    url = urllib2.unquote(request.GET['article'])
-    
     owner = request.GET.get('owner', None)
     if not owner or owner == "None" or owner == "null":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-        
-    num = int(request.GET.get('num', 0))
+
     sort = request.GET.get('sort', 'id')
     
-    
-    a = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     next = request.GET.get('next')
     if not next:
@@ -407,30 +402,27 @@ def summary_data(request):
 
 @render_to('website/subtree.html')
 def subtree(request):
-    url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
-    
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     return {'article': article,
             'source': article.source}
 
 
 @render_to('website/history.html')
 def history(request):
-    url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     
     hist = History.objects.filter(article_id=article.id).order_by('-datetime').select_related()
     
@@ -440,15 +432,14 @@ def history(request):
 
 @render_to('website/cluster.html')
 def cluster(request):
-    url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     
     return {'article': article,
             'source': article.source}
@@ -943,7 +934,8 @@ def delete_node(did):
                 recurse_up_post(parent[0])
     except Exception, e:
         print e
-    
+
+
 def get_summary(summary):
     
     summary_split = re.compile("([-=]){5,}").split(summary)
@@ -1707,15 +1699,14 @@ def hide_replies(request):
         return HttpResponseBadRequest()
 
 def tags(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     
@@ -1724,15 +1715,14 @@ def tags(request):
     return HttpResponse(json_data, content_type='application/json')
     
 def get_stats(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     authors = {}
     tags = {}
@@ -1764,15 +1754,14 @@ def get_stats(request):
  
     
 def tags_and_authors(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     for i in range(len(tags)):
@@ -1882,7 +1871,6 @@ def determine_is_collapsed(post, article):
     return False
 
 def viz_data(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
@@ -1900,9 +1888,8 @@ def viz_data(request):
     start = 15 * next
     end = (15 * next) + 15
     
-    num = int(request.GET.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -1999,8 +1986,6 @@ def cluster_data(request):
     from sklearn.metrics.pairwise import euclidean_distances
     import numpy as np
     
-    article_url = request.GET['article']
-    
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
@@ -2008,9 +1993,8 @@ def cluster_data(request):
         owner = User.objects.get(username=owner)
     
     cluster_size = int(request.GET.get('size'))
-    num = int(request.GET.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -2099,7 +2083,6 @@ def cluster_data(request):
     
     
 def subtree_data(request):
-    article_url = request.GET['article']
     sort = request.GET.get('sort', None)
     next = request.GET.get('next', None)
     owner = request.GET.get('owner', None)
@@ -2111,9 +2094,8 @@ def subtree_data(request):
     
     comment_id = request.GET.get('comment_id', None)
     
-    num = int(request.GET.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
 
     least = 2
     most = 6

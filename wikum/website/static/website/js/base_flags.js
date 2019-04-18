@@ -7,8 +7,9 @@ delete_summary_node_ids = [];
 
 current_summarize_d_id = [];
 
-var article_url = getParameterByName('article');
+var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
+var article_id = $('#article_id').text();
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
@@ -880,7 +881,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  prefetch: {
-	  	url:'/tags?article=' + article_url + '&num=' + num + '&owner=' + owner,
+	  	url:'/tags?id=' + article_id + '&owner=' + owner,
 	  	cache: false,
 	  }
 	});
@@ -2830,17 +2831,17 @@ function error_noty() {
 function make_stats() {
 	$.ajax({
 			type: 'GET',
-			url: '/get_stats?article=' + article_url + '&num=' + num + '&owner=' +owner,
+			url: '/get_stats?id=' + article_id + '&owner=' +owner,
 			success: function(res) {
 				var text = '<span style="background-color: rgb(66, 220, 163); display: block; color: #333; font-weight:bold;">Top Users:</span>';
 				for (var i=0;i<res.authors.length;i++) {
-					text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner+ '&sort=' + sort + '&filter=User: ' + res.authors[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.authors[i][0] + ': ' + res.authors[i][1] + '</span></a>';
+					text += '<a href="/visualization_flags?id=' + article_id + '&owner=' + owner+ '&sort=' + sort + '&filter=User: ' + res.authors[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.authors[i][0] + ': ' + res.authors[i][1] + '</span></a>';
 				}
 				$('#user_stats').html(text);
 				
 				var text = '<span style="background-color: rgb(66, 220, 163); display: block; color: #333; font-weight:bold;">Top Tags:</span>';
 				for (var i=0;i<res.tags.length;i++) {
-					text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner+ '&sort=' + sort + '&filter=Tag: ' + res.tags[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.tags[i][0] + ': ' + res.tags[i][1] + '</span></a>';
+					text += '<a href="/visualization_flags?id=' + article_id + '&owner=' + owner+ '&sort=' + sort + '&filter=Tag: ' + res.tags[i][0] +  '"><span style="padding-left: 5px; padding-right: 5px; color: #333;">' + res.tags[i][0] + ': ' + res.tags[i][1] + '</span></a>';
 				}
 				$('#tag_stats').html(text);
 			}
@@ -2862,7 +2863,7 @@ function make_filter() {
 	  datumTokenizer: Bloodhound.tokenizers.whitespace,
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  prefetch: {
-	  	url:'/tags_and_authors?article=' + article_url + '&num=' + num + '&owner=' + owner,
+	  	url:'/tags_and_authors?id=' + article_id + '&owner=' + owner,
 	  	cache: false,
 	  }
 	});
@@ -2879,7 +2880,7 @@ function make_filter() {
 	$('#inputFilter').keypress(function(e) {
 	    if(e.which == 13) {
 		    filter = $('#inputFilter').val();
-	        window.location.href = '/visualization_flags?article=' + article_url + '&num=' + num+ '&sort=' + sort + '&filter=' + filter + '&owner=' + owner;
+	        window.location.href = '/visualization_flags?id=' + article_id + '&sort=' + sort + '&filter=' + filter + '&owner=' + owner;
 	    }
 	});
 }
@@ -3871,11 +3872,11 @@ function construct_comment(d) {
 		text += '<BR><div id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
 			if (is_dark(d.tags[i][1])) {
-				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
+				text += '<a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			} else {
-				text += '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
+				text += '<a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
 				text += '<button class="btn btn-xs" style="color: #000000; background-color: #' + d.tags[i][1] + '">' + d.tags[i][0] + '</button> ';
 				text += '</a>';
 			}
@@ -4331,7 +4332,7 @@ function showdiv(d) {
 				if (text != '') {
 					text += '<BR>';
 				}
-				text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+				text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
 				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 				if (d.hid && d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
@@ -4383,14 +4384,14 @@ function showdiv(d) {
 
 			if (d.article) {
 				if (window.location.href.indexOf('/subtree') > -1) {
-					text = '<a href="/visualization_flags?article=' + article_url + '&num=' + num + '&owner=' + owner + '">See Entire Discussion</a>';
+					text = '<a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '">See Entire Discussion</a>';
 				}
 			} else {
 				if (comment_id != d.d_id) {
 					if (text != '') {
 						text += '<BR>';
 					}
-					text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner +'">See Isolated Subtree</a>';
+					text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner +'">See Isolated Subtree</a>';
 				
 
 				}
@@ -4459,7 +4460,7 @@ function hide_replace_nodes(id) {
 	}
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 	}
 	if (text != '') {
@@ -4485,7 +4486,7 @@ function show_replace_nodes(id) {
 
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?article=' + article_url + '&comment_id=' + d.d_id + '&num=' + num + '&owner=' + owner + '">See Isolated Subtree</a>';
+		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
 		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
 
 	}
