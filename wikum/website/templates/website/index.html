@@ -372,7 +372,7 @@
 									</div>			
 											{% for a in recent_articles %}
 												 <div class="col-md-2 col-sm-4 col-xs-6"> 
-												 	<a href="/visualization_flags?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">
+												 	<a href="/visualization_flags?id={{ a.id }}&owner={{ a.owner }}">
 													 <div class="team-member member-image-hover plan-featured" style="padding:10px;"> 
 													 	{{ a.title | shorten:60 }}
 													 	<BR>
@@ -404,7 +404,7 @@
 								 <div class="col-md-2 col-sm-2  hidden-xs"> 
 									</div>			
 											{% for a in finished_articles %}
-											<a href="/visualization_flags?article={{ a.url }}&num={{ a.num }}&owner={{ a.owner }}">
+											<a href="/visualization_flags?id={{ a.id }}&owner={{ a.owner }}">
 												 <div class="col-md-2 col-sm-4 col-xs-6"> 
 													 <div class="team-member member-image-hover plan-featured" style="padding:10px;"> 
 													 	{{ a.title | shorten:60 }}
