@@ -504,11 +504,13 @@
                                 
                                 
                                <a class="btn btn-md btn-outline text-uppercase"
-                               data-toggle="modal" 
+                               data-toggle="modal"
                                data-target="#createWikumModal">{% trans "Import Discussion" %}</a>
 
-                                
-                                
+                               <a class="btn btn-md btn-outline text-uppercase"
+                               data-toggle="modal"
+                               data-target="#newWikumModal">{% trans "Create Discussion" %}</a>
+
                             </div>
                         </div>
                     </div>
@@ -540,6 +542,10 @@
                             		<a class="btn btn-md btn-outline text-uppercase"
                                data-toggle="modal" 
                                data-target="#createWikumModal">{% trans "Import Discussion" %}</a>
+
+                               <a class="btn btn-md btn-outline text-uppercase"
+                               data-toggle="modal" 
+                               data-target="#newWikumModal">{% trans "Create Discussion" %}</a>
                             	
                             	{% else %}
 	                                <a
@@ -1334,6 +1340,49 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div id="newWikumModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{% trans "Create a Discussion" %}</h4>
+      </div>
+      <div class="modal-body">
+
+		{% trans "New Wikum Title:" %}
+
+		<form>
+			<div class="form-group">
+
+			<input class="form-control" id="wikumTitle" placeholder="">
+			<BR>
+			<button type="button" class="btn btn-default" id="submitTitle">{% trans "Submit" %}</button>
+
+			</div>
+		</form>
+
+		<div id="message" style="display: block; height:40px;">
+	  	</div>
+ 
+            
+		<div class="progress_container" style="display: block; height: 70px;">
+			<div class="status" style="display: block; height: 30px;">
+		   			
+			</div>
+		   		
+			<div class="result" style="display: block; height: 30px;">
+			</div>
+		</div>
+
+		</div>
+	</div>
+
+	</div>
+</div>
+
 {% endblock %}
 
 
@@ -1417,6 +1466,34 @@
     		submiturl();
     		return false;
     	});
+
+		function submitTitle() {
+			var wikumTitle = $('#wikumTitle').val();
+			var owner = $('#owner').text();
+			if (!owner) {
+				owner = "None";
+			}
+			$.ajax({
+				url: "create_wikum",
+				data: {
+					'article': wikumTitle,
+					'owner': owner,
+				},
+				success: function(res){
+					console.log(res);
+					$('.status').text('');
+					$('.result').text('');
+					wikumTitle = wikumTitle.replace('#', '%23').replace('&', '%26');
+					$('.status').html('Success!  <a href="/visualization_flags?article=' + wikumTitle + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+				}
+			});
+		}
+
+		$('#submitTitle').click(function(event) {
+			submitTitle();
+			return false;
+		});
+
     
 		$('#articleUrl').keydown(function(event){ 
 		    var keyCode = (event.keyCode ? event.keyCode : event.which);   

@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^summary_data','website.views.summary_data'),
     
     url(r'^import_article', 'website.views.import_article'),
+    url(r'^create_wikum', 'website.views.create_wikum'),
     url(r'^poll_status$', 'website.views.poll_status'),
     
     url(r'^summary1','website.views.summary1'),

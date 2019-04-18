@@ -308,7 +308,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	$('#new_node_modal_box form').off("submit");
 
 	$('#new_node_modal_box form').submit({}, function(evt) {
-		console.log("HELLO?");
 		evt.preventDefault();
 		$('#new_node_modal_box').modal('toggle');
 		success_noty();
@@ -347,6 +346,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 				$('#comment_' + new_d.d_id).html(text);
 				$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
 				author_hover();
+				show_text(new_d.parent);
 				
 				d3.select("#node_" + new_d.d_id).style("fill",color);
 
@@ -2302,6 +2302,9 @@ function cascade_collapses(d) {
 
 function insert_node_to_children(node_insert, node_parent) {
 	added = false;
+	if (node_parent.article && !node_parent.children) {
+		node_parent.children = [];
+	}
 
 	if (node_parent.children) {
 		for (var i=0; i<node_parent.children.length; i++) {

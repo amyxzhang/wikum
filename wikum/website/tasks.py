@@ -68,6 +68,7 @@ def generate_tags(article_id):
             'tags', 'suggested_tags')))
         # merge all text (comments+summaries) into a new column
         df['train_text'] = df[['text', 'summary']].apply(lambda x: ' '.join(x), axis=1)
+        print(df['train_text'])
 
         # define  classifier
         clf = OneVsRestClassifier(SVC(kernel='linear'))

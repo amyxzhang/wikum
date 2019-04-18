@@ -24,7 +24,7 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from website.models import CommentRating, CommentAuthor, Permissions
+from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
 
 
 def index(request):
@@ -236,7 +236,8 @@ def poll_status(request):
 
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
-    
+
+
 def author_info(request):
     username = request.GET.get('username', None)
     url = request.GET.get('article', None)
@@ -295,6 +296,28 @@ def import_article(request):
 
     return HttpResponse(json_data, content_type='application/json')
 
+def create_wikum(request):
+    data = 'Fail'
+    if request.is_ajax():
+        owner = request.GET.get('owner', 'None')
+        user = User.objects.get(username=owner)
+        title = request.GET['article']
+        new_id = random_with_N_digits(10)
+        source,_ = Source.objects.get_or_create(source_name="new_wikum")
+        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=user)
+        article.last_updated = datetime.datetime.now()
+        article.save()
+
+        request.session['task_id'] = new_id
+        request.session['url'] = title
+        request.session['owner'] = owner
+        data = new_id
+    else:
+        data = 'This is not an ajax request!'
+
+    json_data = json.dumps(data)
+
+    return HttpResponse(json_data, content_type='application/json')
     
 def summary_page(request):
     owner = request.GET.get('owner', None)
@@ -649,7 +672,7 @@ def new_node(request):
 
         recurse_down_num_subtree(new_comment)
 
-        make_vector(new_comment, a)
+        # make_vector(new_comment, a)
 
         a.percent_complete = count_article(a)
         a.last_updated = datetime.datetime.now()
@@ -673,7 +696,7 @@ def reply_comment(request):
         author = CommentAuthor.objects.get(username=req_username)
 
         c = Comment.objects.get(id=id)
-        new_id = random_with_N_digits(10);
+        new_id = random_with_N_digits(10)
         new_comment = Comment.objects.create(article=a,
                                              author=author,
                                              is_replacement=False,
