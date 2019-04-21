@@ -633,44 +633,71 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 
 def new_node(request):
     try:
+        user = request.user
+        owner = request.GET.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
+
         article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        comment = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
-        req_username = request.user.username if request.user.is_authenticated() else None
-        author = CommentAuthor.objects.get(username=req_username)
+        article = Article.objects.get(id=article_id)
 
-        new_id = random_with_N_digits(10);
-        new_comment = Comment.objects.create(article=a,
-                                             author=author,
-                                             is_replacement=False,
-                                             disqus_id=new_id,
-                                             text=comment,
-                                             summarized=False,
-                                             text_len=len(comment))
-        new_comment.save()
+        permission = None
+        if user.is_authenticated():
+            permission = Permissions.objects.filter(user=user, article=article)
+            if permission.exists():
+                permission = permission[0]
+        if article.access_mode < 3 or (user.is_authenticated() and permission and permission.access_level < 3) or user == owner:
+            comment = request.POST['comment']
+            req_user = request.user if request.user.is_authenticated() else None
+            req_username = request.user.username if request.user.is_authenticated() else None
+            # if commentauthor for username use it; otherwise create it
+            author = CommentAuthor.objects.filter(username=req_username)
+            if user.is_anonymous():
+                req_username = "Anonymous"
+                author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
+            else:
+                if author.exists():
+                    author = author[0]
+                    author.is_wikum = True
+                    author.user = user
+                else:
+                    # existing user who is not a comment author
+                    author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
+            new_id = random_with_N_digits(10)
+            new_comment = Comment.objects.create(article=article,
+                                                 author=author,
+                                                 is_replacement=False,
+                                                 disqus_id=new_id,
+                                                 text=comment,
+                                                 summarized=False,
+                                                 text_len=len(comment))
+            new_comment.save()
 
-        action = 'new_node'
-        explanation = 'new comment'
+            action = 'new_node'
+            explanation = 'new comment'
 
-        h = History.objects.create(user=req_user,
-                                   article=a,
-                                   action=action,
-                                   explanation=explanation)
+            h = History.objects.create(user=req_user,
+                                       article=article,
+                                       action=action,
+                                       explanation=explanation)
 
-        h.comments.add(new_comment)
-        recurse_up_post(new_comment)
+            h.comments.add(new_comment)
+            recurse_up_post(new_comment)
 
-        recurse_down_num_subtree(new_comment)
+            recurse_down_num_subtree(new_comment)
 
-        # make_vector(new_comment, a)
+            # make_vector(new_comment, article)
 
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
+            article.percent_complete = count_article(article)
+            article.last_updated = datetime.datetime.now()
 
-        a.save()
+            article.save()
 
-        return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+            return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+        else:
+            return JsonResponse({'comment': 'unauthorized'})
 
     except Exception, e:
         print e
@@ -678,48 +705,77 @@ def new_node(request):
         
 def reply_comment(request):
     try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
         id = request.POST['id']
         comment = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
-        req_username = request.user.username if request.user.is_authenticated() else None
-        author = CommentAuthor.objects.get(username=req_username)
+        user = request.user
+        owner = request.GET.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
 
-        c = Comment.objects.get(id=id)
-        new_id = random_with_N_digits(10)
-        new_comment = Comment.objects.create(article=a,
-                                             author=author,
-                                             is_replacement=False,
-                                             reply_to_disqus=c.disqus_id,
-                                             disqus_id=new_id,
-                                             text=comment,
-                                             summarized=False,
-                                             text_len=len(comment),
-                                             import_order=c.import_order)
-        new_comment.save()
+        article_id = request.POST['article']
+        article = Article.objects.get(id=article_id)
 
-        action = 'reply_comment'
-        explanation = 'reply to comment'
+        permission = None
+        if user.is_authenticated():
+            permission = Permissions.objects.filter(user=user, article=article)
+            if permission.exists():
+                permission = permission[0]
+        if article.access_mode < 3 or (user.is_authenticated() and permission and permission.access_level < 3) or user == owner:
+            comment = request.POST['comment']
+            req_user = request.user if request.user.is_authenticated() else None
+            req_username = request.user.username if request.user.is_authenticated() else None
+            # if commentauthor for username use it; otherwise create it
+            author = CommentAuthor.objects.filter(username=req_username)
+            if user.is_anonymous():
+                req_username = "Anonymous"
+                author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
+            else:
+                if author.exists():
+                    author = author[0]
+                    author.is_wikum = True
+                    author.user = user
+                else:
+                    # existing user who is not a comment author
+                    author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
 
-        h = History.objects.create(user=req_user,
-                                   article=a,
-                                   action=action,
-                                   explanation=explanation)
+            c = Comment.objects.get(id=id)
+            new_id = random_with_N_digits(10)
+            new_comment = Comment.objects.create(article=article,
+                                                 author=author,
+                                                 is_replacement=False,
+                                                 reply_to_disqus=c.disqus_id,
+                                                 disqus_id=new_id,
+                                                 text=comment,
+                                                 summarized=False,
+                                                 text_len=len(comment),
+                                                 import_order=c.import_order)
+            new_comment.save()
 
-        h.comments.add(new_comment)
-        recurse_up_post(new_comment)
+            action = 'reply_comment'
+            explanation = 'reply to comment'
 
-        recurse_down_num_subtree(new_comment)
+            h = History.objects.create(user=req_user,
+                                       article=article,
+                                       action=action,
+                                       explanation=explanation)
 
-        make_vector(new_comment, a)
+            h.comments.add(new_comment)
+            recurse_up_post(new_comment)
 
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
+            recurse_down_num_subtree(new_comment)
 
-        a.save()
+            make_vector(new_comment, article)
 
-        return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+            article.percent_complete = count_article(article)
+            article.last_updated = datetime.datetime.now()
+
+            article.save()
+
+            return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+        else:
+            return JsonResponse({'comment': 'unauthorized'})
 
     except Exception, e:
         print e

@@ -147,6 +147,7 @@ class Comment(models.Model):
 
 class CommentAuthor(models.Model):
     username = models.TextField(null=True)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     real_name = models.TextField()
     power_contrib = models.BooleanField(default=False)
@@ -172,6 +173,8 @@ class CommentAuthor(models.Model):
 
     is_decide = models.BooleanField(default=False)
     is_join = models.BooleanField(default=False)
+
+    is_wikum = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.anonymous:
