@@ -224,6 +224,7 @@ def poll_status(request):
                 
                 a = Article.objects.filter(url=request.session['url'], owner=owner)
                 if a.exists():
+                    data['id'] = a[0].id
                     comment_count = a[0].comment_set.count()
                     if comment_count == 0:
                         a.delete()
@@ -309,7 +310,7 @@ def create_wikum(request):
         request.session['task_id'] = new_id
         request.session['url'] = title
         request.session['owner'] = owner
-        data = new_id
+        data = article.id
     else:
         data = 'This is not an ajax request!'
 
