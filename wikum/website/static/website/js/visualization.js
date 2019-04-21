@@ -237,10 +237,6 @@ var comment_id = null;
 
  make_username_typeahead();
 
-if ($('#access_mode').attr('data-access') != "1" && $('#access_mode').attr('data-access') != "2") {
-	$('#new_node').css("display","none");
-}
-
 d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`, function(error, flare) {
 	if (error) throw error;
 
