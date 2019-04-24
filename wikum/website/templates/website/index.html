@@ -12,10 +12,8 @@
 {% block content %}
 
 
-
-
 <section id="intro" class="intro-section">
-	
+		
 		<div class="section-inner-intro xs-section-align sm-section-align">
 	
 	
@@ -1401,14 +1399,17 @@
 
 
 <script>
-	var article_id = $('#articleUrl').val();
 	var PollState = function(task_id) {
+		var article_id = null;
 		$.ajax({
  			url: "poll_status",
  			type: "POST",
  			data: "task_id=" + task_id,
 		}).done(function(task){
  			console.log(task);
+ 			if (task.id != null) {
+ 				article_id = task.id; 
+ 			}
  			if (task.state == 'PROGRESS') {
  				if (task.result) {
   					$('.result').html('Status: ' + task.result.count + ' comments ingested.');
@@ -1420,10 +1421,9 @@
  				$('.result').html('Status: Pending...');
  				setTimeout(PollState(task_id), 3000);
  			} else {
+ 				console.log(article_id);
  				$('#message').text('');
  				if (task.state == 'SUCCESS') {
- 					var article = $('#articleUrl').val();
- 					article = article.replace('#', '%23').replace('&', '%26');
  					var owner = $('#owner').text();
  					if (!owner) {
  						owner = "None";
@@ -1441,6 +1441,8 @@
 			if (!owner) {
 				owner = "None";
 			}
+			var article = $('#articleUrl').val();
+ 			article = article.replace('#', '%23').replace('&', '%26');
 			$.ajax({
 				url: "import_article",
 				data: {
@@ -1480,7 +1482,7 @@
 					$('.status').text('');
 					$('.result').text('');
 					wikumTitle = wikumTitle.replace('#', '%23').replace('&', '%26');
-					$('.status').html('Success!  <a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
+					$('.status').html('Success!  <a href="/visualization_flags?id=' + res + '&owner=' + owner + '"><button class="btn btn-default btn-sm">View comments</button></a>');
 				}
 			});
 		}

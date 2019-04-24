@@ -109,6 +109,9 @@ a:hover {
 	position: absolute;
 	top: 120px;
 	left: 70px;
+	width: 20px;
+	height: 20px;
+	display: flex;
 }
 #create_new{
 	width: 20px;
@@ -117,7 +120,7 @@ a:hover {
 	padding: 1px 0;
 	font-size: 12px;
 	font-weight: bold;
-	line-height: 1.4;
+	line-height: 12px;
 	border-radius: 15px;
 }
 
