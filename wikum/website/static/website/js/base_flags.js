@@ -324,6 +324,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 			url: '/new_node',
 			data: data,
 			success: function(res) {
+				$("#new_node_textarea").val('');
 				if (res.comment == 'unauthorized') {
 					unauthorized_noty();
 				} else {
@@ -421,6 +422,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 			url: '/reply_comment',
 			data: data,
 			success: function(res) {
+				$("#reply_comment_textarea").val('');
 				if (res.comment == 'unauthorized') {
 					unauthorized_noty();
 				} else {

@@ -299,6 +299,7 @@ def create_wikum(request):
     data = 'Fail'
     if request.is_ajax():
         owner = request.GET.get('owner', 'None')
+        # create wikum with no owner --> public everything
         user = User.objects.get(username=owner)
         title = request.GET['article']
         new_id = random_with_N_digits(10)
@@ -767,7 +768,7 @@ def reply_comment(request):
 
             recurse_down_num_subtree(new_comment)
 
-            make_vector(new_comment, article)
+            # make_vector(new_comment, article)
 
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
