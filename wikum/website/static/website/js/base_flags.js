@@ -301,9 +301,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	$("#new_node_modal_box").css({
 	    'margin-top': function () {
 	        return ($(this).height() / 4);
-	    },
-	    'margin-left': function () {
-	        return ($(this).width() / 4);
 	    }
 	});
 
