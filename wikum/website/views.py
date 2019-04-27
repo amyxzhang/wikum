@@ -299,12 +299,14 @@ def create_wikum(request):
     data = 'Fail'
     if request.is_ajax():
         owner = request.GET.get('owner', 'None')
-        # create wikum with no owner --> public everything
-        user = User.objects.get(username=owner)
+        if owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
         title = request.GET['article']
         new_id = random_with_N_digits(10)
         source,_ = Source.objects.get_or_create(source_name="new_wikum")
-        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=user)
+        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=owner)
         article.last_updated = datetime.datetime.now()
         article.save()
 
