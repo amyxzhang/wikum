@@ -291,6 +291,7 @@ function is_dark(color) {
 }
 
 $('#new_node_modal_box').on('show.bs.modal', function(e) {
+	$("#new_node_textarea").val("");
 	$.ajax({type: 'GET',
 			url: '/log_data?data=open_new_node_modal',
 			success: function(res) {
@@ -324,7 +325,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 			url: '/new_node',
 			data: data,
 			success: function(res) {
-				$("#new_node_textarea").val('');
 				if (res.comment == 'unauthorized') {
 					unauthorized_noty();
 				} else {
@@ -371,6 +371,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 
 $('#reply_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
+	$("#reply_comment_textarea").val('');
 
 	d = nodes_all[id-1];
 	var ids = [];
@@ -422,7 +423,6 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 			url: '/reply_comment',
 			data: data,
 			success: function(res) {
-				$("#reply_comment_textarea").val('');
 				if (res.comment == 'unauthorized') {
 					unauthorized_noty();
 				} else {
