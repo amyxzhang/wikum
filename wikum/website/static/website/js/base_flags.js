@@ -353,6 +353,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 					show_text(new_d.parent);
 					
 					d3.select("#node_" + new_d.d_id).style("fill",color);
+					d3.select('#node_' + d.id).style('fill', color);
 
 					highlight_box(new_d.d_id);
 					make_progress_bar();
@@ -463,6 +464,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 					author_hover();
 					
 					d3.select("#node_" + new_d.d_id).style("fill",color);
+					d3.select('#node_' + d.id).style('fill', color);
 
 					highlight_box(new_d.d_id);
 					make_progress_bar();
@@ -1162,12 +1164,16 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 
 		if (evt.data.type == "hide_comment") {
 			data.id = evt.data.data_id;
+			var d = nodes_all[evt.data.id-1];
+			console.log(d.parent);
+			d3.select('#node_' + d.parent.id).style('fill', color);
 			$.ajax({
 				type: 'POST',
 				url: '/hide_comment',
 				data: data,
 				success: function() {
 					$('#hide_modal_box').modal('toggle');
+
 					success_noty();
 					$('#comment_' + id).remove();
 					hide_node(id);
@@ -1208,6 +1214,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					success_noty();
 
 					var d = nodes_all[evt.data.id-1];
+					d3.select('#node_' + d.parent.id).style('fill', color);
 
 					if (d.children) {
 						ids = [];
@@ -4820,6 +4827,9 @@ function color(d) {
 		}
 	
 		if (d.collapsed) {
+			if (d.hiddennode) {
+				return "#990000";
+			}
 			if (d.summarized==false) {
 				return "#a1c5d1";
 			}
@@ -4828,9 +4838,6 @@ function color(d) {
 				return "url(#gradientorange)";
 			}
 			
-			if (d.hiddennode) {
-				return "#990000";
-			}
 			return "#f8c899";
 		}
 	
