@@ -513,7 +513,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var node_text = d.name;
 	}
 			
-	var text = '<div class="summary_box tag_comment_comment">' + node_text+ '</div>';
+	var text = '<div class="summary_box tag_comment_comment" style="border-width:2px;">' + node_text+ '</div>';
 
 	if (d.replace.length > 0) {
 		var children_text = '';
