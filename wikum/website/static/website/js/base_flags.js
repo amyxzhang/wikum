@@ -3148,6 +3148,12 @@ function make_username_typeahead() {
 	   		var username = $('#userFilter').val();
 	   		var access = $('#add_user_perm').prev().children().first().text();
 	   		add_user_perm(username, access, false, null);
+	   		var find_username = $("#user_perm_table").find("td:contains('" + username + "')");
+	   		if (find_username.length > 0) {
+	   			var update_text = access;
+		   		update_text += "<span class='caret'></span>";
+				find_username.parent().children('td').eq(1).children().first().children().first().html(update_text);
+	   		}
 	   });
 }
 
