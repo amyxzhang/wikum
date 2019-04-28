@@ -213,25 +213,38 @@
 		<strong>Global Permissions: </strong>
 		
 		<div class="btn-group">
-		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    {% if article.access_mode == 1 %}
+		  <button type="button" id="global-perm-dropdown" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    {% if article.access_mode == 0 or article.access_mode == 1 or article.access_mode == 2 %}
 		    	Publicly Editable
-		    {% elif article.access_mode == 2 %}
-		    	Publicly Commentable
-		    {% elif article.access_mode == 1 %}
+		    {% elif article.access_mode == 3 %}
 		    	Publicly Viewable
 		    {% else %}
-		    	Private
+		    	Private Access
 		    {% endif %}
 		    
 		     <span class="caret"></span>
 		  </button>
 		  <ul class="dropdown-menu" id="global_perm">
 		    <li><a href="#">Publicly Editable</a></li>
-		    <li><a href="#">Publicly Commentable</a></li>
 		    <li><a href="#">Publicly Viewable</a></li>
 		    <li><a href="#">Private Access</a></li>
 		  </ul>
+		</div>
+
+		<div class=public-edit-perms>
+				{% if article.access_mode == 1 %}
+				Allow users to:
+					<input type="checkbox" name="perms" value="comment" id="global-perm-comment" checked> Comment
+					<input type="checkbox" name="perms" value="summarize" id="global-perm-summarize"> Summarize
+				{% elif article.access_mode == 2 %}
+				Allow users to:
+					<input type="checkbox" name="perms" value="comment" id="global-perm-comment"> Comment
+					<input type="checkbox" name="perms" value="summarize" id="global-perm-summarize" checked> Summarize
+				{% else %}
+				Allow users to:
+					<input type="checkbox" name="perms" value="comment" id="global-perm-comment" checked> Comment
+					<input type="checkbox" name="perms" value="summarize" id="global-perm-summarize" checked> Summarize
+				{% endif %}
 		</div>
 		
 		<BR>
@@ -246,8 +259,9 @@
 					     <span class="caret"></span>
 					  </button>
 					  <ul class="dropdown-menu permission-menu">
-					    <li><a href="#">Edit Access</a></li>
+					    <li><a href="#">Full Edit Access</a></li>
 					    <li><a href="#">Comment Access</a></li>
+					    <li><a href="#">Summarize Access</a></li>
 					    <li><a href="#">View Access</a></li>
 					  </ul>
 					</div>
@@ -265,18 +279,21 @@
 								<td>
 									<div class="btn-group">
 										  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										   		{% if perm.access_level == 1 %}
-										   			Edit Access
-										   		{% elif perm.access_level == 2 %}
+										   		{% if perm.access_level == 0 %}
+										   			Full Edit Access
+										   		{% elif perm.access_level == 1 %}
 										   			Comment Access
+										   		{% elif perm.access_level == 2 %}
+										   			Summarize Access
 										   		{% elif perm.access_level == 3 %}
 										   			View Access	
 										   		{% endif %}
 										     <span class="caret"></span>
 										  </button>
 										  <ul class="dropdown-menu permission-menu">
-										    <li><a href="#">Edit Access</a></li>
+										    <li><a href="#">Full Edit Access</a></li>
 										    <li><a href="#">Comment Access</a></li>
+										    <li><a href="#">Summarize Access</a></li>
 										    <li><a href="#">View Access</a></li>
 										  </ul>
 										</div>

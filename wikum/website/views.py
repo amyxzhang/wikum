@@ -299,11 +299,14 @@ def create_wikum(request):
     data = 'Fail'
     if request.is_ajax():
         owner = request.GET.get('owner', 'None')
-        user = User.objects.get(username=owner)
+        if owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
         title = request.GET['article']
         new_id = random_with_N_digits(10)
         source,_ = Source.objects.get_or_create(source_name="new_wikum")
-        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=user)
+        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=owner)
         article.last_updated = datetime.datetime.now()
         article.save()
 
@@ -649,7 +652,7 @@ def new_node(request):
             permission = Permissions.objects.filter(user=user, article=article)
             if permission.exists():
                 permission = permission[0]
-        if article.access_mode < 3 or (user.is_authenticated() and permission and permission.access_level < 3) or user == owner:
+        if article.access_mode < 2 or (user.is_authenticated() and permission and (permission.access_level < 2)) or user == owner:
             comment = request.POST['comment']
             req_user = request.user if request.user.is_authenticated() else None
             req_username = request.user.username if request.user.is_authenticated() else None
@@ -723,7 +726,7 @@ def reply_comment(request):
             permission = Permissions.objects.filter(user=user, article=article)
             if permission.exists():
                 permission = permission[0]
-        if article.access_mode < 3 or (user.is_authenticated() and permission and permission.access_level < 3) or user == owner:
+        if article.access_mode < 2 or (user.is_authenticated() and permission and (permission.access_level < 2)) or user == owner:
             comment = request.POST['comment']
             req_user = request.user if request.user.is_authenticated() else None
             req_username = request.user.username if request.user.is_authenticated() else None
@@ -767,7 +770,7 @@ def reply_comment(request):
 
             recurse_down_num_subtree(new_comment)
 
-            make_vector(new_comment, article)
+            # make_vector(new_comment, article)
 
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
@@ -1851,10 +1854,11 @@ def add_global_perm(request):
 
         if user == owner:
             access = request.POST.get('access', None).strip()
-           
             if access == "Publicly Editable":
-                a.access_mode = 1
+                a.access_mode = 0
             elif access == "Publicly Commentable":
+                a.access_mode = 1
+            elif access == "Publicly Summarizable":
                 a.access_mode = 2
             elif access == "Publicly Viewable":
                 a.access_mode = 3
@@ -1891,12 +1895,17 @@ def add_user_perm(request):
             if delete_perm == 'true':
                 Permissions.objects.filter(article=a, user=a_user).delete()
             elif access:
-                if access == "Edit Access":
+                if access == "Full Edit Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 0
+                    p.save()
+                    data['created'] = created
+                elif access == "Comment Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 1
                     p.save()
                     data['created'] = created
-                elif access == "Comment Access":
+                elif access == "Summarize Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 2
                     p.save()
