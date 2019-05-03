@@ -504,6 +504,9 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 			}
 	});
 	
+	// Need to expand to see children and add them to nodes_all
+    expand_all(d.id);
+    show_text(d);
 	
 	var text = 'Flag this summary as being problematic or exemplary in the below characteristics:';
 	$('#evaluate_text').html(text);
@@ -522,28 +525,28 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var children_text = '';
 		for (var i=0; i<d.replace.length; i++) {
 			if (d.replace[i].summary != '') {
-				children_text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.replace[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.replace[i]) + '</div>';
+				children_text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].id + '</P><strong>Summary: </strong> ' + render_summary_node_edit(d.replace[i]) + '</div>';
 			} else {
 
 				current_summarize_d_id.push(d.replace[i].d_id);
 
-				children_text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.replace[i].name, d.replace[i].d_id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
+				children_text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.replace[i].id + '</P>' + show_comment_text(d.replace[i].name, d.replace[i].id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
 			}
-			children_text = get_subtree_summarize(children_text, d.replace[i], 1);
+			children_text = get_subtree_summarize(children_text, d.replace[i], 1, true);
 		}
 
 	} else if (d.children.length > 0) {
 		var children_text = '';
 		for (var i=0; i<d.children.length; i++) {
 			if (d.children[i].summary != '') {
-				children_text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
+				children_text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].id + '</P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
 			} else {
 
 				current_summarize_d_id.push(d.children[i].d_id);
 
-				children_text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
+				children_text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment"><P>ID: ' + d.children[i].id + '</P>' + show_comment_text(d.children[i].name, d.children[i].id) + '<P>-- ' + d.children[i].author + '</P></div>';
 			}
-			children_text = get_subtree_summarize(children_text, d.children[i], 1);
+			children_text = get_subtree_summarize(children_text, d.children[i], 1, true);
 		}
 	}
 
@@ -673,9 +676,6 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
     
     $('#quality_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
 
-    // Need to expand to see children and add them to nodes_all
-    expand_all(d.id);
-    show_text(d);
     var summarized_list_text = 'Summarized list (check to mark as summarized):';
     summarized_list_text += '<div id="summarized_id_list">';
     var d_all_children = recurse_get_children(d);
@@ -2458,7 +2458,7 @@ function get_subtree(text, d, level) {
 	return text;
 }
 
-function get_subtree_summarize(text, d, level) {
+function get_subtree_summarize(text, d, level, eval=false) {
 	if (level <= 2) {
 		var lvl = level;
 	} else {
@@ -2470,35 +2470,61 @@ function get_subtree_summarize(text, d, level) {
 
 			if (d.children[i].summary != '' || d.children[i].extra_summary != '') {
 				if (d.children[i].replace_node) {
-					text += '<div id="sum_box_' + d.children[i].id + '" class="summary_box summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary_node(' + d.children[i].id + ');">Promote Summary</a> | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d.children[i]) + '</div>';
+					if (eval){
+						console.log(d.children[i]);
+						text += '<div id="sum_box_' + d.children[i].id + '" class="summary_box summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].id + '</P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d.children[i]) + '</div>';
+					} else {
+						text += '<div id="sum_box_' + d.children[i].id + '" class="summary_box summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary_node(' + d.children[i].id + ');">Promote Summary</a> | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d.children[i]) + '</div>';
+					}
 				} else {
-					text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
+					if (eval) {
+						text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].id + '</P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
+					} else {
+						text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
+					}
 				}
 			} else {
 
 				current_summarize_d_id.push(d.children[i].d_id);
-
-				text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
+				if (eval) {
+					text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].id + '</P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
+				} else {
+					text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
+				}
+				
 			}
 			if (!d.children[i].replace_node) {
-				text = get_subtree_summarize(text, d.children[i], level+1);
+				text = get_subtree_summarize(text, d.children[i], level+1, eval);
 			}
 		}
 	} else if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
 			if (d._children[i].summary != '' || d._children[i].summary != '') {
 				if (d._children[i].replace_node) {
-					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment summary_box level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs" btn-edit onclick="copy_summary_node(' + d._children[i].id + ');">Promote Summary</a> | <a class="btn-xs" btn-edit onclick="copy_summary(' + d._children[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d._children[i]) + '</div>';
+					if (eval) {
+						text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment summary_box level' + lvl + '"><P>ID: ' + d._children[i].id + '</P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d._children[i]) + '</div>';
+					} else {
+						text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment summary_box level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs" btn-edit onclick="copy_summary_node(' + d._children[i].id + ');">Promote Summary</a> | <a class="btn-xs" btn-edit onclick="copy_summary(' + d._children[i].id + ');">Copy Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Summary</a></P><strong>Summary Node:</strong><BR>' + render_summary_node_edit(d._children[i]) + '</div>';
+					}
+					
 				} else {
-					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d._children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P><strong>Summary:</strong> ' + render_summary_node_edit(d._children[i]) + '</div>';
+					if (eval) {
+						text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].id + '</P><strong>Summary:</strong> ' + render_summary_node_edit(d._children[i]) + '</div>';
+					} else {
+						text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d._children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P><strong>Summary:</strong> ' + render_summary_node_edit(d._children[i]) + '</div>';
+					}
 				}
 			} else {
 
 				current_summarize_d_id.push(d._children[i].d_id);
-
-				text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d._children[i].name, d._children[i].d_id) + '<P>-- ' + d._children[i].author + '</P></div>';
+				if (eval) {
+					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + '<P>-- ' + d._children[i].author + '</P></div>';
+				} else {
+					text += '<div id="sum_box_' + d._children[i].id + '" class="summarize_comment_comment level' + lvl + '"><P>ID: ' + d._children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d._children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d._children[i].name, d._children[i].d_id) + '<P>-- ' + d._children[i].author + '</P></div>';
+				}
+				
 			}
-			text = get_subtree_summarize(text, d._children[i], level+1);
+			text = get_subtree_summarize(text, d._children[i], level+1, eval);
 		}
 	}
 
