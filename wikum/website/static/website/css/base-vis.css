@@ -457,6 +457,15 @@ rect.selection {
 		padding-bottom: 15px;
 	}
 
+.summarized.summarize_comment_comment {
+	background-color: hsl(50, 100%, 95%);
+	border: 1px solid hsl(40, 100%, 75%);
+	--link-color: hsl(45, 100%, 46%);
+}
+	.summarized.summarize_comment_comment footer{
+		--background: hsl(45, 100%, 83%);
+	}
+
 .reply_comment_comment {
 	font-size: 12px;
 	display: block;
