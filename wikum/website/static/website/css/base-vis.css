@@ -105,11 +105,6 @@ a:hover {
     font-size: 11px;
 }
 
-#new_node {
-	position: absolute;
-	top: 120px;
-	left: 70px;
-}
 #create_new{
 	width: 20px;
 	height: 20px;
@@ -119,6 +114,9 @@ a:hover {
 	font-weight: bold;
 	line-height: 1.4;
 	border-radius: 15px;
+	position: absolute;
+	top: 120px;
+	left: 70px;
 }
 
 #new_comment:hover{
@@ -370,7 +368,7 @@ rect.selection {
 .id_val {
 	position: absolute;
 	top: 2px;
-	left: 8px;
+	right: 8px;
 	color: gray;
 }
 
