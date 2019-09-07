@@ -676,6 +676,7 @@ def new_node(request):
 
         # make_vector(new_comment, a)
 
+        a.comment_num = a.comment_num + 1
         a.percent_complete = count_article(a)
         a.last_updated = datetime.datetime.now()
 
@@ -727,6 +728,7 @@ def reply_comment(request):
 
         make_vector(new_comment, a)
 
+        a.comment_num = a.comment_num + 1
         a.percent_complete = count_article(a)
         a.last_updated = datetime.datetime.now()
 
