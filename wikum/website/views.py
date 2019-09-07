@@ -647,7 +647,9 @@ def new_node(request):
         comment = request.POST['comment']
         req_user = request.user if request.user.is_authenticated() else None
         req_username = request.user.username if request.user.is_authenticated() else None
-        author = CommentAuthor.objects.get(username=req_username)
+        author = CommentAuthor.objects.filter(username=req_username)
+        if author.exists():
+            author = author[0]
 
         new_id = random_with_N_digits(10);
         new_comment = Comment.objects.create(article=a,
@@ -693,7 +695,9 @@ def reply_comment(request):
         comment = request.POST['comment']
         req_user = request.user if request.user.is_authenticated() else None
         req_username = request.user.username if request.user.is_authenticated() else None
-        author = CommentAuthor.objects.get(username=req_username)
+        author = CommentAuthor.objects.filter(username=req_username)
+        if author.exists():
+            author = author[0]
 
         c = Comment.objects.get(id=id)
         new_id = random_with_N_digits(10)
