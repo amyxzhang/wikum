@@ -411,7 +411,6 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 
 		data.id = evt.data.data_id;
 		let username = $('#owner')[0].innerHTML;
-		console.log(username);
 		if (nodes_all[id-1] && nodes_all[id-1].name === comment && !nodes_all[id-1].replace_node && nodes_all[id-1].author === username) {
 			identical_noty();
 		} else {
@@ -422,7 +421,6 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 				success: function(res) {
 					success_noty();
 					d = nodes_all[evt.data.id-1];
-					console.log(d);
 					new_d = {d_id: res.d_id,
 								 name: res.comment,
 								 summary: "",
