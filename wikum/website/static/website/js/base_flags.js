@@ -310,7 +310,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	$('#new_node_modal_box form').submit({}, function(evt) {
 		evt.preventDefault();
 		$('#new_node_modal_box').modal('toggle');
-		success_noty();
 		var comment = $('#new_node_textarea').val().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
@@ -324,6 +323,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 			url: '/new_node',
 			data: data,
 			success: function(res) {
+				success_noty();
 				new_d = {d_id: res.d_id,
 							 name: res.comment,
 							 summary: "",
