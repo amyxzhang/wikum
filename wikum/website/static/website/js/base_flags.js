@@ -338,7 +338,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 							 hid: [],
 							 depth: 1
 							};
-
 				insert_node_to_children(new_d, new_d.parent);
 				update(new_d.parent);
 
@@ -403,7 +402,6 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 	$('#reply_modal_box form').submit({data_id: did, id: id, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
 		$('#reply_modal_box').modal('toggle');
-		success_noty();
 		var comment = $('#reply_comment_textarea').val().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
@@ -412,57 +410,65 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 			article: article_id};
 
 		data.id = evt.data.data_id;
-		$.ajax({
-			type: 'POST',
-			url: '/reply_comment',
-			data: data,
-			success: function(res) {
-				d = nodes_all[evt.data.id-1];
-				new_d = {d_id: res.d_id,
-							 name: res.comment,
-							 summary: "",
-							 summarized: false,
-							 extra_summary: "",
-							 parent: d,
-							 replace: [],
-							 author: res.author,
-							 tags: [],
-							 collapsed: false,
-							 replace_node: false,
-							 size: d.size,
-							 hid: [],
-							 depth: d.depth+1,
-							 x: d.x,
-							 x0: d.x0,
-							 y: d.y,
-							 y0: d.y0,
-							};
-				recurse_expand_all(d);
-				if (!d.children) {
-					d.children = [];
+		let username = $('#owner')[0].innerHTML;
+		console.log(username);
+		if (nodes_all[id-1] && nodes_all[id-1].name === comment && !nodes_all[id-1].replace_node && nodes_all[id-1].author === username) {
+			identical_noty();
+		} else {
+			$.ajax({
+				type: 'POST',
+				url: '/reply_comment',
+				data: data,
+				success: function(res) {
+					success_noty();
+					d = nodes_all[evt.data.id-1];
+					console.log(d);
+					new_d = {d_id: res.d_id,
+								 name: res.comment,
+								 summary: "",
+								 summarized: false,
+								 extra_summary: "",
+								 parent: d,
+								 replace: [],
+								 author: res.author,
+								 tags: [],
+								 collapsed: false,
+								 replace_node: false,
+								 size: d.size,
+								 hid: [],
+								 depth: d.depth+1,
+								 x: d.x,
+								 x0: d.x0,
+								 y: d.y,
+								 y0: d.y0,
+								};
+					recurse_expand_all(d);
+					if (!d.children) {
+						d.children = [];
+					}
+					if (!d._children) {
+						d._children = [];
+					}
+					d.children.push(new_d);
+					d._children.push(new_d);
+					update(d);
+
+					var text = construct_comment(new_d);
+					$('#comment_' + new_d.d_id).html(text);
+					$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
+					author_hover();
+
+					d3.select("#node_" + new_d.d_id).style("fill",color);
+
+					highlight_box(new_d.d_id);
+					make_progress_bar();
+
+				},
+				error: function() {
+					error_noty();
 				}
-				if (!d._children) {
-					d._children = [];
-				}
-				d.children.push(new_d);
-				d._children.push(new_d);
-				update(d);
-
-				var text = construct_comment(new_d);
-				$('#comment_' + new_d.d_id).html(text);
-				$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
-				author_hover();
-				
-				d3.select("#node_" + new_d.d_id).style("fill",color);
-
-				highlight_box(new_d.d_id);
-				make_progress_bar();
-
-			},
-			error: function() {
-				error_noty();
-			}
-		});
+			});
+		}
 	});
 
 });
@@ -2813,6 +2819,23 @@ function success_noty() {
 function error_noty() {
 	noty({
 	    text: 'Sorry, an error occurred.',
+	    layout: 'topCenter',
+	    type: 'error',
+	    timeout: 1500,
+	    closeOnSelfClick: true,
+        closeOnSelfOver: false,
+	    animation: {
+	        open: {height: 'toggle'},
+	        close: {height: 'toggle'},
+	        easing: 'swing',
+	        speed: 500
+	    }
+	});
+}
+
+function identical_noty() {
+	noty({
+	    text: 'Duplicate action occurred.',
 	    layout: 'topCenter',
 	    type: 'error',
 	    timeout: 1500,
