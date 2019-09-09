@@ -38,6 +38,12 @@ virtualenv wikum
 source wikum/bin/activate
 ```
 
+Install requirements inside the virtualenv
+'''sh
+$ pip install -r requirements.txt
+'''
+
+
 
 #### Setup the database
 
@@ -68,6 +74,9 @@ SECRET_KEY = ''
 DISQUS_API_KEY = ''
 ```
 *Note that you should replace 'myUser' and 'myPassword' with the ones you've choosen. Also In order to follow the correct Django configuration you should create a strong secret key (assign a long string to the SECRET_KEY variable).*
+
+
+In settings.py, change <NAME>, <USER>, and <PASSWORD> to the same values as in **private.py**. 
 
 
 

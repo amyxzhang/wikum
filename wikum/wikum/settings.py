@@ -22,8 +22,8 @@ except IOError:
     print "Unable to open configuration file!"
 
 
-_ENV_FILE_PATH = '/opt/wikum/env'
-_DEBUG_FILE_PATH = '/opt/wikum/debug'
+_ENV_FILE_PATH = 'opt/wikum/env'
+_DEBUG_FILE_PATH = 'opt/wikum/debug'
 PRAW_USERNAME = ''
 PRAW_PASSWORD = ''
 PRAW_CLIENT_ID = ''
@@ -35,10 +35,10 @@ def _get_env():
 
     if env[-1] == '\n':
         env = env[:-1]
-    
+
     f.close()
     return env
-ENV = _get_env() 
+ENV = _get_env()
 
 def _get_debug():
     f = open(_DEBUG_FILE_PATH)
@@ -46,24 +46,24 @@ def _get_debug():
 
     if debug[-1] == '\n':
         debug = debug[:-1]
-    
+
     f.close()
     if debug == 'true':
         return True
     else:
         return False
-    
+
 DEBUG = _get_debug()
 
 if ENV == 'prod':
     BASE_URL = 'murmur.csail.mit.edu'
-    MYSQL = MYSQL_PROD
+    MYSQL = 'MYSQL_PROD'
 elif ENV == 'staging':
     BASE_URL = 'murmur-dev.csail.mit.edu'
-    MYSQL = MYSQL_DEV
+    MYSQL = 'MYSQL_DEV'
 else:
     BASE_URL = 'localhost:8000'
-    MYSQL = MYSQL_LOCAL
+    MYSQL = 'MYSQL_LOCAL'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -86,7 +86,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    
+
     'website',
     'tracking',
     'account',
@@ -105,7 +105,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'account.middleware.LocaleMiddleware',
     'account.middleware.TimezoneMiddleware',
-    
+
 ]
 
 ROOT_URLCONF = 'wikum.urls'
@@ -137,10 +137,10 @@ WSGI_APPLICATION = 'wikum.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': MYSQL["NAME"],# Or path to database file if using sqlite3.
-        'USER': MYSQL["USER"], # Not used with sqlite3.
-        'PASSWORD': MYSQL["PASSWORD"],# Not used with sqlite3.
-        'HOST': MYSQL["HOST"], # Set to empty string for localhost. Not used with sqlite3.
+        'NAME': '<NAME>',  # MYSQL["NAME"],# Or path to database file if using sqlite3.
+        'USER': '<USER>', # MYSQL["USER"], # Not used with sqlite3.
+        'PASSWORD': '<PASSWORD>', # MYSQL["PASSWORD"],# Not used with sqlite3.
+        'HOST': '', # MYSQL["HOST"], # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
         'STORAGE_ENGINE': 'MyISAM'
     }
@@ -206,7 +206,7 @@ LANGUAGES = (
     ('es', _('Spanish')),
 )
 LOCALE_PATHS = (
-    BASE_DIR + '/website/locale',     
+    BASE_DIR + '/website/locale',
 )
 
 DEFAULT_CHARSET = 'utf-8'
