@@ -14,13 +14,15 @@ class Source(models.Model):
         return self.source_name
 
 class Article(models.Model):
-    EDIT_ACCESS = 1
-    COMMENT_ACCESS = 2
+    FULL_ACCESS = 0
+    COMMENT_ACCESS = 1
+    SUMMARIZE_ACCESS = 2
     VIEW_ACCESS = 3
     PRIVATE_ACCESS = 4
     ACCESS_MODES = (
-        (EDIT_ACCESS, 'Edit'),
+        (FULL_ACCESS, 'Full'),
         (COMMENT_ACCESS, 'Comment'),
+        (SUMMARIZE_ACCESS, 'Summarize'),
         (VIEW_ACCESS, 'View'),
         (PRIVATE_ACCESS, 'Private'),
     )
@@ -37,7 +39,7 @@ class Article(models.Model):
     highlight_authors = models.TextField()
     vectorizer = models.BinaryField()
 
-    access_mode = models.IntegerField(choices=ACCESS_MODES, default=EDIT_ACCESS)
+    access_mode = models.IntegerField(choices=ACCESS_MODES, default=FULL_ACCESS)
 
     percent_complete = models.IntegerField(default=0)
     comment_num = models.IntegerField(default=0)
@@ -54,13 +56,15 @@ class Article(models.Model):
         return self.title
 
 class Permissions(models.Model):
-    EDIT_ACCESS = 1
-    COMMENT_ACCESS = 2
+    FULL_ACCESS = 0
+    COMMENT_ACCESS = 1
+    SUMMARIZE_ACCESS = 2
     VIEW_ACCESS = 3
     PRIVATE_ACCESS = 4
     ACCESS_MODES = (
-        (EDIT_ACCESS, 'Edit'),
+        (FULL_ACCESS, 'Full'),
         (COMMENT_ACCESS, 'Comment'),
+        (SUMMARIZE_ACCESS, 'Summarize'),
         (VIEW_ACCESS, 'View'),
         (PRIVATE_ACCESS, 'Private'),
     )
@@ -68,7 +72,7 @@ class Permissions(models.Model):
     id = models.AutoField(primary_key=True)
     article = models.ForeignKey('Article')
     user = models.ForeignKey(User)
-    access_level = models.IntegerField(choices=ACCESS_MODES, default=EDIT_ACCESS)
+    access_level = models.IntegerField(choices=ACCESS_MODES, default=FULL_ACCESS)
     
     class Meta:
         unique_together = ('article', 'user',)
@@ -147,6 +151,7 @@ class Comment(models.Model):
 
 class CommentAuthor(models.Model):
     username = models.TextField(null=True)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     real_name = models.TextField()
     power_contrib = models.BooleanField(default=False)
@@ -172,6 +177,8 @@ class CommentAuthor(models.Model):
 
     is_decide = models.BooleanField(default=False)
     is_join = models.BooleanField(default=False)
+
+    is_wikum = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.anonymous:

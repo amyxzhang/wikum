@@ -150,10 +150,9 @@ def visualization_flag(request):
     else:
         owner = User.objects.get(username=owner)
         
-    url = request.GET['article']
-    num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url, owner=owner)[num]
-    
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
+
     permission = None
     if user.is_authenticated():
         permission = Permissions.objects.filter(user=user, article=article)
@@ -187,9 +186,8 @@ def visualization(request):
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    url = request.GET['article']
-    num = int(request.GET.get('num', 0))
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     return {'article': article,
             'user': user,
             'source': article.source}
@@ -226,6 +224,7 @@ def poll_status(request):
                 
                 a = Article.objects.filter(url=request.session['url'], owner=owner)
                 if a.exists():
+                    data['id'] = a[0].id
                     comment_count = a[0].comment_set.count()
                     if comment_count == 0:
                         a.delete()
@@ -300,18 +299,21 @@ def create_wikum(request):
     data = 'Fail'
     if request.is_ajax():
         owner = request.GET.get('owner', 'None')
-        user = User.objects.get(username=owner)
+        if owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
         title = request.GET['article']
         new_id = random_with_N_digits(10)
         source,_ = Source.objects.get_or_create(source_name="new_wikum")
-        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=user)
+        article, created = Article.objects.get_or_create(disqus_id=new_id, title=title, source=source, url=title, owner=owner)
         article.last_updated = datetime.datetime.now()
         article.save()
 
         request.session['task_id'] = new_id
         request.session['url'] = title
         request.session['owner'] = owner
-        data = new_id
+        data = article.id
     else:
         data = 'This is not an ajax request!'
 
@@ -369,19 +371,16 @@ def summary4(request):
     return summary_page(request)
     
 def summary_data(request):
-    url = urllib2.unquote(request.GET['article'])
-    
     owner = request.GET.get('owner', None)
     if not owner or owner == "None" or owner == "null":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-        
-    num = int(request.GET.get('num', 0))
+
     sort = request.GET.get('sort', 'id')
     
-    
-    a = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     next = request.GET.get('next')
     if not next:
@@ -407,30 +406,27 @@ def summary_data(request):
 
 @render_to('website/subtree.html')
 def subtree(request):
-    url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
-    
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     return {'article': article,
             'source': article.source}
 
 
 @render_to('website/history.html')
 def history(request):
-    url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     
     hist = History.objects.filter(article_id=article.id).order_by('-datetime').select_related()
     
@@ -440,15 +436,14 @@ def history(request):
 
 @render_to('website/cluster.html')
 def cluster(request):
-    url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    article = Article.objects.filter(url=url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     
     return {'article': article,
             'source': article.source}
@@ -642,8 +637,15 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 
 def new_node(request):
     try:
+        user = request.user
+        owner = request.GET.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
+
         article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
+        article = Article.objects.get(id=article_id)
         comment = request.POST['comment']
         req_user = request.user if request.user.is_authenticated() else None
         req_username = request.user.username if request.user.is_authenticated() else None
@@ -651,38 +653,62 @@ def new_node(request):
         if author.exists():
             author = author[0]
 
-        new_id = random_with_N_digits(10);
-        new_comment = Comment.objects.create(article=a,
-                                             author=author,
-                                             is_replacement=False,
-                                             disqus_id=new_id,
-                                             text=comment,
-                                             summarized=False,
-                                             text_len=len(comment))
-        new_comment.save()
+        permission = None
+        if user.is_authenticated():
+            permission = Permissions.objects.filter(user=user, article=article)
+            if permission.exists():
+                permission = permission[0]
+        if article.access_mode < 2 or (user.is_authenticated() and permission and (permission.access_level < 2)) or user == owner:
+            comment = request.POST['comment']
+            req_user = request.user if request.user.is_authenticated() else None
+            req_username = request.user.username if request.user.is_authenticated() else None
+            # if commentauthor for username use it; otherwise create it
+            author = CommentAuthor.objects.filter(username=req_username)
+            if user.is_anonymous():
+                req_username = "Anonymous"
+                author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
+            else:
+                if author.exists():
+                    author = author[0]
+                    author.is_wikum = True
+                    author.user = user
+                else:
+                    # existing user who is not a comment author
+                    author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
+            new_id = random_with_N_digits(10)
+            new_comment = Comment.objects.create(article=article,
+                                                 author=author,
+                                                 is_replacement=False,
+                                                 disqus_id=new_id,
+                                                 text=comment,
+                                                 summarized=False,
+                                                 text_len=len(comment))
+            new_comment.save()
 
-        action = 'new_node'
-        explanation = 'new comment'
+            action = 'new_node'
+            explanation = 'new comment'
 
-        h = History.objects.create(user=req_user,
-                                   article=a,
-                                   action=action,
-                                   explanation=explanation)
+            h = History.objects.create(user=req_user,
+                                       article=article,
+                                       action=action,
+                                       explanation=explanation)
 
-        h.comments.add(new_comment)
-        recurse_up_post(new_comment)
+            h.comments.add(new_comment)
+            recurse_up_post(new_comment)
 
-        recurse_down_num_subtree(new_comment)
+            recurse_down_num_subtree(new_comment)
 
-        # make_vector(new_comment, a)
+            # make_vector(new_comment, article)
 
-        a.comment_num = a.comment_num + 1
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
+            article.comment_num = article.comment_num + 1
+            article.percent_complete = count_article(a)
+            article.last_updated = datetime.datetime.now()
 
-        a.save()
+            article.save()
 
-        return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+            return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+        else:
+            return JsonResponse({'comment': 'unauthorized'})
 
     except Exception, e:
         print e
@@ -690,51 +716,80 @@ def new_node(request):
         
 def reply_comment(request):
     try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
         id = request.POST['id']
         comment = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
-        req_username = request.user.username if request.user.is_authenticated() else None
-        author = CommentAuthor.objects.filter(username=req_username)
-        if author.exists():
-            author = author[0]
+        user = request.user
+        owner = request.GET.get('owner', None)
+        if not owner or owner == "None":
+            owner = None
+        else:
+            owner = User.objects.get(username=owner)
 
-        c = Comment.objects.get(id=id)
-        new_id = random_with_N_digits(10)
-        new_comment = Comment.objects.create(article=a,
-                                             author=author,
-                                             is_replacement=False,
-                                             reply_to_disqus=c.disqus_id,
-                                             disqus_id=new_id,
-                                             text=comment,
-                                             summarized=False,
-                                             text_len=len(comment),
-                                             import_order=c.import_order)
-        new_comment.save()
+        article_id = request.POST['article']
+        article = Article.objects.get(id=article_id)
 
-        action = 'reply_comment'
-        explanation = 'reply to comment'
+        permission = None
+        if user.is_authenticated():
+            permission = Permissions.objects.filter(user=user, article=article)
+            if permission.exists():
+                permission = permission[0]
+        if article.access_mode < 2 or (user.is_authenticated() and permission and (permission.access_level < 2)) or user == owner:
+            comment = request.POST['comment']
+            req_user = request.user if request.user.is_authenticated() else None
+            req_username = request.user.username if request.user.is_authenticated() else None
+            # if commentauthor for username use it; otherwise create it
+            author = CommentAuthor.objects.filter(username=req_username)
+            if user.is_anonymous():
+                req_username = "Anonymous"
+                author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
+            else:
+                if author.exists():
+                    author = author[0]
+                    author.is_wikum = True
+                    author.user = user
+                else:
+                    # existing user who is not a comment author
+                    author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
 
-        h = History.objects.create(user=req_user,
-                                   article=a,
-                                   action=action,
-                                   explanation=explanation)
+            c = Comment.objects.get(id=id)
+            new_id = random_with_N_digits(10)
+            new_comment = Comment.objects.create(article=article,
+                                                 author=author,
+                                                 is_replacement=False,
+                                                 reply_to_disqus=c.disqus_id,
+                                                 disqus_id=new_id,
+                                                 text=comment,
+                                                 summarized=False,
+                                                 text_len=len(comment),
+                                                 import_order=c.import_order)
+            new_comment.save()
 
-        h.comments.add(new_comment)
-        recurse_up_post(new_comment)
+            action = 'reply_comment'
+            explanation = 'reply to comment'
 
-        recurse_down_num_subtree(new_comment)
+            h = History.objects.create(user=req_user,
+                                       article=article,
+                                       action=action,
+                                       explanation=explanation)
 
-        make_vector(new_comment, a)
+            h.comments.add(new_comment)
+            recurse_up_post(new_comment)
 
-        a.comment_num = a.comment_num + 1
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
+            a.comment_num = a.comment_num + 1
+            a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
+            recurse_down_num_subtree(new_comment)
 
-        a.save()
+            # make_vector(new_comment, article)
 
-        return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+            article.percent_complete = count_article(article)
+            article.last_updated = datetime.datetime.now()
+
+            article.save()
+
+            return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
+        else:
+            return JsonResponse({'comment': 'unauthorized'})
 
     except Exception, e:
         print e
@@ -949,7 +1004,8 @@ def delete_node(did):
                 recurse_up_post(parent[0])
     except Exception, e:
         print e
-    
+
+
 def get_summary(summary):
     
     summary_split = re.compile("([-=]){5,}").split(summary)
@@ -1713,15 +1769,14 @@ def hide_replies(request):
         return HttpResponseBadRequest()
 
 def tags(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     
@@ -1730,15 +1785,14 @@ def tags(request):
     return HttpResponse(json_data, content_type='application/json')
     
 def get_stats(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     authors = {}
     tags = {}
@@ -1770,15 +1824,14 @@ def get_stats(request):
  
     
 def tags_and_authors(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    num = int(request.GET.get('num', 0))
     
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     tags = list(a.tag_set.all().values_list('text', flat=True))
     for i in range(len(tags)):
@@ -1811,10 +1864,11 @@ def add_global_perm(request):
 
         if user == owner:
             access = request.POST.get('access', None).strip()
-           
             if access == "Publicly Editable":
-                a.access_mode = 1
+                a.access_mode = 0
             elif access == "Publicly Commentable":
+                a.access_mode = 1
+            elif access == "Publicly Summarizable":
                 a.access_mode = 2
             elif access == "Publicly Viewable":
                 a.access_mode = 3
@@ -1851,12 +1905,17 @@ def add_user_perm(request):
             if delete_perm == 'true':
                 Permissions.objects.filter(article=a, user=a_user).delete()
             elif access:
-                if access == "Edit Access":
+                if access == "Full Edit Access":
+                    p, created = Permissions.objects.get_or_create(article=a, user=a_user)
+                    p.access_level = 0
+                    p.save()
+                    data['created'] = created
+                elif access == "Comment Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 1
                     p.save()
                     data['created'] = created
-                elif access == "Comment Access":
+                elif access == "Summarize Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 2
                     p.save()
@@ -1888,7 +1947,6 @@ def determine_is_collapsed(post, article):
     return False
 
 def viz_data(request):
-    article_url = request.GET['article']
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
@@ -1906,9 +1964,8 @@ def viz_data(request):
     start = 15 * next
     end = (15 * next) + 15
     
-    num = int(request.GET.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -2005,8 +2062,6 @@ def cluster_data(request):
     from sklearn.metrics.pairwise import euclidean_distances
     import numpy as np
     
-    article_url = request.GET['article']
-    
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
@@ -2014,9 +2069,8 @@ def cluster_data(request):
         owner = User.objects.get(username=owner)
     
     cluster_size = int(request.GET.get('size'))
-    num = int(request.GET.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
@@ -2105,7 +2159,6 @@ def cluster_data(request):
     
     
 def subtree_data(request):
-    article_url = request.GET['article']
     sort = request.GET.get('sort', None)
     next = request.GET.get('next', None)
     owner = request.GET.get('owner', None)
@@ -2117,9 +2170,8 @@ def subtree_data(request):
     
     comment_id = request.GET.get('comment_id', None)
     
-    num = int(request.GET.get('num', 0))
-    
-    a = Article.objects.filter(url=article_url, owner=owner)[num]
+    article_id = int(request.GET['id'])
+    a = Article.objects.get(id=article_id)
 
     least = 2
     most = 6

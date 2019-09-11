@@ -227,41 +227,53 @@
                    
                    
                    
-                   <div data-target="#permission_modal_box" data-toggle="modal" data-backdrop="false" class="btn btn-xs btn-primary" style="cursor: hand; position: relative; top: 8px;" id="access_mode" data-access=1>
-							{% if article.access_mode == 1 %}
+                   <div data-target="#permission_modal_box" data-toggle="modal" data-backdrop="false" class="btn btn-xs btn-primary" style="cursor: hand; position: relative; top: 8px;" id="access_mode" data-access=0>
+							{% if article.access_mode == 0 %}
 								Publicly Editable
-							{% elif article.access_mode == 2 %}
+							{% elif article.access_mode == 1 %}
 								Publicly Commentable
+							{% elif article.access_mode == 2 %}
+								Publicly Summarizable
 							{% elif article.access_mode == 3 %}
 								Publicly Viewable
 							{% elif article.access_mode == 4 %}
-								Private
+								Private Access
 							{% endif %}
 							 | Share <span class="caret"></span>
 						</div>
 					{% else %}
 						<div class="btn btn-xs" style="cursor: default;  position: relative; top: 8px; border: 1px solid #7d8a93; color: #7d8a93;" id="access_mode" data-access=
-							{% if article.access_mode == 1 %}
-								1>Public Edit Access
-							{% elif article.access_mode == 2 %}
-								{% if permission and permission.access_level == 1 %}
-									1>Publicly Commentable | Private Edit Access
+							{% if article.access_mode == 0 %}
+								0>Public Edit Access
+							{% elif article.access_mode == 1 %}
+								{% if permission and permission.access_level == 2 or permission.access_level == 0 %}
+									0>Publicly Commentable | Private Edit Access
 								{% else %}
-									2>Public Comment Access
+									1>Public Comment Access
+								{% endif %}
+							{% elif article.access_mode == 2 %}
+								{% if permission and permission.access_level == 1 or permission.access_level == 0 %}
+									0>Publicly Summarizable | Private Edit Access
+								{% else %}
+									2>Public Summarize Access
 								{% endif %}
 							{% elif article.access_mode == 3 %}
-								{% if permission and permission.access_level == 1 %}
-									1>Publicly Viewable | Private Edit Access
+								{% if permission and permission.access_level == 0 %}
+									0>Publicly Viewable | Private Edit Access
+								{% elif permission and permission.access_level == 1 %}
+									1>Publicly Viewable | Private Comment Access
 								{% elif permission and permission.access_level == 2 %}
-									2>Publicly Viewable | Private Comment Access
+									2>Publicly Viewable | Private Summarize Access
 								{% else %}
 									3>Public View Access
 								{% endif %}
 							{% elif article.access_mode == 4 %}
-								{% if permission and permission.access_level == 1 %}
-									1>Private Edit Access
+								{% if permission and permission.access_level == 0 %}
+									0>Private Edit Access
+								{% elif permission and permission.access_level == 1 %}
+									1>Private Comment Access
 								{% elif permission and permission.access_level == 2 %}
-									2>Private Comment Access
+									2>Private Summarize Access
 								{% elif permission and permission.access_level == 3 %}
 									3>Private View Access
 								{% endif %}

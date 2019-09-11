@@ -178,7 +178,7 @@ svg.append('svg:rect')
 
 var nodes_all = null;
 
-var article_url = getParameterByName('article');
+var article_url = $('#article_url').text();
 article_url = article_url.replace('#','%23');
 
 var size = parseInt(getParameterByName('size'));
@@ -224,17 +224,17 @@ var comment_id = null;
 	    return false;
 	});
 
- $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?article=${article_url}&num=${num}&owner=${owner}`);
- $('#menu-view').children().eq(3).children().first().attr('href', `/history?article=${article_url}&num=${num}&owner=${owner}`);
-	   $('#menu-view').children().eq(4).children().first().attr('href', article_url);
+ $('#menu-view').children().eq(0).children().first().attr('href', `/visualization_flags?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(1).children().first().attr('href', `/subtree?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(2).children().first().attr('href', `/cluster?id=${article_id}&owner=${owner}`);
+ $('#menu-view').children().eq(3).children().first().attr('href', `/history?id=${article_id}&owner=${owner}`);
+	   $('#menu-view').children().eq(4).children().first().attr('href', article_id);
 
 	  
  $( "#slider" ).slider({
   	value: size,
   	change: function( event, ui ) {
-  		url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&size=';
+  		url = "/cluster?id=" + article_id + '&owner=' + owner + '&size=';
   		window.location.href = url + ui.value;
   	}
   });
@@ -251,7 +251,7 @@ var comment_id = null;
   
  make_username_typeahead();
 
-d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num=' + num + '&owner=' + owner, function(error, flare) {
+d3.json('/cluster_data?id=' + article_id + '&size=' + size + '&owner=' + owner, function(error, flare) {
   if (error) throw error;
 
   flare.x0 = 100;
@@ -265,7 +265,7 @@ d3.json('/cluster_data?article=' + article_url + '&size=' + size + '&num=' + num
   
   	  make_progress_bar();
   	  
-  	    var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&colorby=' + colorby  + '&sort=' + sort + '&size=';
+  	    var url = "/cluster?id=" + article_id + '&owner=' + owner + '&colorby=' + colorby  + '&sort=' + sort + '&size=';
   var text = '<a class="btn btn-xs btn-primary" href="' +url + size + '">Get another cluster &gt;&gt;</a>';
   $('#paginate').html(text);
 
@@ -295,7 +295,7 @@ function make_dropdown() {
 	    return false;
 	});
 	
-  var url = "/cluster?article=" + article_url + '&num=' + num + '&owner=' + owner + '&size=' + size + '&colorby=' + colorby + '&sort=';
+  var url = "/cluster?id=" + article_id + '&owner=' + owner + '&size=' + size + '&colorby=' + colorby + '&sort=';
   $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
   $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
   $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
@@ -320,9 +320,9 @@ function make_color() {
 		});
 	
 	$('#menu-color').children().eq(0).children().first().attr('href', 
-		`/cluster?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
+		`/cluster?id=${article_id}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=summarized`);
  
  	$('#menu-color').children().eq(1).children().first().attr('href', 
-		`/cluster?article=${article_url}&num=${num}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
+		`/cluster?id=${article_id}&owner=${owner}&sort=${sort}&filter=${filter}&colorby=user`);
 
 }
