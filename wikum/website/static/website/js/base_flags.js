@@ -11,22 +11,22 @@ var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
 var article_id = $('#article_id').text();
 
-var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-var chatsock = new WebSocket(ws_scheme + '://' + window.location.host + "/wikum" + window.location.pathname + getUrlVars()['article'] + getUrlVars()['owner'] + getUrlVars()['num']);
-console.log(window.location.host); // localhost:8000
-console.log(window.location.pathname); // /visualization_flags
-console.log(getUrlVars()['article']); // new%20logged%20in (title)
-console.log(getUrlVars()['owner']); // sunnytian#
-console.log(getUrlVars()['num']); // 0
+//var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+//var chatsock = new WebSocket(ws_scheme + '://' + window.location.host + "/wikum" + window.location.pathname + getUrlVars()['article'] + getUrlVars()['owner'] + getUrlVars()['num']);
+// console.log(window.location.host); // localhost:8000
+// console.log(window.location.pathname); // /visualization_flags
+// console.log(getUrlVars()['article']); // new%20logged%20in (title)
+// console.log(getUrlVars()['owner']); // sunnytian#
+// console.log(getUrlVars()['num']); // 0
 
 
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    return vars;
-}
+// function getUrlVars() {
+//     var vars = {};
+//     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+//         vars[key] = value;
+//     });
+//     return vars;
+// }
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
@@ -340,7 +340,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 			article: article_id};
 
 		data.id = evt.data.data_id;
-		chatsock.send(JSON.stringify(data));
+		//chatsock.send(JSON.stringify(data));
 
 		$.ajax({
 			type: 'POST',
@@ -375,7 +375,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 					show_text(new_d.parent);
 					
 					d3.select("#node_" + new_d.d_id).style("fill",color);
-					d3.select('#node_' + d.id).style('fill', color);
 
 					highlight_box(new_d.d_id);
 					make_progress_bar();
@@ -474,14 +473,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 									 y0: d.y0,
 									};
 						recurse_expand_all(d);
-						if (!d.children) {
-							d.children = [];
-						}
-						if (!d._children) {
-							d._children = [];
-						}
-						d.children.push(new_d);
-						d._children.push(new_d);
+						insert_node_to_children(new_d, new_d.parent);
 						update(d);
 
 						var text = construct_comment(new_d);
@@ -496,9 +488,6 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 						make_progress_bar();
 						success_noty();
 					}
-
-					highlight_box(new_d.d_id);
-					make_progress_bar();
 
 				},
 				error: function() {

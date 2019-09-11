@@ -303,6 +303,7 @@ def create_wikum(request):
             owner = None
         else:
             owner = User.objects.get(username=owner)
+        print(owner)
         title = request.GET['article']
         new_id = random_with_N_digits(10)
         source,_ = Source.objects.get_or_create(source_name="new_wikum")
@@ -311,14 +312,12 @@ def create_wikum(request):
         article.save()
 
         request.session['task_id'] = new_id
-        request.session['url'] = title
-        request.session['owner'] = owner
+        request.session['url'] = str(title)
+        request.session['owner'] = str(owner)
         data = article.id
     else:
         data = 'This is not an ajax request!'
-
     json_data = json.dumps(data)
-
     return HttpResponse(json_data, content_type='application/json')
     
 def summary_page(request):
@@ -701,7 +700,7 @@ def new_node(request):
             # make_vector(new_comment, article)
 
             article.comment_num = article.comment_num + 1
-            article.percent_complete = count_article(a)
+            article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
 
             article.save()
@@ -727,9 +726,15 @@ def reply_comment(request):
 
         article_id = request.POST['article']
         article = Article.objects.get(id=article_id)
+        print("OWNER")
+        print(owner)
+        print("USER")
+        print(user)
+        print("TRUE?")
+        print(user == owner)
 
         permission = None
-        if user.is_authenticated():
+        if user.is_authenticated() or user == owner:
             permission = Permissions.objects.filter(user=user, article=article)
             if permission.exists():
                 permission = permission[0]
@@ -775,13 +780,11 @@ def reply_comment(request):
             h.comments.add(new_comment)
             recurse_up_post(new_comment)
 
-            a.comment_num = a.comment_num + 1
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
             recurse_down_num_subtree(new_comment)
 
             # make_vector(new_comment, article)
 
+            article.comment_num = article.comment_num + 1
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
 
