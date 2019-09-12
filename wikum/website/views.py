@@ -303,7 +303,6 @@ def create_wikum(request):
             owner = None
         else:
             owner = User.objects.get(username=owner)
-        print(owner)
         title = request.GET['article']
         new_id = random_with_N_digits(10)
         source,_ = Source.objects.get_or_create(source_name="new_wikum")
@@ -458,7 +457,6 @@ def recurse_up_post(post):
 def recurse_down_post(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
-        print child.id
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
@@ -726,12 +724,6 @@ def reply_comment(request):
 
         article_id = request.POST['article']
         article = Article.objects.get(id=article_id)
-        print("OWNER")
-        print(owner)
-        print("USER")
-        print(user)
-        print("TRUE?")
-        print(user == owner)
 
         permission = None
         if user.is_authenticated() or user == owner:
