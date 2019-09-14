@@ -635,7 +635,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 def new_node(request):
     try:
         user = request.user
-        owner = request.GET.get('owner', None)
+        owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
@@ -716,7 +716,7 @@ def reply_comment(request):
         id = request.POST['id']
         comment = request.POST['comment']
         user = request.user
-        owner = request.GET.get('owner', None)
+        owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
@@ -726,7 +726,7 @@ def reply_comment(request):
         article = Article.objects.get(id=article_id)
 
         permission = None
-        if user.is_authenticated() or user == owner:
+        if user.is_authenticated():
             permission = Permissions.objects.filter(user=user, article=article)
             if permission.exists():
                 permission = permission[0]

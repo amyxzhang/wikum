@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'channels',
     'website',
     'tracking',
     'account',
@@ -144,17 +143,6 @@ DATABASES = {
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
         'STORAGE_ENGINE': 'MyISAM'
     }
-}
-
-# Channel settings
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-        },
-        "ROUTING": "wikum.routing.channel_routing",
-    },
 }
 
 # Password validation

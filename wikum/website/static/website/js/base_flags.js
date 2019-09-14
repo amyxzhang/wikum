@@ -11,23 +11,6 @@ var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
 var article_id = $('#article_id').text();
 
-//var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-//var chatsock = new WebSocket(ws_scheme + '://' + window.location.host + "/wikum" + window.location.pathname + getUrlVars()['article'] + getUrlVars()['owner'] + getUrlVars()['num']);
-// console.log(window.location.host); // localhost:8000
-// console.log(window.location.pathname); // /visualization_flags
-// console.log(getUrlVars()['article']); // new%20logged%20in (title)
-// console.log(getUrlVars()['owner']); // sunnytian#
-// console.log(getUrlVars()['num']); // 0
-
-
-// function getUrlVars() {
-//     var vars = {};
-//     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-//         vars[key] = value;
-//     });
-//     return vars;
-// }
-
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
 	var csrf = $('#csrf').text();
@@ -337,6 +320,7 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
 			comment: comment,
+			owner: owner,
 			article: article_id};
 
 		data.id = evt.data.data_id;
@@ -437,6 +421,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
 			comment: comment,
+			owner: owner,
 			article: article_id};
 
 		data.id = evt.data.data_id;
