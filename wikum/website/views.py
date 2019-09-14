@@ -2300,11 +2300,3 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
 
     else:
         return parent_dict['children'][0]
-    
-                
-        
-        
-        
-    
-                
-    
