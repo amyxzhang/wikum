@@ -86,7 +86,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    
     'website',
     'tracking',
     'account',
@@ -145,7 +144,6 @@ DATABASES = {
         'STORAGE_ENGINE': 'MyISAM'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

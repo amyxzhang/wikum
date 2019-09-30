@@ -311,14 +311,12 @@ def create_wikum(request):
         article.save()
 
         request.session['task_id'] = new_id
-        request.session['url'] = title
-        request.session['owner'] = owner
+        request.session['url'] = str(title)
+        request.session['owner'] = str(owner)
         data = article.id
     else:
         data = 'This is not an ajax request!'
-
     json_data = json.dumps(data)
-
     return HttpResponse(json_data, content_type='application/json')
     
 def summary_page(request):
@@ -459,7 +457,6 @@ def recurse_up_post(post):
 def recurse_down_post(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
-        print child.id
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
@@ -638,7 +635,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 def new_node(request):
     try:
         user = request.user
-        owner = request.GET.get('owner', None)
+        owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
@@ -646,6 +643,12 @@ def new_node(request):
 
         article_id = request.POST['article']
         article = Article.objects.get(id=article_id)
+        comment = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
+        req_username = request.user.username if request.user.is_authenticated() else None
+        author = CommentAuthor.objects.filter(username=req_username)
+        if author.exists():
+            author = author[0]
 
         permission = None
         if user.is_authenticated():
@@ -694,6 +697,7 @@ def new_node(request):
 
             # make_vector(new_comment, article)
 
+            article.comment_num = article.comment_num + 1
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
 
@@ -712,7 +716,7 @@ def reply_comment(request):
         id = request.POST['id']
         comment = request.POST['comment']
         user = request.user
-        owner = request.GET.get('owner', None)
+        owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
@@ -772,6 +776,7 @@ def reply_comment(request):
 
             # make_vector(new_comment, article)
 
+            article.comment_num = article.comment_num + 1
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
 
@@ -992,6 +997,7 @@ def delete_node(did):
         
             if parent.count() > 0:
                 recurse_up_post(parent[0])
+            a.summary_num = a.summary_num - 1
     except Exception, e:
         print e
 
@@ -2294,11 +2300,3 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
 
     else:
         return parent_dict['children'][0]
-    
-                
-        
-        
-        
-    
-                
-    

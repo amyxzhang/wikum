@@ -113,6 +113,7 @@ a:hover {
 	height: 20px;
 	display: flex;
 }
+
 #create_new{
 	width: 20px;
 	height: 20px;
@@ -122,6 +123,9 @@ a:hover {
 	font-weight: bold;
 	line-height: 12px;
 	border-radius: 15px;
+	position: absolute;
+	top: 120px;
+	left: 70px;
 }
 
 #new_comment:hover{
@@ -373,7 +377,7 @@ rect.selection {
 .id_val {
 	position: absolute;
 	top: 2px;
-	left: 8px;
+	right: 8px;
 	color: gray;
 }
 
