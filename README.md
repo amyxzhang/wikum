@@ -33,6 +33,7 @@ This repository contains:
 ## Usage
 
 Once you have Wikum locally installed you can start developing. 
+You can find up-to-date requirements at [requirements.txt](/requirements.txt).
 
 
 ## Maintainers
