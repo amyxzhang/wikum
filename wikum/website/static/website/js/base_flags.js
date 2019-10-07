@@ -457,14 +457,7 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 									 y0: d.y0,
 									};
 						recurse_expand_all(new_d.parent);
-						if (!d.children) {
-							d.children = [];
-						}
-						if (!d._children) {
-							d._children = [];
-						}
-						d.children.push(new_d);
-						d._children.push(new_d);
+						insert_node_to_children(new_d, new_d.parent);
 						update(new_d.parent);
 
 						var text = construct_comment(new_d);
