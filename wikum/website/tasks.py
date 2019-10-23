@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 from celery import shared_task, current_task
 from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
@@ -6,7 +7,7 @@ from website.import_data import get_source, get_article, get_disqus_posts,\
 from django.contrib.auth.models import User
 
 
-@shared_task()
+@shared_task
 def import_article(url, owner):
     source = get_source(url)
 
@@ -104,12 +105,12 @@ def generate_tags(article_id):
         for comment in comments:
             comment.suggested_tags.clear()
 
-        for row_item, comment in zip(sorted_df.iterrows(), comments):
+        for row_item, comment in list(zip(sorted_df.iterrows(), comments)):
             index, row = row_item
             if row['suggested_tags']:
                 if not comment.tags.filter(id=row['suggested_tags']).exists():
                     comment.suggested_tags.add(row['suggested_tags'])
 
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
 

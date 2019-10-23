@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import print_function
 import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wikum.settings')
 
@@ -7,7 +8,7 @@ from celery import Celery
 
 app = Celery('website')
 
-app.config_from_object('django.conf:settings')
+app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # For autodiscover_tasks to work, you must define your tasks in a file called 'tasks.py'.
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

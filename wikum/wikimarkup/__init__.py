@@ -27,6 +27,3 @@ def get_revision():
     return None
 
 __build__ = get_revision()
-
-from parser import parse, parselite, registerTagHook, registerInternalLinkHook, registerInternalTemplateHook
-
