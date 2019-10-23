@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.encoding import python_2_unicode_compatible
 
 # Create your models here.
 
@@ -13,6 +14,7 @@ class Source(models.Model):
     def __unicode__(self):
         return self.source_name
 
+@python_2_unicode_compatible
 class Article(models.Model):
     FULL_ACCESS = 0
     COMMENT_ACCESS = 1
@@ -32,7 +34,7 @@ class Article(models.Model):
     created_at = models.DateTimeField(null=True)
     title = models.TextField()
     url = models.URLField()
-    source = models.ForeignKey('Source')
+    source = models.ForeignKey('Source', on_delete=models.CASCADE)
     last_updated = models.DateTimeField(null=True)
 
     num = models.IntegerField(default=0)
@@ -50,9 +52,9 @@ class Article(models.Model):
     # To prevent this, we first grab only the section(not the entire page) using "section_index" and parse it.
     section_index = models.IntegerField(default=0)
 
-    owner = models.ForeignKey(User, null=True)
+    owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 class Permissions(models.Model):
@@ -70,40 +72,42 @@ class Permissions(models.Model):
     )
     
     id = models.AutoField(primary_key=True)
-    article = models.ForeignKey('Article')
-    user = models.ForeignKey(User)
+    article = models.ForeignKey('Article', on_delete=models.CASCADE,)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     access_level = models.IntegerField(choices=ACCESS_MODES, default=FULL_ACCESS)
     
     class Meta:
         unique_together = ('article', 'user',)
 
+@python_2_unicode_compatible
 class History(models.Model):
     id = models.AutoField(primary_key=True)
-    article = models.ForeignKey('Article')
+    article = models.ForeignKey('Article', on_delete=models.CASCADE)
     action = models.CharField(max_length=20)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now=True)
     comments = models.ManyToManyField('Comment')
     from_str = models.TextField()
     to_str = models.TextField()
     explanation = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.action
 
+@python_2_unicode_compatible
 class Tag(models.Model):
     id = models.AutoField(primary_key=True)
-    article = models.ForeignKey('Article')
+    article = models.ForeignKey('Article', on_delete=models.CASCADE)
     text = models.TextField()
     color = models.CharField(max_length=6)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Tag of %s on article %s' % (self.text, self.article.title)
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
-    article = models.ForeignKey('Article')
-    author = models.ForeignKey('CommentAuthor', null=True)
+    article = models.ForeignKey('Article', on_delete=models.CASCADE)
+    author = models.ForeignKey('CommentAuthor', null=True, on_delete=models.CASCADE)
 
     cosigners = models.ManyToManyField('CommentAuthor', related_name="cosigned_on")
 
@@ -151,7 +155,7 @@ class Comment(models.Model):
 
 class CommentAuthor(models.Model):
     username = models.TextField(null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
 
     real_name = models.TextField()
     power_contrib = models.BooleanField(default=False)
@@ -189,15 +193,9 @@ class CommentAuthor(models.Model):
 
 class CommentRating(models.Model):
     id = models.AutoField(primary_key=True)
-    comment = models.ForeignKey('Comment')
-    user = models.ForeignKey(User, null=True)
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     neutral_rating = models.IntegerField(null=True)
     coverage_rating = models.IntegerField(null=True)
     quality_rating = models.IntegerField(null=True)
-
-
-
-
-
-
 

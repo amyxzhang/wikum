@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
+from __future__ import print_function
 
 import os
 import sys
@@ -17,9 +18,9 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE_ROOT = os.path.dirname(BASE_DIR)
 try:
-    execfile(BASE_DIR + '/private.py')
+    exec(open(BASE_DIR + '/private.py').read())
 except IOError:
-    print "Unable to open configuration file!"
+    print("Unable to open configuration file!")
 
 
 _ENV_FILE_PATH = '/opt/wikum/env'
@@ -71,7 +72,7 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.wikum.csail.mit.edu']
+ALLOWED_HOSTS = ['.wikum.csail.mit.edu', 'localhost', '128.52.139.135']
 
 #database connection max age
 CONN_MAX_AGE = 0
@@ -86,21 +87,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    
+    'channels',
     'website',
     'tracking',
     'account',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'tracking.middleware.VisitorTrackingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'account.middleware.LocaleMiddleware',
@@ -120,7 +121,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.i18n', # added this one
+                'django.template.context_processors.i18n', # added this one
                 'django.contrib.messages.context_processors.messages',
                 'account.context_processors.account',
             ],
@@ -129,7 +130,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wikum.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -145,7 +145,6 @@ DATABASES = {
         'STORAGE_ENGINE': 'MyISAM'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -167,14 +166,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # BROKER_URL = 'message_broker://user:password@hostname:port/virtual_host'
 # message_broker --> rabbitmq = amqp
-BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+#BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 
 # List of modules to import when celery starts.
-CELERY_IMPORTS = ("website.tasks",)
-CELERY_RESULT_BACKEND = "db+mysql://root:koob@localhost/celery"
-CELERY_IGNORE_RESULT = False
-CELERY_RESULT_DB_SHORT_LIVED_SESSIONS = True
-CELERY_RESULT_BACKEND = "db+mysql://celery:koob@localhost/celery"
+#CELERY_IMPORTS = ("website.tasks",)
+#CELERY_RESULT_BACKEND = "db+mysql://root:koob@localhost/celery"
+#CELERY_IGNORE_RESULT = False
+#CELERY_RESULT_DB_SHORT_LIVED_SESSIONS = True
+#CELERY_RESULT_BACKEND = "db+mysql://celery:koob@localhost/celery"
+CELERY_BROKER_URL = 'redis://localhost:6379' 
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -216,3 +220,20 @@ DEFAULT_CHARSET = 'utf-8'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = ( os.path.join('website/static'), )
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# redis_host = os.environ.get('REDIS_HOST', 'localhost')
+# Channel settings
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
+}
+
+# ASGI_APPLICATION should be set to your outermost router
+ASGI_APPLICATION = 'wikum.routing.application'
+

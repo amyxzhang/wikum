@@ -1,9 +1,16 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import str
+from builtins import range
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import json
 from django.http import JsonResponse
 
-from engine import *
+from .engine import *
 
 from django.http import HttpResponse
 from annoying.decorators import render_to
@@ -16,21 +23,22 @@ from math import floor
 from django.views.decorators.csrf import csrf_exempt
 from website.import_data import get_source, get_article
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
-from wikimarkup import parse
-import parse_helper
+from wikimarkup.parser import Parser
+from . import parse_helper
 import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
 
+parser = Parser()
 
 def index(request):
     user = request.user
 
-    if user.is_authenticated():
+    if user.is_authenticated:
         a = Article.objects.filter(owner=user).order_by('-last_updated').select_related()
         for art in a:
             art.url = re.sub('#', '%23', art.url)
@@ -68,7 +76,7 @@ def index(request):
                 'finished_articles': a,
                 'user': user}
         
-        if 'task_id' in request.session.keys() and request.session['task_id']:
+        if 'task_id' in list(request.session.keys()) and request.session['task_id']:
             task_id = request.session['task_id']
             resp['task_id'] = task_id
 
@@ -92,7 +100,7 @@ def about(request):
         art.url = re.sub('#', '%23', art.url)
         art.url = re.sub('&', '%26', art.url)
     
-    if 'task_id' in request.session.keys() and request.session['task_id']:
+    if 'task_id' in list(request.session.keys()) and request.session['task_id']:
         task_id = request.session['task_id']
         resp['task_id'] = task_id
     return resp
@@ -102,7 +110,7 @@ def explore_public(request):
     user = request.user
     sort = request.GET.get('sort', None)
     
-    if not sort and not user.is_anonymous():
+    if not sort and not user.is_anonymous:
         a_1 = list(Article.objects.filter(owner=user).order_by('-percent_complete').select_related())
         a_2 = list(Article.objects.filter(~Q(owner=user)).order_by('-percent_complete').select_related())
         a = a_1 + a_2
@@ -154,14 +162,14 @@ def visualization_flag(request):
     article = Article.objects.get(id=article_id)
 
     permission = None
-    if user.is_authenticated():
+    if user.is_authenticated:
         permission = Permissions.objects.filter(user=user, article=article)
         if permission.exists():
             permission = permission[0]
         
-    if article.access_mode < 4 or (user.is_authenticated() and permission and permission.access_level < 4) or user == owner:
+    if article.access_mode < 4 or (user.is_authenticated and permission and permission.access_level < 4) or user == owner:
 
-        if owner != None and user.is_authenticated() and owner == user:
+        if owner != None and user.is_authenticated and owner == user:
             all_perms = Permissions.objects.filter(article=article).select_related()
         else:
             all_perms = []
@@ -196,17 +204,16 @@ def visualization(request):
 def poll_status(request):
     data = 'Fail'
     if request.is_ajax():
-        if 'task_id' in request.POST.keys() and request.POST['task_id']:
-            from tasks import import_article
+        if 'task_id' in list(request.POST.keys()) and request.POST['task_id']:
+            from .tasks import import_article
             task_id = request.POST['task_id']
             task = import_article.AsyncResult(task_id)
-            
             data = {'result': task.result, 'state': task.state}
         else:
             data = {'result': 'No task_id in the request', 'state': 'ERROR'}
     else:
         data = {'result': 'This is not an ajax request', 'state': 'ERROR'}
-    
+ 
     if task.state == 'SUCCESS' or task.state == 'FAILURE':
         request.session['task_id'] = None
         if task.state == 'SUCCESS':
@@ -255,7 +262,7 @@ def author_info(request):
     author_info = {}
     if username and url:
         a = Article.objects.filter(url=url, owner=owner)[num]
-        print a.url
+        print(a.url)
         if 'en.wikipedia' in a.url:
             author = CommentAuthor.objects.filter(username=username, is_wikipedia=True)
             if author.exists():
@@ -279,7 +286,7 @@ def author_info(request):
 def import_article(request):       
     data = 'Fail'
     if request.is_ajax():
-        from tasks import import_article
+        from .tasks import import_article
         owner = request.GET.get('owner', 'None')
         url = request.GET['article']
         job = import_article.delay(url, owner)
@@ -311,14 +318,12 @@ def create_wikum(request):
         article.save()
 
         request.session['task_id'] = new_id
-        request.session['url'] = title
-        request.session['owner'] = owner
+        request.session['url'] = str(title)
+        request.session['owner'] = str(owner)
         data = article.id
     else:
         data = 'This is not an ajax request!'
-
     json_data = json.dumps(data)
-
     return HttpResponse(json_data, content_type='application/json')
     
 def summary_page(request):
@@ -459,7 +464,6 @@ def recurse_up_post(post):
 def recurse_down_post(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
     for child in children:
-        print child.id
         child.json_flatten = ""
         child.save()
         recurse_down_post(child)
@@ -490,7 +494,7 @@ def remove_summarized(post):
             remove_summarized(child)
     
 def clean_parse(text):
-    text = parse(text).strip()
+    text = parser.parse(text).strip()
     
     text = re.sub('<dl>', '', text)
     text = re.sub('</dl>', '', text)
@@ -638,7 +642,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 def new_node(request):
     try:
         user = request.user
-        owner = request.GET.get('owner', None)
+        owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
@@ -646,19 +650,25 @@ def new_node(request):
 
         article_id = request.POST['article']
         article = Article.objects.get(id=article_id)
+        comment = request.POST['comment']
+        req_user = request.user if request.user.is_authenticated() else None
+        req_username = request.user.username if request.user.is_authenticated() else None
+        author = CommentAuthor.objects.filter(username=req_username)
+        if author.exists():
+            author = author[0]
 
         permission = None
-        if user.is_authenticated():
+        if user.is_authenticated:
             permission = Permissions.objects.filter(user=user, article=article)
             if permission.exists():
                 permission = permission[0]
-        if article.access_mode < 2 or (user.is_authenticated() and permission and (permission.access_level < 2)) or user == owner:
+        if article.access_mode < 2 or (user.is_authenticated and permission and (permission.access_level < 2)) or user == owner:
             comment = request.POST['comment']
-            req_user = request.user if request.user.is_authenticated() else None
-            req_username = request.user.username if request.user.is_authenticated() else None
+            req_user = request.user if request.user.is_authenticated else None
+            req_username = request.user.username if request.user.is_authenticated else None
             # if commentauthor for username use it; otherwise create it
             author = CommentAuthor.objects.filter(username=req_username)
-            if user.is_anonymous():
+            if user.is_anonymous:
                 req_username = "Anonymous"
                 author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
             else:
@@ -694,6 +704,7 @@ def new_node(request):
 
             # make_vector(new_comment, article)
 
+            article.comment_num = article.comment_num + 1
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
 
@@ -703,8 +714,8 @@ def new_node(request):
         else:
             return JsonResponse({'comment': 'unauthorized'})
 
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
         
 def reply_comment(request):
@@ -712,7 +723,7 @@ def reply_comment(request):
         id = request.POST['id']
         comment = request.POST['comment']
         user = request.user
-        owner = request.GET.get('owner', None)
+        owner = request.POST.get('owner', None)
         if not owner or owner == "None":
             owner = None
         else:
@@ -722,17 +733,17 @@ def reply_comment(request):
         article = Article.objects.get(id=article_id)
 
         permission = None
-        if user.is_authenticated():
+        if user.is_authenticated:
             permission = Permissions.objects.filter(user=user, article=article)
             if permission.exists():
                 permission = permission[0]
-        if article.access_mode < 2 or (user.is_authenticated() and permission and (permission.access_level < 2)) or user == owner:
+        if article.access_mode < 2 or (user.is_authenticated and permission and (permission.access_level < 2)) or user == owner:
             comment = request.POST['comment']
-            req_user = request.user if request.user.is_authenticated() else None
-            req_username = request.user.username if request.user.is_authenticated() else None
+            req_user = request.user if request.user.is_authenticated else None
+            req_username = request.user.username if request.user.is_authenticated else None
             # if commentauthor for username use it; otherwise create it
             author = CommentAuthor.objects.filter(username=req_username)
-            if user.is_anonymous():
+            if user.is_anonymous:
                 req_username = "Anonymous"
                 author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
             else:
@@ -772,6 +783,7 @@ def reply_comment(request):
 
             # make_vector(new_comment, article)
 
+            article.comment_num = article.comment_num + 1
             article.percent_complete = count_article(article)
             article.last_updated = datetime.datetime.now()
 
@@ -781,8 +793,8 @@ def reply_comment(request):
         else:
             return JsonResponse({'comment': 'unauthorized'})
 
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 def summarize_comment(request):
@@ -793,7 +805,7 @@ def summarize_comment(request):
         summary = request.POST['comment']
         top_summary, bottom_summary = get_summary(summary)
         
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         c = Comment.objects.get(id=id)
         from_summary = c.summary + '\n----------\n' + c.extra_summary
@@ -819,7 +831,7 @@ def summarize_comment(request):
         h.comments.add(c)
         recurse_up_post(c)
         
-        make_vector(c, a)
+        # make_vector(c, a)
         
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
@@ -849,8 +861,8 @@ def summarize_comment(request):
                                  'bottom_summary': bottom_summary})
         
         
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
            
            
@@ -884,7 +896,7 @@ def summarize_selected(request):
         
         top_summary, bottom_summary = get_summary(summary)
         
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         comments = Comment.objects.filter(id__in=ids)
         children = [c for c in comments if c.id in children_ids]
@@ -931,7 +943,7 @@ def summarize_selected(request):
 
         recurse_down_num_subtree(new_comment)
 
-        make_vector(new_comment, a)
+        # make_vector(new_comment, a)
 
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
@@ -962,8 +974,8 @@ def summarize_selected(request):
                                  'top_summary': top_summary,
                                  'bottom_summary': bottom_summary})
         
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()  
    
 def delete_node(did):
@@ -992,8 +1004,9 @@ def delete_node(did):
         
             if parent.count() > 0:
                 recurse_up_post(parent[0])
-    except Exception, e:
-        print e
+            a.summary_num = a.summary_num - 1
+    except Exception as e:
+        print(e)
 
 
 def get_summary(summary):
@@ -1018,7 +1031,7 @@ def summarize_comments(request):
 
         delete_nodes = request.POST.getlist('delete_nodes[]')
         
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         c = Comment.objects.get(id=id)
         
@@ -1088,7 +1101,7 @@ def summarize_comments(request):
         h.comments.add(c)
         
         
-        make_vector(new_comment, a)
+        # make_vector(new_comment, a)
         
         a.summary_num = a.summary_num + 1
         a.percent_complete = count_article(a)
@@ -1118,11 +1131,11 @@ def summarize_comments(request):
                                  'top_summary': top_summary,
                                  'bottom_summary': bottom_summary})
         
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         
         import traceback
-        print traceback.format_exc()
+        print(traceback.format_exc())
         
         return HttpResponseBadRequest()  
 
@@ -1131,7 +1144,7 @@ def suggested_tags(request):
     try:
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         id = request.POST.get('id', None)
         if not id:
@@ -1151,8 +1164,8 @@ def suggested_tags(request):
         
     
         return JsonResponse(resp)
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 
@@ -1160,7 +1173,7 @@ def tag_comments(request):
     try:
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         ids = request.POST.getlist('ids[]')
         tag = request.POST['tag']
@@ -1199,22 +1212,22 @@ def tag_comments(request):
             
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
-            from tasks import generate_tags
+            from .tasks import generate_tags
             generate_tags.delay(article_id)
             
         if len(affected_comms) > 0:
             return JsonResponse({'color': color})
         else:
             return JsonResponse({})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 def hide_comments(request):
     try:
         article_id = request.POST['article']
         a = Article.objects.get(id=article_id)
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         ids = request.POST.getlist('ids[]')
         explain = request.POST['comment']
@@ -1244,8 +1257,8 @@ def hide_comments(request):
             
             
         return JsonResponse({})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 def move_comments(request):
@@ -1253,7 +1266,7 @@ def move_comments(request):
         new_parent_id = request.POST['new_parent']
         node_id = request.POST['node']
         
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         comment = Comment.objects.get(id=node_id)
         
@@ -1286,8 +1299,8 @@ def move_comments(request):
         
         return JsonResponse({})
     
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
            
            
@@ -1327,7 +1340,7 @@ def auto_summarize_comment(request):
         
         for sent in sents:
             if 'https://en.wikipedia.org/wiki/' in comment.article.url:
-                text = parse(sent._text)
+                text = parser.parse(sent._text)
                 sent = ''
                 in_tag = False
                 for c in text:
@@ -1356,7 +1369,7 @@ def tag_comment(request):
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         tag = request.POST['tag']
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         comment = Comment.objects.get(id=id)
         
@@ -1392,15 +1405,15 @@ def tag_comment(request):
                 
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
-            from tasks import generate_tags
+            from .tasks import generate_tags
             generate_tags.delay(article_id)
             
         if affected:
             return JsonResponse({'color': color})
         else:
             return JsonResponse()
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
     
 def delete_tags(request):
@@ -1415,7 +1428,7 @@ def delete_tags(request):
                 ids.append(int(idx))
                 
         tag = request.POST['tag']
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         comments = Comment.objects.filter(id__in=ids)
         
@@ -1447,21 +1460,21 @@ def delete_tags(request):
                 
         tag_count = a.comment_set.filter(tags__isnull=False).count()
         if tag_count % 2 == 0:
-            from tasks import generate_tags
+            from .tasks import generate_tags
             generate_tags.delay(a.id)
             
         if affected:
             return JsonResponse({'affected': 1})
         else:
             return JsonResponse({'affected': 0})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
     
 
 def rate_summary(request):
     try:
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         id = request.POST['id']
         neutral_rating = request.POST['neu']
         coverage_rating = request.POST['cov']
@@ -1508,8 +1521,8 @@ def rate_summary(request):
        
             return JsonResponse({'success': True});
         return JsonResponse({'success': False});
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 
@@ -1519,7 +1532,7 @@ def delete_comment_summary(request):
         article = Article.objects.get(id=article_id)
         comment_id = request.POST['id']
         explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
 
         comment = Comment.objects.get(id=comment_id)
         if not comment.is_replacement:
@@ -1538,14 +1551,14 @@ def delete_comment_summary(request):
             
         return JsonResponse({})
 
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 
 def upvote_summary(request):
     try:
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         if req_user:
             
             id = request.POST['id']
@@ -1596,13 +1609,13 @@ def upvote_summary(request):
                                  })
         else:
             return JsonResponse({'success': False})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
     
 def downvote_summary(request):
     try:
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         if req_user:
             
             id = request.POST['id']
@@ -1652,8 +1665,8 @@ def downvote_summary(request):
                                  })
         else:
             return JsonResponse({'success': False})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 
@@ -1663,7 +1676,7 @@ def hide_comment(request):
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         comment = Comment.objects.get(id=id)
         if comment.is_replacement:
@@ -1702,8 +1715,8 @@ def hide_comment(request):
             a.save()
             
         return JsonResponse({})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
     
 def recurse_down_hidden(replies, count):
@@ -1723,7 +1736,7 @@ def hide_replies(request):
         a = Article.objects.get(id=article_id)
         id = request.POST['id']
         explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
+        req_user = request.user if request.user.is_authenticated else None
         
         c = Comment.objects.get(id=id)
 
@@ -1754,8 +1767,8 @@ def hide_replies(request):
             return JsonResponse({'ids': ids})
         else:
             return JsonResponse({})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 def tags(request):
@@ -1765,6 +1778,7 @@ def tags(request):
     else:
         owner = User.objects.get(username=owner)
     
+    print(request.GET['id'])
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
@@ -1797,11 +1811,11 @@ def get_stats(request):
                 tags[t.text] = 0
             tags[t.text] += 1
             
-    author_list = sorted(authors.items(), key=lambda x: x[1], reverse=True)
+    author_list = sorted(list(authors.items()), key=lambda x: x[1], reverse=True)
     if len(author_list) > 5:
         author_list = author_list[:5]
         
-    tag_list = sorted(tags.items(), key=lambda x: x[1], reverse=True)
+    tag_list = sorted(list(tags.items()), key=lambda x: x[1], reverse=True)
     if len(tag_list) > 5:
         tag_list = tag_list[:5]
     
@@ -1867,8 +1881,8 @@ def add_global_perm(request):
             a.save()
         
         return JsonResponse({})
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 def add_user_perm(request):
@@ -1917,8 +1931,8 @@ def add_user_perm(request):
                     data['created'] = created
         
         return JsonResponse(data)
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         return HttpResponseBadRequest()
 
 def users(request):
@@ -2083,7 +2097,7 @@ def cluster_data(request):
     for post in posts:
         try:
             posts_vectors.append(pickle.loads(post.vector).toarray()[0])
-        except Exception, e:
+        except Exception as e:
             make_vector(post, a)
             posts_vectors.append(pickle.loads(post.vector).toarray()[0])
     
@@ -2104,7 +2118,7 @@ def cluster_data(request):
         
     count_dict = {}
     
-    for cluster, num in cluster_dict.items():
+    for cluster, num in list(cluster_dict.items()):
         if num != 1:
             if num not in count_dict:
                 count_dict[num] = []
@@ -2131,7 +2145,7 @@ def cluster_data(request):
     min_dist = 10000
     min_cluster = None
     
-    for cluster, vectors in vector_dict.items():
+    for cluster, vectors in list(vector_dict.items()):
         dist = np.mean(euclidean_distances(np.array(vectors), [cluster_centers[cluster]]))
         if dist < min_dist:
             min_dist = dist
@@ -2294,11 +2308,4 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
 
     else:
         return parent_dict['children'][0]
-    
-                
-        
-        
-        
-    
-                
-    
+

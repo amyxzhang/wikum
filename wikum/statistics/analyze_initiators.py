@@ -1,8 +1,10 @@
+from __future__ import print_function
 
 # coding: utf-8
 
 # In[1]:
 
+from builtins import zip
 get_ipython().magic(u'matplotlib inline')
 import MySQLdb
 import pandas as pd
@@ -69,7 +71,7 @@ plt.show()
 resampled_df.idxmax()
 resampled_df.max()
 
-print int(resampled_df.max())
+print(int(resampled_df.max()))
 
 
 # In[7]:

@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 from . import indentutils as wiu
 from . import signatureutils as su
 import mwparserfromhell as mwp
