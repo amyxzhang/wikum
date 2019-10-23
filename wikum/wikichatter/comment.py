@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 from . import signatureutils as su
 from . import indentutils as wiu
 from .error import Error

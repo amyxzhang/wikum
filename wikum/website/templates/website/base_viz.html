@@ -139,8 +139,10 @@
                 
                 
                <span title="{{ article.title }}" style="font-size:16px; color: #000000;"> {{ article.title | shorten:100 }}
-               	<a class="btn btn-xs" href="{{ article.url }}">link</a>
-                </span>
+               	       {% if not article.source.source_name == 'new_wikum' %}
+               		    <a class="btn btn-xs" href="{{ article.url }}">link</a>
+               	       {% endif %}
+		</span>
                 <BR>
                
                <div class="navbar-collapse collapse" id="navbar-collapse2"> 

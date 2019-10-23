@@ -11,13 +11,11 @@
 
 <div id="author_info"></div>
 {% if user == article.owner or article.access_mode == 0 or article.access_mode == 1 or permission and permission.access_level == 0 or permission and permission.access_level == 1 %}
-<div id="new_node">
+<div id="viz">
 	<button type="button" class="btn btn-default" data-toggle="modal" data-backdrop="false"
 	data-target="#new_node_modal_box" id="create_new">{% trans "+" %}</button>
 </div>
 {% endif %}
-<div id="viz">
-</div>
 <div id="box"></div>
 
 <div id="expand" style="display: none;"></div>

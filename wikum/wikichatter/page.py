@@ -1,3 +1,4 @@
+from builtins import object
 from . import section
 from . import mwparsermod as mwpm
 

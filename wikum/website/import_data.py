@@ -1,6 +1,6 @@
 from website.models import Article, Source, CommentAuthor, Comment, History, Tag
 from wikum.settings import DISQUS_API_KEY, PRAW_USERNAME, PRAW_PASSWORD, PRAW_CLIENT_ID, PRAW_CLIENT_SECRET
-import urllib2
+import urllib
 import json
 import praw
 import datetime
@@ -27,7 +27,7 @@ def get_article(url, user, source, num):
             url = url.strip().split('?')[0]
 
             thread_call = THREAD_CALL % (DISQUS_API_KEY, source.disqus_name, url)
-            result = urllib2.urlopen(thread_call)
+            result = urllib.request.urlopen(thread_call)
             result = json.load(result)
 
             if len(result['response']) > 1 and result['response'][0]['link'] != url:
@@ -61,7 +61,7 @@ def get_article(url, user, source, num):
 
             from wikitools import wiki, api
             site = wiki.Wiki(domain + '/w/api.php')
-            page = urllib2.unquote(str(wiki_sub[0]) + ':' + wiki_page.encode('ascii', 'ignore'))
+            page = urllib.parse.unquote(str(wiki_sub[0]) + ':' + wiki_page)
             params = {'action': 'parse', 'prop': 'sections','page': page ,'redirects':'yes' }
             request = api.APIRequest(site, params)
             result = request.query()
@@ -80,20 +80,20 @@ def get_article(url, user, source, num):
             if section_title:
                 title = title + ' - ' + section_title
 
-            link = urllib2.unquote(url)
+            link = urllib.parse.unquote(url)
 
         elif source.source_name == "Decide Proposal":
             url_parts = url.split('/proposals/')
             id = url_parts[1].split('-')[0]
             #title = url_parts[1]
-            link = urllib2.unquote(url)
+            link = urllib.parse.unquote(url)
             r = requests.post('https://decide.madrid.es/graphql', data = {'query': DECIDE_CALL % (id, '')})
             title = json.loads(str(r.content))['data']['proposal']['title']
 
         elif source.source_name == "JOIN Taiwan":
             url_parts = url.split('/detail/')
             id = url_parts[1].split('?')[0]
-            link = urllib2.unquote(url)
+            link = urllib.parse.unquote(url)
             r = requests.get('https://join.gov.tw/joinComments/board/policy/{0}'.format(id))
             title = r.json()['result'][0]['board']['title']
 
@@ -418,7 +418,7 @@ def get_decide_proposal_posts(article, current_task, total_count):
 def get_disqus_posts(article, current_task, total_count):
     comment_call = COMMENTS_CALL % (DISQUS_API_KEY, article.disqus_id)
 
-    result = urllib2.urlopen(comment_call)
+    result = urllib.request.urlopen(comment_call)
     result = json.load(result)
 
     count = import_disqus_posts(result, article)
@@ -437,7 +437,7 @@ def get_disqus_posts(article, current_task, total_count):
         comment_call_cursor = '%s&cursor=%s' % (comment_call, next)
 
 
-        result = urllib2.urlopen(comment_call_cursor)
+        result = urllib.request.urlopen(comment_call_cursor)
         result = json.load(result)
 
         count = import_disqus_posts(result, article)
@@ -687,3 +687,4 @@ def import_join_taiwan_posts(result, article, current_task, total_count):
             current_task.update_state(state='PROGRESS',
                                       meta={'count': total_count})
     return count
+

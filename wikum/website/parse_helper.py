@@ -1,7 +1,10 @@
-from wikimarkup import parse, registerInternalLinkHook, registerInternalTemplateHook, registerTagHook
+from __future__ import print_function
+from builtins import str
+from wikimarkup.parser import Parser
 import re
 from wikitools import wiki, api
 
+parser = Parser()
 
 def galleryTagHook(parser_env, body, attributes={}):
     widths = attributes.get('widths')
@@ -33,10 +36,10 @@ def galleryTagHook(parser_env, body, attributes={}):
                 request = api.APIRequest(site, params)
                 result = request.query()
                 try:
-                    url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
-                    desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
-                    width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
-                    height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+                    url = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumburl']
+                    desc_url = list(result['query']['pages'].values())[0]['imageinfo'][0]['descriptionurl']
+                    width = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbwidth']
+                    height = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbheight']
                 except:
                     continue
                 text = '<li class="gallerybox" style="width: %spx"><div style="width: %spx">' % (float(int(width)) + 1.496, float(int(width)) + 1.496)
@@ -50,7 +53,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                     inner_text = '|'.join(res[2:]).strip()
                 else:
                     inner_text = '|'.join(res[1:]).strip()
-                text += parse(inner_text)
+                text += parser.parse(inner_text)
                 text += '</p></div></li>'
                 start_text += text
     elif attributes.get('mode', None) == 'nolines':
@@ -70,10 +73,10 @@ def galleryTagHook(parser_env, body, attributes={}):
                 request = api.APIRequest(site, params)
                 result = request.query()
                 try:
-                    url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
-                    desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
-                    width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
-                    height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+                    url = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumburl']
+                    desc_url = list(result['query']['pages'].values())[0]['imageinfo'][0]['descriptionurl']
+                    width = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbwidth']
+                    height = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbheight']
                 except:
                     continue
                 
@@ -94,7 +97,7 @@ def galleryTagHook(parser_env, body, attributes={}):
                     inner_text = '|'.join(res[2:]).strip()
                 else:
                     inner_text = '|'.join(res[1:]).strip()
-                text += parse(inner_text)
+                text += parser.parse(inner_text)
                 text += '</p></div></li>'
                 start_text += text
     else:   
@@ -110,10 +113,10 @@ def galleryTagHook(parser_env, body, attributes={}):
                 request = api.APIRequest(site, params)
                 result = request.query()
                 try:
-                    url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
-                    desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
-                    width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
-                    height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+                    url = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumburl']
+                    desc_url = list(result['query']['pages'].values())[0]['imageinfo'][0]['descriptionurl']
+                    width = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbwidth']
+                    height = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbheight']
                 except:
                     continue
                 
@@ -136,16 +139,16 @@ def galleryTagHook(parser_env, body, attributes={}):
                     inner_text = '|'.join(res[2:]).strip()
                 else:
                     inner_text = '|'.join(res[1:]).strip()
-                text += parse(inner_text)
+                text += parser.parse(inner_text)
                 text += '</p></div></li>'
                 start_text += text
     start_text += '</ul>'
     return start_text
             
-registerTagHook('gallery', galleryTagHook)
+parser.registerTagHook('gallery', galleryTagHook)
 
 def slinkHook(parser_env, namespace, body):
-    print body
+    print(body)
     vals = body.split('|')
     href = vals[1].strip()
     text = href[1:]
@@ -178,10 +181,10 @@ def fileHook(parser_env, namespace, body):
     request = api.APIRequest(site, params)
     result = request.query()
     try:
-        url = result['query']['pages'].values()[0]['imageinfo'][0]['thumburl']
-        desc_url = result['query']['pages'].values()[0]['imageinfo'][0]['descriptionurl']
-        width = result['query']['pages'].values()[0]['imageinfo'][0]['thumbwidth']
-        height = result['query']['pages'].values()[0]['imageinfo'][0]['thumbheight']
+        url = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumburl']
+        desc_url = list(result['query']['pages'].values())[0]['imageinfo'][0]['descriptionurl']
+        width = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbwidth']
+        height = list(result['query']['pages'].values())[0]['imageinfo'][0]['thumbheight']
     except:
         return file_name
     text = '<a href="%s" class="image">' % desc_url
@@ -238,7 +241,7 @@ def colorHook(parser_env, namespace, body):
 
 def talkquoteHook(parser_env, namespace, body):
     text = '<blockquote>'
-    print body
+    print(body)
     res = body.split('=')
     res = '='.join(res[1:])
     res = res.split('|')
@@ -259,49 +262,48 @@ def emphHook(parser_env, namespace, body):
     return '<i>' + body + '</i>'
 
 def pbHook(parser_env, namespace, body):
-    print parser_env
-    print namespace
-    print body
+    print(parser_env)
+    print(namespace)
+    print(body)
     return '<br><br>'
 
 def sndHook(parser_env, namespace, body):
-    print parser_env
-    print namespace
-    print body
+    print(parser_env)
+    print(namespace)
+    print(body)
     return ' - '
 
 def passThroughHook(parser_env, namespace, body):
     return body
     
 
-registerInternalLinkHook('*', linkHook)
-registerInternalLinkHook('user talk', userTalkHook)
-registerInternalLinkHook('user', userHook)
-registerInternalLinkHook('userlink', userHook)
-registerInternalLinkHook('file', fileHook)
-registerInternalLinkHook('slink', slinkHook)
+parser.registerInternalLinkHook('*', linkHook)
+parser.registerInternalLinkHook('user talk', userTalkHook)
+parser.registerInternalLinkHook('user', userHook)
+parser.registerInternalLinkHook('userlink', userHook)
+parser.registerInternalLinkHook('file', fileHook)
+parser.registerInternalLinkHook('slink', slinkHook)
 
-registerInternalTemplateHook('ping', pingTempHook)
-registerInternalTemplateHook('reply to', userHook)
-registerInternalTemplateHook('replyto', userHook)
-registerInternalTemplateHook('u', userHook)
-registerInternalTemplateHook('re', userHook)
-registerInternalTemplateHook('color', colorHook)
-registerInternalTemplateHook('cot', cotHook)
-registerInternalTemplateHook('tq2', quoteHook)
-registerInternalTemplateHook('tq', quoteHook)
-registerInternalTemplateHook('xt', quoteHook)
-registerInternalTemplateHook('!xt', quote2Hook)
-registerInternalTemplateHook('pb', pbHook)
-registerInternalTemplateHook('snd', sndHook)
-registerInternalTemplateHook('em', emphHook)
-registerInternalTemplateHook('archivetop', archiveHook)
-registerInternalTemplateHook('Quote', quoteBoxHook)
-registerInternalTemplateHook('quote box', quoteBoxHook)
-registerInternalTemplateHook('highlight round', highlightHook)
-registerInternalTemplateHook('rfc top', passThroughHook)
-registerInternalTemplateHook('outdent', passThroughHook)
-registerInternalTemplateHook('outindent', passThroughHook)
-registerInternalTemplateHook('talkquote', talkquoteHook)
-
+parser.registerInternalTemplateHook('ping', pingTempHook)
+parser.registerInternalTemplateHook('reply to', userHook)
+parser.registerInternalTemplateHook('replyto', userHook)
+parser.registerInternalTemplateHook('u', userHook)
+parser.registerInternalTemplateHook('re', userHook)
+parser.registerInternalTemplateHook('color', colorHook)
+parser.registerInternalTemplateHook('cot', cotHook)
+parser.registerInternalTemplateHook('tq2', quoteHook)
+parser.registerInternalTemplateHook('tq', quoteHook)
+parser.registerInternalTemplateHook('xt', quoteHook)
+parser.registerInternalTemplateHook('!xt', quote2Hook)
+parser.registerInternalTemplateHook('pb', pbHook)
+parser.registerInternalTemplateHook('snd', sndHook)
+parser.registerInternalTemplateHook('em', emphHook)
+parser.registerInternalTemplateHook('archivetop', archiveHook)
+parser.registerInternalTemplateHook('Quote', quoteBoxHook)
+parser.registerInternalTemplateHook('quote box', quoteBoxHook)
+parser.registerInternalTemplateHook('highlight round', highlightHook)
+parser.registerInternalTemplateHook('rfc top', passThroughHook)
+parser.registerInternalTemplateHook('outdent', passThroughHook)
+parser.registerInternalTemplateHook('outindent', passThroughHook)
+parser.registerInternalTemplateHook('talkquote', talkquoteHook)
 

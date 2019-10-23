@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 import re
 import mwparserfromhell as mwp
 from .error import Error
