@@ -28,7 +28,7 @@ constantly==15.1.0
 coverage==4.5.4
 cryptography==2.7
 cycler==0.10.0
-daphne==2.3.0
+daphne==2.2.5
 decorator==4.4.0
 distlib==0.2.9.post0
 Django==2.1.1
@@ -38,7 +38,7 @@ django-tracking2==0.5.0
 django-user-accounts==2.1.0
 docopt==0.6.2
 docutils==0.15.2
-future==0.18.0
+future==0.18.1
 gnureadline==8.0.0
 hiredis==1.0.0
 html5lib==1.0.1
@@ -87,6 +87,7 @@ pyrsistent==0.15.4
 python-dateutil==2.8.0
 python-dotenv==0.10.3
 pytz==2019.3
+redis==3.3.11
 requests==2.22.0
 s3transfer==0.2.1
 scikit-learn==0.21.3
@@ -107,7 +108,8 @@ vine==1.3.0
 wcwidth==0.1.7
 webencodings==0.5.1
 websocket-client==0.56.0
-wikitools==1.2
+whitenoise==4.1.4
+wikitools==1.3
 wrapt==1.11.2
 zipp==0.6.0
 zope.interface==4.6.0
