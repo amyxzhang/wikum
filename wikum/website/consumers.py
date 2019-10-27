@@ -13,7 +13,6 @@ from channels.exceptions import StopConsumer
 # from channels.auth import channel_session, http_session_user, channel_session_user, channel_session_user_from_http
 from .engine import *
 from django.contrib.auth.models import User
-from django.http.response import HttpResponseBadRequest
 from django.utils import timezone
 from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
@@ -88,6 +87,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_summarize_comment(data, username)
                 elif data_type == 'summarize_selected':
                     message = self.handle_summarize_selected(data, username)
+                elif data_type == 'summarize_comments':
+                    message = self.handle_summarize_comments(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -423,6 +424,7 @@ class WikumConsumer(WebsocketConsumer):
             
             res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': child_id, 'children': children_ids}
             res['size'] = data['size']
+            res['delete_summary_node_ids'] = data['delete_summary_node_ids']
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
@@ -448,6 +450,119 @@ class WikumConsumer(WebsocketConsumer):
         except Exception as e:
             print(e)
             return {'user': username}
+
+    def handle_summarize_comments(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            summary = data['comment']
+            top_summary, bottom_summary = get_summary(summary)
+
+            delete_nodes = data['delete_nodes']
+            
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            c = Comment.objects.get(id=id)
+            
+            if not c.is_replacement:
+                new_id = random_with_N_digits(10);
+                
+                new_comment = Comment.objects.create(article=a, 
+                                                     is_replacement=True, 
+                                                     reply_to_disqus=c.reply_to_disqus,
+                                                     summary=top_summary,
+                                                     summarized=True,
+                                                     extra_summary=bottom_summary,
+                                                     disqus_id=new_id,
+                                                     points=c.points,
+                                                     text_len=len(summary),
+                                                     import_order=c.import_order)
+
+                c.reply_to_disqus = new_id
+                c.save()
+
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='sum_nodes',
+                                           to_str=summary,
+                                           explanation='initial summary of subtree')
+                
+                d_id = new_comment.id
+
+                h.comments.add(new_comment)
+
+                self.mark_children_summarized(new_comment)
+
+                recurse_up_post(new_comment)
+
+                recurse_down_num_subtree(new_comment)
+                
+            else:
+                from_summary = c.summary + '\n----------\n' + c.extra_summary
+                c.summary = top_summary
+                c.extra_summary=bottom_summary
+                c.save()
+                
+                h = History.objects.create(user=req_user, 
+                               article=a,
+                               action='edit_sum_nodes',
+                               from_str=from_summary,
+                               to_str=summary,
+                               explanation='edit summary of subtree')
+                
+                d_id = c.id
+                
+                new_comment = c
+                recurse_down_num_subtree(new_comment)
+                recurse_up_post(c)
+
+            for node in delete_nodes:
+                new_h = History.objects.create(user=req_user, 
+                               article=a,
+                               action='delete_node',
+                               from_str=node,
+                               to_str=c.id,
+                               explanation='promote summary')
+                delete_node(node)
+
+            h.comments.add(c)
+            
+            a.summary_num = a.summary_num + 1
+            a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
+            
+            a.save()
+            
+            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'd_id': d_id}
+            res['subtype'] = data['subtype']
+            res['delete_summary_node_ids'] = data['delete_summary_node_ids']
+            if 'wikipedia.org' in a.url:
+                if top_summary.strip() != '':
+                    res['top_summary'] = clean_parse(top_summary)
+                else:
+                    res['top_summary'] = ''
+                
+                res['top_summary_wiki'] = top_summary
+                
+                if bottom_summary.strip() != '':
+                    res['bottom_summary'] = clean_parse(bottom_summary)
+                else:
+                    res['bottom_summary'] = ''
+                
+                res['bottom_summary_wiki'] = bottom_summary
+                return res
+            else:
+                res['top_summary'] = top_summary
+                res['bottom_summary'] = bottom_summary
+                return res
+            
+        except Exception as e:
+            print(e)
+            import traceback
+            print(traceback.format_exc())
+            return {'user': username}
+
 
     def handle_delete_tags(self, data, username):
         article_id = self.article_id

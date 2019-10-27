@@ -84,7 +84,6 @@ urlpatterns = [
 
     url(r'^suggested_tags', website_views.suggested_tags),
     url(r'^hide_replies', website_views.hide_replies),
-    url(r'^summarize_comments', website_views.summarize_comments),
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
