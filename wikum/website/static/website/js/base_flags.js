@@ -1198,8 +1198,6 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	var ids = [];
 	var dids = [];
 
-
-
 	var id = $(e.relatedTarget).data('id');
 	var did = $(e.relatedTarget).data('did');
 
@@ -1210,11 +1208,10 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 						success: function() {
 						}
 				});
-	
+	console.log("HUH?");
 	current_summarize_d_id.push(d.d_id);
 
 	highlight_box(id);
-
 
 	highlight_check = localStorage.getItem('highlight_check');
 
@@ -1321,40 +1318,9 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 			article: article_id};
 
 		data.id = evt.data.data_id;
-		$.ajax({
-			type: 'POST',
-			url: '/summarize_comment',
-			data: data,
-			success: function(res) {
-				$('#summarize_modal_box').modal('toggle');
-
-				success_noty();
-
-				d = nodes_all[evt.data.id-1];
-
-				d.summary = res.top_summary;
-				d.extra_summary = res.bottom_summary;
-				
-				if (article_url.indexOf('wikipedia.org') !== -1) {
-					d.sumwiki = res.top_summary_wiki;
-					d.extrasumwiki = res.bottom_summary_wiki;
-				}
-
-				var text = construct_comment(d);
-				$('#comment_' + evt.data.id).empty();
-				$('#comment_' + evt.data.id).html(text);
-				author_hover();
-				
-				d3.select("#node_" + d.id).style("fill",color);
-				$('#comment_' + evt.data.id).addClass("summary");
-
-				highlight_box(evt.data.id);
-				make_progress_bar();
-			},
-			error: function() {
-				error_noty();
-			}
-		});
+		data.node_id = evt.data.id;
+		data.type = 'summarize_comment';
+		chatsock.send(JSON.stringify(data));
 	});
 });
 
@@ -1996,6 +1962,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type === 'tag_one' || res.type === 'tag_selected') {
 		handle_channel_tags(res);
 	}
+	else if (res.type === 'summarize_comment') {
+		handle_channel_summarize_comment(res);
+	}
 	else if (res.type == 'delete_tags') {
 		handle_channel_delete_tags(res);
 	}
@@ -2004,7 +1973,8 @@ chatsock.onmessage = function(message) {
 chatsock.onerror = function(message) {
 	console.log("Socket error");
 	// TODO: Show error noty for correct user
-	// error_noty();
+	var res = JSON.parse(message.data);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) error_noty();
 }
 
 
@@ -2141,11 +2111,38 @@ function handle_channel_tags(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 }
 
+function handle_channel_summarize_comment(res) {
+
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
+
+	let node_id = res.node_id;
+	d = nodes_all[node_id-1];
+
+	d.summary = res.top_summary;
+	d.extra_summary = res.bottom_summary;
+	
+	if (article_url.indexOf('wikipedia.org') !== -1) {
+		d.sumwiki = res.top_summary_wiki;
+		d.extrasumwiki = res.bottom_summary_wiki;
+	}
+
+	var text = construct_comment(d);
+	$('#comment_' + node_id).empty();
+	$('#comment_' + node_id).html(text);
+	author_hover();
+	
+	d3.select("#node_" + d.id).style("fill",color);
+	$('#comment_' + node_id).addClass("summary");
+
+	highlight_box(node_id);
+	make_progress_bar();
+}
+
 function handle_channel_delete_tags(res) {
 	var ids = res.node_ids;
 	var tag = res.tag;
 	if (res.type === 'delete_tags') {
-	    success_noty();
+	    if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 		$('#current_tags').children().each(function(index, element) {
 			var btn_text = $(this).text().trim().slice(0, -3);
 			

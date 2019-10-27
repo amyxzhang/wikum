@@ -13,10 +13,11 @@ from channels.exceptions import StopConsumer
 # from channels.auth import channel_session, http_session_user, channel_session_user, channel_session_user_from_http
 from .engine import *
 from django.contrib.auth.models import User
+from django.http.response import HttpResponseBadRequest
 from django.utils import timezone
 from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
-from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, count_article
+from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, count_article, get_summary, clean_parse
 
 log = logging.getLogger(__name__)
 
@@ -70,14 +71,21 @@ class WikumConsumer(WebsocketConsumer):
         # conform to the expected message format.
         try:
             data = json.loads(text_data)
+            user = self.scope["user"]
+            req_user = user if user.is_authenticated else None
+            username = user.username if user.is_authenticated else None
+            if user.is_anonymous:
+                    username = "Anonymous"
             if 'type' in data:
                 data_type = data['type']
                 if data_type == 'new_node' or data_type == 'reply_comment':
-                    message = self.handle_message(data, self.scope["user"])
+                    message = self.handle_message(data, username)
                 elif data_type == 'tag_one' or data_type == 'tag_selected':
-                    message = self.handle_tags(data, self.scope["user"])
+                    message = self.handle_tags(data, username)
                 elif data_type == 'delete_tags':
-                    message = self.handle_delete_tags(data, self.scope["user"])
+                    message = self.handle_delete_tags(data, username)
+                elif data_type == 'summarize_comment':
+                    message = self.handle_summarize_comment(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -96,7 +104,7 @@ class WikumConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps(message))
 
 
-    def handle_message(self, data, user):
+    def handle_message(self, data, username):
         article_id = self.article_id
         article = Article.objects.get(id=article_id)
         try:
@@ -177,15 +185,13 @@ class WikumConsumer(WebsocketConsumer):
                 if data['type'] == 'reply_comment':
                     response_dict['node_id'] = data['node_id']
                 return response_dict
-                #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
             else:
-                return {}
-                #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps({'comment': 'unauthorized'})})
+                return {'user': username}
         except Exception as e:
             print(e)
             return {}
 
-    def handle_tags(self, data, user):
+    def handle_tags(self, data, username):
         article_id = self.article_id
         article = Article.objects.get(id=article_id)
         try:
@@ -230,12 +236,10 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
 
                 if affected:
-                    response_dict = {'color': color, 'type': data['type'], 'node_id': data['node_id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'node_id': data['node_id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
                     return response_dict
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
                 else:
-                    return {}
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps({})})
+                    return {'user': username}
             elif data['type'] == 'tag_selected':
                 ids = data['ids']
                 comments = Comment.objects.filter(id__in=ids, hidden=False)
@@ -266,17 +270,83 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
                     
                 if len(affected_comms) > 0:
-                    response_dict = {'color': color, 'type': data['type'], 'node_ids': data['node_ids'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'node_ids': data['node_ids'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
                     return response_dict
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
                 else:
-                    return {}
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps({})})
+                    return {'user': username}
         except Exception as e:
             print(e)
             return {}
 
-    def handle_delete_tags(self, data, user):
+    def handle_summarize_comment(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            summary = data['comment']
+            top_summary, bottom_summary = get_summary(summary)
+            print(top_summary)
+            print(bottom_summary)
+
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            c = Comment.objects.get(id=id)
+            from_summary = c.summary + '\n----------\n' + c.extra_summary
+            c.summary = top_summary
+            c.extra_summary = bottom_summary
+            c.save()
+            
+            if from_summary != '':
+                action = 'edit_sum'
+                explanation = 'edit summary'
+            else :
+                action = 'sum_comment'
+                explanation = 'initial summary'
+                
+
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action=action,
+                                       from_str=from_summary,
+                                       to_str=summary,
+                                       explanation=explanation)
+            
+            h.comments.add(c)
+            recurse_up_post(c)
+            
+            a.summary_num = a.summary_num + 1
+            a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
+            
+            a.save()
+
+            res = {'user': username, 'type': data['type'], 'node_id': data['node_id']}
+            if 'wikipedia.org' in a.url:
+                if top_summary.strip() != '':
+                    res['top_summary'] = clean_parse(top_summary)
+                else:
+                    res['top_summary'] = ''
+                
+                res['top_summary_wiki'] = top_summary
+                
+                if bottom_summary.strip() != '':
+                    res['bottom_summary'] = clean_parse(bottom_summary)
+                else:
+                    res['bottom_summary'] = ''
+                
+                res['bottom_summary_wiki'] = bottom_summary
+                    
+                return res
+            else:
+                res['top_summary'] = top_summary
+                res['bottom_summary'] = bottom_summary
+                return res
+            
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_delete_tags(self, data, username):
         article_id = self.article_id
         article = Article.objects.get(id=article_id)
         try:
@@ -323,14 +393,13 @@ class WikumConsumer(WebsocketConsumer):
                 from .tasks import generate_tags
                 generate_tags.delay(a.id)
 
-            response_dict = {'type': data['type'], 'node_ids': data['node_ids'], 'tag': data['tag']}
+            response_dict = {'type': data['type'], 'node_ids': data['node_ids'], 'tag': data['tag'], 'user': username}
             if affected:
                 response_dict['affected'] = 1
             else:
                 response_dict['affected'] = 0
             return response_dict
-            #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
         except Exception as e:
             print(e)
-            return {}
+            return {'user': username}
 
