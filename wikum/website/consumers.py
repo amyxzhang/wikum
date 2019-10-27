@@ -17,7 +17,7 @@ from django.http.response import HttpResponseBadRequest
 from django.utils import timezone
 from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
-from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, count_article, get_summary, clean_parse
+from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, count_article, get_summary, clean_parse, delete_node
 
 log = logging.getLogger(__name__)
 
@@ -86,6 +86,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_delete_tags(data, username)
                 elif data_type == 'summarize_comment':
                     message = self.handle_summarize_comment(data, username)
+                elif data_type == 'summarize_selected':
+                    message = self.handle_summarize_selected(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -98,6 +100,14 @@ class WikumConsumer(WebsocketConsumer):
                     'message': message
                 }
             )
+
+    def mark_children_summarized(self, post):
+        post.summarized = True
+        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+        for child in children:
+            child.summarized = True
+            child.save()
+            self.mark_children_summarized(child)
 
     def handle_data(self, event):
         message = event['message']
@@ -285,8 +295,6 @@ class WikumConsumer(WebsocketConsumer):
             id = data['id']
             summary = data['comment']
             top_summary, bottom_summary = get_summary(summary)
-            print(top_summary)
-            print(bottom_summary)
 
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
@@ -336,6 +344,101 @@ class WikumConsumer(WebsocketConsumer):
                 
                 res['bottom_summary_wiki'] = bottom_summary
                     
+                return res
+            else:
+                res['top_summary'] = top_summary
+                res['bottom_summary'] = bottom_summary
+                return res
+            
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_summarize_selected(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            ids = data['ids']
+            children_ids = data['children']
+            children_ids = [int(x) for x in children_ids]
+            child_id = data['child']
+            
+            delete_nodes = data['delete_nodes']
+            
+            summary = data['comment']
+            
+            top_summary, bottom_summary = get_summary(summary)
+            
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            comments = Comment.objects.filter(id__in=ids)
+            children = [c for c in comments if c.id in children_ids]
+            child = Comment.objects.get(id=child_id)
+            
+            lowest_child = children[0]
+            for c in children:
+                if c.import_order < lowest_child.import_order:
+                    lowest_child = c
+
+            new_id = random_with_N_digits(10)
+                
+            new_comment = Comment.objects.create(article=a, 
+                                                 is_replacement=True, 
+                                                 reply_to_disqus=child.reply_to_disqus,
+                                                 summarized=True,
+                                                 summary=top_summary,
+                                                 extra_summary=bottom_summary,
+                                                 disqus_id=new_id,
+                                                 points=child.points,
+                                                 text_len=len(summary),
+                                                 import_order=lowest_child.import_order)
+
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='sum_selected',
+                                       to_str=summary,
+                                       explanation='initial summary of group of comments') 
+           
+            for c in children:
+                c.reply_to_disqus = new_id
+                c.save()
+                h.comments.add(c)
+                
+            h.comments.add(new_comment)
+
+            for node in delete_nodes:
+                delete_node(node)
+
+            self.mark_children_summarized(new_comment)
+
+            recurse_up_post(new_comment)
+
+            recurse_down_num_subtree(new_comment)
+
+            a.summary_num = a.summary_num + 1
+            a.percent_complete = count_article(a)
+            a.last_updated = datetime.datetime.now()
+            
+            a.save()
+            
+            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': child_id, 'children': children_ids}
+            res['size'] = data['size']
+            if 'wikipedia.org' in a.url:
+                if top_summary.strip() != '':
+                    res['top_summary'] = clean_parse(top_summary)
+                else:
+                    res['top_summary'] = ''
+                
+                res['top_summary_wiki'] = top_summary
+                
+                if bottom_summary.strip() != '':
+                    res['bottom_summary'] = clean_parse(bottom_summary)
+                else:
+                    res['bottom_summary'] = ''
+                
+                res['bottom_summary_wiki'] = bottom_summary
+                res['user'] = username
+                res['type'] = data['type']
                 return res
             else:
                 res['top_summary'] = top_summary
