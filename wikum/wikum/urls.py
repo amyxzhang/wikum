@@ -78,7 +78,6 @@ urlpatterns = [
     url(r'^downvote_summary', website_views.downvote_summary),
     
     url(r'^hide_comments', website_views.hide_comments),
-    url(r'^hide_comment', website_views.hide_comment),
     
     url(r'^delete_comment_summary', website_views.delete_comment_summary),
 

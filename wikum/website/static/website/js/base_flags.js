@@ -837,7 +837,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			type: evt.data.type,
 			did_str: did_str,
 			id_str: id_str
-			};
+		};
 
 		if (evt.data.type == "tag_one") {
 			data.id = evt.data.data_id;
@@ -995,28 +995,15 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		var data = {csrfmiddlewaretoken: csrf,
 			comment: comment,
 			article: article_id};
+		$('#hide_modal_box').modal('toggle');
 
 		if (evt.data.type == "hide_comment") {
 			data.id = evt.data.data_id;
 			var d = nodes_all[evt.data.id-1];
-			console.log(d.parent);
 			d3.select('#node_' + d.parent.id).style('fill', color);
-			$.ajax({
-				type: 'POST',
-				url: '/hide_comment',
-				data: data,
-				success: function() {
-					$('#hide_modal_box').modal('toggle');
-
-					success_noty();
-					$('#comment_' + id).remove();
-					hide_node(id);
-					make_progress_bar();
-				},
-				error: function() {
-					error_noty();
-				}
-			});
+			data.node_id = id;
+			data.type = 'hide_comment';
+			chatsock.send(JSON.stringify(data));
 		} else if (evt.data.type == "hide_all_selected") {
 			data.ids = evt.data.dids;
 			$.ajax({
@@ -1024,7 +1011,6 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 				url: '/hide_comments',
 				data: data,
 				success: function() {
-					$('#hide_modal_box').modal('toggle');
 					success_noty();
 
 					for (var i=0; i<evt.data.ids.length; i++) {
@@ -1044,7 +1030,6 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 				url: '/hide_replies',
 				data: data,
 				success: function() {
-					$('#hide_modal_box').modal('toggle');
 					success_noty();
 
 					var d = nodes_all[evt.data.id-1];
@@ -1135,21 +1120,9 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				comment: '',
 				article: article_id,
 				id: d.d_id};
-
-			$.ajax({
-					type: 'POST',
-					url: '/hide_comment',
-					data: data,
-					success: function() {
-						delete_summary_node(id);
-						success_noty();
-						make_progress_bar();
-						$("#confirm_delete_modal_box .close").click();
-					},
-					error: function() {
-						error_noty();
-					}
-			});
+			data.node_id = id;
+			data.type = 'hide_comment';
+			chatsock.send(JSON.stringify(data));
 		} else {
 			var article_id = $('#article_id').text();
 			var csrf = $('#csrf').text();
@@ -1739,6 +1712,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type == 'delete_tags') {
 		handle_channel_delete_tags(res);
 	}
+	else if (res.type == 'hide_comment') {
+		handle_channel_hide_comment(res);
+	}
 };
 
 chatsock.onerror = function(message) {
@@ -2187,6 +2163,15 @@ function handle_channel_delete_tags(res) {
 			}
 		}
 	}
+}
+
+function handle_channel_hide_comment(res) {
+	let id = res.node_id;
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
+	$('#comment_' + id).remove();
+	delete_summary_node(id);
+	hide_node(id);
+	make_progress_bar();
 }
 
 function get_upvote_downvote(id) {

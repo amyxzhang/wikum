@@ -460,13 +460,6 @@ def recurse_up_post(post):
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
     if parent.count() > 0:
         recurse_up_post(parent[0])
-
-def recurse_down_post(post):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
-    for child in children:
-        child.json_flatten = ""
-        child.save()
-        recurse_down_post(child)
         
 def recurse_down_num_subtree(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
@@ -729,7 +722,7 @@ def suggested_tags(request):
 def hide_comments(request):
     try:
         article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
+        a = Article.objects.gxet(id=article_id)
         req_user = request.user if request.user.is_authenticated else None
         
         ids = request.POST.getlist('ids[]')
@@ -1064,55 +1057,6 @@ def downvote_summary(request):
         print(e)
         return HttpResponseBadRequest()
 
-
-def hide_comment(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated else None
-        
-        comment = Comment.objects.get(id=id)
-        if comment.is_replacement:
-            action = 'delete_sum'
-            recurse_down_post(comment)
-            
-            delete_node(comment.id)
-            
-            affected = False
-        else:
-            action = 'hide_comment'
-            if not comment.hidden:
-                comment.hidden = True
-                comment.save()
-                affected = True
-            else:
-                affected = False
-        
-        if affected:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action=action,
-                                       explanation=explain)
-            c = Comment.objects.get(id=id)
-            h.comments.add(c)
-            
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
-            if parent.count() > 0:
-                recurse_up_post(parent[0])
-                
-            
-            a.comment_num = a.comment_num - 1
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
-        
-            a.save()
-            
-        return JsonResponse({})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
     
 def recurse_down_hidden(replies, count):
     for reply in replies:
