@@ -228,17 +228,17 @@ def poll_status(request):
                     owner = None
                 else:
                     owner = User.objects.get(username=request.session['owner'])
-                
-                a = Article.objects.filter(url=request.session['url'], owner=owner)
-                if a.exists():
-                    data['id'] = a[0].id
-                    comment_count = a[0].comment_set.count()
+                urlparsed = urllib.parse.unquote(request.session['url'])
+                articles_list = Article.objects.filter(url=urlparsed, owner=owner)
+                if len(articles_list):
+                    a = articles_list[0]
+                    data['id'] = a.id
+                    comment_count = a.comment_set.count()
                     if comment_count == 0:
                         a.delete()
                         data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
                         data['state'] = 'FAILURE'
         request.session['url'] = None
-            
 
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
@@ -870,36 +870,6 @@ def rate_summary(request):
        
             return JsonResponse({'success': True});
         return JsonResponse({'success': False});
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-
-
-def delete_comment_summary(request):
-    try:
-        article_id = request.POST['article']
-        article = Article.objects.get(id=article_id)
-        comment_id = request.POST['id']
-        explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated else None
-
-        comment = Comment.objects.get(id=comment_id)
-        if not comment.is_replacement:
-            comment.summary = ""
-            comment.save()
-            recurse_up_post(comment)
-            h = History.objects.create(user=req_user,
-                                       article=article,
-                                       action='delete_comment_sum',
-                                       explanation=explain)
-            h.comments.add(comment)
-            
-            article.percent_complete = count_article(article)
-            article.last_updated = datetime.datetime.now()
-            article.save()
-            
-        return JsonResponse({})
-
     except Exception as e:
         print(e)
         return HttpResponseBadRequest()

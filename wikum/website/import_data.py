@@ -96,7 +96,6 @@ def get_article(url, user, source, num):
             link = urllib.parse.unquote(url)
             r = requests.get('https://join.gov.tw/joinComments/board/policy/{0}'.format(id))
             title = r.json()['result'][0]['board']['title']
-
         article, created = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, owner=user)
         article.last_updated = datetime.datetime.now()
         article.save()

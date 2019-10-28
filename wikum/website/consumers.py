@@ -16,7 +16,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
-from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, count_article, get_summary, clean_parse, delete_node
+from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse, delete_node
+from website.engine import count_article
 
 log = logging.getLogger(__name__)
 
@@ -95,6 +96,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_hide_comments(data, username)
                 elif data_type == 'hide_replies':
                     message = self.handle_hide_replies(data, username)
+                elif data_type == 'delete_comment_summary':
+                    message = self.handle_delete_comment_summary(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -347,12 +350,15 @@ class WikumConsumer(WebsocketConsumer):
             h.comments.add(c)
             recurse_up_post(c)
             
-            a.summary_num = a.summary_num + 1
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
             
+            a.summary_num = a.summary_num + 1
+            print("SUMMARY INCREMENTED")
+            a.percent_complete = count_article(a)
+            print("PERCENT COMPLETE UPDATED")
+            a.last_updated = datetime.datetime.now()
+            print("LAST UPDATED")
             a.save()
-
+            print("SAVED")
             res = {'user': username, 'type': data['type'], 'node_id': data['node_id']}
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
@@ -368,11 +374,12 @@ class WikumConsumer(WebsocketConsumer):
                     res['bottom_summary'] = ''
                 
                 res['bottom_summary_wiki'] = bottom_summary
-                    
+                print(res)
                 return res
             else:
                 res['top_summary'] = top_summary
                 res['bottom_summary'] = bottom_summary
+                print(res)
                 return res
             
         except Exception as e:
@@ -764,6 +771,35 @@ class WikumConsumer(WebsocketConsumer):
                 return {'node_id': data['node_id'], 'user': username, 'type': data['type'], 'ids': ids}
             else:
                 return JsonResponse({})
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_delete_comment_summary(self, data, username):
+        try:
+            article_id = self.article_id
+            article = Article.objects.get(id=article_id)
+            comment_id = data['id']
+            explain = data['comment']
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+
+            comment = Comment.objects.get(id=comment_id)
+            if not comment.is_replacement:
+                comment.summary = ""
+                comment.save()
+                recurse_up_post(comment)
+                h = History.objects.create(user=req_user,
+                                           article=article,
+                                           action='delete_comment_sum',
+                                           explanation=explain)
+                h.comments.add(comment)
+                
+                article.percent_complete = count_article(article)
+                article.last_updated = datetime.datetime.now()
+                article.save()
+                
+            return {'node_id': data['node_id'], 'user': username, 'type': data['type']}
+
         except Exception as e:
             print(e)
             return {'user': username}

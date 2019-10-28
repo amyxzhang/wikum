@@ -1067,6 +1067,7 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
   		var id = $(this).data('id');
   		
   		d = nodes_all[id-1];
+  		$('#confirm_delete_modal_box').modal('toggle');
 		if (d.replace_node) {
 			var article_id = $('#article_id').text();
 			var csrf = $('#csrf').text();
@@ -1084,20 +1085,9 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				comment: '',
 				article: article_id,
 				id: d.d_id};
-			$.ajax({
-					type: 'POST',
-					url: '/delete_comment_summary',
-					data: data,
-					success: function() {
-						delete_comment_summary(id);
-						success_noty();
-						make_progress_bar();
-						$("#confirm_delete_modal_box .close").click();
-					},
-					error: function() {
-						error_noty();
-					}
-			});
+			data.node_id = id;
+			data.type = 'delete_comment_summary';
+			chatsock.send(JSON.stringify(data));
 		}
 	});
 
@@ -1135,7 +1125,6 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 						success: function() {
 						}
 				});
-	console.log("HUH?");
 	current_summarize_d_id.push(d.d_id);
 
 	highlight_box(id);
@@ -1675,6 +1664,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type == 'hide_replies') {
 		handle_channel_hide_replies(res);
 	}
+	else if (res.type == 'delete_comment_summary') {
+		handle_channel_delete_comment_summary(res);
+	}
 };
 
 chatsock.onerror = function(message) {
@@ -1819,7 +1811,7 @@ function handle_channel_tags(res) {
 }
 
 function handle_channel_summarize_comment(res) {
-
+	console.log(res);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	let node_id = res.node_id;
@@ -2123,6 +2115,13 @@ function handle_channel_delete_tags(res) {
 			}
 		}
 	}
+}
+
+function handle_channel_delete_comment_summary(res) {
+	let id = res.node_id;
+	delete_comment_summary(id);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
+	make_progress_bar();
 }
 
 function handle_channel_hide_comment(res) {
