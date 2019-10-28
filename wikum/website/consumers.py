@@ -93,6 +93,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_hide_comment(data, username)
                 elif data_type == 'hide_comments':
                     message = self.handle_hide_comments(data, username)
+                elif data_type == 'hide_replies':
+                    message = self.handle_hide_replies(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -120,6 +122,17 @@ class WikumConsumer(WebsocketConsumer):
             child.json_flatten = ""
             child.save()
             self.recurse_down_post(child)
+
+    def recurse_down_hidden(self, replies, count):
+        for reply in replies:
+            if not reply.hidden:
+                reply.hidden = True
+                reply.json_flatten = ''
+                reply.save()
+                count += 1
+                reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id, article=reply.article)
+                count = self.recurse_down_hidden(reps, count)
+        return count
 
     def handle_data(self, event):
         message = event['message']
@@ -710,6 +723,47 @@ class WikumConsumer(WebsocketConsumer):
                 a.save()
 
             return {'node_ids': data['node_ids'], 'user': username, 'type': data['type']}
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_hide_replies(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            explain = data['comment']
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            c = Comment.objects.get(id=id)
+
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
+            
+            affected = self.recurse_down_hidden(replies, 0)
+            
+            if affected > 0:
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='hide_replies',
+                                           explanation=explain)
+                
+                replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
+                for reply in replies:
+                    h.comments.add(reply)
+                
+                recurse_up_post(c)
+                
+                ids = [reply.id for reply in replies]
+                
+                a.comment_num = a.comment_num - affected
+                a.percent_complete = count_article(a)
+                a.last_updated = datetime.datetime.now()
+            
+                a.save()
+                
+                return {'node_id': data['node_id'], 'user': username, 'type': data['type'], 'ids': ids}
+            else:
+                return JsonResponse({})
         except Exception as e:
             print(e)
             return {'user': username}

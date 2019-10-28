@@ -1011,41 +1011,9 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 			chatsock.send(JSON.stringify(data));
 		} else {
 			data.id = evt.data.data_id;
-			$.ajax({
-				type: 'POST',
-				url: '/hide_replies',
-				data: data,
-				success: function() {
-					success_noty();
-
-					var d = nodes_all[evt.data.id-1];
-					d3.select('#node_' + d.parent.id).style('fill', color);
-
-					if (d.children) {
-						ids = [];
-						for (var i=0; i<d.children.length; i++) {
-							ids.push(d.children[i].id);
-						}
-						for (var i=0; i<ids.length; i++) {
-							$('#comment_' + ids[i]).remove();
-							hide_node(ids[i]);
-						}
-					} else if (d._children) {
-						ids = [];
-						for (var i=0; i<d._children.length; i++) {
-							ids.push(d._children[i].id);
-						}
-						for (var i=0; i<d._children.length; i++) {
-							$('#comment_' + ids[i]).remove();
-							hide_node(ids[i]);
-						}
-					}
-					make_progress_bar();
-				},
-				error: function() {
-					error_noty();
-				}
-			});
+			data.node_id = evt.data.id;
+			data.type = 'hide_replies';
+			chatsock.send(JSON.stringify(data));
 		}
 
 	});
@@ -1704,6 +1672,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type === 'hide_comments') {
 		handle_channel_hide_comments(res);
 	}
+	else if (res.type == 'hide_replies') {
+		handle_channel_hide_replies(res);
+	}
 };
 
 chatsock.onerror = function(message) {
@@ -2171,6 +2142,34 @@ function handle_channel_hide_comments(res) {
 		hide_node(node_ids[i]);
 	}
 	show_text(nodes_all[0]);
+	make_progress_bar();
+}
+
+function handle_channel_hide_replies(res) {
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
+
+	var d = nodes_all[res.node_id-1];
+	d3.select('#node_' + d.parent.id).style('fill', color);
+
+	if (d.children) {
+		ids = [];
+		for (var i=0; i<d.children.length; i++) {
+			ids.push(d.children[i].id);
+		}
+		for (var i=0; i<ids.length; i++) {
+			$('#comment_' + ids[i]).remove();
+			hide_node(ids[i]);
+		}
+	} else if (d._children) {
+		ids = [];
+		for (var i=0; i<d._children.length; i++) {
+			ids.push(d._children[i].id);
+		}
+		for (var i=0; i<d._children.length; i++) {
+			$('#comment_' + ids[i]).remove();
+			hide_node(ids[i]);
+		}
+	}
 	make_progress_bar();
 }
 

@@ -80,7 +80,6 @@ urlpatterns = [
     url(r'^delete_comment_summary', website_views.delete_comment_summary),
 
     url(r'^suggested_tags', website_views.suggested_tags),
-    url(r'^hide_replies', website_views.hide_replies),
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),

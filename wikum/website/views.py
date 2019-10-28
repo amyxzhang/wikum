@@ -1018,58 +1018,6 @@ def downvote_summary(request):
         print(e)
         return HttpResponseBadRequest()
 
-    
-def recurse_down_hidden(replies, count):
-    for reply in replies:
-        if not reply.hidden:
-            reply.hidden = True
-            reply.json_flatten = ''
-            reply.save()
-            count += 1
-            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id, article=reply.article)
-            count = recurse_down_hidden(reps, count)
-    return count
-    
-def hide_replies(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated else None
-        
-        c = Comment.objects.get(id=id)
-
-        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
-        
-        affected = recurse_down_hidden(replies, 0)
-        
-        if affected > 0:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='hide_replies',
-                                       explanation=explain)
-            
-            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
-            for reply in replies:
-                h.comments.add(reply)
-            
-            recurse_up_post(c)
-            
-            ids = [reply.id for reply in replies]
-            
-            a.comment_num = a.comment_num - affected
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
-        
-            a.save()
-            
-            return JsonResponse({'ids': ids})
-        else:
-            return JsonResponse({})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
 
 def tags(request):
     owner = request.GET.get('owner', None)
