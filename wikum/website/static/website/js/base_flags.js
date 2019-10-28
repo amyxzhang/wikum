@@ -1006,23 +1006,9 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 			chatsock.send(JSON.stringify(data));
 		} else if (evt.data.type == "hide_all_selected") {
 			data.ids = evt.data.dids;
-			$.ajax({
-				type: 'POST',
-				url: '/hide_comments',
-				data: data,
-				success: function() {
-					success_noty();
-
-					for (var i=0; i<evt.data.ids.length; i++) {
-						$('#comment_' + evt.data.ids[i]).remove();
-						hide_node(evt.data.ids[i]);
-					}
-					make_progress_bar();
-				},
-				error: function() {
-					error_noty();
-				}
-			});
+			data.node_ids = evt.data.ids;
+			data.type = 'hide_comments';
+			chatsock.send(JSON.stringify(data));
 		} else {
 			data.id = evt.data.data_id;
 			$.ajax({
@@ -1715,6 +1701,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type == 'hide_comment') {
 		handle_channel_hide_comment(res);
 	}
+	else if (res.type === 'hide_comments') {
+		handle_channel_hide_comments(res);
+	}
 };
 
 chatsock.onerror = function(message) {
@@ -2171,6 +2160,17 @@ function handle_channel_hide_comment(res) {
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
 	hide_node(id);
+	make_progress_bar();
+}
+
+function handle_channel_hide_comments(res) {
+	let node_ids = res.node_ids;
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
+	for (var i = 0; i < node_ids.length; i++) {
+		$('#comment_' + node_ids[i]).remove();
+		hide_node(node_ids[i]);
+	}
+	show_text(nodes_all[0]);
 	make_progress_bar();
 }
 

@@ -91,6 +91,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_summarize_comments(data, username)
                 elif data_type == 'hide_comment':
                     message = self.handle_hide_comment(data, username)
+                elif data_type == 'hide_comments':
+                    message = self.handle_hide_comments(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -672,6 +674,42 @@ class WikumConsumer(WebsocketConsumer):
                 a.save()
 
             return {'node_id': data['node_id'], 'user': username, 'type': data['type']}
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_hide_comments(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            ids = data['ids']
+            explain = data['comment']
+            
+            affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
+            
+            if affected > 0:
+                
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='hide_comments',
+                                           explanation=explain)
+                
+                for id in ids:
+                    c = Comment.objects.get(id=id)
+                    h.comments.add(c)
+                    
+                    parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+                    if parent.count() > 0:
+                        recurse_up_post(parent[0])
+                
+                a.comment_num = a.comment_num - affected
+                a.percent_complete = count_article(a)
+                a.last_updated = datetime.datetime.now()
+                a.save()
+
+            return {'node_ids': data['node_ids'], 'user': username, 'type': data['type']}
         except Exception as e:
             print(e)
             return {'user': username}

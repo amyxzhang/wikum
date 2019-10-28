@@ -718,45 +718,6 @@ def suggested_tags(request):
         print(e)
         return HttpResponseBadRequest()
 
-
-def hide_comments(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.gxet(id=article_id)
-        req_user = request.user if request.user.is_authenticated else None
-        
-        ids = request.POST.getlist('ids[]')
-        explain = request.POST['comment']
-        
-        affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
-        
-        if affected > 0:
-            
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='hide_comments',
-                                       explanation=explain)
-            
-            for id in ids:
-                c = Comment.objects.get(id=id)
-                h.comments.add(c)
-                
-                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
-                if parent.count() > 0:
-                    recurse_up_post(parent[0])
-            
-            a.comment_num = a.comment_num - affected
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
-        
-            a.save()
-            
-            
-        return JsonResponse({})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-
 def move_comments(request):
     try:
         new_parent_id = request.POST['new_parent']
