@@ -144,6 +144,8 @@ class Comment(models.Model):
     is_replacement = models.BooleanField(default=False)
     summarized = models.BooleanField(default=False)
 
+    is_locked = models.BooleanField(default=False)
+
     vector = models.BinaryField()
 
     tags = models.ManyToManyField(Tag, related_name="comments")

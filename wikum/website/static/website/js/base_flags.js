@@ -1106,6 +1106,18 @@ function insert_quote(highlighted_text, did) {
     box.val( textBefore + '\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
 }
 
+function send_update_locks(dids, node_ids, to_lock) {
+	var article_id = $('#article_id').text();
+	var csrf = $('#csrf').text();
+	var lock_data = {csrfmiddlewaretoken: csrf,
+		article: article_id,
+		ids: dids,
+		node_ids: node_ids,
+		to_lock: to_lock,
+		type: 'update_locks'};
+	chatsock.send(JSON.stringify(lock_data));
+}
+
 $('#summarize_modal_box').on('show.bs.modal', function(e) {
 
 	activeBox = 'summarize';
@@ -1221,6 +1233,8 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	.mousedown(function(evt) {
 		cancelClick = setTimeout(is_click, 250);
 	});
+
+	send_update_locks([did], [id], true);
 
 	$('#summarize_modal_box form').off("submit");
 
@@ -1643,6 +1657,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type === 'tag_one' || res.type === 'tag_selected') {
 		handle_channel_tags(res);
 	}
+	else if (res.type === 'update_locks') {
+		handle_channel_update_locks(res);
+	}
 	else if (res.type === 'summarize_comment') {
 		handle_channel_summarize_comment(res);
 	}
@@ -1671,9 +1688,10 @@ chatsock.onmessage = function(message) {
 
 chatsock.onerror = function(message) {
 	console.log("Socket error");
-	// TODO: Show error noty for correct user
-	var res = JSON.parse(message.data);
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) error_noty();
+	if (message.data) {
+		var res = JSON.parse(message.data);
+		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) error_noty();
+	}
 }
 
 
@@ -1810,8 +1828,19 @@ function handle_channel_tags(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 }
 
-function handle_channel_summarize_comment(res) {
+function handle_channel_update_locks(res) {
 	console.log(res);
+	let dids = res.ids;
+	for (var i = 0; i < dids.length; i++) {
+		// for each node to update, set it to the correct locking state
+		let node = nodes_all.filter(o => o.d_id == dids[i])[0];
+		if (node) {
+			node.is_locked = res.to_lock;
+		}
+	}
+}
+
+function handle_channel_summarize_comment(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	let node_id = res.node_id;

@@ -84,6 +84,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_tags(data, username)
                 elif data_type == 'delete_tags':
                     message = self.handle_delete_tags(data, username)
+                elif data_type == 'update_locks':
+                    message = self.handle_update_locks(data, username)
                 elif data_type == 'summarize_comment':
                     message = self.handle_summarize_comment(data, username)
                 elif data_type == 'summarize_selected':
@@ -316,6 +318,25 @@ class WikumConsumer(WebsocketConsumer):
             print(e)
             return {}
 
+    def handle_update_locks(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            ids = data['ids']
+            for id in ids:
+                c = Comment.objects.get(id=id)
+                if data['to_lock']:
+                    c.is_locked = True
+                else:
+                    c.is_locked = False
+                c.save()
+            res = {'user': username, 'type': data['type'], 'node_ids': data['node_ids'], 'ids': data['ids'], 'to_lock': data['to_lock']}
+            return res
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+
     def handle_summarize_comment(self, data, username):
         try:
             article_id = self.article_id
@@ -352,13 +373,9 @@ class WikumConsumer(WebsocketConsumer):
             
             
             a.summary_num = a.summary_num + 1
-            print("SUMMARY INCREMENTED")
             a.percent_complete = count_article(a)
-            print("PERCENT COMPLETE UPDATED")
             a.last_updated = datetime.datetime.now()
-            print("LAST UPDATED")
             a.save()
-            print("SAVED")
             res = {'user': username, 'type': data['type'], 'node_id': data['node_id']}
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
@@ -374,12 +391,10 @@ class WikumConsumer(WebsocketConsumer):
                     res['bottom_summary'] = ''
                 
                 res['bottom_summary_wiki'] = bottom_summary
-                print(res)
                 return res
             else:
                 res['top_summary'] = top_summary
                 res['bottom_summary'] = bottom_summary
-                print(res)
                 return res
             
         except Exception as e:
