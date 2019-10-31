@@ -239,7 +239,7 @@ $('#hide_modal_box').on('hidden.bs.modal', function () {
 $('#summarize_modal_box').on('hide.bs.modal', function (e) {
 	var id = $('#summarize_modal_box').attr('summarize_modal_box_id');
 	var did = $('#summarize_modal_box').attr('summarize_modal_box_did');
-	send_update_locks([did], [id], false);
+	send_update_locks([parseInt(did)], [parseInt(id)], false);
 });
 
 $('#summarize_modal_box').on('hidden.bs.modal', function (e) {
@@ -256,6 +256,14 @@ $('#summarize_modal_box').on('hidden.bs.modal', function (e) {
 						success: function(res) {
 						}
 				});
+});
+
+$('#summarize_multiple_modal_box').on('hide.bs.modal', function (e) {
+	var str_ids = $('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids').split(",");
+	var ids = str_ids.map(str_id => parseInt(str_id));
+	var str_dids = $('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids').split(",");
+	var dids = str_dids.map(str_did => parseInt(str_did));
+	send_update_locks(dids, ids, false);
 });
 
 $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
@@ -834,6 +842,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 	$('#tag_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
+		$('#tag_modal_box').modal('toggle');
 		var tag = $('#tag-form').val();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
@@ -1249,6 +1258,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	$('#summarize_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
 		send_update_locks([did], [id], false);
+		$('#summarize_modal_box').modal('toggle');
 		var comment = $('#summarize_comment_textarea').val().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
@@ -1348,6 +1358,10 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		$('#summarize_multiple_comment_text').text('Summarize these selected comments.');
 		$('#summarize_multiple_comment_textarea').val("");
+
+		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids', ids);
+		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', dids);
+		send_update_locks(dids, ids, true);
 	} else {
 
 		var id = $(e.relatedTarget).data('id');
@@ -1362,6 +1376,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		d = nodes_all[id-1];
 
 		highlight_box(id);
+		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids', [id]);
+		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', [did]);
+		console.log([id]);
+		send_update_locks([did], [id], true);
+
 		if (type == "summarize") {
 			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment">';
 
@@ -1512,6 +1531,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 	$('#summarize_multiple_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
+		$('#summarize_multiple_modal_box').modal('toggle');
 		var comment = $('#summarize_multiple_comment_textarea').val().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
