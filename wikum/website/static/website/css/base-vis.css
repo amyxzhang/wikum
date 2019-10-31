@@ -437,6 +437,15 @@ rect.selection {
 		--background: hsl(195, 59%, 90%);
 		white-space: normal;
 	}
+		.comment_box footer a.disabled {
+			padding: .5em;
+			color: hsl(207, 0%, 71%);
+			font-weight: 500;
+			font-size: 13px;
+			display: inline-block;
+			pointer-events: none;
+			cursor: default;
+		}
 
 		.comment_box footer a {
 			padding: .5em;

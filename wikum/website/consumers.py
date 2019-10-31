@@ -330,6 +330,7 @@ class WikumConsumer(WebsocketConsumer):
                 else:
                     c.is_locked = False
                 c.save()
+                recurse_up_post(c)
             res = {'user': username, 'type': data['type'], 'node_ids': data['node_ids'], 'ids': data['ids'], 'to_lock': data['to_lock']}
             return res
         except Exception as e:

@@ -535,7 +535,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     author = post.author.username
             else:
                 author = ""
-                
             v1 = {'size': post.points,
                   'd_id': post.id,
                   'parent': parent.id if parent else None,
@@ -545,8 +544,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'summarized': post.summarized,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()],
                   }
-            
-            
+            v1['is_locked'] = post.is_locked
             v1['rating'] = []
             for rating in post.commentrating_set.all():
                 v = []
