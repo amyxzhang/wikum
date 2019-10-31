@@ -1378,7 +1378,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		highlight_box(id);
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids', [id]);
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', [did]);
-		console.log([id]);
 		send_update_locks([did], [id], true);
 
 		if (type == "summarize") {
