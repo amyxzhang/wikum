@@ -223,7 +223,7 @@ class WikumConsumer(WebsocketConsumer):
                 article.save()
                 response_dict = {'comment': comment, 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
-                    response_dict['node_id'] = data['node_id']
+                    response_dict['parent_did'] = data['id']
                 return response_dict
             else:
                 return {'user': username}
@@ -276,7 +276,7 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
 
                 if affected:
-                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'node_id': data['node_id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'd_id': data['id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
                     return response_dict
                 else:
                     return {'user': username}
@@ -377,7 +377,7 @@ class WikumConsumer(WebsocketConsumer):
             a.percent_complete = count_article(a)
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'type': data['type'], 'node_id': data['node_id']}
+            res = {'user': username, 'type': data['type'], 'd_id': data['id']}
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
@@ -581,7 +581,7 @@ class WikumConsumer(WebsocketConsumer):
             
             a.save()
             
-            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'd_id': d_id}
+            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
             res['subtype'] = data['subtype']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -784,9 +784,9 @@ class WikumConsumer(WebsocketConsumer):
             
                 a.save()
                 
-                return {'d_id': data['d_id'], 'user': username, 'type': data['type'], 'ids': ids}
+                return {'d_id': data['id'], 'user': username, 'type': data['type'], 'ids': ids}
             else:
-                return JsonResponse({})
+                return {'user': username}
         except Exception as e:
             print(e)
             return {'user': username}

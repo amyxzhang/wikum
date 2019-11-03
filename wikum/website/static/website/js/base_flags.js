@@ -1747,7 +1747,7 @@ function handle_channel_message(res) {
 		if (res.comment === 'unauthorized') {
 			unauthorized_noty();
 		} else {
-			d = nodes_all.filter(o => o.d_id == res.d_id)[0];
+			d = nodes_all.filter(o => o.d_id == res.parent_did)[0];
 			new_d = {d_id: res.d_id,
 			          name: res.comment,
 			          summary: "",
@@ -2012,7 +2012,7 @@ function handle_channel_summarize_selected(res) {
 }
 
 function handle_channel_summarize_comments(res) {
-	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
+	let d = nodes_all.filter(o => o.d_id == res.orig_did)[0];
 
 	if (res.subtype == "summarize") {
 
@@ -2146,7 +2146,7 @@ function handle_channel_delete_tags(res) {
 		});
 		
 		var list_dids = dids.split(',');
-		var list_ids = list_dids.map(did => nodes_all.filter(o => o.d_id == did)[0].id);
+		var list_ids = list_dids.map(did => nodes_all.filter(o => o.d_id == did)[0].id.toString());
 		
 		for (var i=0; i<list_ids.length; i++) {
 			if (list_ids[i].trim() != '') {
