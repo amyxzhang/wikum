@@ -3,4 +3,5 @@
 requirements.txt
 private.py
 wikum/env/
+wikum/env3/
 *.bak

@@ -1,6 +1,6 @@
 
 
-This project uses [Django](https://docs.djangoproject.com/en/1.11/topics/install/) as backend as well as [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
+This project uses [Django](https://www.djangoproject.com/download/) as backend as well as [python](https://www.python.org/downloads/), [MySQL](https://www.mysql.com/downloads/), [pip](https://pip.pypa.io/en/stable/installing/) and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/). Go check them out if you don't have them locally installed.
 
 ### Installation Instructions
 
@@ -19,30 +19,21 @@ sudo apt-get install build-essential python-dev python-mysqldb libmysqlclient-de
 
 #### Install virtualenv and python packages
 
+Please install Python 3.7. [Here](https://tecadmin.net/install-python-3-7-on-ubuntu-linuxmint/) are the instructions for Ubuntu and Linux machines. For MacOS, you can use Homebrew. Then, create a virtualenv using Python 3.7 (here I am calling it wikum-env3), activate it, and install requirements:
 ```sh
 
-$ sudo easy_install pip
-$ sudo pip install virtualenv
-$ pip install mysql-python
+$ sudo python3.7 -m venv wikum-env3
+$ source wikum-env3/bin/activate
 $ pip install -r requirements.txt
 
 ```
 
-* Create a virtualenv for this project:
+Wikitools is a Python 2 dependency that has a Python 3 branch. Install that separately:
 ```sh
-virtualenv wikum
+
+$ pip install git+https://github.com/alexz-enwp/wikitools.git@py3
+
 ```
-
-* Make sure your virtualenv is activated:
-```sh
-source wikum/bin/activate
-```
-
-Install requirements inside the virtualenv
-'''sh
-$ pip install -r requirements.txt
-'''
-
 
 
 #### Setup the database
