@@ -228,17 +228,17 @@ def poll_status(request):
                     owner = None
                 else:
                     owner = User.objects.get(username=request.session['owner'])
-                
-                a = Article.objects.filter(url=request.session['url'], owner=owner)
-                if a.exists():
-                    data['id'] = a[0].id
-                    comment_count = a[0].comment_set.count()
+                urlparsed = urllib.parse.unquote(request.session['url'])
+                articles_list = Article.objects.filter(url=urlparsed, owner=owner)
+                if len(articles_list):
+                    a = articles_list[0]
+                    data['id'] = a.id
+                    comment_count = a.comment_set.count()
                     if comment_count == 0:
                         a.delete()
                         data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
                         data['state'] = 'FAILURE'
         request.session['url'] = None
-            
 
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
@@ -460,13 +460,6 @@ def recurse_up_post(post):
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
     if parent.count() > 0:
         recurse_up_post(parent[0])
-
-def recurse_down_post(post):
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
-    for child in children:
-        child.json_flatten = ""
-        child.save()
-        recurse_down_post(child)
         
 def recurse_down_num_subtree(post):
     children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
@@ -542,7 +535,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     author = post.author.username
             else:
                 author = ""
-                
             v1 = {'size': post.points,
                   'd_id': post.id,
                   'parent': parent.id if parent else None,
@@ -552,8 +544,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                   'summarized': post.summarized,
                   'tags': [(tag.text, tag.color) for tag in post.tags.all()],
                   }
-            
-            
+            v1['is_locked'] = post.is_locked
             v1['rating'] = []
             for rating in post.commentrating_set.all():
                 v = []
@@ -639,233 +630,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
     return children, hid_children, replace_children, num_subtree_children
 
-def new_node(request):
-    try:
-        user = request.user
-        owner = request.POST.get('owner', None)
-        if not owner or owner == "None":
-            owner = None
-        else:
-            owner = User.objects.get(username=owner)
-
-        article_id = request.POST['article']
-        article = Article.objects.get(id=article_id)
-        comment = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated() else None
-        req_username = request.user.username if request.user.is_authenticated() else None
-        author = CommentAuthor.objects.filter(username=req_username)
-        if author.exists():
-            author = author[0]
-
-        permission = None
-        if user.is_authenticated:
-            permission = Permissions.objects.filter(user=user, article=article)
-            if permission.exists():
-                permission = permission[0]
-        if article.access_mode < 2 or (user.is_authenticated and permission and (permission.access_level < 2)) or user == owner:
-            comment = request.POST['comment']
-            req_user = request.user if request.user.is_authenticated else None
-            req_username = request.user.username if request.user.is_authenticated else None
-            # if commentauthor for username use it; otherwise create it
-            author = CommentAuthor.objects.filter(username=req_username)
-            if user.is_anonymous:
-                req_username = "Anonymous"
-                author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
-            else:
-                if author.exists():
-                    author = author[0]
-                    author.is_wikum = True
-                    author.user = user
-                else:
-                    # existing user who is not a comment author
-                    author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
-            new_id = random_with_N_digits(10)
-            new_comment = Comment.objects.create(article=article,
-                                                 author=author,
-                                                 is_replacement=False,
-                                                 disqus_id=new_id,
-                                                 text=comment,
-                                                 summarized=False,
-                                                 text_len=len(comment))
-            new_comment.save()
-
-            action = 'new_node'
-            explanation = 'new comment'
-
-            h = History.objects.create(user=req_user,
-                                       article=article,
-                                       action=action,
-                                       explanation=explanation)
-
-            h.comments.add(new_comment)
-            recurse_up_post(new_comment)
-
-            recurse_down_num_subtree(new_comment)
-
-            # make_vector(new_comment, article)
-
-            article.comment_num = article.comment_num + 1
-            article.percent_complete = count_article(article)
-            article.last_updated = datetime.datetime.now()
-
-            article.save()
-
-            return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
-        else:
-            return JsonResponse({'comment': 'unauthorized'})
-
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
         
-def reply_comment(request):
-    try:
-        id = request.POST['id']
-        comment = request.POST['comment']
-        user = request.user
-        owner = request.POST.get('owner', None)
-        if not owner or owner == "None":
-            owner = None
-        else:
-            owner = User.objects.get(username=owner)
-
-        article_id = request.POST['article']
-        article = Article.objects.get(id=article_id)
-
-        permission = None
-        if user.is_authenticated:
-            permission = Permissions.objects.filter(user=user, article=article)
-            if permission.exists():
-                permission = permission[0]
-        if article.access_mode < 2 or (user.is_authenticated and permission and (permission.access_level < 2)) or user == owner:
-            comment = request.POST['comment']
-            req_user = request.user if request.user.is_authenticated else None
-            req_username = request.user.username if request.user.is_authenticated else None
-            # if commentauthor for username use it; otherwise create it
-            author = CommentAuthor.objects.filter(username=req_username)
-            if user.is_anonymous:
-                req_username = "Anonymous"
-                author = CommentAuthor.objects.create(username=req_username, anonymous=True, is_wikum=True)
-            else:
-                if author.exists():
-                    author = author[0]
-                    author.is_wikum = True
-                    author.user = user
-                else:
-                    # existing user who is not a comment author
-                    author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
-
-            c = Comment.objects.get(id=id)
-            new_id = random_with_N_digits(10)
-            new_comment = Comment.objects.create(article=article,
-                                                 author=author,
-                                                 is_replacement=False,
-                                                 reply_to_disqus=c.disqus_id,
-                                                 disqus_id=new_id,
-                                                 text=comment,
-                                                 summarized=False,
-                                                 text_len=len(comment),
-                                                 import_order=c.import_order)
-            new_comment.save()
-
-            action = 'reply_comment'
-            explanation = 'reply to comment'
-
-            h = History.objects.create(user=req_user,
-                                       article=article,
-                                       action=action,
-                                       explanation=explanation)
-
-            h.comments.add(new_comment)
-            recurse_up_post(new_comment)
-
-            recurse_down_num_subtree(new_comment)
-
-            # make_vector(new_comment, article)
-
-            article.comment_num = article.comment_num + 1
-            article.percent_complete = count_article(article)
-            article.last_updated = datetime.datetime.now()
-
-            article.save()
-
-            return JsonResponse({'comment': comment, 'd_id': new_comment.id, 'author': req_username})
-        else:
-            return JsonResponse({'comment': 'unauthorized'})
-
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-
-def summarize_comment(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        summary = request.POST['comment']
-        top_summary, bottom_summary = get_summary(summary)
-        
-        req_user = request.user if request.user.is_authenticated else None
-        
-        c = Comment.objects.get(id=id)
-        from_summary = c.summary + '\n----------\n' + c.extra_summary
-        c.summary = top_summary
-        c.extra_summary = bottom_summary
-        c.save()
-        
-        if from_summary != '':
-            action = 'edit_sum'
-            explanation = 'edit summary'
-        else :
-            action = 'sum_comment'
-            explanation = 'initial summary'
-            
-
-        h = History.objects.create(user=req_user, 
-                                   article=a,
-                                   action=action,
-                                   from_str=from_summary,
-                                   to_str=summary,
-                                   explanation=explanation)
-        
-        h.comments.add(c)
-        recurse_up_post(c)
-        
-        # make_vector(c, a)
-        
-        a.summary_num = a.summary_num + 1
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
-        
-        a.save()
-        
-        if 'wikipedia.org' in a.url:
-            res = {}
-            if top_summary.strip() != '':
-                res['top_summary'] = clean_parse(top_summary)
-            else:
-                res['top_summary'] = ''
-            
-            res['top_summary_wiki'] = top_summary
-            
-            if bottom_summary.strip() != '':
-                res['bottom_summary'] = clean_parse(bottom_summary)
-            else:
-                res['bottom_summary'] = ''
-            
-            res['bottom_summary_wiki'] = bottom_summary
-                
-            return JsonResponse(res)
-        else:
-            return JsonResponse({'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary})
-        
-        
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-           
-           
 def delete_comment(post, article):
     parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=post.article)
     delete_comment_recurse(post, article)
@@ -879,104 +644,7 @@ def delete_comment_recurse(post, article):
     for child in children:
         delete_comment_recurse(child, article)
     post.delete()
-       
-        
-def summarize_selected(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        ids = request.POST.getlist('ids[]')
-        children_ids = request.POST.getlist('children[]')
-        children_ids = [int(x) for x in children_ids]
-        child_id = request.POST['child']
-        
-        delete_nodes = request.POST.getlist('delete_nodes[]')
-        
-        summary = request.POST['comment']
-        
-        top_summary, bottom_summary = get_summary(summary)
-        
-        req_user = request.user if request.user.is_authenticated else None
-        
-        comments = Comment.objects.filter(id__in=ids)
-        children = [c for c in comments if c.id in children_ids]
-        child = Comment.objects.get(id=child_id)
-        
-        lowest_child = children[0]
-        for c in children:
-            if c.import_order < lowest_child.import_order:
-                lowest_child = c
 
-        new_id = random_with_N_digits(10)
-            
-        new_comment = Comment.objects.create(article=a, 
-                                             is_replacement=True, 
-                                             reply_to_disqus=child.reply_to_disqus,
-                                             summarized=True,
-                                             summary=top_summary,
-                                             extra_summary=bottom_summary,
-                                             disqus_id=new_id,
-                                             points=child.points,
-                                             text_len=len(summary),
-                                             import_order=lowest_child.import_order)
-
-        h = History.objects.create(user=req_user, 
-                                   article=a,
-                                   action='sum_selected',
-                                   to_str=summary,
-                                   explanation='initial summary of group of comments') 
-       
-        for c in children:
-            c.reply_to_disqus = new_id
-            c.save()
-            h.comments.add(c)
-            
-        h.comments.add(new_comment)
-            
-                
-        for node in delete_nodes:
-            delete_node(node)
-
-        mark_children_summarized(new_comment)
-
-        recurse_up_post(new_comment)
-
-        recurse_down_num_subtree(new_comment)
-
-        # make_vector(new_comment, a)
-
-        a.summary_num = a.summary_num + 1
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
-        
-        a.save()
-        
-        
-        if 'wikipedia.org' in a.url:
-            res = {'d_id': new_comment.id}
-            if top_summary.strip() != '':
-                res['top_summary'] = clean_parse(top_summary)
-            else:
-                res['top_summary'] = ''
-            
-            res['top_summary_wiki'] = top_summary
-            
-            if bottom_summary.strip() != '':
-                res['bottom_summary'] = clean_parse(bottom_summary)
-            else:
-                res['bottom_summary'] = ''
-            
-            res['bottom_summary_wiki'] = bottom_summary
-                
-            return JsonResponse(res)
-        else:
-            return JsonResponse({'d_id': new_comment.id,
-                                 'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary})
-        
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()  
    
 def delete_node(did):
     try:
@@ -1019,126 +687,6 @@ def get_summary(summary):
         bottom_summary = ' '.join(summary_split[2:]).strip()
     return top_summary, bottom_summary
 
-    
-def summarize_comments(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        summary = request.POST['comment']
-        
-        top_summary, bottom_summary = get_summary(summary)
-
-        delete_nodes = request.POST.getlist('delete_nodes[]')
-        
-        req_user = request.user if request.user.is_authenticated else None
-        
-        c = Comment.objects.get(id=id)
-        
-        if not c.is_replacement:
-            new_id = random_with_N_digits(10);
-            
-            new_comment = Comment.objects.create(article=a, 
-                                                 is_replacement=True, 
-                                                 reply_to_disqus=c.reply_to_disqus,
-                                                 summary=top_summary,
-                                                 summarized=True,
-                                                 extra_summary=bottom_summary,
-                                                 disqus_id=new_id,
-                                                 points=c.points,
-                                                 text_len=len(summary),
-                                                 import_order=c.import_order)
-
-            c.reply_to_disqus = new_id
-            c.save()
-
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='sum_nodes',
-                                       to_str=summary,
-                                       explanation='initial summary of subtree')
-            
-            d_id = new_comment.id
-
-            h.comments.add(new_comment)
-
-            mark_children_summarized(new_comment)
-
-            recurse_up_post(new_comment)
-
-            recurse_down_num_subtree(new_comment)
-            
-        else:
-            from_summary = c.summary + '\n----------\n' + c.extra_summary
-            c.summary = top_summary
-            c.extra_summary=bottom_summary
-            c.save()
-            
-            h = History.objects.create(user=req_user, 
-                           article=a,
-                           action='edit_sum_nodes',
-                           from_str=from_summary,
-                           to_str=summary,
-                           explanation='edit summary of subtree')
-            
-            d_id = c.id
-            
-            new_comment = c
-            recurse_down_num_subtree(new_comment)
-            recurse_up_post(c)
-        
-        
-        for node in delete_nodes:
-            new_h = History.objects.create(user=req_user, 
-                           article=a,
-                           action='delete_node',
-                           from_str=node,
-                           to_str=c.id,
-                           explanation='promote summary')
-            delete_node(node)
-
-      
-        h.comments.add(c)
-        
-        
-        # make_vector(new_comment, a)
-        
-        a.summary_num = a.summary_num + 1
-        a.percent_complete = count_article(a)
-        a.last_updated = datetime.datetime.now()
-        
-        a.save()
-        
-        if 'wikipedia.org' in a.url:
-            res = {'d_id': d_id}
-            if top_summary.strip() != '':
-                res['top_summary'] = clean_parse(top_summary)
-            else:
-                res['top_summary'] = ''
-            
-            res['top_summary_wiki'] = top_summary
-            
-            if bottom_summary.strip() != '':
-                res['bottom_summary'] = clean_parse(bottom_summary)
-            else:
-                res['bottom_summary'] = ''
-            
-            res['bottom_summary_wiki'] = bottom_summary
-                
-            return JsonResponse(res)
-        else:
-            return JsonResponse({'d_id': d_id,
-                                 'top_summary': top_summary,
-                                 'bottom_summary': bottom_summary})
-        
-    except Exception as e:
-        print(e)
-        
-        import traceback
-        print(traceback.format_exc())
-        
-        return HttpResponseBadRequest()  
-
 
 def suggested_tags(request):
     try:
@@ -1164,99 +712,6 @@ def suggested_tags(request):
         
     
         return JsonResponse(resp)
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-
-
-def tag_comments(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        req_user = request.user if request.user.is_authenticated else None
-        
-        ids = request.POST.getlist('ids[]')
-        tag = request.POST['tag']
-        
-        
-        t, created = Tag.objects.get_or_create(article=a, text=tag.lower().strip())
-        if created:
-            r = lambda: random.randint(0, 255)
-            color = '%02X%02X%02X' % (r(), r(), r())
-            t.color = color
-            t.save()
-        else:
-            color = t.color
-        
-        comments = Comment.objects.filter(id__in=ids, hidden=False)
-        
-        affected_comms = [];
-        
-        for comment in comments:
-            tag_exists = comment.tags.filter(text=t.text)
-            if tag_exists.count() == 0:
-                comment.tags.add(t)
-                affected_comms.append(comment)
-        
-        if affected_comms:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='tag_comments',
-                                       explanation='Add tag %s to comments' % t.text)
-            a.last_updated = datetime.datetime.now()
-            a.save()
-        
-            for com in affected_comms:
-                recurse_up_post(com)
-                h.comments.add(com)
-            
-        tag_count = a.comment_set.filter(tags__isnull=False).count()
-        if tag_count % 2 == 0:
-            from .tasks import generate_tags
-            generate_tags.delay(article_id)
-            
-        if len(affected_comms) > 0:
-            return JsonResponse({'color': color})
-        else:
-            return JsonResponse({})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-
-def hide_comments(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        req_user = request.user if request.user.is_authenticated else None
-        
-        ids = request.POST.getlist('ids[]')
-        explain = request.POST['comment']
-        
-        affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
-        
-        if affected > 0:
-            
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='hide_comments',
-                                       explanation=explain)
-            
-            for id in ids:
-                c = Comment.objects.get(id=id)
-                h.comments.add(c)
-                
-                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
-                if parent.count() > 0:
-                    recurse_up_post(parent[0])
-            
-            a.comment_num = a.comment_num - affected
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
-        
-            a.save()
-            
-            
-        return JsonResponse({})
     except Exception as e:
         print(e)
         return HttpResponseBadRequest()
@@ -1362,114 +817,6 @@ def auto_summarize_comment(request):
      
 def log_data(request):
     return JsonResponse({})
-     
-def tag_comment(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        tag = request.POST['tag']
-        req_user = request.user if request.user.is_authenticated else None
-        
-        comment = Comment.objects.get(id=id)
-        
-        
-        t, created = Tag.objects.get_or_create(article=a, text=tag.lower())
-        if created:
-            r = lambda: random.randint(0, 255)
-            color = '%02X%02X%02X' % (r(), r(), r())
-            t.color = color
-            t.save()
-        else:
-            color = t.color
-        
-        affected= False
-        
-        tag_exists = comment.tags.filter(text=t.text)
-        if tag_exists.count() == 0:
-            comment.tags.add(t)
-            affected = True
-            
-        if affected:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='tag_comment',
-                                       explanation="Add tag %s to a comment" % t.text)
-            
-            h.comments.add(comment)
-            
-            a.last_updated = datetime.datetime.now()
-            a.save()
-            
-            recurse_up_post(comment)
-                
-        tag_count = a.comment_set.filter(tags__isnull=False).count()
-        if tag_count % 2 == 0:
-            from .tasks import generate_tags
-            generate_tags.delay(article_id)
-            
-        if affected:
-            return JsonResponse({'color': color})
-        else:
-            return JsonResponse()
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-    
-def delete_tags(request):
-    try:
-        comment_ids = request.POST['ids']
-        
-        comment_ids = comment_ids.split(',')
-        
-        ids = []
-        for idx in comment_ids:
-            if idx:
-                ids.append(int(idx))
-                
-        tag = request.POST['tag']
-        req_user = request.user if request.user.is_authenticated else None
-        
-        comments = Comment.objects.filter(id__in=ids)
-        
-        affected_comments = []
-        affected= False
-        a = None
-        
-        for comment in comments:
-            a = comment.article
-            tag_exists = comment.tags.filter(text=tag)
-            
-            if tag_exists.count() == 1:
-                comment.tags.remove(tag_exists[0])
-                affected_comments.append(comment)
-                affected = True
-            
-        if affected:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='delete_tag',
-                                       explanation="Deleted tag %s from comments" % tag)
-            for comment in affected_comments:
-                h.comments.add(comment)
-            
-            a.last_updated = datetime.datetime.now()
-            a.save()
-            
-            recurse_up_post(comment)
-                
-        tag_count = a.comment_set.filter(tags__isnull=False).count()
-        if tag_count % 2 == 0:
-            from .tasks import generate_tags
-            generate_tags.delay(a.id)
-            
-        if affected:
-            return JsonResponse({'affected': 1})
-        else:
-            return JsonResponse({'affected': 0})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
     
 
 def rate_summary(request):
@@ -1521,36 +868,6 @@ def rate_summary(request):
        
             return JsonResponse({'success': True});
         return JsonResponse({'success': False});
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-
-
-def delete_comment_summary(request):
-    try:
-        article_id = request.POST['article']
-        article = Article.objects.get(id=article_id)
-        comment_id = request.POST['id']
-        explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated else None
-
-        comment = Comment.objects.get(id=comment_id)
-        if not comment.is_replacement:
-            comment.summary = ""
-            comment.save()
-            recurse_up_post(comment)
-            h = History.objects.create(user=req_user,
-                                       article=article,
-                                       action='delete_comment_sum',
-                                       explanation=explain)
-            h.comments.add(comment)
-            
-            article.percent_complete = count_article(article)
-            article.last_updated = datetime.datetime.now()
-            article.save()
-            
-        return JsonResponse({})
-
     except Exception as e:
         print(e)
         return HttpResponseBadRequest()
@@ -1669,107 +986,6 @@ def downvote_summary(request):
         print(e)
         return HttpResponseBadRequest()
 
-
-def hide_comment(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated else None
-        
-        comment = Comment.objects.get(id=id)
-        if comment.is_replacement:
-            action = 'delete_sum'
-            recurse_down_post(comment)
-            
-            delete_node(comment.id)
-            
-            affected = False
-        else:
-            action = 'hide_comment'
-            if not comment.hidden:
-                comment.hidden = True
-                comment.save()
-                affected = True
-            else:
-                affected = False
-        
-        if affected:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action=action,
-                                       explanation=explain)
-            c = Comment.objects.get(id=id)
-            h.comments.add(c)
-            
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
-            if parent.count() > 0:
-                recurse_up_post(parent[0])
-                
-            
-            a.comment_num = a.comment_num - 1
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
-        
-            a.save()
-            
-        return JsonResponse({})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
-    
-def recurse_down_hidden(replies, count):
-    for reply in replies:
-        if not reply.hidden:
-            reply.hidden = True
-            reply.json_flatten = ''
-            reply.save()
-            count += 1
-            reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id, article=reply.article)
-            count = recurse_down_hidden(reps, count)
-    return count
-    
-def hide_replies(request):
-    try:
-        article_id = request.POST['article']
-        a = Article.objects.get(id=article_id)
-        id = request.POST['id']
-        explain = request.POST['comment']
-        req_user = request.user if request.user.is_authenticated else None
-        
-        c = Comment.objects.get(id=id)
-
-        replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
-        
-        affected = recurse_down_hidden(replies, 0)
-        
-        if affected > 0:
-            h = History.objects.create(user=req_user, 
-                                       article=a,
-                                       action='hide_replies',
-                                       explanation=explain)
-            
-            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
-            for reply in replies:
-                h.comments.add(reply)
-            
-            recurse_up_post(c)
-            
-            ids = [reply.id for reply in replies]
-            
-            a.comment_num = a.comment_num - affected
-            a.percent_complete = count_article(a)
-            a.last_updated = datetime.datetime.now()
-        
-            a.save()
-            
-            return JsonResponse({'ids': ids})
-        else:
-            return JsonResponse({})
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
 
 def tags(request):
     owner = request.GET.get('owner', None)

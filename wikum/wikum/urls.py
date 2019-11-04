@@ -68,7 +68,6 @@ urlpatterns = [
     url(r'^history', website_views.history),
     
     url(r'^move_comments', website_views.move_comments),
-    url(r'^delete_tags', website_views.delete_tags),
     
     url(r'^auto_summarize_comment', website_views.auto_summarize_comment),
     
@@ -77,22 +76,8 @@ urlpatterns = [
      
     url(r'^upvote_summary', website_views.upvote_summary),
     url(r'^downvote_summary', website_views.downvote_summary),
-    
-    url(r'^hide_comments', website_views.hide_comments),
-    url(r'^hide_comment', website_views.hide_comment),
-    
-    url(r'^delete_comment_summary', website_views.delete_comment_summary),
 
     url(r'^suggested_tags', website_views.suggested_tags),
-    url(r'^tag_comments', website_views.tag_comments),
-    url(r'^tag_comment', website_views.tag_comment),
-    
-    url(r'^hide_replies', website_views.hide_replies),
-    url(r'^summarize_selected', website_views.summarize_selected),
-    url(r'^summarize_comments', website_views.summarize_comments),
-    url(r'^summarize_comment', website_views.summarize_comment),
-    url(r'^reply_comment', website_views.reply_comment),
-    url(r'^new_node', website_views.new_node),
     
     url(r"^account/", include("account.urls")),
     url(r'^admin/', admin.site.urls),
