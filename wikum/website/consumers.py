@@ -5,6 +5,7 @@ import re
 import json
 import random
 import logging
+from threading import Timer
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from channels.exceptions import StopConsumer
@@ -38,6 +39,7 @@ class WikumConsumer(WebsocketConsumer):
         # message['path'] = /ws/article/[article_name]/visualization_flags
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
+        self.locks = {}
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -327,8 +329,13 @@ class WikumConsumer(WebsocketConsumer):
                 c = Comment.objects.get(id=id)
                 if data['to_lock']:
                     c.is_locked = True
+                    t = Timer(1800.0, self.handle_update_locks, [{'ids': data['ids'], 'type': data['type'], 'node_ids': data['node_ids'], 'to_lock': False}, username])
+                    t.start()
+                    self.locks[",".join(str(ids))] = t
                 else:
                     c.is_locked = False
+                    stop_timer = self.locks[",".join(str(ids))]
+                    stop_timer.cancel()
                 c.save()
                 recurse_up_post(c)
             res = {'user': username, 'type': data['type'], 'node_ids': data['node_ids'], 'ids': data['ids'], 'to_lock': data['to_lock']}
