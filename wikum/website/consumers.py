@@ -688,6 +688,10 @@ class WikumConsumer(WebsocketConsumer):
                 action = 'delete_sum'
                 self.recurse_down_post(comment)
                 delete_node(comment.id)
+                a.summary_num = a.summary_num - 1
+                a.percent_complete = count_article(a)
+                a.last_updated = datetime.datetime.now()
+                a.save()
                 affected = False
             else:
                 action = 'hide_comment'
