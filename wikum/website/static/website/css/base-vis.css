@@ -390,6 +390,24 @@ rect.selection {
     border: 1px gray solid;
 }
 
+#reply_comment_textarea {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#reply-comment-form {
+  width: 250px;
+}
+
+.popover-content {
+  width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .comment_box,
 .reply_comment_comment {
 	position: relative;
