@@ -15,13 +15,6 @@ $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
 })
 
-$('[data-toggle="popover"]').popover({
-    html: 'true',
-}).click(function (e) {
-	e.preventDefault();
-    $('.popover').css('right', '100px');
-});
-
 // Ensure that popover 'Close' allows for show on first following click
 $('body').on('hidden.bs.popover', function (e) {
     $(e.target).data("bs.popover").inState = { click: false, hover: false, focus: false }
@@ -350,26 +343,42 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	});
 });
 
-function getReplyCommentFormString() {
-	var commentFormString = '<div id="comment_popover_box" role="dialog">';
-	commentFormString += '<form id="reply-comment-form' + '" class="reply-comment-form" style="margin-bottom: 5px" name="mainForm" method="post" action="">';
+var popOverSettings = {
+    placement: 'bottom',
+    html: true,
+    selector: '[data-toggle="popover"]', //Sepcify the selector here
+}
+
+$('body').popover(popOverSettings);
+
+// $(function () {
+// 		$('[data-toggle="tooltip"]').tooltip()
+// 	})
+// 	$('[data-toggle="popover"]').popover({
+// 	    html: 'true',
+// 	}).click(function (e) {
+// 		e.preventDefault();
+// 	    $('.popover').css('right', '100px');
+// 	});
+	//popover_show();
+
+
+function getReplyCommentFormString(id, did) {
+	var commentFormString = '<div id="comment_popover_box" data-id=' + id + ' data-did=' + did + '">';
+	commentFormString += '<form id="reply-comment-form' + '" class="reply-comment-form" style="margin-bottom: 5px" name="mainForm">';
 	commentFormString += '<div class="reply-comment-body">';
 	commentFormString += '	<P><span class="wordcount"></span>';
-	commentFormString += '<textarea class="reply-editor" id="reply_comment_textarea" rows=5 required placeholder="These are my thoughts..."></textarea>';
+	commentFormString += '<textarea class="reply-editor" id="reply_comment_textarea_' + did + '" rows=5 required placeholder="These are my thoughts..."></textarea>';
 	commentFormString += '</P></div>';
 	commentFormString += '<div class="reply-comment-footer">';
-	commentFormString += '<button type="submit" class="btn btn-default">Submit</button>';
+	commentFormString += '<button type="button" id="reply_submit_' + did + '" class="btn btn-default">Submit</button>';
 	commentFormString += '<button type="button" class="btn btn-default" onclick=&#39;$(this).closest(&quot;div.popover&quot;).popover(&quot;hide&quot;);&#39;>Close</button></div></form>';
 	commentFormString += '</div>';
 	return commentFormString;
 }
 
-
-$('[data-toggle="popover"]').on('show.bs.popover', function(e) {
-	console.log($(e.relatedTarget).data('id'));
-	var id = $(e.relatedTarget).data('id');
-	$("#reply_comment_textarea").val('');
-
+$('#box_container').on('show.bs.popover', function(e) {
+	var id = $(e.target).data('id');
 	d = nodes_all[id-1];
 	var ids = [];
 	var dids = [];
@@ -379,38 +388,20 @@ $('[data-toggle="popover"]').on('show.bs.popover', function(e) {
 	highlight_box(id);
 	did_str += d.d_id;
 	id_str += d.id;
-	$.ajax({type: 'GET',
-			url: '/log_data?data=open_reply_modal&did=' + did_str,
-			success: function(res) {
-			}
-	});
-
-	var class_sum = "";
-	if (d.replace_node) {
-		var node_text = '<strong>Summary Node:</strong><BR>' + render_summary_node(d, false);
-		var class_sum = "summary_box";
-	} else if (d.summary != '') {
-		var node_text = '<strong>Summary:</strong> ' + render_summary_node(d, false);
-	} else {
-		var node_text = d.name;
-	}
-	
-	var text = '<div class="reply_comment_comment' + ' ' + class_sum + '">' + node_text+ '</div>';
-
-	$('#reply_comment_box').html(text);
 
 	// id of node to reply to
-	var did = $(e.relatedTarget).data('did');
+	var did = $(e.target).data('did');
+	var reply_elmt_id = "#reply_submit_" + did;
 
-	$('#reply_modal_box form').off("submit");
+	$(document).off("click", reply_elmt_id);
 
-	$('#reply_modal_box form').submit({data_id: did, id: id, ids: ids, dids: dids}, function(evt) {
-		evt.preventDefault();
-		$(this).submit(function() {
+	$(document).on("click", reply_elmt_id, function(evt){
+	    evt.preventDefault();
+	    $(this).click(function() {
 	        return false;
 	    });
-		$('#reply_modal_box').modal('toggle');
-		var comment = $('#reply_comment_textarea').val().trim();
+	    $("a[data-did='" + did +"'][data-toggle='popover'").popover('hide');
+		var comment = $('#reply_comment_textarea_' + did).val().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
@@ -418,10 +409,10 @@ $('[data-toggle="popover"]').on('show.bs.popover', function(e) {
 			owner: owner,
 			article: article_id,
 			type: 'reply_comment'};
-		data.id = evt.data.data_id;
-		data.node_id = evt.data.id;
+		data.id = did;
+		data.node_id = id;
 		chatsock.send(JSON.stringify(data));
-	    return true;
+	    return false;
 	});
 
 });
@@ -1883,12 +1874,6 @@ function handle_channel_update_locks(res) {
 		let text = construct_comment(node);
 		$('#comment_' + node.id).html(text);
 	}
-	$('[data-toggle="popover"]').popover({
-	    html: 'true',
-	}).click(function (e) {
-		e.preventDefault();
-	    $('.popover').css('right', '100px');
-	});
 }
 
 function handle_channel_summarize_comment(res) {
@@ -1999,7 +1984,7 @@ function handle_channel_summarize_selected(res) {
 	
 	if ($('#access_mode').attr('data-access') == "0") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${new_d.id}" data-content='` + getReplyCommentFormString() + `' data-placement="bottom" data-id="${new_d.id}">Reply</a>
+			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${new_d.new_d.id}" data-content='` + getReplyCommentFormString(new_d.id, new_d.d_id) + `' data-placement="bottom" data-id="${new_d.id}">Reply</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
@@ -2008,7 +1993,7 @@ function handle_channel_summarize_selected(res) {
 
 	else if ($('#access_mode').attr('data-access') == "1") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${new_d.id}" data-content='` + getReplyCommentFormString() + `' data-placement="bottom" data-id="${new_d.id}">Reply</a>
+			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${new_d.new_d.id}" data-content='` + getReplyCommentFormString(new_d.id, new_d.d_id) + `' data-placement="bottom" data-id="${new_d.id}">Reply</a>
 		</footer>`;
 	}
 
@@ -2128,8 +2113,8 @@ function handle_channel_summarize_comments(res) {
 	
 	if ($('#access_mode').attr('data-access') == "0") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.id}" data-content='` + getReplyCommentFormString() + `' data-placement="bottom" data-id="${d.id}">Reply</a>
-			<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
+			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString(d.id, d.d_id) + `' data-placement="bottom" data-id="${d.id}">Reply</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
 			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 		</footer>`;
@@ -2137,7 +2122,7 @@ function handle_channel_summarize_comments(res) {
 
 	else if ($('#access_mode').attr('data-access') == "1") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.id}" data-content='` + getReplyCommentFormString() + `' data-placement="bottom" data-id="${d.id}">Reply</a>
+			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString(d.id, d.d_id) + `' data-placement="bottom" data-id="${d.id}">Reply</a>
 		</footer>`;
 	}
 
@@ -4132,7 +4117,7 @@ function construct_comment(d) {
 			var data_access = $('#access_mode').attr('data-access');
 			text += `<footer>`;
 			if (data_access == "0" || data_access == "1") {
-				text += `<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString() + `' data-placement="bottom" data-id="${d.id}">Reply</a>`;
+				text += `<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString(d.id, d.d_id) + `' data-placement="bottom" data-id="${d.id}">Reply</a>`;
 			}
 			if (data_access == "0" || data_access == "2") {
 				text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
@@ -4150,7 +4135,7 @@ function construct_comment(d) {
 	
 			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
-					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString() + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a ';
 					if (d.is_locked) text += 'class="disabled" ';
 					text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
@@ -4159,7 +4144,7 @@ function construct_comment(d) {
 				}
 			} else if (!d.replace_node) {
 				if (!d.hiddennode) {
-					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString() + '\' data-placement="bottom" -type="tag_one" data-id="' + d.id + '">Reply</a>';
+					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" -type="tag_one" data-id="' + d.id + '">Reply</a>';
 				}
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a ';
@@ -4179,12 +4164,12 @@ function construct_comment(d) {
 			text += '<footer>';
 			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
-					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString() + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 				}
 			} else {
-				text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString() + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+				text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a ';
 					if (d.is_locked) text += 'class="disabled" ';
@@ -4200,7 +4185,7 @@ function construct_comment(d) {
 	else if ($('#access_mode').attr('data-access') == "1") {
 		if (!d.replace_node) {
 			text += '<footer>';
-			text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString() + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+			text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
 			text += '</footer>';
 		}
 	}
@@ -4446,16 +4431,6 @@ function show_text(d) {
 		  }
 	);
 
-	$(function () {
-		$('[data-toggle="tooltip"]').tooltip()
-	})
-
-	$('[data-toggle="popover"]').popover({
-	    html: 'true',
-	}).click(function (e) {
-		e.preventDefault();
-	    $('.popover').css('right', '100px');
-	});
 }
 
 function extra_highlight_node(id) {

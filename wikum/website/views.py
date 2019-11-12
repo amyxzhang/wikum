@@ -151,7 +151,6 @@ def visualization_upvote(request):
 
 
 def visualization_flag(request):
-    print("NOW!!!!!")
     user = request.user
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
