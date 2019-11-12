@@ -351,18 +351,6 @@ var popOverSettings = {
 
 $('body').popover(popOverSettings);
 
-// $(function () {
-// 		$('[data-toggle="tooltip"]').tooltip()
-// 	})
-// 	$('[data-toggle="popover"]').popover({
-// 	    html: 'true',
-// 	}).click(function (e) {
-// 		e.preventDefault();
-// 	    $('.popover').css('right', '100px');
-// 	});
-	//popover_show();
-
-
 function getReplyCommentFormString(id, did) {
 	var commentFormString = '<div id="comment_popover_box" data-id=' + id + ' data-did=' + did + '">';
 	commentFormString += '<form id="reply-comment-form' + '" class="reply-comment-form" style="margin-bottom: 5px" name="mainForm">';
