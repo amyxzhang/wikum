@@ -352,7 +352,7 @@ var popOverSettings = {
 $('body').popover(popOverSettings);
 
 function getReplyCommentFormString(id, did) {
-	var commentFormString = '<div id="comment_popover_box" data-id=' + id + ' data-did=' + did + '">';
+	var commentFormString = '<div id="comment_popover_box" data-reply-id=' + id + ' data-reply-did=' + did + '>';
 	commentFormString += '<form id="reply-comment-form' + '" class="reply-comment-form" style="margin-bottom: 5px" name="mainForm">';
 	commentFormString += '<div class="reply-comment-body">';
 	commentFormString += '	<P><span class="wordcount"></span>';
@@ -365,7 +365,20 @@ function getReplyCommentFormString(id, did) {
 	return commentFormString;
 }
 
+$(document).on('mouseover', '.comment_box', function() {
+	$(this).find('footer').css('display', 'block');
+});
+
+$(document).on('mouseleave', '.comment_box', function() {
+	let did = $(this).find('footer a').data('did');
+	if ($('div[data-reply-did="' + did + '"]').is(":visible") == false) {
+		$(this).find('footer').css('display', 'none');
+	}
+});
+
 $('#box_container').on('show.bs.popover', function(e) {
+	console.log($(e.target).closest(".comment_box"));
+	$(e.target).closest(".comment_box").find('footer').css('display', 'block');
 	var id = $(e.target).data('id');
 	d = nodes_all[id-1];
 	var ids = [];
@@ -1773,7 +1786,7 @@ function handle_channel_message(res) {
 	var text = construct_comment(new_d);
 	$('#comment_' + new_d.d_id).html(text);
 	$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
-	author_hover();
+	//author_hover();
 	show_text(nodes_all[0]);
 	
 	d3.select("#node_" + new_d.d_id).style("fill",color);
@@ -1881,7 +1894,7 @@ function handle_channel_summarize_comment(res) {
 	var text = construct_comment(d);
 	$('#comment_' + node_id).empty();
 	$('#comment_' + node_id).html(text);
-	author_hover();
+	//author_hover();
 	
 	d3.select("#node_" + d.id).style("fill",color);
 	$('#comment_' + node_id).addClass("summary");
@@ -2258,7 +2271,7 @@ function delete_comment_summary(id){
 	$('#comment_'+id).removeClass("summary")
 	$('#comment_'+id).empty();
 	$('#comment_'+id).append(construct_comment(d));
-	author_hover();
+	//author_hover();
 }
 
 
@@ -4350,7 +4363,7 @@ function show_text(d) {
 			text = get_subtree_box(text, d, 1);
 		}
 		$('#box').html(text);
-		author_hover();
+		//author_hover();
 	} else if (d && d != 'clicked') {
 		$('#box').html(d.name);
 		clear_box_top();
@@ -4405,7 +4418,7 @@ function show_text(d) {
 			text += construct_comment(objs[i]);
 			text += '</article>';
 			$('#box').append(text);
-			author_hover();
+			//author_hover();
 		};
 	}
 

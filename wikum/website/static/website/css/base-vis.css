@@ -461,8 +461,10 @@ rect.selection {
 	}
 
 	.comment_box footer {
+		display: none;
 		padding: 0;
 		margin: -.2em -1.2em;
+		transition-duration: 3s;
 		background: var(--background);
 		--background: hsl(195, 59%, 90%);
 		white-space: normal;
