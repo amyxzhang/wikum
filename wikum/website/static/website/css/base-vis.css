@@ -335,7 +335,7 @@ textarea {
 #box_container {
 	padding-top: 15px;
 	position: absolute;
-	max-height: calc(100vh - 80px);
+	max-height: 100vh;
 	margin: 80px 15px 15px 350px;
 	overflow: auto;
 	min-width: 45%;
