@@ -2619,7 +2619,7 @@ function open_comment_hyperlink(id, d_id, para) {
 		toggle_original(d.id);
 
 		$('#orig_' + d.id).find('p').eq(para).addClass('highlight');
-		$("#box").scrollTo(".highlight", 500);
+		$("#box_container").scrollTo(".highlight", 500);
 
 	} else {
 		child = find_child_did(d, d_id);
@@ -2640,9 +2640,9 @@ function open_comment_hyperlink(id, d_id, para) {
 			} else {
 				$('#comment_text_' + child.id).find('p').eq(para).addClass('highlight');
 			}
-			$("#box").scrollTo(".highlight", 500);
+			$("#box_container").scrollTo(".highlight", 500);
 		} else {
-			$("#box").scrollTo("#comment_" + child.id, 500);
+			$("#box_container").scrollTo("#comment_" + child.id, 500);
 		}
 
 		history.pushState(null, "", `#comment_${child.id}`)
@@ -2653,7 +2653,7 @@ function load_permalink() {
 	var comment = $(location.hash);
 
 	if (comment.length) {
-		$("#box").scrollTo(comment, 500);
+		$("#box_container").scrollTo(comment, 500);
 	}
 	else if (location.hash) {
 		var id = (location.hash.match(/comment_(\d+)/) || [])[1];
@@ -3723,7 +3723,7 @@ function update(source) {
 	      	d3.selectAll(".clicked").classed("clicked", false);
 	      	unhighlight_all();
 	      	show_text(d);
-	      	$('#box').scrollTop(0);
+	      	$('#box_container').scrollTop(0);
 	      	if (highlight_text) {
 	      		$('#box').highlight(highlight_text);
 	      	}
@@ -4693,7 +4693,7 @@ function showdiv(d) {
 			extra_highlight_node(d.id);
 			highlight_box(d.id);
 			hover_timer = window.setTimeout(function(d) {
-				$("#box").scrollTo("#comment_" + d.id, 500);
+				$("#box_container").scrollTo("#comment_" + d.id, 500);
 			}, 500, d);
 		}
 	}
