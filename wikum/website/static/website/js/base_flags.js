@@ -1820,6 +1820,10 @@ function handle_channel_message(res) {
 	if (res.type === 'reply_comment') d3.select('#node_' + d.id).style('fill', color);
 
 	$("#box_container").scrollTo("#comment_" + new_d.id, 500);
+	$('#comment_' + new_d.id)
+	  .animate({borderColor:'red'}, 400)
+	  .delay(400)
+	  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
 	highlight_box(new_d.d_id);
 	make_progress_bar();
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
