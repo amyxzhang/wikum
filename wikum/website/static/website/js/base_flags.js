@@ -15,6 +15,28 @@ $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
 })
 
+var idleTime = 0;
+var dids_in_use = [];
+$(document).ready(function () {
+    //Increment the idle time counter every minute.
+    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        idleTime = 0;
+    });
+});
+
+function timerIncrement() {
+    idleTime = idleTime + 1;
+    if (idleTime > 14) { // 15 minutes
+    	send_update_locks(dids_in_use, false);
+    }
+}
+
 // Ensure that popover 'Close' allows for show on first following click
 $('body').on('hidden.bs.popover', function (e) {
     $(e.target).data("bs.popover").inState = { click: false, hover: false, focus: false }
@@ -234,7 +256,8 @@ $('#hide_modal_box').on('hidden.bs.modal', function () {
 $('#summarize_modal_box').on('hide.bs.modal', function (e) {
 	var id = $('#summarize_modal_box').attr('summarize_modal_box_id');
 	var did = $('#summarize_modal_box').attr('summarize_modal_box_did');
-	send_update_locks([parseInt(did)], [parseInt(id)], false);
+	dids_in_use = [];
+	send_update_locks([parseInt(did)], false);
 });
 
 $('#summarize_modal_box').on('hidden.bs.modal', function (e) {
@@ -258,7 +281,8 @@ $('#summarize_multiple_modal_box').on('hide.bs.modal', function (e) {
 	var ids = str_ids.map(str_id => parseInt(str_id));
 	var str_dids = $('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids').split(",");
 	var dids = str_dids.map(str_did => parseInt(str_did));
-	send_update_locks(dids, ids, false);
+	dids_in_use = [];
+	send_update_locks(dids, false);
 });
 
 $('#summarize_multiple_modal_box').on('hidden.bs.modal', function () {
@@ -1130,13 +1154,12 @@ function insert_quote(highlighted_text, did) {
     box.val( textBefore + '\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
 }
 
-function send_update_locks(dids, node_ids, to_lock) {
+function send_update_locks(dids, to_lock) {
 	var article_id = $('#article_id').text();
 	var csrf = $('#csrf').text();
 	var lock_data = {csrfmiddlewaretoken: csrf,
 		article: article_id,
 		ids: dids,
-		node_ids: node_ids,
 		to_lock: to_lock,
 		type: 'update_locks'};
 	chatsock.send(JSON.stringify(lock_data));
@@ -1260,13 +1283,15 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		cancelClick = setTimeout(is_click, 250);
 	});
 
-	send_update_locks([did], [id], true);
+	dids_in_use = [did];
+	send_update_locks([did], true);
 
 	$('#summarize_modal_box form').off("submit");
 
 	$('#summarize_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
-		send_update_locks([did], [id], false);
+		dids_in_use = [];
+		send_update_locks([did], false);
 		$('#summarize_modal_box').modal('toggle');
 		var comment = $('#summarize_comment_textarea').val().trim();
 		var article_id = $('#article_id').text();
@@ -1370,7 +1395,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids', ids);
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', dids);
-		send_update_locks(dids, ids, true);
+		dids_in_use = dids;
+		send_update_locks(dids, true);
 	} else {
 
 		var id = $(e.relatedTarget).data('id');
@@ -1387,7 +1413,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		highlight_box(id);
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids', [id]);
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', [did]);
-		send_update_locks([did], [id], true);
+		dids_in_use = [did];
+		send_update_locks([did], true);
 
 		if (type == "summarize") {
 			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment">';
