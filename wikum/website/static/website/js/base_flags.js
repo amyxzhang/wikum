@@ -401,7 +401,6 @@ $(document).on('mouseleave', '.comment_box', function() {
 });
 
 $('#box_container').on('show.bs.popover', function(e) {
-	console.log($(e.target).closest(".comment_box"));
 	$(e.target).closest(".comment_box").find('footer').css('display', 'block');
 	var id = $(e.target).data('id');
 	d = nodes_all[id-1];
