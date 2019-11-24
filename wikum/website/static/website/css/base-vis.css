@@ -341,6 +341,7 @@ textarea {
 	min-width: 45%;
 	max-width: calc(100vw - 350px);
 	overflow-x: scroll;
+	z-index: 100;
 }
 
 #viz {
@@ -992,6 +993,7 @@ form.modal-content {
 	position: fixed;
 	left:330px;
 	top: 100px;
+	z-index: 1000;
 }
 
 .editors {
