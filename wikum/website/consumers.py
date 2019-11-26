@@ -39,6 +39,7 @@ class WikumConsumer(WebsocketConsumer):
         # message['path'] = /ws/article/[article_name]/visualization_flags
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
+        self.user_to_locked_nodes = {}
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -49,6 +50,23 @@ class WikumConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
+        # Release locks held by user
+        username = self.scope["user"].username if self.scope["user"].is_authenticated else None
+        print(username)
+        ids = []
+        if username in self.user_to_locked_nodes:
+            ids = self.user_to_locked_nodes[username]
+        message_ids = ids[:]
+        data = {'to_lock': False, 'ids': ids, 'type': 'update_locks'}
+        message = {'user': username, 'type': 'update_locks', 'ids': message_ids, 'to_lock': False}
+        self.handle_update_locks(data, username)
+        async_to_sync(self.channel_layer.group_send)(
+            self.group_name,
+            {
+                'type': 'handle.data',
+                'message': message
+            }
+        )
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
@@ -324,14 +342,19 @@ class WikumConsumer(WebsocketConsumer):
             article_id = self.article_id
             a = Article.objects.get(id=article_id)
             ids = data['ids']
+            if username not in self.user_to_locked_nodes:
+                self.user_to_locked_nodes[username] = []
             for id in ids:
-                c = Comment.objects.get(id=id)
-                if data['to_lock']:
-                    c.is_locked = True
-                else:
-                    c.is_locked = False
-                c.save()
-                recurse_up_post(c)
+                if username is not 'Anonymous':
+                    c = Comment.objects.get(id=id)
+                    if data['to_lock'] :
+                        self.user_to_locked_nodes[username].append(id)
+                        c.is_locked = True
+                    else:
+                        self.user_to_locked_nodes[username].remove(id)
+                        c.is_locked = False
+                    c.save()
+                    recurse_up_post(c)
             res = {'user': username, 'type': data['type'], 'ids': data['ids'], 'to_lock': data['to_lock']}
             return res
         except Exception as e:
