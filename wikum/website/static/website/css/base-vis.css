@@ -319,9 +319,18 @@ div.selected {
 	color: white;
 }
 
+ul, ol {
+	line-height: 1em;
+}
+
 textarea {
 	font-size: 12px;
 	min-height: 50px;
+}
+
+.tinymce-content p {
+    padding: 0;
+    margin: 2px 0;
 }
 
 #box {
@@ -335,10 +344,11 @@ textarea {
 #box_container {
 	padding-top: 15px;
 	position: absolute;
+	height: 100vh;
 	max-height: 100vh;
 	margin: 80px 15px 15px 350px;
 	overflow: auto;
-	min-width: 45%;
+	min-width: 60%;
 	max-width: calc(100vw - 350px);
 	overflow-x: scroll;
 	z-index: 100;

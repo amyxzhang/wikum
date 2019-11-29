@@ -396,9 +396,9 @@ class WikumConsumer(WebsocketConsumer):
             h.comments.add(c)
             recurse_up_post(c)
             
-            
-            a.summary_num = a.summary_num + 1
-            a.percent_complete = count_article(a)
+            if from_summary == '':
+                a.summary_num = a.summary_num + 1
+                a.percent_complete = count_article(a)
             a.last_updated = datetime.datetime.now()
             a.save()
             res = {'user': username, 'type': data['type'], 'd_id': data['id']}
@@ -486,7 +486,7 @@ class WikumConsumer(WebsocketConsumer):
             recurse_up_post(new_comment)
 
             recurse_down_num_subtree(new_comment)
-
+            print('HELLO2')
             a.summary_num = a.summary_num + 1
             a.percent_complete = count_article(a)
             a.last_updated = datetime.datetime.now()
@@ -598,11 +598,10 @@ class WikumConsumer(WebsocketConsumer):
                 delete_node(node)
 
             h.comments.add(c)
-            
-            a.summary_num = a.summary_num + 1
-            a.percent_complete = count_article(a)
+            if not c.is_replacement:
+                a.summary_num = a.summary_num + 1
+                a.percent_complete = count_article(a)
             a.last_updated = datetime.datetime.now()
-            
             a.save()
             
             res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}

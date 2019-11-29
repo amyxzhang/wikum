@@ -1390,7 +1390,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		}
 
 		$('#summarize_multiple_comment_text').text('Summarize these selected comments.');
-		$('#summarize_multiple_comment_textarea').val("");
+		tinymce.get('summarize_multiple_comment_textarea').setContent("");
 
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_ids', ids);
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', dids);
@@ -1428,7 +1428,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 			text = get_subtree_summarize(text, d, 1);
 			$('#summarize_multiple_comment_text').text('Summarize this comment and all replies (replaces them all).');
-			$('#summarize_multiple_comment_textarea').val("");
+			tinymce.get('summarize_multiple_comment_textarea').setContent("");
 		} else if (type == "edit_summarize") {
 
 			show_replace_nodes(d.id);
@@ -1472,16 +1472,16 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 			if (d.extra_summary != '') {
 				if (article_url.indexOf('wikipedia.org') !== -1) {
-					$('#summarize_multiple_comment_textarea').val(d.sumwiki + '\n----------\n' + d.extrasumwiki);
+					tinymce.get('summarize_multiple_comment_textarea').setContent(d.sumwiki + '\n----------\n' + d.extrasumwiki);
 				} else {
-					$('#summarize_multiple_comment_textarea').val(d.summary + '\n----------\n' + d.extra_summary);
+					tinymce.get('summarize_multiple_comment_textarea').setContent(d.summary + '\n----------\n' + d.extra_summary);
 				}
 			} else {
 				if (article_url.indexOf('wikipedia.org') !== -1) {
-					$('#summarize_multiple_comment_textarea').val(d.sumwiki);
+					tinymce.get('summarize_multiple_comment_textarea').setContent(d.sumwiki);
 				}
 				else {
-					$('#summarize_multiple_comment_textarea').val(d.summary);
+					tinymce.get('summarize_multiple_comment_textarea').setContent(d.summary);
 				}
 			}
 
@@ -1566,7 +1566,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 	$('#summarize_multiple_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
 		$('#summarize_multiple_modal_box').modal('toggle');
-		var comment = $('#summarize_multiple_comment_textarea').val().trim();
+		var comment = tinyMCE.get('summarize_multiple_comment_textarea').getContent().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
@@ -5144,8 +5144,8 @@ function color(d) {
 function count_unsummarized_words(d) {
 	count = 0;
 	if (d.replace_node) {
-		count += d.summary.split(/\s+/).length;
-		count += d.extra_summary.split(/\s+/).length;
+		// count += d.summary.split(/\s+/).length;
+		// count += d.extra_summary.split(/\s+/).length;
 	} else {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
@@ -5200,13 +5200,12 @@ function count_all_words(d) {
 		if (!d.article && !d.parent_node) {
 			count += wordCount(d.name);
 		}
-	}
-	
-	if (d.hid) {
-		for (var i=0; i<d.hid.length; i++) {
-				count += count_all_words(d.hid[i]);
-			}
-	}
+	}	
+	// if (d.hid) {
+	// 	for (var i=0; i<d.hid.length; i++) {
+	// 			count += count_all_words(d.hid[i]);
+	// 		}
+	// }
 	
 	return count;
 }
@@ -5215,14 +5214,14 @@ function make_progress_bar() {
 	num_words_all = count_all_words(nodes_all[0]);
 	num_words_still = count_unsummarized_words(nodes_all[0]);
 
-	if (num_words_all >= 250) {
-		num_words_all = num_words_all - 250;
-		num_words_still = num_words_still - 250;
-	} else {
-		var half = num_words_all/2;
-		num_words_all = num_words_all - half;
-		num_words_still = num_words_still - half;
-	}
+	// if (num_words_all >= 250) {
+	// 	num_words_all = num_words_all - 250;
+	// 	num_words_still = num_words_still - 250;
+	// } else {
+	// 	var half = num_words_all/2;
+	// 	num_words_all = num_words_all - half;
+	// 	num_words_still = num_words_still - half;
+	// }
 
 	if (num_words_all != 0) {
 		value = Math.round((1 - (num_words_still/num_words_all)) * 100);
