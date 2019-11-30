@@ -471,6 +471,12 @@ rect.selection {
 		/*color: var(--link-color);*/
 	}
 
+	.comment_box a.disabled {
+		color: hsl(207, 0%, 71%);
+		pointer-events: none;
+		cursor: default;
+	}
+
 	.comment_box footer {
 		display: none;
 		padding: 0;

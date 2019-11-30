@@ -486,7 +486,7 @@ class WikumConsumer(WebsocketConsumer):
             recurse_up_post(new_comment)
 
             recurse_down_num_subtree(new_comment)
-            print('HELLO2')
+
             a.summary_num = a.summary_num + 1
             a.percent_complete = count_article(a)
             a.last_updated = datetime.datetime.now()
