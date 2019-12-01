@@ -185,6 +185,10 @@ $("#hide_modal_box").draggable({
     handle: ".modal-title"
 });
 
+$("#reply_modal_box").draggable({
+    handle: ".modal-title"
+});
+
 $("#new_node_modal_box").draggable({
     handle: ".modal-title"
 });
@@ -226,6 +230,16 @@ $('#evaluate_summary_modal_box').on('hidden.bs.modal', function () {
 $('#tag_modal_box').on('hidden.bs.modal', function () {
 				$.ajax({type: 'GET',
 						url: '/log_data?data=close_tag_modal',
+						success: function(res) {
+						}
+				});
+});
+
+$('#reply_modal_box').on('hidden.bs.modal', function () {
+	$('#reply_comment_box').attr('style', '');
+	$('#reply_comment_box').text('');
+				$.ajax({type: 'GET',
+						url: '/log_data?data=close_reply_modal',
 						success: function(res) {
 						}
 				});
@@ -400,9 +414,10 @@ $(document).on('mouseleave', '.comment_box', function() {
 	}
 });
 
-$('#box_container').on('show.bs.popover', function(e) {
-	$(e.target).closest(".comment_box").find('footer').css('display', 'block');
-	var id = $(e.target).data('id');
+$('#reply_modal_box').on('show.bs.modal', function(e) {
+	var id = $(e.relatedTarget).data('id');
+	$("#reply_comment_textarea").val('');
+	
 	d = nodes_all[id-1];
 	var ids = [];
 	var dids = [];
@@ -413,19 +428,37 @@ $('#box_container').on('show.bs.popover', function(e) {
 	did_str += d.d_id;
 	id_str += d.id;
 
+	$.ajax({type: 'GET',	
+			url: '/log_data?data=open_reply_modal&did=' + did_str,	
+			success: function(res) {	
+			}	
+	});	
+
+	var class_sum = "";	
+	if (d.replace_node) {	
+		var node_text = '<strong>Summary Node:</strong><BR>' + render_summary_node(d, false);	
+		var class_sum = "summary_box";	
+	} else if (d.summary != '') {	
+		var node_text = '<strong>Summary:</strong> ' + render_summary_node(d, false);	
+	} else {	
+		var node_text = d.name;	
+	}	
+
+	var text = '<div class="reply_comment_comment' + ' ' + class_sum + '">' + node_text+ '</div>';	
+
+	$('#reply_comment_box').html(text);
+
 	// id of node to reply to
-	var did = $(e.target).data('did');
-	var reply_elmt_id = "#reply_submit_" + did;
+	var did = $(e.relatedTarget).data('did');
+	$('#reply_modal_box form').off("submit");
 
-	$(document).off("click", reply_elmt_id);
-
-	$(document).on("click", reply_elmt_id, function(evt){
-	    evt.preventDefault();
-	    $(this).click(function() {
-	        return false;
-	    });
-	    $("a[data-did='" + did +"'][data-toggle='popover'").popover('hide');
-		var comment = $('#reply_comment_textarea_' + did).val().trim();
+	$('#reply_modal_box form').submit({data_id: did, id: id, ids: ids, dids: dids}, function(evt) {
+		evt.preventDefault();
+		$(this).submit(function() {
+			return false;
+		});
+		$('#reply_modal_box').modal('toggle');
+		var comment = $('#reply_comment_textarea').val().trim();
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
@@ -433,10 +466,10 @@ $('#box_container').on('show.bs.popover', function(e) {
 			owner: owner,
 			article: article_id,
 			type: 'reply_comment'};
-		data.id = did;
-		data.node_id = id;
+		data.id = evt.data.data_id;
+		data.node_id = evt.data.id;
 		chatsock.send(JSON.stringify(data));
-	    return false;
+		return true;
 	});
 
 });
@@ -1819,7 +1852,7 @@ function handle_channel_message(res) {
 	if (res.type === 'reply_comment') d3.select('#node_' + d.id).style('fill', color);
 
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
-		$("#box_container").scrollTo("#comment_" + new_d.id, 500);
+		$("#box").scrollTo("#comment_" + new_d.id, 500);
 	}
 	$('#comment_' + new_d.id)
 	  .animate({borderColor:'red'}, 400)
@@ -2018,7 +2051,7 @@ function handle_channel_summarize_selected(res) {
 	
 	if ($('#access_mode').attr('data-access') == "0") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${new_d.new_d.id}" data-content='` + getReplyCommentFormString(new_d.id, new_d.d_id) + `' data-placement="bottom" data-id="${new_d.id}">Reply</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
 			<a`;
 		if (new_d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
@@ -2029,7 +2062,7 @@ function handle_channel_summarize_selected(res) {
 
 	else if ($('#access_mode').attr('data-access') == "1") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${new_d.new_d.id}" data-content='` + getReplyCommentFormString(new_d.id, new_d.d_id) + `' data-placement="bottom" data-id="${new_d.id}">Reply</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
 		</footer>`;
 	}
 
@@ -2150,7 +2183,7 @@ function handle_channel_summarize_comments(res) {
 	
 	if ($('#access_mode').attr('data-access') == "0") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString(d.id, d.d_id) + `' data-placement="bottom" data-id="${d.id}">Reply</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
@@ -2161,7 +2194,7 @@ function handle_channel_summarize_comments(res) {
 
 	else if ($('#access_mode').attr('data-access') == "1") {
 		text += `<footer>
-			<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString(d.id, d.d_id) + `' data-placement="bottom" data-id="${d.id}">Reply</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>
 		</footer>`;
 	}
 
@@ -2672,7 +2705,7 @@ function open_comment_hyperlink(id, d_id, para) {
 		toggle_original(d.id);
 
 		$('#orig_' + d.id).find('p').eq(para).addClass('highlight');
-		$("#box_container").scrollTo(".highlight", 500);
+		$("#box").scrollTo(".highlight", 500);
 
 	} else {
 		child = find_child_did(d, d_id);
@@ -2693,9 +2726,9 @@ function open_comment_hyperlink(id, d_id, para) {
 			} else {
 				$('#comment_text_' + child.id).find('p').eq(para).addClass('highlight');
 			}
-			$("#box_container").scrollTo(".highlight", 500);
+			$("#box").scrollTo(".highlight", 500);
 		} else {
-			$("#box_container").scrollTo("#comment_" + child.id, 500);
+			$("#box").scrollTo("#comment_" + child.id, 500);
 		}
 
 		history.pushState(null, "", `#comment_${child.id}`)
@@ -2706,7 +2739,7 @@ function load_permalink() {
 	var comment = $(location.hash);
 
 	if (comment.length) {
-		$("#box_container").scrollTo(comment, 500);
+		$("#box").scrollTo(comment, 500);
 	}
 	else if (location.hash) {
 		var id = (location.hash.match(/comment_(\d+)/) || [])[1];
@@ -3785,7 +3818,7 @@ function update(source) {
 	      	d3.selectAll(".clicked").classed("clicked", false);
 	      	unhighlight_all();
 	      	show_text(d);
-	      	$('#box_container').scrollTop(0);
+	      	$('#box').scrollTop(0);
 	      	if (highlight_text) {
 	      		$('#box').highlight(highlight_text);
 	      	}
@@ -4169,7 +4202,7 @@ function construct_comment(d) {
 			var data_access = $('#access_mode').attr('data-access');
 			text += `<footer>`;
 			if (data_access == "0" || data_access == "1") {
-				text += `<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="${d.d_id}" data-content='` + getReplyCommentFormString(d.id, d.d_id) + `' data-placement="bottom" data-id="${d.id}">Reply</a>`;
+				text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>`;
 			}
 			if (data_access == "0" || data_access == "2") {
 				text += `<a `;
@@ -4189,7 +4222,7 @@ function construct_comment(d) {
 	
 			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
-					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a ';
 					if (d.is_locked) text += 'class="disabled" ';
 					text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="summarize_one" data-id="' + d.id + '">Summarize Comment</a>';
@@ -4198,7 +4231,7 @@ function construct_comment(d) {
 				}
 			} else if (!d.replace_node) {
 				if (!d.hiddennode) {
-					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" -type="tag_one" data-id="' + d.id + '">Reply</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" -type="tag_one" data-id="' + d.id + '">Reply</a>';
 				}
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a ';
@@ -4218,12 +4251,12 @@ function construct_comment(d) {
 			text += '<footer>';
 			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
-					text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
 				}
 			} else {
-				text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 				if (!(d.parent && d.parent.replace_node)) {
 					text += '<a ';
 					if (d.is_locked) text += 'class="disabled" ';
@@ -4239,7 +4272,7 @@ function construct_comment(d) {
 	else if ($('#access_mode').attr('data-access') == "1") {
 		if (!d.replace_node) {
 			text += '<footer>';
-			text += '<a tabindex="0" role="button" data-html="true" data-container="#box_container" data-toggle="popover" title="<b>Reply:</b>" data-did="' + d.d_id + '" data-content=\'' + getReplyCommentFormString(d.id, d.d_id) + '\' data-placement="bottom" data-type="" data-id="' + d.id + '">Reply</a>';
+			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 			text += '</footer>';
 		}
 	}
@@ -4759,7 +4792,7 @@ function showdiv(d) {
 			extra_highlight_node(d.id);
 			highlight_box(d.id);
 			hover_timer = window.setTimeout(function(d) {
-				$("#box_container").scrollTo("#comment_" + d.id, 500);
+				$("#box").scrollTo("#comment_" + d.id, 500);
 			}, 500, d);
 		}
 	}

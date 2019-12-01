@@ -341,15 +341,14 @@ textarea {
 	word-break: break-all;
 }
 
-#box_container {
+#box {
 	padding-top: 15px;
-	position: absolute;
-	height: 100vh;
-	max-height: 100vh;
-	margin: 80px 15px 15px 350px;
+	position: fixed;
+	max-height: calc(100vh - 80px);
+	margin: 80px 15px 15px 550px;
 	overflow: auto;
-	min-width: 60%;
-	max-width: calc(100vw - 350px);
+	min-width: 45%;
+	max-width: calc(100vw - 550px);
 	overflow-x: scroll;
 	z-index: 100;
 }
