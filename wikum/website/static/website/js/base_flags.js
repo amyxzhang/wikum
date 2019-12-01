@@ -2932,17 +2932,19 @@ function show_extra_summary(id) {
 
 function cite_comment(did) {
 	var box = $('#' + activeBox + '_comment_textarea');
-	console.log(activeBox);
 	var cursorPos = box.prop('selectionStart');
 	var v = box.val();
-	if (activeBox == "summarize_multiple") {
+	var tinyMCE_is_active = (typeof tinyMCE != "undefined") && tinyMCE.activeEditor && !tinyMCE.activeEditor.isHidden();
+	if (tinyMCE_is_active) {
+		var cursorPos = tinyMCE.activeEditor.selection.getBookmark();
 		v = tinymce.get('summarize_multiple_comment_textarea').getContent();
 	}
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + '[[comment_' + did +']]\n' + textAfter );
-    if (activeBox == "summarize_multiple") {
-    	tinymce.get('summarize_multiple_comment_textarea').setContent( textBefore + '[[comment_' + did +']]\n' + textAfter );
+    if (tinyMCE_is_active) {
+    	tinyMCE.activeEditor.selection.moveToBookmark(cursorPos);
+    	tinyMCE.activeEditor.selection.setContent('[[comment_' + did +']]\n');
     }
 }
 
