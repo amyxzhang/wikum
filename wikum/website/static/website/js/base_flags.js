@@ -417,7 +417,7 @@ $(document).on('mouseleave', '.comment_box', function() {
 $('#reply_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	$("#reply_comment_textarea").val('');
-	
+
 	d = nodes_all[id-1];
 	var ids = [];
 	var dids = [];
@@ -1107,6 +1107,7 @@ function cite_para(did, para_num) {
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + '[[comment_' + did + '_p' +  para_num + ']]\n' + textAfter );
+    copy_to_tinyMCE('[[comment_' + did + '_p' +  para_num + ']]\n');
 }
 
 function delete_tags(evt, dids, ids, tag) {
@@ -1184,6 +1185,7 @@ function insert_quote(highlighted_text, did) {
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + '\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
+    copy_to_tinyMCE('\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n');
 }
 
 function send_update_locks(dids, to_lock) {
@@ -2807,6 +2809,7 @@ function copy_summary_quote() {
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + text + '\n' + textAfter );
+    copy_to_tinyMCE(text + '\n');
 }
 
 function render_summary_node_edit(d) {
@@ -2875,6 +2878,8 @@ function copy_summary(id) {
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + text + '\n' + textAfter );
 
+    copy_to_tinyMCE(text + '\n');
+
 }
 
 function undo_delete_summary(did, id) {
@@ -2917,6 +2922,8 @@ function copy_summary_node(id) {
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + text + '\n' + textAfter );
+
+    copy_to_tinyMCE(text + '\n');
 
 }
 
@@ -2963,22 +2970,26 @@ function show_extra_summary(id) {
 	$('#extra_summary_' + id).toggle();
 }
 
-function cite_comment(did) {
-	var box = $('#' + activeBox + '_comment_textarea');
-	var cursorPos = box.prop('selectionStart');
-	var v = box.val();
+function copy_to_tinyMCE(new_content) {
 	var tinyMCE_is_active = (typeof tinyMCE != "undefined") && tinyMCE.activeEditor && !tinyMCE.activeEditor.isHidden();
 	if (tinyMCE_is_active) {
 		var cursorPos = tinyMCE.activeEditor.selection.getBookmark();
 		v = tinymce.get('summarize_multiple_comment_textarea').getContent();
 	}
+	if (tinyMCE_is_active) {
+    	tinyMCE.activeEditor.selection.moveToBookmark(cursorPos);
+    	tinyMCE.activeEditor.selection.setContent(new_content);
+    }
+}
+
+function cite_comment(did) {
+	var box = $('#' + activeBox + '_comment_textarea');
+	var cursorPos = box.prop('selectionStart');
+	var v = box.val();
     var textBefore = v.substring(0,  cursorPos );
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + '[[comment_' + did +']]\n' + textAfter );
-    if (tinyMCE_is_active) {
-    	tinyMCE.activeEditor.selection.moveToBookmark(cursorPos);
-    	tinyMCE.activeEditor.selection.setContent('[[comment_' + did +']]\n');
-    }
+    copy_to_tinyMCE('[[comment_' + did +']]\n');
 }
 
 function delete_children_boxes(node) {
