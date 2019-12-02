@@ -1968,6 +1968,7 @@ function handle_channel_summarize_comment(res) {
 	$('#comment_' + node_id).addClass("summary");
 
 	highlight_box(node_id);
+	show_text(nodes_all[0]);
 	make_progress_bar();
 }
 
@@ -2213,6 +2214,7 @@ function handle_channel_summarize_comments(res) {
 	$('#comment_' + d.id).html(text);
 
 	highlight_box(d.id);
+	show_text(nodes_all[0]);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	make_progress_bar();
 }
