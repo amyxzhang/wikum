@@ -37,11 +37,6 @@ function timerIncrement() {
     }
 }
 
-// Ensure that popover 'Close' allows for show on first following click
-$('body').on('hidden.bs.popover', function (e) {
-    $(e.target).data("bs.popover").inState = { click: false, hover: false, focus: false }
-});
-
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
 	var csrf = $('#csrf').text();
@@ -380,28 +375,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 		chatsock.send(JSON.stringify(data));
 	});
 });
-
-var popOverSettings = {
-    placement: 'bottom',
-    html: true,
-    selector: '[data-toggle="popover"]', //Sepcify the selector here
-}
-
-$('body').popover(popOverSettings);
-
-function getReplyCommentFormString(id, did) {
-	var commentFormString = '<div id="comment_popover_box" data-reply-id=' + id + ' data-reply-did=' + did + '>';
-	commentFormString += '<form id="reply-comment-form' + '" class="reply-comment-form" style="margin-bottom: 5px" name="mainForm">';
-	commentFormString += '<div class="reply-comment-body">';
-	commentFormString += '	<P><span class="wordcount"></span>';
-	commentFormString += '<textarea class="reply-editor" id="reply_comment_textarea_' + did + '" rows=5 required placeholder="These are my thoughts..."></textarea>';
-	commentFormString += '</P></div>';
-	commentFormString += '<div class="reply-comment-footer">';
-	commentFormString += '<button type="button" id="reply_submit_' + did + '" class="btn btn-default">Submit</button>';
-	commentFormString += '<button type="button" class="btn btn-default" onclick=&#39;$(this).closest(&quot;div.popover&quot;).popover(&quot;hide&quot;);&#39;>Close</button></div></form>';
-	commentFormString += '</div>';
-	return commentFormString;
-}
 
 $(document).on('mouseover', '.comment_box', function() {
 	$(this).find('footer').css('display', 'block');

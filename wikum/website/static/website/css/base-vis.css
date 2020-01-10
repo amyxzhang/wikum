@@ -419,17 +419,6 @@ rect.selection {
  	width: 400px;
 }
 
-.popover {
-	max-width: 430px;
-	width: 430px;
-	position: absolute;
-}
-
-.popover-content {
-	width: 400px;
-	display: table;
-}
-
 .comment_box,
 .reply_comment_comment {
 	position: relative;

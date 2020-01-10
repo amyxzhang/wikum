@@ -87,6 +87,12 @@
     
         <!-- jQuery -->
     <script src={% static "website/js/jquery.js" %}></script>
+
+    <!-- Bootstrap Core JavaScript -->  
+    <script src={% static "website/js/bootstrap.min.js" %}></script>    
+
+
+
     <!-- Plugin JavaScript -->
     <script src={% static "website/js/jquery.easing.min.js" %}></script>
 
@@ -95,13 +101,6 @@
     <script src={% static "website/js/grayscale.js" %}></script>
     
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript">
-	// Change JQueryUI plugin names to fix name collision with Bootstrap.
-	$.widget.bridge('uitooltip', $.ui.tooltip);
-	$.widget.bridge('uibutton', $.ui.button);
-	</script>
-	<script src={% static "website/js/popper.min.js" %}></script>
-	<script src={% static "website/js/bootstrap.min.js" %}></script>
     
     
     <script src={% static "website/assets/js/modernizr.js" %}></script>
@@ -335,18 +334,5 @@
 	{% endblock %}
 
 </body>
-<script type="text/javascript">
-	$(function () {
-		$('[data-toggle="tooltip"]').tooltip()
-	})
-
-	$('[data-toggle="popover"]').popover({
-	    html: 'true',
-	    trigger: 'manual',
-	}).click(function (e) {
-	    $(this).popover('toggle');
-	    e.preventDefault()
-	});
-</script>
 </html>
 
