@@ -5,7 +5,6 @@ import re
 import json
 import random
 import logging
-from threading import Timer
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from channels.exceptions import StopConsumer
