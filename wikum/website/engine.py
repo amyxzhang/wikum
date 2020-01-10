@@ -170,13 +170,13 @@ def count_article(art):
     print(num_words_all)
     print(num_words_still)
 
-    if num_words_all >= 250:
-        num_words_all = num_words_all - 250;
-        num_words_still = num_words_still - 250;
-    else:
-        half = old_div(num_words_all,2);
-        num_words_all = num_words_all - half;
-        num_words_still = num_words_still - half;
+    # if num_words_all >= 250:
+    #     num_words_all = num_words_all - 250;
+    #     num_words_still = num_words_still - 250;
+    # else:
+    #     half = old_div(num_words_all,2);
+    #     num_words_all = num_words_all - half;
+    #     num_words_still = num_words_still - half;
 
     if num_words_all != 0:
         value = round(((1.0 - float(float(num_words_still)/float(num_words_all))) * 100.0))
@@ -186,7 +186,7 @@ def count_article(art):
     if value > 100:
         value = 100
     return value
-    
+
 
 def count_all_words(count, info):
     if info.get('replace_node'):
