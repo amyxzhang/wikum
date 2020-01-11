@@ -23,6 +23,8 @@
 	        			<td>{% trans "From" %}</td>
 	        			<td>{% trans "To" %}</td>
 	        			<td>{% trans "Explanation" %}</td>
+	        			<td>{% trans "Words Shown" %}</td>
+	        			<td>{% trans "Percent Complete" %}</td>
 	        		</tr>
 	            {% for h in history %}
 	            	<tr>
@@ -30,6 +32,10 @@
 	            		<td>{% trans "Hide Comment" %}</td>
 	            	{% elif h.action == "sum_comment" %}
 	            		<td>{% trans "Summarize Comment" %}</td>
+	            	{% elif h.action == "reply_comment" %}
+	            		<td>{% trans "Reply to Comment" %}</td>
+	            	{% elif h.action == "new_node" %}
+	            		<td>{% trans "New Comment" %}</td>
 	            	{% elif h.action == "edit_sum" %}
 	            		<td>{% trans "Edit Summary of a Comment" %}</td>
 	            	{% elif h.action == "hide_replies" %}
@@ -93,7 +99,7 @@
 	            		{% elif h.action == "hide_comments" %}
 							{% trans "All Comments Hidden" %}
 	            		{% elif h.action == "move_comment" %}
-							{% trans "Move CommentMove Comment" %}
+							{% trans "Move Comment" %}
 	            		{% else %}
 	            			{{ h.to_str }}
 						{% endif %} 
@@ -101,7 +107,12 @@
 	            	<td>
 	            		{{ h.explanation }}
 	            	</td>
-	            	
+					<td>
+	            		{{ h.words_shown }}
+	            	</td>
+	            	<td>
+	            		{{ h.current_percent_complete }}%
+	            	</td>	            	
 	            	</tr>
 	            {% endfor %}
 	           </table>

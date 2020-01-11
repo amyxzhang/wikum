@@ -46,6 +46,7 @@ class Article(models.Model):
     percent_complete = models.IntegerField(default=0)
     comment_num = models.IntegerField(default=0)
     summary_num = models.IntegerField(default=0)
+    words_shown = models.IntegerField(default=0)
 
     # "section_index" is a column for storing the index number of the section within the page.
     # There are some cases when wikicode does not parse a section as a section when given a whole page.
@@ -90,6 +91,8 @@ class History(models.Model):
     from_str = models.TextField()
     to_str = models.TextField()
     explanation = models.TextField()
+    words_shown = models.IntegerField(default=0)
+    current_percent_complete = models.IntegerField(default=0)
 
     def __str__(self):
         return self.action
