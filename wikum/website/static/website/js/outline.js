@@ -74,7 +74,7 @@ function createOutlineString(d) {
 	  *	 summary = summary
 	  *  psum = partially summarized comment
 	  */
-	if (d.children) {
+	if (d.children && d.children.length) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
@@ -84,7 +84,7 @@ function createOutlineString(d) {
 			outline += `</div>`
 		}
 		outline += `</div>`;
-	} else if (d._children) {
+	} else if (d._children && d._children.length) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d._children.length; i++) {
@@ -94,7 +94,7 @@ function createOutlineString(d) {
 			outline += `</div>`;
 		}
 		outline += `</div>`;
-	} else if (d.replace) {
+	} else if (d.replace && d.replace.length) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
@@ -111,19 +111,18 @@ outline += '</div>';
 d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`, function(error, flare) {
 	if (error) throw error;
 
-	console.log(flare);
 	createOutlineString(flare);
-	console.log(outline);
-
-	// _createList(item){
-	//      return item.map((el,i)=>{
-	//          return <div key={i}>
-	//                   {el.name}
-	//                   {el.child.length ? this._createList(el.child) : null}
-	//                 </div>
-	//      })
-	//  }
-
+	document.getElementById("outline").innerHTML = outline;
+	var nestedSortables = document.getElementsByClassName("nested-sortable");
+	// Loop through each nested sortable element
+	for (var i = 0; i < nestedSortables.length; i++) {
+		new Sortable(nestedSortables[i], {
+			group: 'nested',
+			animation: 150,
+			fallbackOnBody: true,
+			swapThreshold: 0.65
+		});
+	}
 });
 
 function make_dropdown() {
