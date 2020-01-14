@@ -783,6 +783,14 @@ class WikumConsumer(WebsocketConsumer):
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             
             if affected > 0:
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='hide_comments',
+                                           explanation=explain,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
                 for id in ids:
                     c = Comment.objects.get(id=id)
                     h.comments.add(c)
@@ -792,14 +800,6 @@ class WikumConsumer(WebsocketConsumer):
                         recurse_up_post(parent[0])
                 
                 a.comment_num = a.comment_num - affected
-                words_shown = count_words_shown(a)
-                percent_complete = count_article(a)
-                h = History.objects.create(user=req_user, 
-                                           article=a,
-                                           action='hide_comments',
-                                           explanation=explain,
-                                           words_shown=words_shown,
-                                           current_percent_complete=percent_complete)
                 a.percent_complete = percent_complete
                 a.words_shown = words_shown
                 a.last_updated = datetime.datetime.now()
@@ -825,6 +825,14 @@ class WikumConsumer(WebsocketConsumer):
             affected = self.recurse_down_hidden(replies, 0)
             
             if affected > 0:
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='hide_replies',
+                                           explanation=explain,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
                 replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
                 for reply in replies:
                     h.comments.add(reply)
@@ -834,14 +842,6 @@ class WikumConsumer(WebsocketConsumer):
                 ids = [reply.id for reply in replies]
                 
                 a.comment_num = a.comment_num - affected
-                words_shown = count_words_shown(a)
-                percent_complete = count_article(a)
-                h = History.objects.create(user=req_user, 
-                                           article=a,
-                                           action='hide_replies',
-                                           explanation=explain,
-                                           words_shown=words_shown,
-                                           current_percent_complete=percent_complete)
                 a.percent_complete = percent_complete
                 a.words_shown = words_shown
                 a.last_updated = datetime.datetime.now()
