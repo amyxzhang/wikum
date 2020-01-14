@@ -1066,7 +1066,6 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 			data.type = 'hide_comments';
 			chatsock.send(JSON.stringify(data));
 		} else {
-			console.log("HIDE REPLIES");
 			data.id = evt.data.data_id;
 			data.node_id = evt.data.id;
 			data.type = 'hide_replies';

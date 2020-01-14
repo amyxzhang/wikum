@@ -11,6 +11,7 @@ var article_id = $('#article_id').text();
 /* Outline View Visualization */
 
 var nodes_all = null;
+var tree = d3.layout.tree();
 
 var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
@@ -125,8 +126,18 @@ d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&o
 		});
 	}
 
-	$('.outline-item').click(function(e){
-    	e.stopPropagation();
+	nodes_all = tree.nodes(flare);
+	let counter = 0;
+	nodes_all = nodes_all.map(function (node) {
+		counter += 1;
+		node['id'] = counter;
+		return node;
+	});
+	show_text(nodes_all[0]);
+	make_progress_bar();
+
+	$('.outline-item').on('dblclick', function(e) {
+	    e.stopPropagation();
     	var child = $(this).next()[0];
     	if ($(child).hasClass('nested-sortable')) {
 	    	if ($(child).is(":visible")) {
@@ -138,7 +149,7 @@ d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&o
 	    		$(this).children().last().remove();
 	    	}
 	    }
-    });
+	});
 });
 
 function make_dropdown() {

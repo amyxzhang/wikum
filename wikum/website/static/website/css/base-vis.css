@@ -385,6 +385,11 @@ textarea {
 	background-color: #D3D3D3;
 }
 
+.outline-item .down-arrow {
+	font-size: 10px;
+	padding: 5px;
+}
+
 text {
 	cursor: pointer;
 }
