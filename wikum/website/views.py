@@ -861,6 +861,7 @@ def rate_summary(request):
             h.comments.add(comment)
             
             art = comment.article
+            art.percent_complete = count_article(art)
             art.last_updated = datetime.datetime.now()
             art.save()
             

@@ -727,6 +727,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 					}
 
 					d3.select('#node_' + d.id).style('fill', color);
+					make_progress_bar();
 
 				}
 			},
@@ -5183,8 +5184,21 @@ function color(d) {
 function count_unsummarized_words(d) {
 	count = 0;
 	if (d.replace_node) {
-		// count += d.summary.split(/\s+/).length;
-		// count += d.extra_summary.split(/\s+/).length;
+		if (d.replace) {
+			for (var i=0; i<d.replace.length; i++) {
+				count += count_unsummarized_words(d.replace[i]);
+			}
+		}
+		if (d.children) {
+			for (var i=0; i<d.children.length; i++) {
+				count += count_unsummarized_words(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				count += count_unsummarized_words(d._children[i]);
+			}
+		}
 	} else {
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
@@ -5197,7 +5211,7 @@ function count_unsummarized_words(d) {
 			}
 		}
 
-		if (!d.article && !d.parent_node) {
+		if (!d.article && !d.parent_node && d.summarized == false) {
 			if (d.summary != '') {
 				count += wordCount(d.summary);
 				count += wordCount(d.extra_summary);
