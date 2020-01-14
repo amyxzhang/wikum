@@ -78,27 +78,30 @@ function createOutlineString(d) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,10) : d.children[i].name.substring(0,10);
-			outline += `<div class="list-group-item nested-${level}">` + title + `</div>`;
+			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
+			outline += `<div class="list-group-item nested-${level}">` + title;
 			createOutlineString(d.children[i]);
+			outline += `</div>`
 		}
 		outline += `</div>`;
 	} else if (d._children) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d._children.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,10) : d.children[i].name.substring(0,10);
-			outline += `<div class="list-group-item nested-${level}">` + title + `</div>`;
+			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
+			outline += `<div class="list-group-item nested-${level}">` + title;
 			createOutlineString(d._children[i]);
+			outline += `</div>`;
 		}
 		outline += `</div>`;
 	} else if (d.replace) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,10) : d.children[i].name.substring(0,10);
-			outline += `<div class="list-group-item nested-${level}">` + title + `</div>`;
+			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
+			outline += `<div class="list-group-item nested-${level}">` + title;
 			createOutlineString(d.replace[i]);
+			outline += `</div>`;
 		}
 		outline += `</div>`;
 	}
