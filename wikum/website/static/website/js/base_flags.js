@@ -962,6 +962,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					}
 			});
 	} else if (type == "hide_replies") {
+		console.log("HIDE REPLIES");
 		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>Replies:</strong><BR>';
 		text = get_subtree(text, d, 0);
 		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
@@ -1065,6 +1066,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 			data.type = 'hide_comments';
 			chatsock.send(JSON.stringify(data));
 		} else {
+			console.log("HIDE REPLIES");
 			data.id = evt.data.data_id;
 			data.node_id = evt.data.id;
 			data.type = 'hide_replies';
@@ -1956,6 +1958,7 @@ function handle_channel_summarize_selected(res) {
 		}
 	}
 	let lowest_d = nodes_all.filter(o => o.d_id == res.lowest_d)[0];
+	let position = lowest_d.parent.children.indexOf(lowest_d);
 	new_d = {d_id: res.d_id,
 			 name: "",
 			 summary: res.top_summary,
@@ -1992,7 +1995,7 @@ function handle_channel_summarize_selected(res) {
 		children[d].parent = new_d;
 	}
 
-	insert_node_to_children(new_d, new_d.parent);
+	insert_node_to_children(new_d, new_d.parent, position);
 
 	delete_summary_nodes = res.delete_summary_node_dids;
 	for (var i=0; i<delete_summary_nodes.length; i++) {
@@ -2069,6 +2072,7 @@ function handle_channel_summarize_selected(res) {
 
 function handle_channel_summarize_comments(res) {
 	let d = nodes_all.filter(o => o.d_id == res.orig_did)[0];
+	let position = d.parent.children.indexOf(d);
 
 	if (res.subtype == "summarize") {
 
@@ -2106,8 +2110,7 @@ function handle_channel_summarize_comments(res) {
 		}
 
 		d.parent = new_d;
-
-		insert_node_to_children(new_d, new_d.parent);
+		insert_node_to_children(new_d, new_d.parent, position);
 
 		console.log(new_d.collapsed);
 		if (!new_d.collapsed) {
@@ -2331,6 +2334,8 @@ function delete_summary_node(id) {
 	$('#comment_' +id).remove();
 
 	d = nodes_all[id-1];
+	let position = d.parent.children.indexOf(d);
+
 	if (d.replace_node) {
 		parent = d.parent;
 
@@ -2372,18 +2377,18 @@ function delete_summary_node(id) {
 		if (d.replace) {
 			for (var i=0; i<d.replace.length; i++) {
 				d.replace[i].parent = parent;
-				insert_node_to_children(d.replace[i], parent);
+				insert_node_to_children(d.replace[i], parent, position);
 			}
 		}
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
 				d.children[i].parent = parent;
-				insert_node_to_children(d.children[i], parent);
+				insert_node_to_children(d.children[i], parent, position);
 			}
 		} else if (d._children) {
 			for (var i=0; i<d._children.length; i++) {
 				d._children[i].parent = parent;
-				insert_node_to_children(d._children[i], parent);
+				insert_node_to_children(d._children[i], parent, position);
 			}
 		}
 	}
@@ -2441,19 +2446,15 @@ function cascade_collapses(d) {
 	}
 }
 
-function insert_node_to_children(node_insert, node_parent) {
+function insert_node_to_children(node_insert, node_parent, position = undefined) {
 	added = false;
 	if (!node_parent.children) {
 		node_parent.children = [];
 	}
-
 	if (node_parent.children) {
-		for (var i=0; i<node_parent.children.length; i++) {
-			if (node_parent.children[i].size < node_insert.size) {
-				node_parent.children.splice(i, 0, node_insert);
-				added = true;
-				break;
-			}
+		if (position !== undefined && position <= node_parent.children.length) {
+			node_parent.children.splice(position, 0, node_insert);
+			added = true;
 		}
 
 		if (!added) {
@@ -2461,12 +2462,9 @@ function insert_node_to_children(node_insert, node_parent) {
 		}
 
 	} else if (node_parent.replace) {
-		for (var i=0; i<node_parent.replace.length; i++) {
-			if (node_parent.replace[i].size < node_insert.size) {
-				node_parent.replace.splice(i, 0, node_insert);
-				added = true;
-				break;
-			}
+		if (position !== undefined && position <= node_parent.replace.length) {
+			node_parent.children.splice(position, 0, node_insert);
+			added = true;
 		}
 
 		if (!added) {
