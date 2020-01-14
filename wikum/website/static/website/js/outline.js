@@ -131,9 +131,11 @@ d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&o
     	if ($(child).hasClass('nested-sortable')) {
 	    	if ($(child).is(":visible")) {
 	    		$(child).slideUp();
+	    		$(this).append('<span class="down-arrow">&#9660</span>')
 	    	}
 	    	else {
 	    		$(child).slideDown();
+	    		$(this).children().last().remove();
 	    	}
 	    }
     });
