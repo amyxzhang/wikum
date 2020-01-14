@@ -123,7 +123,7 @@ a:hover {
 	line-height: 12px;
 	border-radius: 15px;
 	position: absolute;
-	top: 120px;
+	top: 100px;
 	left: 70px;
 }
 
@@ -355,6 +355,22 @@ textarea {
 
 #viz {
 	float: left;
+}
+
+#outline {
+	margin-top: 100px;
+	margin-left: 100px;
+}
+
+#outline .list-group-item {
+	background-color: #F5F5F5;
+	border: none;
+	border-left: 1px solid #BEBEBE;
+}
+
+#outline .list-group {
+	margin: 0;
+	margin-top: 5px;
 }
 
 text {
