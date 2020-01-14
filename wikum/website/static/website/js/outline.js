@@ -77,9 +77,10 @@ function createOutlineString(d) {
 	if (d.children && d.children.length) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
+		counter = 1;
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + title;
+			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
 			createOutlineString(d.children[i]);
 			outline += `</div>`
 		}
@@ -89,7 +90,7 @@ function createOutlineString(d) {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d._children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + title;
+			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
 			createOutlineString(d._children[i]);
 			outline += `</div>`;
 		}
@@ -99,7 +100,7 @@ function createOutlineString(d) {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + title;
+			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
 			createOutlineString(d.replace[i]);
 			outline += `</div>`;
 		}
@@ -123,6 +124,19 @@ d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&o
 			swapThreshold: 0.65
 		});
 	}
+
+	$('.outline-item').click(function(e){
+    	e.stopPropagation();
+    	var child = $(this).next()[0];
+    	if ($(child).hasClass('nested-sortable')) {
+	    	if ($(child).is(":visible")) {
+	    		$(child).slideUp();
+	    	}
+	    	else {
+	    		$(child).slideDown();
+	    	}
+	    }
+    });
 });
 
 function make_dropdown() {

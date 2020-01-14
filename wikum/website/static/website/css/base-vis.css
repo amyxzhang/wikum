@@ -360,6 +360,7 @@ textarea {
 #outline {
 	margin-top: 100px;
 	margin-left: 100px;
+	width: 200px;
 }
 
 #outline .list-group-item {
@@ -371,6 +372,17 @@ textarea {
 #outline .list-group {
 	margin: 0;
 	margin-top: 5px;
+}
+
+#outline .outline-item {
+	height: 100%;
+	width: 100%;
+	display: inline-block;
+}
+
+#outline .outline-item:hover {
+	cursor: pointer;
+	background-color: #D3D3D3;
 }
 
 text {
