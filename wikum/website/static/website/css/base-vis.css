@@ -367,6 +367,7 @@ textarea {
 	background-color: #F5F5F5;
 	border: none;
 	border-left: 1px solid #BEBEBE;
+	padding: 10px 0 10px 15px;
 }
 
 #outline .list-group {

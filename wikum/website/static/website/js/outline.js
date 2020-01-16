@@ -83,7 +83,7 @@ $.ajax({type: 'GET',
 
 		redRightOutlineBorder(document.getElementById("viewAll"));
 
-		nodes_all = recurse_update_nodes_all(flare);
+		nodes_all = update_nodes_all(flare);
 		console.log(nodes_all);
 		show_text(nodes_all[0]);
 		make_progress_bar();

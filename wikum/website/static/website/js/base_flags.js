@@ -3674,6 +3674,7 @@ function createOutlineInsideString(d, outline='') {
 		}
 		outline += `</div>`;
 	} else if (d.replace && d.replace.length) {
+		// todo: default to collapsed
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
 			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
@@ -3711,6 +3712,16 @@ function recurse_update_nodes_all(d, parent=undefined, counter=1, all_children=[
 		}
 	}
 	return all_children;
+}
+
+function update_nodes_all(d) {
+	var nodes_all = recurse_update_nodes_all(d);
+	for (var i = 0; i < nodes_all.length; i++) {
+		if (!nodes_all[i].parent) {
+			nodes_all[i].parent = nodes_all[0];
+		}
+	}
+	return nodes_all;
 }
 
 function update_ids() {
