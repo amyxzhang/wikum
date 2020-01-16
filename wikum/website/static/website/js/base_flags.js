@@ -3648,16 +3648,91 @@ function check_clicked_node(d, clicked_ids) {
 	return true;
 }
 
+function createOutlineInsideString(d, outline='') {
+	/** type (for coloring):
+	  *  comment = normal comment
+	  *  unsum = unsummarized comment under a summary node
+	  *	 summary = summary
+	  *  psum = partially summarized comment
+	  */
+	if (d.children && d.children.length) {
+		outline += `<div class="list-group nested-sortable">`;
+		for (var i=0; i<d.children.length; i++) {
+			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}>` + title + `</div>`;
+			outline += createOutlineInsideString(d.children[i]);
+			outline += `</div>`;
+		}
+		outline += `</div>`;
+	} else if (d._children && d._children.length) {
+		outline += `<div class="list-group nested-sortable">`;
+		for (var i=0; i<d._children.length; i++) {
+			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
+			outline += `<div class="list-group-item">` + `<div class="outline-item">` + title + `</div>`;
+			outline += createOutlineInsideString(d._children[i]);
+			outline += `</div>`;
+		}
+		outline += `</div>`;
+	} else if (d.replace && d.replace.length) {
+		outline += `<div class="list-group nested-sortable">`;
+		for (var i=0; i<d.replace.length; i++) {
+			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
+			outline += `<div class="list-group-item">` + `<div class="outline-item">` + title + `</div>`;
+			outline += createOutlineInsideString(d.replace[i]);
+			outline += `</div>`;
+		}
+		outline += `</div>`;
+	}
+	return outline
+}
+
+function createOutlineString(d) {
+	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
+	outlineString += '<div id="viewAll" class="outline-item">View All</div>';
+	outlineString += createOutlineInsideString(d);
+	outlineString += '</div>';
+	return outlineString;
+}
+
+function recurse_update_nodes_all(d, parent=undefined, counter=1, all_children=[]) {
+	d.id = counter;
+	if (d.parent) d.parent = parent;
+	all_children.push(d);
+	if (d.replace_node && d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			counter += 1;
+			recurse_update_nodes_all(d.replace[i], d, counter, all_children);
+		}
+	}
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			counter += 1;
+			recurse_update_nodes_all(d.children[i], d, counter, all_children);
+		}
+	}
+	return all_children;
+}
+
+function update_ids() {
+	let counter = 0;
+	nodes_all = nodes_all.map(function (node) {
+		counter += 1;
+		node['id'] = counter;
+		return node;
+	});
+}
+
 /**
  * Updates the outline view
  * Replace with the following update() to return to d3 node view
  */
 function update(d) {
-	// redraw from here and below
+	// Replace element and all of its children with updated version in the outline view
 	// (should be in correct order for update(some_parent) b/c of insert_node_to_children)
-	console.log(d);
-
-	// update ids of nodes_all
+	let outline_id = d.d_id;
+	let children_group = $('.outline-item#' + outline_id).next()[0];
+	$(children_group).replaceWith(createOutlineInsideString(d));
+	update_ids();
 }
 
 // function update(source) {

@@ -64,59 +64,11 @@ $('#menu-view').children().eq(3).children().first().attr('href', `/history?id=${
 $('#menu-view').children().eq(4).children().first().attr('href', article_id);
 
 make_username_typeahead();
-var outline = '';
-var level = 0;
-function createOutlineInsideString(d) {
-	/** type (for coloring):
-	  *  comment = normal comment
-	  *  unsum = unsummarized comment under a summary node
-	  *	 summary = summary
-	  *  psum = partially summarized comment
-	  */
-	if (d.children && d.children.length) {
-		level += 1;
-		outline += `<div class="list-group nested-sortable">`;
-		for (var i=0; i<d.children.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item" id=${d.children[i].d_id}>` + title + `</div>`;
-			createOutlineInsideString(d.children[i]);
-			outline += `</div>`
-		}
-		outline += `</div>`;
-	} else if (d._children && d._children.length) {
-		level += 1;
-		outline += `<div class="list-group nested-sortable">`;
-		for (var i=0; i<d._children.length; i++) {
-			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
-			createOutlineInsideString(d._children[i]);
-			outline += `</div>`;
-		}
-		outline += `</div>`;
-	} else if (d.replace && d.replace.length) {
-		level += 1;
-		outline += `<div class="list-group nested-sortable">`;
-		for (var i=0; i<d.replace.length; i++) {
-			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
-			createOutlineInsideString(d.replace[i]);
-			outline += `</div>`;
-		}
-		outline += `</div>`;
-	}
-}
-
-function createOutlineString(d) {
-	outline += '<div id="nestedOutline" class="list-group col nested-sortable">';
-	outline += '<div id="viewAll" class="outline-item">View All</div>';
-	createOutlineInsideString(d);
-	outline += '</div>';
-}
 
 $.ajax({type: 'GET',	
 	url: `/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`,	
 	success: function(flare) {
-		createOutlineString(flare);
+		var outline = createOutlineString(flare);
 		document.getElementById("outline").innerHTML = outline;
 		var nestedSortables = document.getElementsByClassName("nested-sortable");
 		// Loop through each nested sortable element
@@ -131,14 +83,8 @@ $.ajax({type: 'GET',
 
 		redRightOutlineBorder(document.getElementById("viewAll"));
 
-		nodes_all = recurse_get_children(flare);
-
-		let counter = 0;
-		nodes_all = nodes_all.map(function (node) {
-			counter += 1;
-			node['id'] = counter;
-			return node;
-		});
+		nodes_all = recurse_update_nodes_all(flare);
+		console.log(nodes_all);
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
