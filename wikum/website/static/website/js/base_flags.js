@@ -4216,7 +4216,7 @@ function construct_comment(d) {
 		 if (!summary && d.name.length > 300) {
 			text += '<footer>';
 	
-			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
+			if (((!d.children || !d.children.length) && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a ';
@@ -4245,7 +4245,7 @@ function construct_comment(d) {
 			text += '</footer>';
 		} else if (!d.replace_node) {
 			text += '<footer>';
-			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
+			if ((!d.children || !d.children.length) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
@@ -4276,7 +4276,7 @@ function construct_comment(d) {
 		if (!summary && d.name.length > 300) {
 			text += '<footer>';
 	
-			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
+			if (((!d.children || !d.children.length) && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a ';
 					if (d.is_locked) text += 'class="disabled" ';
@@ -4301,7 +4301,7 @@ function construct_comment(d) {
 			text += '</footer>';
 		} else if (!d.replace_node) {
 			text += '<footer>';
-			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
+			if ((!d.children || !d.children.length) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
