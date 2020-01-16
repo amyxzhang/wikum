@@ -360,7 +360,7 @@ textarea {
 #outline {
 	margin-top: 100px;
 	margin-left: 100px;
-	width: 250px;
+	width: 220px;
 }
 
 #outline .list-group-item {
@@ -374,9 +374,10 @@ textarea {
 }
 
 #outline .outline-item {
+	display: inline-block;
+	font-size: 12px;
 	height: 100%;
 	width: 100%;
-	display: inline-block;
 }
 
 #outline #viewAll {

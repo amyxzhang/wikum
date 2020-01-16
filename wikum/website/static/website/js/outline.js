@@ -166,10 +166,12 @@ $.ajax({type: 'GET',
 		    	if ($(child).is(":visible")) {
 		    		$(child).slideUp();
 		    		$(this).append('<span class="down-arrow">&#9660</span>')
+		    		// todo: show only this comment box?
 		    	}
 		    	else {
 		    		$(child).slideDown();
 		    		$(this).children().last().remove();
+		    		// todo: expand all comment boxes?
 		    	}
 		    }
 		});

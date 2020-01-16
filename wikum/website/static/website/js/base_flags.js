@@ -3648,13 +3648,16 @@ function check_clicked_node(d, clicked_ids) {
 	return true;
 }
 
-function update(source) {
-	let counter = 0;
-	source = source.map(function (node) {
-		counter += 1;
-		node['id'] = counter;
-		return node;
-	});
+/**
+ * Updates the outline view
+ * Replace with the following update() to return to d3 node view
+ */
+function update(d) {
+	// redraw from here and below
+	// (should be in correct order for update(some_parent) b/c of insert_node_to_children)
+	console.log(d);
+
+	// update ids of nodes_all
 }
 
 // function update(source) {
