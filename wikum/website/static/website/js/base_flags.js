@@ -3649,247 +3649,256 @@ function check_clicked_node(d, clicked_ids) {
 }
 
 function update(source) {
-  // Compute the flattened node list. TODO use d3.layout.hierarchy.
-  var nodes = tree.nodes(root);
-
-  var height = Math.max($(window).height() - 250, 100 + nodes.length * barHeight + margin.top + margin.bottom);
-
-  d3.select("svg").transition()
-      .duration(duration)
-      .attr("height", height);
-
-  d3.select("rect").transition()
-      .duration(duration)
-      .attr("height", height);
-
-  d3.select(self.frameElement).transition()
-      .duration(duration)
-      .style("height", height + "px");
-
-  // Compute the "layout".
-  nodes.forEach(function(n, i) {
-    n.x = (i * barHeight) + 100;
-    n.y = n.y + 100;
-  });
-
-  // Update the nodes…
-  var node = svg.selectAll("g.node")
-      .data(nodes, function(d) {
-	      	if (d.id) {
-	      		nodes_all[d.id-1] = d;
-	      		return d.id;
-	      	} else {
-	      		d.id = ++i;
-	      		nodes_all[d.id-1] = d;
-	      		return d.id;
-	      	}
-      	});
-
-  var nodeEnter = node.enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-      .style("opacity", 1e-6);
-
-  var node_drag = d3.behavior.drag()
-  	.origin(function(d) { return {x: 0, y: 0}; })
-    .on("dragstart", dragstart)
-    .on("drag", dragmove)
-    .on("dragend", dragend);
-
-
-  // Enter any new nodes at the parent's previous position.
-  nodeEnter.append("path")
-  	  .attr("d", function(d) {
-  	  	if (!(d.children || d._children || d.replace_node)) {
-  	  		return "M0,5c0-1.4,0-5,0-5s3.7,0,5,0c2.8,0,5,2.2,5,5s-2.2,5-5,5S0,7.8,0,5z";
-  	  	} else {
-  	  		return "M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0";
-  	  	}
-  	  })
-      .attr("height", barHeight)
-      .style("stroke-width", stroke_width)
-      .style("stroke", stroke)
-      .style("fill", color)
-      .attr("id", function(d) { return 'node_' + d.id; })
-      .attr("vector-effect", "non-scaling-stroke")
-      .style("transform", function(d) {
-      		if (d.article) {
-	      		return "";
-	      	}
-
-			if (d.replace_node || d.summary != '') {
-				num_words = wordCount(d.summary + ' ' + d.extra_summary)
-			} else {
-				num_words = wordCount(d.name)
-			}
-
-	      	total = num_words/20 + 5;
-
-	      	if ((total/10 < 1.3) && !(d.children || d._children || d.replace_node)) {
-	      		return "scale(1.3)";
-	      	}
-
-	      	if (total > 18) {
-	      		return "scale(1.5)";
-	      	} else if (total < 8) {
-	      		return "scale(0.8)";
-	      	} else {
-	      		return `scale(${total/10})`;
-	      	}
-      })
-      .on("click", function(d) {
-      	
-      	if (d3.event.ctrlKey || d3.event.metaKey) {
-      		clicked = d3.selectAll(".clicked")[0];
-
-			console.log(clicked.length);
-      		clicked_ids = [];
-      		
-      		for (var i=0; i<clicked.length; i++) {
-      			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
-      		}
-      		
-    		if ($('#node_' + d.id).css('stroke-width') == "0px") {
-    			clicked_ids.push(d.id);
-    			highlight_node(d.id);
-    		} else if ( clicked.length == nodes_all.length - 2) {
-    			unhighlight_all();
-    			clicked_ids = [];
-    			clicked_ids.push(d.id);
-    			highlight_node(d.id);
-    		} else {
-    			var index = clicked_ids.indexOf(d.id);
-				if (index !== -1) array.splice(index, 1);
-				unhighlight_node(d.id);
-    		}
-    		
-    		show_text('clicked');
-      		if (highlight_text) {
-	      		$('#box').highlight(highlight_text);
-	      	}
-      		
-      		
-	    } else {
-
-      		clicked = d3.selectAll(".clicked")[0];
-      		clicked_ids = [];
-
-      		if ($('#node_' + d.id).css('stroke-width') != "0px") {
-      			clicked_ids.push(d.id);
-      		}
-
-      		for (var i=0; i<clicked.length; i++) {
-      			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
-      		}
-
-      		if (!d.parent_node) {
-      			if (d.replace_node) {
-      				if (d.replace.length > 0) {
-      					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
-      						show_replace_nodes(d.id);
-      					}
-      				} else {
-      					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
-      						hide_replace_nodes(d.id);
-      					}
-      				}
-      			}
-
-		      	if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
-		      		click_node(d.id);
-		      	}
-		    }
-	      	d3.selectAll(".clicked").classed("clicked", false);
-	      	unhighlight_all();
-	      	show_text(d);
-	      	$('#box').scrollTop(0);
-	      	if (highlight_text) {
-	      		$('#box').highlight(highlight_text);
-	      	}
-	      }
-
-      })
-      .on("mouseover", showdiv)
-      .on("mouseout", hidediv)
-      .call(node_drag);
-
-	nodeEnter.append("circle")
-            .attr('class', 'ghostCircle')
-            .attr("r", 20)
-            .attr("opacity", 0.0) // change this to zero to hide the target area
-        .style("fill", "red")
-            .attr('pointer-events', 'mouseover')
-            .on("mouseover", function(node) {
-                overCircle(node);
-            })
-            .on("mouseout", function(node) {
-                outCircle(node);
-            });
-
-  // Transition nodes to their new position.
-  nodeEnter.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-      .style("opacity", 1);
-
-  node.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-      .style("opacity", 1)
-    .select("rect")
-      .style("fill", color);
-
-  // Transition exiting nodes to the parent's new position.
-  node.exit().transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-      .style("opacity", 1e-6)
-      .remove();
-
-  // Update the links…
-  var link = svg.selectAll("path.link")
-      .data(tree.links(nodes), function(d) {
-      	if (d.source.article) {
-      		return null;
-      	} else {
-      		return d.target.id;
-      	}
-      	});
-
-  // Enter any new links at the parent's previous position.
-  link.enter().insert("path", "g")
-      .attr("class", "link")
-      .attr("d", function(d) {
-    	var o = {x: source.x0, y: source.y0};
-    	return diagonal({source: o, target: o});
-      })
-      .attr("id", function(d) {
-     	return 'link_' + d.source.id + '_' + d.target.id;
-      })
-    .transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition links to their new position.
-  link.transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition exiting nodes to the parent's new position.
-  link.exit().transition()
-      .duration(duration)
-      .attr("d", function(d) {
-        var o = {x: source.x, y: source.y};
-        return diagonal({source: o, target: o});
-      })
-      .remove();
-
-  // Stash the old positions for transition.
-  nodes.forEach(function(d) {
-    d.x0 = d.x;
-    d.y0 = d.y;
-  });
+	let counter = 0;
+	source = source.map(function (node) {
+		counter += 1;
+		node['id'] = counter;
+		return node;
+	});
 }
+
+// function update(source) {
+//   // Compute the flattened node list. TODO use d3.layout.hierarchy.
+//   var nodes = tree.nodes(root);
+
+//   var height = Math.max($(window).height() - 250, 100 + nodes.length * barHeight + margin.top + margin.bottom);
+
+//   d3.select("svg").transition()
+//       .duration(duration)
+//       .attr("height", height);
+
+//   d3.select("rect").transition()
+//       .duration(duration)
+//       .attr("height", height);
+
+//   d3.select(self.frameElement).transition()
+//       .duration(duration)
+//       .style("height", height + "px");
+
+//   // Compute the "layout".
+//   nodes.forEach(function(n, i) {
+//     n.x = (i * barHeight) + 100;
+//     n.y = n.y + 100;
+//   });
+
+//   // Update the nodes…
+//   var node = svg.selectAll("g.node")
+//       .data(nodes, function(d) {
+// 	      	if (d.id) {
+// 	      		nodes_all[d.id-1] = d;
+// 	      		return d.id;
+// 	      	} else {
+// 	      		d.id = ++i;
+// 	      		nodes_all[d.id-1] = d;
+// 	      		return d.id;
+// 	      	}
+//       	});
+
+//   var nodeEnter = node.enter().append("g")
+//       .attr("class", "node")
+//       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+//       .style("opacity", 1e-6);
+
+//   var node_drag = d3.behavior.drag()
+//   	.origin(function(d) { return {x: 0, y: 0}; })
+//     .on("dragstart", dragstart)
+//     .on("drag", dragmove)
+//     .on("dragend", dragend);
+
+
+//   // Enter any new nodes at the parent's previous position.
+//   nodeEnter.append("path")
+//   	  .attr("d", function(d) {
+//   	  	if (!(d.children || d._children || d.replace_node)) {
+//   	  		return "M0,5c0-1.4,0-5,0-5s3.7,0,5,0c2.8,0,5,2.2,5,5s-2.2,5-5,5S0,7.8,0,5z";
+//   	  	} else {
+//   	  		return "M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0";
+//   	  	}
+//   	  })
+//       .attr("height", barHeight)
+//       .style("stroke-width", stroke_width)
+//       .style("stroke", stroke)
+//       .style("fill", color)
+//       .attr("id", function(d) { return 'node_' + d.id; })
+//       .attr("vector-effect", "non-scaling-stroke")
+//       .style("transform", function(d) {
+//       		if (d.article) {
+// 	      		return "";
+// 	      	}
+
+// 			if (d.replace_node || d.summary != '') {
+// 				num_words = wordCount(d.summary + ' ' + d.extra_summary)
+// 			} else {
+// 				num_words = wordCount(d.name)
+// 			}
+
+// 	      	total = num_words/20 + 5;
+
+// 	      	if ((total/10 < 1.3) && !(d.children || d._children || d.replace_node)) {
+// 	      		return "scale(1.3)";
+// 	      	}
+
+// 	      	if (total > 18) {
+// 	      		return "scale(1.5)";
+// 	      	} else if (total < 8) {
+// 	      		return "scale(0.8)";
+// 	      	} else {
+// 	      		return `scale(${total/10})`;
+// 	      	}
+//       })
+//       .on("click", function(d) {
+      	
+//       	if (d3.event.ctrlKey || d3.event.metaKey) {
+//       		clicked = d3.selectAll(".clicked")[0];
+
+// 			console.log(clicked.length);
+//       		clicked_ids = [];
+      		
+//       		for (var i=0; i<clicked.length; i++) {
+//       			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
+//       		}
+      		
+//     		if ($('#node_' + d.id).css('stroke-width') == "0px") {
+//     			clicked_ids.push(d.id);
+//     			highlight_node(d.id);
+//     		} else if ( clicked.length == nodes_all.length - 2) {
+//     			unhighlight_all();
+//     			clicked_ids = [];
+//     			clicked_ids.push(d.id);
+//     			highlight_node(d.id);
+//     		} else {
+//     			var index = clicked_ids.indexOf(d.id);
+// 				if (index !== -1) array.splice(index, 1);
+// 				unhighlight_node(d.id);
+//     		}
+    		
+//     		show_text('clicked');
+//       		if (highlight_text) {
+// 	      		$('#box').highlight(highlight_text);
+// 	      	}
+      		
+      		
+// 	    } else {
+
+//       		clicked = d3.selectAll(".clicked")[0];
+//       		clicked_ids = [];
+
+//       		if ($('#node_' + d.id).css('stroke-width') != "0px") {
+//       			clicked_ids.push(d.id);
+//       		}
+
+//       		for (var i=0; i<clicked.length; i++) {
+//       			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
+//       		}
+
+//       		if (!d.parent_node) {
+//       			if (d.replace_node) {
+//       				if (d.replace.length > 0) {
+//       					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
+//       						show_replace_nodes(d.id);
+//       					}
+//       				} else {
+//       					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
+//       						hide_replace_nodes(d.id);
+//       					}
+//       				}
+//       			}
+
+// 		      	if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
+// 		      		click_node(d.id);
+// 		      	}
+// 		    }
+// 	      	d3.selectAll(".clicked").classed("clicked", false);
+// 	      	unhighlight_all();
+// 	      	show_text(d);
+// 	      	$('#box').scrollTop(0);
+// 	      	if (highlight_text) {
+// 	      		$('#box').highlight(highlight_text);
+// 	      	}
+// 	      }
+
+//       })
+//       .on("mouseover", showdiv)
+//       .on("mouseout", hidediv)
+//       .call(node_drag);
+
+// 	nodeEnter.append("circle")
+//             .attr('class', 'ghostCircle')
+//             .attr("r", 20)
+//             .attr("opacity", 0.0) // change this to zero to hide the target area
+//         .style("fill", "red")
+//             .attr('pointer-events', 'mouseover')
+//             .on("mouseover", function(node) {
+//                 overCircle(node);
+//             })
+//             .on("mouseout", function(node) {
+//                 outCircle(node);
+//             });
+
+//   // Transition nodes to their new position.
+//   nodeEnter.transition()
+//       .duration(duration)
+//       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+//       .style("opacity", 1);
+
+//   node.transition()
+//       .duration(duration)
+//       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+//       .style("opacity", 1)
+//     .select("rect")
+//       .style("fill", color);
+
+//   // Transition exiting nodes to the parent's new position.
+//   node.exit().transition()
+//       .duration(duration)
+//       .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+//       .style("opacity", 1e-6)
+//       .remove();
+
+//   // Update the links…
+//   var link = svg.selectAll("path.link")
+//       .data(tree.links(nodes), function(d) {
+//       	if (d.source.article) {
+//       		return null;
+//       	} else {
+//       		return d.target.id;
+//       	}
+//       	});
+
+//   // Enter any new links at the parent's previous position.
+//   link.enter().insert("path", "g")
+//       .attr("class", "link")
+//       .attr("d", function(d) {
+//     	var o = {x: source.x0, y: source.y0};
+//     	return diagonal({source: o, target: o});
+//       })
+//       .attr("id", function(d) {
+//      	return 'link_' + d.source.id + '_' + d.target.id;
+//       })
+//     .transition()
+//       .duration(duration)
+//       .attr("d", diagonal);
+
+//   // Transition links to their new position.
+//   link.transition()
+//       .duration(duration)
+//       .attr("d", diagonal);
+
+//   // Transition exiting nodes to the parent's new position.
+//   link.exit().transition()
+//       .duration(duration)
+//       .attr("d", function(d) {
+//         var o = {x: source.x, y: source.y};
+//         return diagonal({source: o, target: o});
+//       })
+//       .remove();
+
+//   // Stash the old positions for transition.
+//   nodes.forEach(function(d) {
+//     d.x0 = d.x;
+//     d.y0 = d.y;
+//   });
+// }
 
 function is_click() {
 	isClick = false;
@@ -5110,6 +5119,13 @@ var stringToColour = function(str) {
     colour += ('00' + value.toString(16)).substr(-2);
   }
   return colour;
+}
+
+function redRightOutlineBorder(element) {
+	$('.rb-red').removeClass('rb-red');
+	if (element.id !== 'viewAll') $(element).addClass('rb-red');
+	var child = $(element).next()[0];
+	$(child).addClass('rb-red');
 }
 
 function color(d) {

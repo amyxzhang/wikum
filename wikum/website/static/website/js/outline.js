@@ -11,7 +11,6 @@ var article_id = $('#article_id').text();
 /* Outline View Visualization */
 
 var nodes_all = null;
-var tree = d3.layout.tree();
 
 var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
@@ -65,10 +64,9 @@ $('#menu-view').children().eq(3).children().first().attr('href', `/history?id=${
 $('#menu-view').children().eq(4).children().first().attr('href', article_id);
 
 make_username_typeahead();
-
-var outline = '<div id="nestedOutline" class="list-group col nested-sortable">';
+var outline = '';
 var level = 0;
-function createOutlineString(d) {
+function createOutlineInsideString(d) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -78,11 +76,10 @@ function createOutlineString(d) {
 	if (d.children && d.children.length) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
-		counter = 1;
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
-			createOutlineString(d.children[i]);
+			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item" id=${d.children[i].d_id}>` + title + `</div>`;
+			createOutlineInsideString(d.children[i]);
 			outline += `</div>`
 		}
 		outline += `</div>`;
@@ -90,9 +87,9 @@ function createOutlineString(d) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d._children.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
+			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
 			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
-			createOutlineString(d._children[i]);
+			createOutlineInsideString(d._children[i]);
 			outline += `</div>`;
 		}
 		outline += `</div>`;
@@ -100,56 +97,86 @@ function createOutlineString(d) {
 		level += 1;
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
+			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
 			outline += `<div class="list-group-item nested-${level}">` + `<div class="outline-item">` + title + `</div>`;
-			createOutlineString(d.replace[i]);
+			createOutlineInsideString(d.replace[i]);
 			outline += `</div>`;
 		}
 		outline += `</div>`;
 	}
 }
-outline += '</div>';
 
-d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`, function(error, flare) {
-	if (error) throw error;
+function createOutlineString(d) {
+	outline += '<div id="nestedOutline" class="list-group col nested-sortable">';
+	outline += '<div id="viewAll" class="outline-item">View All</div>';
+	createOutlineInsideString(d);
+	outline += '</div>';
+}
 
-	createOutlineString(flare);
-	document.getElementById("outline").innerHTML = outline;
-	var nestedSortables = document.getElementsByClassName("nested-sortable");
-	// Loop through each nested sortable element
-	for (var i = 0; i < nestedSortables.length; i++) {
-		new Sortable(nestedSortables[i], {
-			group: 'nested',
-			animation: 150,
-			fallbackOnBody: true,
-			swapThreshold: 0.65
+$.ajax({type: 'GET',	
+	url: `/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`,	
+	success: function(flare) {
+		createOutlineString(flare);
+		document.getElementById("outline").innerHTML = outline;
+		var nestedSortables = document.getElementsByClassName("nested-sortable");
+		// Loop through each nested sortable element
+		for (var i = 0; i < nestedSortables.length; i++) {
+			new Sortable(nestedSortables[i], {
+				group: 'nested',
+				animation: 150,
+				fallbackOnBody: true,
+				swapThreshold: 0.65
+			});
+		}
+
+		redRightOutlineBorder(document.getElementById("viewAll"));
+
+		nodes_all = recurse_get_children(flare);
+
+		let counter = 0;
+		nodes_all = nodes_all.map(function (node) {
+			counter += 1;
+			node['id'] = counter;
+			return node;
 		});
+		show_text(nodes_all[0]);
+		make_progress_bar();
+
+		// clicking on #viz will show everything again
+		$('#viz').on('click', function(e) {
+			e.stopPropagation();
+			show_text(nodes_all[0]);
+		});
+
+		$('.outline-item').on('click', function(e) {
+			// show only this item and children (subtree)
+		    e.stopPropagation();
+		    let id = this.id;
+		    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+		    // highlight this and children
+		    redRightOutlineBorder(this);
+		    // show appropriate comment boxes
+		    show_text(d);
+		});
+
+		$('.outline-item').on('dblclick', function(e) {
+		    e.stopPropagation();
+	    	var child = $(this).next()[0];
+	    	if ($(child).hasClass('nested-sortable')) {
+		    	if ($(child).is(":visible")) {
+		    		$(child).slideUp();
+		    		$(this).append('<span class="down-arrow">&#9660</span>')
+		    	}
+		    	else {
+		    		$(child).slideDown();
+		    		$(this).children().last().remove();
+		    	}
+		    }
+		});
+	},
+	error: function() {
+		error_noty();
 	}
-
-	nodes_all = tree.nodes(flare);
-	let counter = 0;
-	nodes_all = nodes_all.map(function (node) {
-		counter += 1;
-		node['id'] = counter;
-		return node;
-	});
-	show_text(nodes_all[0]);
-	make_progress_bar();
-
-	$('.outline-item').on('dblclick', function(e) {
-	    e.stopPropagation();
-    	var child = $(this).next()[0];
-    	if ($(child).hasClass('nested-sortable')) {
-	    	if ($(child).is(":visible")) {
-	    		$(child).slideUp();
-	    		$(this).append('<span class="down-arrow">&#9660</span>')
-	    	}
-	    	else {
-	    		$(child).slideDown();
-	    		$(this).children().last().remove();
-	    	}
-	    }
-	});
 });
 
 function make_dropdown() {
