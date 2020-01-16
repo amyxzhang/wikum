@@ -87,16 +87,17 @@ $.ajax({type: 'GET',
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
-		$('body').on('hover', '.outline-item', function() {
+
+		$('body').on('mouseenter mouseleave', '.outline-item', function() {
 			// highlight associated comment box
-		}, function(){
-			// unhighlight associated comment box
+			let did = this.id;
+			let comment_box = $(".comment_box[data-did='" + did +"']");
+			if (comment_box && comment_box.length) highlight_box(comment_box[0].id.substring(8));
 		});
 
 		$('body').on('click', '.outline-item', function() {
 			// show only this item and children (subtree)
 			let id = this.id;
-			console.log(this);
 		    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 		    // highlight this and children
 		    redRightOutlineBorder(this);
