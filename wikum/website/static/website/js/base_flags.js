@@ -3695,20 +3695,17 @@ function createOutlineString(d) {
 	return outlineString;
 }
 
-function recurse_update_nodes_all(d, parent=undefined, counter=1, all_children=[]) {
-	d.id = counter;
+function recurse_update_nodes_all(d, parent=undefined, all_children=[]) {
 	if (d.parent) d.parent = parent;
 	all_children.push(d);
 	if (d.replace_node && d.replace) {
 		for (var i=0; i<d.replace.length; i++) {
-			counter += 1;
-			recurse_update_nodes_all(d.replace[i], d, counter, all_children);
+			recurse_update_nodes_all(d.replace[i], d, all_children);
 		}
 	}
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			counter += 1;
-			recurse_update_nodes_all(d.children[i], d, counter, all_children);
+			recurse_update_nodes_all(d.children[i], d, all_children);
 		}
 	}
 	return all_children;
@@ -3721,16 +3718,18 @@ function update_nodes_all(d) {
 			nodes_all[i].parent = nodes_all[0];
 		}
 	}
+	nodes_all = update_ids(nodes_all);
 	return nodes_all;
 }
 
-function update_ids() {
+function update_ids(nodes_all) {
 	let counter = 0;
 	nodes_all = nodes_all.map(function (node) {
 		counter += 1;
 		node['id'] = counter;
 		return node;
 	});
+	return nodes_all;
 }
 
 /**
@@ -3743,7 +3742,7 @@ function update(d) {
 	let outline_id = d.d_id;
 	let children_group = $('.outline-item#' + outline_id).next()[0];
 	$(children_group).replaceWith(createOutlineInsideString(d));
-	update_ids();
+	update_nodes_all(nodes_all[0]);
 }
 
 // function update(source) {

@@ -87,16 +87,16 @@ $.ajax({type: 'GET',
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
-		// clicking on #viz will show everything again
-		$('#viz').on('click', function(e) {
-			e.stopPropagation();
-			show_text(nodes_all[0]);
+		$('body').on('hover', '.outline-item', function() {
+			// highlight associated comment box
+		}, function(){
+			// unhighlight associated comment box
 		});
 
-		$('.outline-item').on('click', function(e) {
+		$('body').on('click', '.outline-item', function() {
 			// show only this item and children (subtree)
-		    e.stopPropagation();
-		    let id = this.id;
+			let id = this.id;
+			console.log(this);
 		    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 		    // highlight this and children
 		    redRightOutlineBorder(this);
@@ -104,9 +104,8 @@ $.ajax({type: 'GET',
 		    show_text(d);
 		});
 
-		$('.outline-item').on('dblclick', function(e) {
-		    e.stopPropagation();
-	    	var child = $(this).next()[0];
+		$('body').on('dblclick', '.outline-item', function() {
+			var child = $(this).next()[0];
 	    	if ($(child).hasClass('nested-sortable')) {
 		    	if ($(child).is(":visible")) {
 		    		$(child).slideUp();
