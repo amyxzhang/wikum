@@ -720,7 +720,9 @@ class WikumConsumer(WebsocketConsumer):
         try:
             article_id = self.article_id
             a = Article.objects.get(id=article_id)
+            print(article_id)
             id = data['id']
+            print(id)
             explain = data['comment']
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
@@ -729,6 +731,7 @@ class WikumConsumer(WebsocketConsumer):
                 action = 'delete_sum'
                 self.recurse_down_post(comment)
                 delete_node(comment.id)
+                a = Article.objects.get(id=article_id)
                 a.summary_num = a.summary_num - 1
                 a.percent_complete = count_article(a)
                 a.words_shown = count_words_shown(a)
@@ -749,7 +752,7 @@ class WikumConsumer(WebsocketConsumer):
                 parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     recurse_up_post(parent[0])
-
+                a = Article.objects.get(id=article_id)
                 a.comment_num = a.comment_num - 1
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
@@ -783,6 +786,7 @@ class WikumConsumer(WebsocketConsumer):
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             
             if affected > 0:
+                a = Article.objects.get(id=article_id)
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
                 h = History.objects.create(user=req_user, 

@@ -1121,9 +1121,8 @@ function show_comment_text(text, did) {
 $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 		var $modalDiv = $(e.delegateTarget);
   		var id = $(this).data('id');
-  		
   		d = nodes_all[id-1];
-  		$('#confirm_delete_modal_box').modal('toggle');
+  		console.log(d);
 		if (d.replace_node) {
 			var article_id = $('#article_id').text();
 			var csrf = $('#csrf').text();
@@ -1133,6 +1132,7 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				id: d.d_id};
 			data.node_id = id;
 			data.type = 'hide_comment';
+			console.log(data);
 			chatsock.send(JSON.stringify(data));
 		} else {
 			var article_id = $('#article_id').text();
@@ -1145,6 +1145,7 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 			data.type = 'delete_comment_summary';
 			chatsock.send(JSON.stringify(data));
 		}
+		$('#confirm_delete_modal_box').modal('toggle');
 	});
 
 $('#confirm_delete_modal_box').on('show.bs.modal', function(e) {
@@ -2251,6 +2252,8 @@ function handle_channel_hide_comment(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
+	update_nodes_all(nodes_all[0]);
+	show_text(nodes_all[0]);
 	hide_node(id);
 	make_progress_bar();
 }
@@ -3711,6 +3714,16 @@ function recurse_update_nodes_all(d, parent=undefined, all_children=[]) {
 	return all_children;
 }
 
+function update_ids(nodes_all) {
+	let counter = 0;
+	nodes_all = nodes_all.map(function (node) {
+		counter += 1;
+		node['id'] = counter;
+		return node;
+	});
+	return nodes_all;
+}
+
 function update_nodes_all(d) {
 	var nodes_all = recurse_update_nodes_all(d);
 	for (var i = 0; i < nodes_all.length; i++) {
@@ -3719,16 +3732,6 @@ function update_nodes_all(d) {
 		}
 	}
 	nodes_all = update_ids(nodes_all);
-	return nodes_all;
-}
-
-function update_ids(nodes_all) {
-	let counter = 0;
-	nodes_all = nodes_all.map(function (node) {
-		counter += 1;
-		node['id'] = counter;
-		return node;
-	});
 	return nodes_all;
 }
 

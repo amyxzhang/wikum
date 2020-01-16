@@ -87,12 +87,30 @@ $.ajax({type: 'GET',
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
-
-		$('body').on('mouseenter mouseleave', '.outline-item', function() {
+		var delay=500, setTimeoutConst;
+		$('body').on('mouseenter', '.outline-item', function() {
 			// highlight associated comment box
 			let did = this.id;
 			let comment_box = $(".comment_box[data-did='" + did +"']");
-			if (comment_box && comment_box.length) highlight_box(comment_box[0].id.substring(8));
+			
+			if (comment_box && comment_box.length) {
+				highlight_box(comment_box[0].id.substring(8));
+				setTimeoutConst = setTimeout(function() {
+					$("#box").scrollTo("#" + comment_box[0].id, 500);
+				}, delay);
+				
+			}
+		});
+
+		$('body').on('mouseleave', '.outline-item', function() {
+			// highlight associated comment box
+			let did = this.id;
+			let comment_box = $(".comment_box[data-did='" + did +"']");
+			
+			if (comment_box && comment_box.length) {
+				highlight_box(comment_box[0].id.substring(8));
+				clearTimeout(setTimeoutConst);
+			}
 		});
 
 		$('body').on('click', '.outline-item', function() {
@@ -113,7 +131,7 @@ $.ajax({type: 'GET',
 		    	if ($(child).is(":visible")) {
 		    		$(child).slideUp(); //collapse
 		    		collapse_recurs(d);
-		    		$(this).append('<span class="down-arrow">&#9660</span>')
+		    		if (!$(this).find('#down-arrow').length) $(this).append('<span id="down-arrow">&#9660</span>');
 		    	}
 		    	else {
 		    		$(child).slideDown();
