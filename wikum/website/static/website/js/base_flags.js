@@ -4431,7 +4431,7 @@ function get_subtree_box(text, d, level) {
 			var hiddennode = d.children[i].hiddennode && !d.children[i].replace_node? "hiddennode" : "";
 
 
-			text += `<article class="comment_box ${summaryClass} ${summarized} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.children[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${summarized} ${levelClass} ${collapsed} ${summary} ${hiddennode}" data-did="${d.children[i].d_id}" id="comment_${d.children[i].id}">`;
 
 			text +=  construct_comment(d.children[i]);
 			text += '</article>';
@@ -4512,7 +4512,7 @@ function show_text(d) {
 			var summary = d.summary && !d.replace_node? "summary" : "";
 			var hiddennode = d.hiddennode && !d.replace_node? "hiddennode" : "";
 
-			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" id="comment_${d.id}">`;
+			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" data-did="${d.d_id}" id="comment_${d.id}">`;
 
 			if (d.depth > 1
                 	) {
@@ -4570,7 +4570,7 @@ function show_text(d) {
 			var summary = objs[i].summary && !objs[i].replace_node? "summary" : "";
 			var hiddennode = objs[i].hiddennode && !objs[i].replace_node? "hiddennode" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" id="comment_${objs[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" data-did="${objs[i].d_id}" id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
 			    if (!summary)
@@ -4592,32 +4592,22 @@ function show_text(d) {
 
 	$('.comment_box').hover(
 		  function() {
-		    var id = parseInt(this.id.substring(8));
-		    extra_highlight_node(id);
+		    var did = parseInt(this.dataset.did);
+		    extra_highlight_node(did);
 		  }, function() {
-		    var id = parseInt(this.id.substring(8));
-		    unextra_highlight_node(id);
+		    var did = parseInt(this.dataset.did);
+		    unextra_highlight_node(did);
 		  }
 	);
 
 }
 
-function extra_highlight_node(id) {
-	if (id != 1) {
-		d3.select("#node_" + id)
-			.style("stroke","#d73c37")
-			.style("stroke-width", stroke_width);
-		highlight_box(id);
-	}
+function extra_highlight_node(did) {
+	$('.outline-item#' + did).css('background-color', '#D3D3D3');
 }
 
-function unextra_highlight_node(id) {
-	if (id != 1) {
-		d3.select("#node_" + id)
-			.style("stroke","#000000")
-			.style("stroke-width", stroke_width);
-		highlight_box(id);
-	}
+function unextra_highlight_node(did) {
+	$('.outline-item#' + did).css('background-color', '');
 }
 
 function author_hover() {
