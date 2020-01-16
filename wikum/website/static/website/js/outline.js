@@ -107,17 +107,20 @@ $.ajax({type: 'GET',
 
 		$('body').on('dblclick', '.outline-item', function() {
 			var child = $(this).next()[0];
+			let id = this.id;
+			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 	    	if ($(child).hasClass('nested-sortable')) {
 		    	if ($(child).is(":visible")) {
-		    		$(child).slideUp();
+		    		$(child).slideUp(); //collapse
+		    		collapse_recurs(d);
 		    		$(this).append('<span class="down-arrow">&#9660</span>')
-		    		// todo: show only this comment box?
 		    	}
 		    	else {
 		    		$(child).slideDown();
+		    		expand_recurs(d);
 		    		$(this).children().last().remove();
-		    		// todo: expand all comment boxes?
 		    	}
+		    	show_text(d);
 		    }
 		});
 	},
