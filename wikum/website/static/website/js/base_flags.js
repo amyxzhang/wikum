@@ -3762,8 +3762,18 @@ function update(d) {
 	// Replace element and all of its children with updated version in the outline view
 	// (should be in correct order for update(some_parent) b/c of insert_node_to_children)
 	let outline_id = d.d_id;
-	let children_group = $('.outline-item#' + outline_id).next()[0];
-	$(children_group).replaceWith(createOutlineInsideString(d));
+	let outline_item = $('.outline-item#' + outline_id);
+	let children = $(outline_item).next();
+	var inside_string = createOutlineInsideString(d);
+	if (children && children.length) {
+		children_group = children[0];
+		$(children_group).replaceWith(inside_string);
+	} else {
+		// no children, need to create
+		if ($(outline_item).parent() && $(outline_item).parent().length) {
+			$($(outline_item).parent().get(0)).append(inside_string);
+		}
+	}
 	nodes_all = update_nodes_all(nodes_all[0]);
 }
 
