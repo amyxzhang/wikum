@@ -3673,7 +3673,11 @@ function createOutlineInsideString(d, outline='', under_summary=false) {
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
 			let state = getState(d.children[i], under_summary);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}><span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d.children[i].d_id}">` + title + `</span></div>`;
+			outline += `<div class="list-group-item">`
+					+ `<div class="outline-item" id=${d.children[i].d_id}>`
+					+ `<span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span>`
+					+ `<span class="outline-text t-${state}" id="outline-text-${d.children[i].d_id}">`
+					+ title + `</span></div>`;
 			outline += createOutlineInsideString(d.children[i]);
 			outline += `</div>`;
 		}
@@ -3683,7 +3687,11 @@ function createOutlineInsideString(d, outline='', under_summary=false) {
 		for (var i=0; i<d._children.length; i++) {
 			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
 			let state = getState(d._children[i], under_summary);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d._children[i].d_id}><span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d._children[i].d_id}">` + title + `</span></div>`;
+			outline += `<div class="list-group-item">`
+					+ `<div class="outline-item" id=${d._children[i].d_id}>`
+					+ `<span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span>`
+					+ `<span class="outline-text t-${state}" id="outline-text-${d._children[i].d_id}">`
+					+ title + `</span></div>`;
 			outline += createOutlineInsideString(d._children[i]);
 			outline += `</div>`;
 		}
@@ -3695,7 +3703,11 @@ function createOutlineInsideString(d, outline='', under_summary=false) {
 			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
 			under_summary = true;
 			let state = getState(d.replace[i], under_summary);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.replace[i].d_id}><span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d.replace[i].d_id}">` + title + `</span></div>`;
+			outline += `<div class="list-group-item">`
+					+ `<div class="outline-item" id=${d.replace[i].d_id}>`
+					+ `<span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span>`
+					+ `<span class="outline-text t-${state}" id="outline-text-${d.replace[i].d_id}">`
+					+ title + `</span></div>`;
 			outline += createOutlineInsideString(d.replace[i], '', under_summary);
 			outline += `</div>`;
 		}
@@ -3706,7 +3718,7 @@ function createOutlineInsideString(d, outline='', under_summary=false) {
 
 function createOutlineString(d) {
 	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
-	outlineString += '<div id="viewAll" class="outline-item"><span class="outline-text" id="outline-text-viewAll">View All</span></div>';
+	outlineString += `<div id="viewAll" class="outline-item"><span class="outline-text" id="outline-text-viewAll">${article_url}</span></div>`;
 	outlineString += createOutlineInsideString(d);
 	outlineString += '</div>';
 	return outlineString;

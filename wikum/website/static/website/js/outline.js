@@ -6,9 +6,20 @@ var hover_timer = null;
 var highlighted_text = null;
 var highlighted_comm = null;
 var highlight_text = null;
+var ctrlIsPressed = false;
 var article_id = $('#article_id').text();
 
 /* Outline View Visualization */
+
+$(document).keydown(function(evt) {
+    if (evt.ctrlKey || evt.metaKey) {
+    	ctrlIsPressed = true;
+    }
+});
+
+$(document).keyup(function(){
+    ctrlIsPressed = false;
+});
 
 var nodes_all = null;
 
@@ -113,7 +124,7 @@ $.ajax({type: 'GET',
 			}
 		});
 
-		$('body').on('click', '.outline-text', function() {
+		$('body').on('click', '.outline-text', function(evt) {
 			// show only this item and children (subtree)
 			let id = this.id.substring(13);
 		    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
@@ -121,6 +132,10 @@ $.ajax({type: 'GET',
 		    redOutlineBorder($(this).parent()[0]);
 		    // show appropriate comment boxes
 		    show_text(d);
+
+		    if (ctrlIsPressed) {
+		    	console.log("control held");
+		    }
 		});
 
 		$('body').on('dblclick', '.outline-text', function() {
