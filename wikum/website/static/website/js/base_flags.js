@@ -962,7 +962,6 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					}
 			});
 	} else if (type == "hide_replies") {
-		console.log("HIDE REPLIES");
 		var text = '<strong>Original Comment: </strong><div class="hide_comment_comment">' + d.name + '</div><BR><strong>Replies:</strong><BR>';
 		text = get_subtree(text, d, 0);
 		$('#hide_comment_text').text('Hide the replies to this original comment from view.');
@@ -2256,6 +2255,7 @@ function handle_channel_hide_comment(res) {
 	show_text(nodes_all[0]);
 	if (!d.replace_node) hide_node(id);
 	make_progress_bar();
+	update(d.parent);
 }
 
 function handle_channel_hide_comments(res) {
@@ -2268,13 +2268,13 @@ function handle_channel_hide_comments(res) {
 	}
 	show_text(nodes_all[0]);
 	make_progress_bar();
+	update(nodes_all[0]);
 }
 
 function handle_channel_hide_replies(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
-	d3.select('#node_' + d.parent.id).style('fill', color);
 
 	if (d.children) {
 		ids = [];
@@ -2296,6 +2296,7 @@ function handle_channel_hide_replies(res) {
 		}
 	}
 	make_progress_bar();
+	update(d);
 }
 
 function get_upvote_downvote(id) {
