@@ -660,7 +660,7 @@ class WikumConsumer(WebsocketConsumer):
 
     def handle_delete_tags(self, data, username):
         article_id = self.article_id
-        article = Article.objects.get(id=article_id)
+        a = Article.objects.get(id=article_id)
         try:
             comment_ids = data['ids']
             comment_ids = comment_ids.split(',')
@@ -727,16 +727,17 @@ class WikumConsumer(WebsocketConsumer):
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
             comment = Comment.objects.get(id=id)
+            print(comment)
             if comment.is_replacement:
                 action = 'delete_sum'
                 self.recurse_down_post(comment)
                 delete_node(comment.id)
-                a = Article.objects.get(id=article_id)
                 a.summary_num = a.summary_num - 1
                 a.percent_complete = count_article(a)
                 a.words_shown = count_words_shown(a)
                 a.last_updated = datetime.datetime.now()
                 a.save()
+                print(a)
                 affected = False
             else:
                 action = 'hide_comment'
@@ -752,7 +753,6 @@ class WikumConsumer(WebsocketConsumer):
                 parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     recurse_up_post(parent[0])
-                a = Article.objects.get(id=article_id)
                 a.comment_num = a.comment_num - 1
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
@@ -786,7 +786,6 @@ class WikumConsumer(WebsocketConsumer):
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             
             if affected > 0:
-                a = Article.objects.get(id=article_id)
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
                 h = History.objects.create(user=req_user, 

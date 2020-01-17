@@ -1120,9 +1120,8 @@ function show_comment_text(text, did) {
 
 $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 		var $modalDiv = $(e.delegateTarget);
-  		var id = $(this).data('id');
-  		d = nodes_all[id-1];
-  		console.log(d);
+  		var did = $(this).data('did');
+  		d = nodes_all.filter(o => o.d_id == did)[0];
 		if (d.replace_node) {
 			var article_id = $('#article_id').text();
 			var csrf = $('#csrf').text();
@@ -1130,7 +1129,6 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				comment: '',
 				article: article_id,
 				id: d.d_id};
-			data.node_id = id;
 			data.type = 'hide_comment';
 			console.log(data);
 			chatsock.send(JSON.stringify(data));
@@ -1149,8 +1147,9 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 	});
 
 $('#confirm_delete_modal_box').on('show.bs.modal', function(e) {
-	var id = $(e.relatedTarget).data('id');
-  	$('.btn-ok', this).data('id', id);
+	var did = $(e.relatedTarget).data('did');
+	console.log(did);
+  	$('.btn-ok', this).data('did', did);
 });
 
 
@@ -2035,7 +2034,7 @@ function handle_channel_summarize_selected(res) {
 			<a`;
 		if (new_d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}" data-did="${new_d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 		</footer>`;
 	}
@@ -2050,7 +2049,7 @@ function handle_channel_summarize_selected(res) {
 		text += `<footer><a`
 		if (new_d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 		`;
 	}
@@ -2126,7 +2125,7 @@ function handle_channel_summarize_comments(res) {
 			}
 		}
 
-
+		console.log(new_d.parent);
 		update(new_d.parent);
 
 
@@ -2167,7 +2166,7 @@ function handle_channel_summarize_comments(res) {
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}" data-did="${d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 		</footer>`;
 	}
@@ -2183,7 +2182,7 @@ function handle_channel_summarize_comments(res) {
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}" data-did="${d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 		</footer>`;
 	}
@@ -2194,6 +2193,7 @@ function handle_channel_summarize_comments(res) {
 	show_text(nodes_all[0]);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	make_progress_bar();
+	nodes_all = update_nodes_all(nodes_all[0]);
 }
 
 function handle_channel_delete_tags(res) {
@@ -2252,7 +2252,6 @@ function handle_channel_hide_comment(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
-	update_nodes_all(nodes_all[0]);
 	show_text(nodes_all[0]);
 	hide_node(id);
 	make_progress_bar();
@@ -2473,7 +2472,6 @@ function insert_node_to_children(node_insert, node_parent, position = undefined)
 			node_parent.replace.push(node_insert);
 		}
 	}
-
 }
 
 
@@ -3651,6 +3649,17 @@ function check_clicked_node(d, clicked_ids) {
 	return true;
 }
 
+function getState(d) {
+	let state = 'unsum_comment';
+	if (d.replace_node) {
+		state = 'summary';
+	} else if (d.parent && d.parent.replace_node && !(d.summarized == false)) {
+		state = 'sum_comment';
+	}
+	// todo: partial summarized state
+	return state;
+}
+
 function createOutlineInsideString(d, outline='') {
 	/** type (for coloring):
 	  *  comment = normal comment
@@ -3662,7 +3671,8 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}>` + title + `</div>`;
+			let state = getState(d.children[i]);
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}><span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span> ` + title + `</div>`;
 			outline += createOutlineInsideString(d.children[i]);
 			outline += `</div>`;
 		}
@@ -3671,7 +3681,8 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d._children.length; i++) {
 			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
-			outline += `<div class="list-group-item">` + `<div class="outline-item">` + title + `</div>`;
+			let state = getState(d._children[i]);
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d._children[i].d_id}><span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span> ` + title + `</div>`;
 			outline += createOutlineInsideString(d._children[i]);
 			outline += `</div>`;
 		}
@@ -3681,7 +3692,8 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
 			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
-			outline += `<div class="list-group-item">` + `<div class="outline-item">` + title + `</div>`;
+			let state = getState(d.replace[i]);
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.replace[i].d_id}><span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span> ` + title + `</div>`;
 			outline += createOutlineInsideString(d.replace[i]);
 			outline += `</div>`;
 		}
@@ -3711,6 +3723,11 @@ function recurse_update_nodes_all(d, parent=undefined, all_children=[]) {
 			recurse_update_nodes_all(d.children[i], d, all_children);
 		}
 	}
+	if (d._children) {
+		for (var i=0; i<d._children.length; i++) {
+			recurse_update_nodes_all(d._children[i], d, all_children);
+		}
+	}
 	return all_children;
 }
 
@@ -3732,6 +3749,7 @@ function update_nodes_all(d) {
 		}
 	}
 	nodes_all = update_ids(nodes_all);
+	console.log(nodes_all);
 	return nodes_all;
 }
 
@@ -3745,7 +3763,7 @@ function update(d) {
 	let outline_id = d.d_id;
 	let children_group = $('.outline-item#' + outline_id).next()[0];
 	$(children_group).replaceWith(createOutlineInsideString(d));
-	update_nodes_all(nodes_all[0]);
+	nodes_all = update_nodes_all(nodes_all[0]);
 }
 
 // function update(source) {
@@ -4028,9 +4046,7 @@ function hide_node(id) {
 		}
 	}
 
-	update(parent);
-
-	d3.select('#node_' + parent.id).style('fill', color);
+	// d3.select('#node_' + parent.id).style('fill', color);
 	return null;
 }
 
@@ -4116,7 +4132,6 @@ function expand_node(id) {
 function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
-
 
 
 function construct_comment(d) {
@@ -4278,7 +4293,7 @@ function construct_comment(d) {
 				text += '<a ';
 				if (d.is_locked) text += 'class="disabled" ';
 				text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
-				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '">Delete Comment Summary</a> | ';
+				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '" data-did="' + d.d_id +'">Delete Comment Summary</a> | ';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate Summary</a></P>';
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
@@ -4292,7 +4307,7 @@ function construct_comment(d) {
 				text += `<a `;
 				if (d.is_locked) text += `class="disabled" `;
 				text += `data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
-				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
+				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}" data-did="${d.d_id}">Delete Summary</a>
 				<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
 				<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>`;
 			}
@@ -4595,21 +4610,25 @@ function show_text(d) {
 	$('.comment_box').hover(
 		  function() {
 		    var did = parseInt(this.dataset.did);
-		    extra_highlight_node(did);
+		    var id = parseInt(this.id.substring(8));
+		    extra_highlight_node(did, id);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);
-		    unextra_highlight_node(did);
+		    var id = parseInt(this.id.substring(8));
+		    unextra_highlight_node(did, id);
 		  }
 	);
 
 }
 
-function extra_highlight_node(did) {
+function extra_highlight_node(did, id) {
 	$('.outline-item#' + did).css('background-color', '#D3D3D3');
+	highlight_box(id);
 }
 
-function unextra_highlight_node(did) {
+function unextra_highlight_node(did, id) {
 	$('.outline-item#' + did).css('background-color', '');
+	highlight_box(id);
 }
 
 function author_hover() {

@@ -672,7 +672,7 @@ def delete_node(did):
         
             if parent.count() > 0:
                 recurse_up_post(parent[0])
-            a.summary_num = a.summary_num - 1
+            article.summary_num = article.summary_num - 1
     except Exception as e:
         print(e)
 
