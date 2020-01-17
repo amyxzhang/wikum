@@ -1129,7 +1129,6 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				article: article_id,
 				id: d.d_id};
 			data.type = 'hide_comment';
-			console.log(data);
 			chatsock.send(JSON.stringify(data));
 		} else {
 			var article_id = $('#article_id').text();
@@ -3651,18 +3650,18 @@ function check_clicked_node(d, clicked_ids) {
 	return true;
 }
 
-function getState(d) {
+function getState(d, under_summary=false) {
 	let state = 'unsum_comment';
 	if (d.replace_node) {
 		state = 'summary';
-	} else if (d.parent && d.parent.replace_node && !(d.summarized == false)) {
+	} else if (under_summary && !(d.summarized == false)) {
 		state = 'sum_comment';
 	}
 	// todo: partial summarized state
 	return state;
 }
 
-function createOutlineInsideString(d, outline='') {
+function createOutlineInsideString(d, outline='', under_summary=false) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -3673,7 +3672,7 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			let state = getState(d.children[i]);
+			let state = getState(d.children[i], under_summary);
 			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}><span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d.children[i].d_id}">` + title + `</span></div>`;
 			outline += createOutlineInsideString(d.children[i]);
 			outline += `</div>`;
@@ -3683,7 +3682,7 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d._children.length; i++) {
 			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
-			let state = getState(d._children[i]);
+			let state = getState(d._children[i], under_summary);
 			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d._children[i].d_id}><span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d._children[i].d_id}">` + title + `</span></div>`;
 			outline += createOutlineInsideString(d._children[i]);
 			outline += `</div>`;
@@ -3694,9 +3693,10 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.replace.length; i++) {
 			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
-			let state = getState(d.replace[i]);
+			under_summary = true;
+			let state = getState(d.replace[i], under_summary);
 			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.replace[i].d_id}><span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d.replace[i].d_id}">` + title + `</span></div>`;
-			outline += createOutlineInsideString(d.replace[i]);
+			outline += createOutlineInsideString(d.replace[i], '', under_summary);
 			outline += `</div>`;
 		}
 		outline += `</div>`;
@@ -3761,8 +3761,12 @@ function update_nodes_all(d) {
 function update(d) {
 	// Replace element and all of its children with updated version in the outline view
 	// (should be in correct order for update(some_parent) b/c of insert_node_to_children)
-	let outline_id = d.d_id;
-	let outline_item = $('.outline-item#' + outline_id);
+	var outline_item;
+	if (d.article) {
+		outline_item = $('.outline-item#viewAll');
+	} else {
+		outline_item = $('.outline-item#' + d.d_id);
+	}
 	let children = $(outline_item).next();
 	var inside_string = createOutlineInsideString(d);
 	if (children && children.length) {

@@ -120,7 +120,6 @@ $.ajax({type: 'GET',
 		    // highlight this and children
 		    redOutlineBorder($(this).parent()[0]);
 		    // show appropriate comment boxes
-		    console.log(d);
 		    show_text(d);
 		});
 
