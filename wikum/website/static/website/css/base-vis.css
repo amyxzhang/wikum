@@ -123,7 +123,7 @@ a:hover {
 	line-height: 12px;
 	border-radius: 15px;
 	position: absolute;
-	top: 100px;
+	top: 115px;
 	left: 70px;
 }
 
@@ -355,10 +355,16 @@ textarea {
 
 #viz {
 	float: left;
+	height: calc(100vh - 100px);
+    margin: 100px 0px 0px 0px;
+    max-width: calc(100vw - 550px);
+    min-width: 45%;
+    overflow: auto;
+    padding-top: 15px;
+    
 }
 
 #outline {
-	margin-top: 100px;
 	margin-left: 100px;
 	width: 220px;
 }
@@ -406,14 +412,14 @@ textarea {
 	padding-left: 5px;
 }
 
-#outline .outline-item:hover {
+#outline .outline-text:hover {
 	cursor: pointer;
 	background-color: #D3D3D3;
 }
 
 .outline-item #down-arrow {
 	font-size: 10px;
-	padding: 5px;
+	padding-left: 5px;
 }
 
 .rb-red {

@@ -3673,7 +3673,7 @@ function createOutlineInsideString(d, outline='') {
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
 			let state = getState(d.children[i]);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}><span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span> ` + title + `</div>`;
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.children[i].d_id}><span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d.children[i].d_id}">` + title + `</span></div>`;
 			outline += createOutlineInsideString(d.children[i]);
 			outline += `</div>`;
 		}
@@ -3683,7 +3683,7 @@ function createOutlineInsideString(d, outline='') {
 		for (var i=0; i<d._children.length; i++) {
 			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
 			let state = getState(d._children[i]);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d._children[i].d_id}><span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span> ` + title + `</div>`;
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d._children[i].d_id}><span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d._children[i].d_id}">` + title + `</span></div>`;
 			outline += createOutlineInsideString(d._children[i]);
 			outline += `</div>`;
 		}
@@ -3694,7 +3694,7 @@ function createOutlineInsideString(d, outline='') {
 		for (var i=0; i<d.replace.length; i++) {
 			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
 			let state = getState(d.replace[i]);
-			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.replace[i].d_id}><span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span> ` + title + `</div>`;
+			outline += `<div class="list-group-item">` + `<div class="outline-item" id=${d.replace[i].d_id}><span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span><span class="outline-text" id="outline-text-${d.replace[i].d_id}">` + title + `</span></div>`;
 			outline += createOutlineInsideString(d.replace[i]);
 			outline += `</div>`;
 		}
@@ -3705,7 +3705,7 @@ function createOutlineInsideString(d, outline='') {
 
 function createOutlineString(d) {
 	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
-	outlineString += '<div id="viewAll" class="outline-item">View All</div>';
+	outlineString += '<div id="viewAll" class="outline-item"><span class="outline-text" id="outline-text-viewAll">View All</span></div>';
 	outlineString += createOutlineInsideString(d);
 	outlineString += '</div>';
 	return outlineString;
@@ -4607,27 +4607,32 @@ function show_text(d) {
 		};
 	}
 
+	var delay=500, setTimeoutConst;
 	$('.comment_box').hover(
 		  function() {
 		    var did = parseInt(this.dataset.did);
 		    var id = parseInt(this.id.substring(8));
 		    extra_highlight_node(did, id);
+		    setTimeoutConst = setTimeout(function() {
+				$('#viz').scrollTo('#outline-text-' + did, 500);
+			}, delay);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);
 		    var id = parseInt(this.id.substring(8));
 		    unextra_highlight_node(did, id);
+		    clearTimeout(setTimeoutConst);
 		  }
 	);
 
 }
 
 function extra_highlight_node(did, id) {
-	$('.outline-item#' + did).css('background-color', '#D3D3D3');
+	$('#outline-text-' + did).css('background-color', '#D3D3D3');
 	highlight_box(id);
 }
 
 function unextra_highlight_node(did, id) {
-	$('.outline-item#' + did).css('background-color', '');
+	$('#outline-text-' + did).css('background-color', '');
 	highlight_box(id);
 }
 
@@ -5221,7 +5226,7 @@ var stringToColour = function(str) {
   return colour;
 }
 
-function redRightOutlineBorder(element) {
+function redOutlineBorder(element) {
 	$('.rb-red').removeClass('rb-red');
 	if (element.id !== 'viewAll') $(element).addClass('rb-red');
 	var child = $(element).next()[0];

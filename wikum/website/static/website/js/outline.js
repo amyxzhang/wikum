@@ -81,16 +81,16 @@ $.ajax({type: 'GET',
 			});
 		}
 
-		redRightOutlineBorder(document.getElementById("viewAll"));
+		redOutlineBorder(document.getElementById("viewAll"));
 
 		nodes_all = update_nodes_all(flare);
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
 		var delay=500, setTimeoutConst;
-		$('body').on('mouseenter', '.outline-item', function() {
+		$('body').on('mouseenter', '.outline-text', function() {
 			// highlight associated comment box
-			let did = this.id;
+			let did = this.id.substring(13);
 			let comment_box = $(".comment_box[data-did='" + did +"']");
 			
 			if (comment_box && comment_box.length) {
@@ -102,9 +102,9 @@ $.ajax({type: 'GET',
 			}
 		});
 
-		$('body').on('mouseleave', '.outline-item', function() {
+		$('body').on('mouseleave', '.outline-text', function() {
 			// highlight associated comment box
-			let did = this.id;
+			let did = this.id.substring(13);
 			let comment_box = $(".comment_box[data-did='" + did +"']");
 			
 			if (comment_box && comment_box.length) {
@@ -113,30 +113,32 @@ $.ajax({type: 'GET',
 			}
 		});
 
-		$('body').on('click', '.outline-item', function() {
+		$('body').on('click', '.outline-text', function() {
 			// show only this item and children (subtree)
-			let id = this.id;
+			let id = this.id.substring(13);
 		    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 		    // highlight this and children
-		    redRightOutlineBorder(this);
+		    redOutlineBorder($(this).parent()[0]);
 		    // show appropriate comment boxes
+		    console.log(d);
 		    show_text(d);
 		});
 
-		$('body').on('dblclick', '.outline-item', function() {
-			var child = $(this).next()[0];
-			let id = this.id;
+		$('body').on('dblclick', '.outline-text', function() {
+			var outlineItem = $(this).parent()[0];
+			var child = $(this).parent().next()[0];
+			let id = outlineItem.id;
 			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 	    	if ($(child).hasClass('nested-sortable')) {
 		    	if ($(child).is(":visible")) {
 		    		$(child).slideUp(); //collapse
 		    		collapse_recurs(d);
-		    		if (!$(this).find('#down-arrow').length) $(this).append('<span id="down-arrow">&#9660</span>');
+		    		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
 		    	}
 		    	else {
 		    		$(child).slideDown();
 		    		expand_recurs(d);
-		    		$(this).children().last().remove();
+		    		$(outlineItem).children().last().remove();
 		    	}
 		    	show_text(d);
 		    }
