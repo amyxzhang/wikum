@@ -142,6 +142,11 @@ $.ajax({type: 'GET',
 		    	show_text(d);
 		    }
 		});
+
+		$('#viz').on('click', function() {
+			redOutlineBorder($('#outline').children(":first").children('.list-group'));
+			show_text(nodes_all[0]);
+		});
 	},
 	error: function() {
 		error_noty();
