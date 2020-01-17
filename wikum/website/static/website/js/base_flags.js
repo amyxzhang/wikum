@@ -1148,7 +1148,6 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 
 $('#confirm_delete_modal_box').on('show.bs.modal', function(e) {
 	var did = $(e.relatedTarget).data('did');
-	console.log(did);
   	$('.btn-ok', this).data('did', did);
 });
 
@@ -2070,6 +2069,7 @@ function handle_channel_summarize_selected(res) {
 }
 
 function handle_channel_summarize_comments(res) {
+	// need to make children 
 	let d = nodes_all.filter(o => o.d_id == res.orig_did)[0];
 	let position = d.parent.children.indexOf(d);
 
@@ -2248,12 +2248,13 @@ function handle_channel_delete_comment_summary(res) {
 }
 
 function handle_channel_hide_comment(res) {
-	let id = nodes_all.filter(o => o.d_id == res.d_id)[0].id;
+	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
+	let id = d.id;
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
 	show_text(nodes_all[0]);
-	hide_node(id);
+	if (!d.replace_node) hide_node(id);
 	make_progress_bar();
 }
 
@@ -3743,13 +3744,12 @@ function update_ids(nodes_all) {
 
 function update_nodes_all(d) {
 	var nodes_all = recurse_update_nodes_all(d);
-	for (var i = 0; i < nodes_all.length; i++) {
+	for (var i = 1; i < nodes_all.length; i++) {
 		if (!nodes_all[i].parent) {
 			nodes_all[i].parent = nodes_all[0];
 		}
 	}
 	nodes_all = update_ids(nodes_all);
-	console.log(nodes_all);
 	return nodes_all;
 }
 
