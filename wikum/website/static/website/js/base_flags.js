@@ -3470,7 +3470,7 @@ function expand(d) {
 	if (d.replace_node) {
 		show_replace_nodes(d.id);
 	} else {
-		expand_recurs(d);
+		expand_node(d);
 	}
 }
 
@@ -3679,20 +3679,6 @@ function createOutlineInsideString(d, outline='', under_summary=false) {
 					+ `<span class="outline-text t-${state}" id="outline-text-${d.children[i].d_id}">`
 					+ title + `</span></div>`;
 			outline += createOutlineInsideString(d.children[i]);
-			outline += `</div>`;
-		}
-		outline += `</div>`;
-	} else if (d._children && d._children.length) {
-		outline += `<div class="list-group nested-sortable">`;
-		for (var i=0; i<d._children.length; i++) {
-			let title = d._children[i].summary? d._children[i].summary.substring(0,20) : d._children[i].name.substring(0,20);
-			let state = getState(d._children[i], under_summary);
-			outline += `<div class="list-group-item">`
-					+ `<div class="outline-item" id=${d._children[i].d_id}>`
-					+ `<span class="marker m-${state}" id="marker-${d._children[i].d_id}">&#183</span>`
-					+ `<span class="outline-text t-${state}" id="outline-text-${d._children[i].d_id}">`
-					+ title + `</span></div>`;
-			outline += createOutlineInsideString(d._children[i]);
 			outline += `</div>`;
 		}
 		outline += `</div>`;
@@ -4120,39 +4106,37 @@ function expand_recurs(d) {
 	    d.children = d._children;
 	    d._children = null;
 	  }
-	if (d.children) {
+	if (d.children && d.children.length) {
 		for (var i=0; i<d.children.length; i++) {
 			expand_recurs(d.children[i]);
 		}
+		return true;
 	}
+	return false;
 }
 
 
-function collapse_node(id) {
-  d = nodes_all[id-1];
+function collapse_node(d) {
 	if (d._children) {
 	    d.children = d._children;
 	    d._children = null;
-	  }
-	if (d.children) {
-		for (var i=0; i<d.children.length; i++) {
-			collapse_recurs(d.children[i]);
-		}
 	}
-  update(d);
-  setTimeout( function(){
-    show_text('clicked');
-  }  , 2000 );
-
-  return null;
+	if (d.children && d.children.length) {
+		collapse_recurs(d);
+		var outlineItem = '.outline-item#' + d.d_id;
+		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
+		update(d);
+	}
 }
 
 
-function expand_node(id) {
-  d = nodes_all[id-1];
-  expand_recurs(d);
-  update(d);
-  return null;
+function expand_node(d) {
+	var updated = expand_recurs(d);
+	if (updated) {
+		$('.outline-item#' + d.d_id).children().last().remove();
+		update(d);
+		redOutlineBorder($('.outline-item#' + d.d_id));
+	}
 }
 
 
@@ -4855,7 +4839,7 @@ function showdiv(d) {
 				text = '';
 			} else {
 				if (!d.parent_node) {
-					text = '<a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
+					text = '<a onclick="collapse_node(' + d + ');">Collapse replies</a><BR><a onclick="expand_node(' + d + ');">Expand replies</a>';
 				} else {
 					text = '';
 				}

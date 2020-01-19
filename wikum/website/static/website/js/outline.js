@@ -143,19 +143,13 @@ $.ajax({type: 'GET',
 			var child = $(this).parent().next()[0];
 			let id = outlineItem.id;
 			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
-	    	if ($(child).hasClass('nested-sortable')) {
-		    	if ($(child).is(":visible")) {
-		    		$(child).slideUp(); //collapse
-		    		collapse_recurs(d);
-		    		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
-		    	}
-		    	else {
-		    		$(child).slideDown();
-		    		expand_recurs(d);
-		    		$(outlineItem).children().last().remove();
-		    	}
-		    	show_text(d);
-		    }
+	    	if (child) {
+	    		collapse_node(d);
+	    	}
+	    	else {
+	    		expand_node(d);
+	    	}
+	    	show_text(d);
 		});
 
 		$('#viz').on('click', function() {
