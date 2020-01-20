@@ -3465,6 +3465,13 @@ function dragmove(d) {
         }
 };
 
+function collapse(d) {
+	if (d.replace_node) {
+		hide_replace_nodes(d.id);
+	} else {
+		collapse_node(d);
+	}
+}
 
 function expand(d) {
 	if (d.replace_node) {
@@ -3650,18 +3657,18 @@ function check_clicked_node(d, clicked_ids) {
 	return true;
 }
 
-function getState(d, under_summary=false) {
+function getState(d) {
 	let state = 'unsum_comment';
 	if (d.replace_node) {
 		state = 'summary';
-	} else if (under_summary && !(d.summarized == false)) {
+	} else if (d.collapsed && !(d.summarized == false)) {
 		state = 'sum_comment';
 	}
 	// todo: partial summarized state
 	return state;
 }
 
-function createOutlineInsideString(d, outline='', under_summary=false) {
+function createOutlineInsideString(d, outline='') {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -3672,33 +3679,37 @@ function createOutlineInsideString(d, outline='', under_summary=false) {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			let state = getState(d.children[i], under_summary);
+			let state = getState(d.children[i]);
 			outline += `<div class="list-group-item">`
 					+ `<div class="outline-item" id=${d.children[i].d_id}>`
 					+ `<span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span>`
 					+ `<span class="outline-text t-${state}" id="outline-text-${d.children[i].d_id}">`
-					+ title + `</span></div>`;
+					+ title + `</span>`;
+			if (state === 'summary' && d.children[i].replace && d.children[i].replace.length) {
+				outline += '<span id="down-arrow">&#9660</span>';
+			}
+			outline += `</div>`;
 			outline += createOutlineInsideString(d.children[i]);
 			outline += `</div>`;
 		}
 		outline += `</div>`;
-	} else if (d.replace && d.replace.length) {
-		// todo: default to collapsed
-		outline += `<div class="list-group nested-sortable">`;
-		for (var i=0; i<d.replace.length; i++) {
-			let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
-			under_summary = true;
-			let state = getState(d.replace[i], under_summary);
-			outline += `<div class="list-group-item">`
-					+ `<div class="outline-item" id=${d.replace[i].d_id}>`
-					+ `<span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span>`
-					+ `<span class="outline-text t-${state}" id="outline-text-${d.replace[i].d_id}">`
-					+ title + `</span></div>`;
-			outline += createOutlineInsideString(d.replace[i], '', under_summary);
-			outline += `</div>`;
-		}
-		outline += `</div>`;
 	}
+	// else if (d.replace && d.replace.length) {
+	// 	// todo: default to collapsed
+	// 	outline += `<div class="list-group nested-sortable">`;
+	// 	for (var i=0; i<d.replace.length; i++) {
+	// 		let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
+	// 		let state = getState(d.replace[i]);
+	// 		outline += `<div class="list-group-item">`
+	// 				+ `<div class="outline-item" id=${d.replace[i].d_id}>`
+	// 				+ `<span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span>`
+	// 				+ `<span class="outline-text t-${state}" id="outline-text-${d.replace[i].d_id}">`
+	// 				+ title + `</span></div>`;
+	// 		outline += createOutlineInsideString(d.replace[i]);
+	// 		outline += `</div>`;
+	// 	}
+	// 	outline += `</div>`;
+	// }
 	return outline
 }
 
@@ -4133,8 +4144,8 @@ function collapse_node(d) {
 function expand_node(d) {
 	var updated = expand_recurs(d);
 	if (updated) {
-		$('.outline-item#' + d.d_id).children().last().remove();
 		update(d);
+		$('.outline-item#' + d.d_id).children().last().remove();
 		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 }
@@ -4911,7 +4922,7 @@ function hide_replace_nodes(id) {
 	d = nodes_all[id-1];
 
 	delete_children_boxes(d);
-	if (d.children) {
+	if (d.children && d.children.length) {
 		if (!d.replace) {
 			d.replace = [];
 		}
@@ -4920,6 +4931,8 @@ function hide_replace_nodes(id) {
 		}
 		d.children = null;
 		update(d);
+		var outlineItem = '.outline-item#' + d.d_id;
+		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
 	}
 	text = '';
 	if (comment_id != d.d_id) {
@@ -4935,7 +4948,7 @@ function hide_replace_nodes(id) {
 
 function show_replace_nodes(id) {
 	d = nodes_all[id-1];
-	if (d.replace) {
+	if (d.replace && d.replace.length) {
 		if (!d.children) {
 			d.children = [];
 		}
@@ -4945,6 +4958,8 @@ function show_replace_nodes(id) {
 		}
 		d.replace = [];
 		update(d);
+		$('.outline-item#' + d.d_id).children().last().remove();
+		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 
 	text = '';

@@ -144,10 +144,10 @@ $.ajax({type: 'GET',
 			let id = outlineItem.id;
 			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 	    	if (child) {
-	    		collapse_node(d);
+	    		collapse(d);
 	    	}
 	    	else {
-	    		expand_node(d);
+	    		expand(d);
 	    	}
 	    	show_text(d);
 		});
