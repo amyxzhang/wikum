@@ -2123,9 +2123,7 @@ function handle_channel_summarize_comments(res) {
 			}
 		}
 
-		console.log(new_d.parent);
 		update(new_d.parent);
-
 
 		d3.select("#node_" + new_d.id)
 		.style("fill", color);
@@ -3678,14 +3676,15 @@ function createOutlineInsideString(d, outline='') {
 	if (d.children && d.children.length) {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
-			let title = d.children[i].summary? d.children[i].summary.substring(0,20) : d.children[i].name.substring(0,20);
-			let state = getState(d.children[i]);
+			var node = d.children[i];
+			let title = node.summary? node.summary.substring(0,20) : node.name.substring(0,20);
+			let state = getState(node);
 			outline += `<div class="list-group-item">`
-					+ `<div class="outline-item" id=${d.children[i].d_id}>`
-					+ `<span class="marker m-${state}" id="marker-${d.children[i].d_id}">&#183</span>`
-					+ `<span class="outline-text t-${state}" id="outline-text-${d.children[i].d_id}">`
+					+ `<div class="outline-item" id=${node.d_id}>`
+					+ `<span class="marker m-${state}" id="marker-${node.d_id}">&#183</span>`
+					+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
 					+ title + `</span>`;
-			if (state === 'summary' && d.children[i].replace && d.children[i].replace.length) {
+			if ((state === 'summary' && node.replace && node.replace.length) || (node._children && node._children.length)) {
 				outline += '<span id="down-arrow">&#9660</span>';
 			}
 			outline += `</div>`;
@@ -4145,7 +4144,7 @@ function expand_node(d) {
 	var updated = expand_recurs(d);
 	if (updated) {
 		update(d);
-		$('.outline-item#' + d.d_id).children().last().remove();
+		$('.outline-item#' + d.d_id).find("#down-arrow").remove();
 		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 }
@@ -4958,7 +4957,7 @@ function show_replace_nodes(id) {
 		}
 		d.replace = [];
 		update(d);
-		$('.outline-item#' + d.d_id).children().last().remove();
+		$('.outline-item#' + d.d_id).find("#down-arrow").remove();
 		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 
