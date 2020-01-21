@@ -161,10 +161,10 @@ $.ajax({type: 'GET',
 			showdiv(d);
 		});
 
-		// $('#viz').on('mouseleave', function() {
-		// 	// hide #expand div if move mouse out of #outline
-		// 	$('#expand').hide();
-		// });
+		$('body').on('mouseleave', '#expand', function() {
+			// hide #expand div if move mouse out of #outline
+			$('#expand').hide();
+		});
 
 		// viz functions
 		$('#viz').on('click', function() {
