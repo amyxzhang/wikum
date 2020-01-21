@@ -709,24 +709,23 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 					d.rating_flag.neutral = neu;
 					d.rating_flag.coverage = cov;
 					d.rating_flag.quality = qual;
-					
-					show_text(d);
 
 					for (var i=0; i < to_summarize.length; i++) {
 						to_summarize[i].summarized = true;
 						$('#comment_' + to_summarize[i].id).removeClass('unsummarized');
-						d3.select('#node_' + to_summarize[i].id).style('fill', color);
+						// d3.select('#node_' + to_summarize[i].id).style('fill', color);
 					}
 
 					for (var i=0; i < to_unsummarize.length; i++) {
 						to_unsummarize[i].summarized = false;
 						$('#comment_' + to_unsummarize[i].id).addClass('unsummarized');
-						d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
+						// d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
 					}
 
-					d3.select('#node_' + d.id).style('fill', color);
+					// d3.select('#node_' + d.id).style('fill', color);
 					make_progress_bar();
-
+					update(d);
+					show_text(d);
 				}
 			},
 			error: function() {
