@@ -739,7 +739,6 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 
 
 $('#tag_modal_box').on('show.bs.modal', function(e) {
-	console.log(nodes_all);
 	var id = $(e.relatedTarget).data('id');
 	var type = $(e.relatedTarget).data('type');
 	
@@ -775,7 +774,6 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 
 		$('#outline .rb-red').each(function(index) {
 			var data = nodes_all.filter(o => o.d_id == this.id)[0];
-			console.log(data);
 			if (data) {
 				var id_clicked = data.id;
 				ids.push(id_clicked);
