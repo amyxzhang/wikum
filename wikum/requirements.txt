@@ -31,7 +31,7 @@ cycler==0.10.0
 daphne==2.2.5
 decorator==4.4.0
 distlib==0.2.9.post0
-Django==2.1.11
+Django==2.1.15
 django-annoying==0.10.5
 django-appconf==1.0.3
 django-tracking2==0.5.0
