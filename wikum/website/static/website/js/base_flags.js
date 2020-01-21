@@ -5156,12 +5156,11 @@ function recurse_get_unsummarized(d, unsummarized_children=[]) {
 }
 
 function hidediv(d) {
-	if (!isMouseDown && d3.select(this).classed("clicked")) {
+	if (!isMouseDown) {
 		unextra_highlight_node(d.id);
 	}
 	window.clearTimeout(hover_timer);
 	timer = setTimeout(remove_dic, 100);
-
 }
 
 function remove_dic() {

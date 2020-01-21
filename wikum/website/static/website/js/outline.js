@@ -153,7 +153,7 @@ $.ajax({type: 'GET',
 	    	show_text(d);
 		});
 
-		// .outline-item functions
+		// // .outline-item functions
 		$('body').on('mouseenter', '.outline-item', function() {
 			// show #expand div
 			let id = this.id;
@@ -161,10 +161,17 @@ $.ajax({type: 'GET',
 			showdiv(d);
 		});
 
-		$('body').on('mouseleave', '#expand', function() {
-			// hide #expand div if move mouse out of #outline
-			$('#expand').hide();
+		$('body').on('mouseleave', '.outline-item', function() {
+			// show #expand div
+			let id = this.id;
+			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+			hidediv(d);
 		});
+
+		// $('body').on('mouseleave', '#expand', function() {
+		// 	// hide #expand div if move mouse out of #outline
+		// 	$('#expand').hide();
+		// });
 
 		// viz functions
 		$('#viz').on('click', function() {
