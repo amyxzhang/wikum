@@ -4783,7 +4783,12 @@ function highlight_box(id) {
 }
 
 function set_expand_position(d) {
-	var offset = $('svg').offset();
+	var bbox;
+	if (d.article) {
+		bbox = $('.outline-item#viewAll').get(0).getBoundingClientRect();
+	} else {
+		bbox = $('.outline-item#' + d.d_id).get(0).getBoundingClientRect();
+	}
 	var width = $('#expand').width();
 	var node_width = 0;
 	if (d.article) {
@@ -4791,8 +4796,8 @@ function set_expand_position(d) {
 	} else {
 		node_width = (d.size + 400)/65;
 	}
-	$('#expand').css({top: offset.top + d.x + 22,
-		left: offset.left + d.y + ((d.size + 100)/60) - width + 10 - node_width});
+	$('#expand').css({top: bbox.top,
+		left: bbox.left - width});
 }
 
 function showdiv(d) {
@@ -4907,13 +4912,13 @@ function showdiv(d) {
 			set_expand_position(d);
 		}
 
-		if (d3.select(this).classed("clicked")) {
-			extra_highlight_node(d.id);
-			highlight_box(d.id);
-			hover_timer = window.setTimeout(function(d) {
-				$("#box").scrollTo("#comment_" + d.id, 500);
-			}, 500, d);
-		}
+		// if (d3.select(this).classed("clicked")) {
+		// 	extra_highlight_node(d.id);
+		// 	highlight_box(d.id);
+		// 	hover_timer = window.setTimeout(function(d) {
+		// 		$("#box").scrollTo("#comment_" + d.id, 500);
+		// 	}, 500, d);
+		// }
 	}
 }
 

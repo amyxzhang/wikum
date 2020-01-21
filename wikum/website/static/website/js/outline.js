@@ -98,6 +98,7 @@ $.ajax({type: 'GET',
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
+		// .outline-text functions
 		var delay=500, setTimeoutConst;
 		$('body').on('mouseenter', '.outline-text', function() {
 			// highlight associated comment box
@@ -152,6 +153,20 @@ $.ajax({type: 'GET',
 	    	show_text(d);
 		});
 
+		// .outline-item functions
+		$('body').on('mouseenter', '.outline-item', function() {
+			// show #expand div
+			let id = this.id;
+			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+			showdiv(d);
+		});
+
+		$('body').on('mouseleave', '.outline-item', function() {
+			// highlight associated comment box
+			$('#expand').hide();
+		});
+
+		// viz functions
 		$('#viz').on('click', function() {
 			redOutlineBorder($('#outline').children(":first").children('.list-group'));
 			show_text(nodes_all[0]);
