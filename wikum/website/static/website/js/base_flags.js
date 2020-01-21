@@ -2134,8 +2134,6 @@ function handle_channel_summarize_comments(res) {
 		delete_children_boxes(new_d.replace[0]);
 
 		d = new_d;
-	} else {
-		update(d.parent);
 	}
 
 	delete_summary_nodes = res.delete_summary_node_dids;
@@ -2190,6 +2188,7 @@ function handle_channel_summarize_comments(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	make_progress_bar();
 	nodes_all = update_nodes_all(nodes_all[0]);
+	if (res.subtype == "edit_summarize") update(d.parent);
 }
 
 function handle_channel_delete_tags(res) {
