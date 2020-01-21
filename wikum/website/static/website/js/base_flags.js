@@ -4543,6 +4543,7 @@ function show_text(d) {
 		if (d.article) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
+			redOutlineBorder(document.getElementById("viewAll"));
 		} else {
 			var summaryClass = d.replace_node? "summary_box" : "";
 			var summarized = d.summarized!=null && !d.summarized? "unsummarized" : "";
@@ -4567,6 +4568,7 @@ function show_text(d) {
 			text += '</article>';
 			highlight_node(d.id);
 			text = get_subtree_box(text, d, 1);
+			redOutlineBorder($('.outline-item#' + d.d_id));
 		}
 		$('#box').html(text);
 		//author_hover();
