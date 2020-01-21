@@ -4592,8 +4592,9 @@ function show_text(d) {
 		clear_box_top();
 		var objs = [];
 		var min_level = 50;
-		d3.selectAll('.clicked').each( function(data) {
-			if (!data.article) {
+		$('#outline .rb-red').each( function() {
+			var data = nodes_all.filter(o => o.d_id == this.id)[0];
+			if (data && !data.article) {
 				objs.push(data);
 				if (data.depth < min_level) {
 					min_level = data.depth;

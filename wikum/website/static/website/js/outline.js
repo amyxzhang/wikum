@@ -7,6 +7,7 @@ var highlighted_text = null;
 var highlighted_comm = null;
 var highlight_text = null;
 var ctrlIsPressed = false;
+var clicked_dids = {};
 var article_id = $('#article_id').text();
 
 /* Outline View Visualization */
@@ -14,6 +15,7 @@ var article_id = $('#article_id').text();
 $(document).keydown(function(evt) {
     if (evt.ctrlKey || evt.metaKey) {
     	ctrlIsPressed = true;
+    	clicked_dids = {};
     }
 });
 
@@ -126,16 +128,39 @@ $.ajax({type: 'GET',
 		});
 
 		$('body').on('click', '.outline-text', function(evt) {
-			// show only this item and children (subtree)
-			let id = this.id.substring(13);
-		    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
-		    // highlight this and children
-		    redOutlineBorder($(this).parent()[0]);
-		    // show appropriate comment boxes
-		    show_text(d);
-
 		    if (ctrlIsPressed) {
-		    	console.log("control held");
+		    	$('.rb-red').removeClass('rb-red');
+		    	let did = this.id.substring(13);
+		    	if (did !== 'viewAll') {
+		    		let outlineItem = $(this).parent()[0];
+			    	if (!(did in clicked_dids)) {
+			    		clicked_dids[did] = 1;
+			    	} else if (clicked_dids[did] === 0) {
+			    		clicked_dids[did] = 1;
+			    	} else if (clicked_dids[did] === 1) {
+			    		// clicked outline item is already in clicked_dids
+			    		clicked_dids[did] = 0;
+			    	}
+			    }
+
+			    for (const did in clicked_dids) {
+			    	if (clicked_dids[did] === 1) {
+			    		$('.outline-item#' + did).addClass('rb-red');
+			    	}
+			    }
+				
+				show_text('clicked');
+		  		if (highlight_text) {
+		      		$('#box').highlight(highlight_text);
+		      	}
+		    } else {
+		    	// show only this item and children (subtree)
+				let id = this.id.substring(13);
+			    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+			    // highlight this and children
+			    redOutlineBorder($(this).parent()[0]);
+			    // show appropriate comment boxes
+			    show_text(d);
 		    }
 		});
 
