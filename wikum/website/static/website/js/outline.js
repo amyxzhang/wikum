@@ -150,7 +150,6 @@ $.ajax({type: 'GET',
 	    	else {
 	    		expand(d);
 	    	}
-	    	show_text(d);
 		});
 
 		// // .outline-item functions

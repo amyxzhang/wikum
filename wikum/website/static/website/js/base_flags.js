@@ -3506,6 +3506,9 @@ function expand_all(id) {
 	d = nodes_all[id-1];
 	recurse_expand_all(d);
 	update(d);
+	$('.outline-item#' + d.d_id).find("#down-arrow").remove();
+	redOutlineBorder($('.outline-item#' + d.d_id));
+	show_text(d);
 }
 
 function dragend(d) {
@@ -3659,6 +3662,8 @@ function getState(d) {
 	let state = 'unsum_comment';
 	if (d.replace_node) {
 		state = 'summary';
+	} else if (d.hiddennode) {
+		state = 'hidden';
 	} else if (d.collapsed && !(d.summarized == false)) {
 		state = 'sum_comment';
 	}
@@ -4137,6 +4142,7 @@ function collapse_node(id) {
 		var outlineItem = '.outline-item#' + d.d_id;
 		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
 		update(d);
+		show_text(d);
 	}
 }
 
@@ -4148,6 +4154,7 @@ function expand_node(id) {
 		update(d);
 		$('.outline-item#' + d.d_id).find("#down-arrow").remove();
 		redOutlineBorder($('.outline-item#' + d.d_id));
+		show_text(d);
 	}
 }
 
@@ -4939,6 +4946,7 @@ function hide_replace_nodes(id) {
 		update(d);
 		var outlineItem = '.outline-item#' + d.d_id;
 		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
+		show_text(d);
 	}
 	text = '';
 	if (comment_id != d.d_id) {
@@ -4966,6 +4974,7 @@ function show_replace_nodes(id) {
 		update(d);
 		$('.outline-item#' + d.d_id).find("#down-arrow").remove();
 		redOutlineBorder($('.outline-item#' + d.d_id));
+		show_text(d);
 	}
 
 	text = '';
@@ -5079,6 +5088,8 @@ function show_hidden(id) {
 		d.hid = [];
 		d.hashidden = true;
 		update(d);
+		show_text(d);
+		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 }
 
@@ -5120,6 +5131,8 @@ function hide_hidden(id) {
 	if (d.hashidden) {
 		d.hashidden = false;
 		update(d);
+		show_text(d);
+		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 }
 

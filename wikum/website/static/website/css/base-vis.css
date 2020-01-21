@@ -404,6 +404,10 @@ textarea {
 	color: rgb(248, 200, 153);
 }
 
+#outline .m-hidden {
+	color: #990000;
+}
+
 #outline .m-summary {
 	color: rgb(238, 118, 0);
 }
