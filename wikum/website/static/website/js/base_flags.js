@@ -3467,7 +3467,7 @@ function collapse(d) {
 	if (d.replace_node) {
 		hide_replace_nodes(d.id);
 	} else {
-		collapse_node(d);
+		collapse_node(d.id);
 	}
 }
 
@@ -3475,7 +3475,7 @@ function expand(d) {
 	if (d.replace_node) {
 		show_replace_nodes(d.id);
 	} else {
-		expand_node(d);
+		expand_node(d.id);
 	}
 }
 
@@ -4126,7 +4126,8 @@ function expand_recurs(d) {
 }
 
 
-function collapse_node(d) {
+function collapse_node(id) {
+	var d = nodes_all[id-1];
 	if (d._children) {
 	    d.children = d._children;
 	    d._children = null;
@@ -4140,7 +4141,8 @@ function collapse_node(d) {
 }
 
 
-function expand_node(d) {
+function expand_node(id) {
+	var d = nodes_all[id-1];
 	var updated = expand_recurs(d);
 	if (updated) {
 		update(d);
@@ -4854,7 +4856,7 @@ function showdiv(d) {
 				text = '';
 			} else {
 				if (!d.parent_node) {
-					text = '<a onclick="collapse_node(' + d + ');">Collapse replies</a><BR><a onclick="expand_node(' + d + ');">Expand replies</a>';
+					text = '<a onclick="collapse_node(' + d.id + ');">Collapse replies</a><BR><a onclick="expand_node(' + d.id + ');">Expand replies</a>';
 				} else {
 					text = '';
 				}

@@ -161,10 +161,10 @@ $.ajax({type: 'GET',
 			showdiv(d);
 		});
 
-		$('body').on('mouseleave', '.outline-item', function() {
-			// highlight associated comment box
-			$('#expand').hide();
-		});
+		// $('#viz').on('mouseleave', function() {
+		// 	// hide #expand div if move mouse out of #outline
+		// 	$('#expand').hide();
+		// });
 
 		// viz functions
 		$('#viz').on('click', function() {
