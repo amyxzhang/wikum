@@ -300,7 +300,7 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
 
                 if affected:
-                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'd_id': data['id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'd_id': data['id'], 'tag': data['tag'], 'did_str': data['did_str']}
                     return response_dict
                 else:
                     return {'user': username}
@@ -336,7 +336,7 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
                     
                 if len(affected_comms) > 0:
-                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'dids': data['ids'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'dids': data['ids'], 'tag': data['tag'], 'did_str': data['did_str']}
                     return response_dict
                 else:
                     return {'user': username}
@@ -720,14 +720,11 @@ class WikumConsumer(WebsocketConsumer):
         try:
             article_id = self.article_id
             a = Article.objects.get(id=article_id)
-            print(article_id)
             id = data['id']
-            print(id)
             explain = data['comment']
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
             comment = Comment.objects.get(id=id)
-            print(comment)
             if comment.is_replacement:
                 action = 'delete_sum'
                 self.recurse_down_post(comment)
@@ -737,7 +734,6 @@ class WikumConsumer(WebsocketConsumer):
                 a.words_shown = count_words_shown(a)
                 a.last_updated = datetime.datetime.now()
                 a.save()
-                print(a)
                 affected = False
             else:
                 action = 'hide_comment'

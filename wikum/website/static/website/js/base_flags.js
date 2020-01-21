@@ -395,17 +395,15 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 	var ids = [];
 	var dids = [];
 	var did_str = '';
-	var id_str = '';
 
 	highlight_box(id);
 	did_str += d.d_id;
-	id_str += d.id;
 
 	$.ajax({type: 'GET',	
 			url: '/log_data?data=open_reply_modal&did=' + did_str,	
 			success: function(res) {	
 			}	
-	});	
+	});
 
 	var class_sum = "";	
 	if (d.replace_node) {	
@@ -749,12 +747,10 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	var dids = [];
 	var overlapping_tags = [];
 	var did_str = '';
-	var id_str = '';
 
 	highlight_box(id);
 	if (type == "tag_one") {
 		did_str += d.d_id;
-		id_str += d.id;
 		$.ajax({type: 'GET',
 				url: '/log_data?data=open_tag_modal&did=' + did_str + '&type=' + type,
 				success: function(res) {
@@ -776,12 +772,11 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		var datas = [];
 		var min_level = 50;
 
-		$('.clicked').each(function(index) {
-			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
-			if (id_clicked != 1) {
+		$('#outline .rb-red').each(function(index) {
+			var data = nodes_all.filter(o => o.d_id == this.id)[0];
+			if (data) {
+				var id_clicked = data.id;
 				ids.push(id_clicked);
-				var data = nodes_all[id_clicked-1];
-
 				if (index == 0) {
 					overlapping_tags = data.tags;
 				} else {
@@ -795,7 +790,6 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 				datas.push(data);
 				dids.push(data.d_id);
 				did_str += data.d_id + ',';
-				id_str += data.id + ',';
 				if (data.depth < min_level) {
 					min_level = data.depth;
 				}
@@ -842,9 +836,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		d_text += '<BR><div id="current_tags">Current tags: ';
 		for (var i=0; i<overlapping_tags.length; i++) {
 			if (is_dark(overlapping_tags[i][1])) {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +overlapping_tags[i][0] + '\')" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +overlapping_tags[i][0] + '\')" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +overlapping_tags[i][0] + '\')" style="background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +overlapping_tags[i][0] + '\')" style="background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
 			}
 		}
 		d_text += '</div><BR>';
@@ -890,8 +884,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			tag: tag,
 			article: article_id,
 			type: evt.data.type,
-			did_str: did_str,
-			id_str: id_str
+			did_str: did_str
 		};
 
 		if (evt.data.type == "tag_one") {
@@ -1084,7 +1077,7 @@ function cite_para(did, para_num) {
     copy_to_tinyMCE('[[comment_' + did + '_p' +  para_num + ']]\n');
 }
 
-function delete_tags(evt, dids, ids, tag) {
+function delete_tags(evt, dids, tag) {
 	var csrf = $('#csrf').text();
 	var data = {csrfmiddlewaretoken: csrf,
 		ids: dids,
@@ -1841,7 +1834,6 @@ function handle_channel_tags(res) {
 	if (res.color) {
 		var tag = res.tag;
 		var did_str = res.did_str;
-		var id_str = res.id_str;
 		if (res.type === 'tag_one') {
 			d = nodes_all.filter(o => o.d_id == res.d_id)[0];
 			d.tags.push([tag, res.color]);
@@ -1849,10 +1841,10 @@ function handle_channel_tags(res) {
 			d_text = '';
 			d_text2 = '';
 			if (is_dark(res.color)) {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			}
 
@@ -1874,10 +1866,10 @@ function handle_channel_tags(res) {
 			var d_text = '';
 			var d_text2 = '';
 			if (is_dark(res.color)) {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' + tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' + tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			}
 
@@ -1888,13 +1880,16 @@ function handle_channel_tags(res) {
 			}
 
 			var list_dids = res.dids;
+			var c;
 			for (var i=0; i<list_dids.length; i++) {
-				let c = nodes_all.filter(o => o.d_id == list_dids[i])[0];
+				var tags2 = '' + d_text2;
+				c = nodes_all.filter(o => o.d_id == list_dids[i])[0];
+				console.log(tags);
 				c.tags.push([tag, res.color]);
 				if ($('#tags_' + c.id).html() == "") {
-					$('#tags_' + c.id).html('Tags: ' + d_text2);
+					$('#tags_' + c.id).html('Tags: ' + tags2);
 				} else {
-					$('#tags_' + c.id).append(d_text2);
+					$('#tags_' + c.id).append(tags2);
 				}
 			}
 		}
@@ -2194,6 +2189,7 @@ function handle_channel_summarize_comments(res) {
 function handle_channel_delete_tags(res) {
 	var dids = res.dids;
 	var tag = res.tag;
+	console.log("delete tags");
 	if (res.type === 'delete_tags') {
 	    if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 		$('#current_tags').children().each(function(index, element) {
