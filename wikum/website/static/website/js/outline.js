@@ -118,6 +118,19 @@ $.ajax({type: 'GET',
 			}
 		});
 
+		$('body').on('click', '#down-arrow', function(evt) {
+			var outlineItem = $(this).parent()[0];
+			var child = $(this).parent().next()[0];
+			let id = outlineItem.id;
+			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+	    	if (child) {
+	    		collapse(d);
+	    	}
+	    	else {
+	    		expand(d);
+	    	}
+		});
+
 		$('body').on('click', '.outline-text', function(evt) {
 		    if (ctrlIsPressed) {
 		    	$('.rb-red').removeClass('rb-red');
@@ -145,11 +158,12 @@ $.ajax({type: 'GET',
 		      		$('#box').highlight(highlight_text);
 		      	}
 		    } else {
+		    	var outlineItem = $(this).parent()[0];
 		    	// show only this item and children (subtree)
 				let id = this.id.substring(13);
 			    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 			    // highlight this and children
-			    redOutlineBorder($(this).parent()[0]);
+			    redOutlineBorder(outlineItem);
 			    // show appropriate comment boxes
 			    show_text(d);
 		    }
