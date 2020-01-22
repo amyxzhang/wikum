@@ -83,16 +83,7 @@ $.ajax({type: 'GET',
 	success: function(flare) {
 		var outline = createOutlineString(flare);
 		document.getElementById("outline").innerHTML = outline;
-		var nestedSortables = document.getElementsByClassName("nested-sortable");
-		// Loop through each nested sortable element
-		for (var i = 0; i < nestedSortables.length; i++) {
-			new Sortable(nestedSortables[i], {
-				group: 'nested',
-				animation: 150,
-				fallbackOnBody: true,
-				swapThreshold: 0.65
-			});
-		}
+		setSortables();
 
 		redOutlineBorder(document.getElementById("viewAll"));
 
