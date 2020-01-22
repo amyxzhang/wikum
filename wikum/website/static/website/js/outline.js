@@ -97,25 +97,34 @@ $.ajax({type: 'GET',
 		$('body').on('mouseenter', '.outline-text', function() {
 			// highlight associated comment box
 			let did = this.id.substring(13);
-			let comment_box = $(".comment_box[data-did='" + did +"']");
-			
-			if (comment_box && comment_box.length) {
-				highlight_box(comment_box[0].id.substring(8));
+			if (did === 'viewAll') {
 				setTimeoutConst = setTimeout(function() {
-					$("#box").scrollTo("#" + comment_box[0].id, 500);
+					$('#box').animate({scrollTop: 0}, 500);
 				}, delay);
-				
+			} else {
+				let comment_box = $(".comment_box[data-did='" + did +"']");
+				if (comment_box && comment_box.length) {
+					highlight_box(comment_box[0].id.substring(8));
+					setTimeoutConst = setTimeout(function() {
+						$("#box").scrollTo("#" + comment_box[0].id, 500);
+					}, delay);
+					
+				}
 			}
 		});
 
 		$('body').on('mouseleave', '.outline-text', function() {
 			// highlight associated comment box
 			let did = this.id.substring(13);
-			let comment_box = $(".comment_box[data-did='" + did +"']");
-			
-			if (comment_box && comment_box.length) {
-				highlight_box(comment_box[0].id.substring(8));
+			if (did === 'viewAll') {
 				clearTimeout(setTimeoutConst);
+			} else {
+				let comment_box = $(".comment_box[data-did='" + did +"']");
+			
+				if (comment_box && comment_box.length) {
+					highlight_box(comment_box[0].id.substring(8));
+					clearTimeout(setTimeoutConst);
+				}
 			}
 		});
 
