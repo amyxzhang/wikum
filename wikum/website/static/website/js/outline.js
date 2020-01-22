@@ -17,11 +17,15 @@ $(document).keydown(function(evt) {
     if (evt.ctrlKey || evt.metaKey) {
     	ctrlIsPressed = true;
     	clicked_dids = {};
+    } else {
+    	ctrlIsPressed = false;
     }
 });
 
-$(document).keyup(function(){
-    ctrlIsPressed = false;
+$(document).keyup(function(evt){
+	if (evt.originalEvent.key === 'Meta' || evt.originalEvent.key === 'Control') {
+    	ctrlIsPressed = false;
+    }
 });
 
 var nodes_all = null;
@@ -143,6 +147,7 @@ $.ajax({type: 'GET',
 
 		$('body').on('click', '.outline-text', function(evt) {
 		    if (ctrlIsPressed) {
+		    	console.log('ctrlIsPressed');
 		    	$('.rb-red').removeClass('rb-red');
 		    	let did = this.id.substring(13);
 		    	if (did !== 'viewAll') {
