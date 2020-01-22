@@ -380,36 +380,45 @@ textarea {
 	border-top-left-radius: 0px;
 }
 
+#outline .list-group-item:last-child {
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
 #outline .list-group {
 	margin: 0;
 }
 
 #outline .outline-item {
+	align-items: center;
 	display: flex;
 	font-size: 12px;
 	height: 100%;
 }
 
 #outline .marker {
-	font-size: 40px;
-    margin-left: -5px;
-    margin-right: 3px;
+    margin-left: -3px;
+    margin-right: 5px;
+    height: 8px;
+	width: 8px;
+	border-radius: 50%;
+	display: inline-block;
 }
 
 #outline .m-unsum_comment {
-	color: rgb(161, 197, 209);
+	background-color: rgb(161, 197, 209);
 }
 
 #outline .m-sum_comment {
-	color: rgb(248, 200, 153);
+	background-color: rgb(248, 200, 153);
 }
 
 #outline .m-hidden {
-	color: #990000;
+	background-color: #990000;
 }
 
 #outline .m-summary {
-	color: rgb(238, 118, 0);
+	background-color: rgb(238, 118, 0);
 }
 
 #outline #viewAll {

@@ -3546,7 +3546,7 @@ function createOutlineInsideString(d, outline='') {
 			let state = getState(node);
 			outline += `<div class="list-group-item">`
 					+ `<div class="outline-item" id=${node.d_id}>`
-					+ `<span class="marker m-${state}" id="marker-${node.d_id}">&#183</span>`
+					+ `<span class="marker m-${state}" id="marker-${node.d_id}"></span>`
 					+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
 					+ title + `</span>`;
 			if ((state === 'summary' && node.replace && node.replace.length) || (node._children && node._children.length)) {
