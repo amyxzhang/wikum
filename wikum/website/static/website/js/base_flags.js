@@ -3527,6 +3527,10 @@ function getState(d) {
 	return state;
 }
 
+function stripHtml(text) {
+	return text.replace(/<[^>]*>?/gm, '');
+}
+
 function createOutlineInsideString(d, outline='') {
 	/** type (for coloring):
 	  *  comment = normal comment
@@ -3538,7 +3542,7 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
-			let title = node.summary? node.summary.substring(0,20) : node.name.substring(0,20);
+			let title = node.summary? stripHtml(node.summary.substring(0,20)) : stripHtml(node.name.substring(0,20));
 			let state = getState(node);
 			outline += `<div class="list-group-item">`
 					+ `<div class="outline-item" id=${node.d_id}>`

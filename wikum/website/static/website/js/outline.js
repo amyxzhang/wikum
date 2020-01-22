@@ -181,19 +181,6 @@ $.ajax({type: 'GET',
 		    }
 		});
 
-		// $('body').on('dblclick', '.outline-text', function() {
-		// 	var outlineItem = $(this).parent()[0];
-		// 	var child = $(this).parent().next()[0];
-		// 	let id = outlineItem.id;
-		// 	var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
-	 //    	if (child) {
-	 //    		collapse(d);
-	 //    	}
-	 //    	else {
-	 //    		expand(d);
-	 //    	}
-		// });
-
 		// // .outline-item functions
 		$('body').on('mouseenter', '.outline-item', function() {
 			// show #expand div
