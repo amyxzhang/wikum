@@ -3405,25 +3405,37 @@ function expand_all(id) {
 
 function setSortables() {
 	var nestedSortables = document.getElementsByClassName("nested-sortable");
-	console.log(nestedSortables);
 	// Loop through each nested sortable element
 	for (var i = 0; i < nestedSortables.length; i++) {
-		new Sortable(nestedSortables[i], {
-			group: 'nested',
-			animation: 150,
-			fallbackOnBody: true,
-			swapThreshold: 0.65,
-			onStart: function(evt) {
-				$('#expand').hide();
-			},
-			onEnd: function (evt) {
-		        // var items = evt.to.children;
-		        console.log(evt.to);
-		        console.log(evt.item);
-		        // save_node_position();
-		        // update(draggingNode.parent);
-		    }
-		});
+		if (nestedSortables[i].id !== 'nestedOutline') {
+			new Sortable(nestedSortables[i], {
+				group: 'nested',
+				animation: 150,
+				fallbackOnBody: true,
+				swapThreshold: 0.65,
+				onStart: function(evt) {
+					$('#expand').hide();
+				},
+				onEnd: function (evt) {
+			        var dragItem, newParent;
+			        let outlineItem = $(evt.item).find('.outline-item').get(0);
+			        if (outlineItem) dragItem = nodes_all.filter(o => o.d_id == outlineItem.id)[0];
+			        let ns = $(evt.to).closest('.nested-sortable');
+			        let outlineParent = ns.parent().find('.outline-item').get(0);
+			        if (outlineParent) {
+			        	if (outlineParent.id === 'viewAll') {
+			        		newParent = nodes_all[0];
+			        	} else {
+			        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
+			        	}
+			        } 
+			        console.log(dragItem);
+			        console.log(newParent);
+			        if (dragItem && newParent) save_node_position(dragItem, newParent);
+			        // update(draggingNode.parent);
+			    }
+			});
+		}
 	}
 }
 
@@ -3449,9 +3461,9 @@ function save_node_position(dragItem, newParent) {
 	        dragItem.parent = newParent;
 	        if (typeof newParent.children !== 'undefined' || typeof newParent._children !== 'undefined') {
 	            if (typeof newParent.children !== 'undefined') {
-	            	insert_node_to_children(dragItem, selectedNode);
+	            	insert_node_to_children(dragItem, newParent);
 	            } else {
-	            	insert_node_to_un_children(dragItem, selectedNode);
+	            	insert_node_to_un_children(dragItem, newParent);
 	            }
 	        } else {
 	        	if (newParent.replace_node) {
@@ -3462,7 +3474,7 @@ function save_node_position(dragItem, newParent) {
 	        	}
 	        }
 	        // Make sure that the node being added to is expanded so user can see added node is correctly moved
-	        expand(newParent);
+	        //expand(newParent);
 
 	        dragItem.x0 = 0;
 			dragItem.y0 = 0;
