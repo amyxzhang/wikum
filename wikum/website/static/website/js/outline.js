@@ -147,7 +147,6 @@ $.ajax({type: 'GET',
 
 		$('body').on('click', '.outline-text', function(evt) {
 		    if (ctrlIsPressed) {
-		    	console.log('ctrlIsPressed');
 		    	$('.rb-red').removeClass('rb-red');
 		    	let did = this.id.substring(13);
 		    	if (did !== 'viewAll') {
