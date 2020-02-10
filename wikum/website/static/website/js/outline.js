@@ -150,8 +150,6 @@ $.ajax({type: 'GET',
 			d = selectGroup ? nodes_all.filter(o => o.d_id == selectGroup.id)[0] : nodes_all[0];
 			var outlineText = $(selectGroup).children('.outline-text').get(0);
 			var child = $(selectGroup).next().get(0);
-			console.log(lastClicked);
-			console.log(outlineText);
 			if (lastClicked === outlineText) {
 	    		if (child) {
 		    		collapse(d);
@@ -166,7 +164,6 @@ $.ajax({type: 'GET',
 			    show_text(d);
 	    	}
 	    	lastClicked = outlineText;
-	    	console.log(lastClicked);
 		});
 
 		$('body').on('mouseenter', '.list-group-line', function(evt) {
