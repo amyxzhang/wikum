@@ -150,6 +150,8 @@ $.ajax({type: 'GET',
 			d = selectGroup ? nodes_all.filter(o => o.d_id == selectGroup.id)[0] : nodes_all[0];
 			var outlineText = $(selectGroup).children('.outline-text').get(0);
 			var child = $(selectGroup).next().get(0);
+			console.log(lastClicked);
+			console.log(outlineText);
 			if (lastClicked === outlineText) {
 	    		if (child) {
 		    		collapse(d);
@@ -164,6 +166,7 @@ $.ajax({type: 'GET',
 			    show_text(d);
 	    	}
 	    	lastClicked = outlineText;
+	    	console.log(lastClicked);
 		});
 
 		$('body').on('mouseenter', '.list-group-line', function(evt) {
@@ -210,6 +213,7 @@ $.ajax({type: 'GET',
 			    // show only this item and children (subtree)
 				let id = this.id.substring(13);
 			    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+			    console.log(lastClicked);
 		    	if (lastClicked === this) {
 		    		if (child) {
 			    		collapse(d);
@@ -224,6 +228,7 @@ $.ajax({type: 'GET',
 				    show_text(d);
 		    	}
 		    	lastClicked = this;
+		    	console.log(lastClicked);
 		    }
 		});
 
@@ -252,9 +257,12 @@ $.ajax({type: 'GET',
 		// });
 
 		// viz functions
-		$('#viz').on('click', function() {
-			redOutlineBorder($('#outline').children(":first").children('.list-group'));
-			show_text(nodes_all[0]);
+		$('#viz').on('click', function(evt) {
+			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('outline-text'))) {
+				redOutlineBorder($('#outline').children(":first").children('.list-group'));
+				show_text(nodes_all[0]);
+				lastClicked = $('#outline-text-viewAll');
+			}
 		});
 	},
 	error: function() {
