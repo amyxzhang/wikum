@@ -400,6 +400,11 @@ textarea {
 	position: absolute;
     left: 0;
     top: 0;
+    z-index: 10;
+}
+
+#outline .list-group-line.line-hover {
+	background-color: red;
 }
 
 #outline .list-group-line.outline-selected {

@@ -145,6 +145,39 @@ $.ajax({type: 'GET',
 	    	}
 		});
 
+		$('body').on('click', '.list-group-line', function(evt) {
+			var selectGroup = $(this).closest('.list-group-item').children(":first").get(0);
+			d = selectGroup ? nodes_all.filter(o => o.d_id == selectGroup.id)[0] : nodes_all[0];
+			var outlineText = $(selectGroup).children('.outline-text').get(0);
+			var child = $(selectGroup).next().get(0);
+			if (lastClicked === outlineText) {
+	    		if (child) {
+		    		collapse(d);
+		    	}
+		    	else {
+		    		expand(d);
+		    	}
+	    	} else {
+			    // highlight this and children
+			    redOutlineBorder(selectGroup);
+			    // show appropriate comment boxes
+			    show_text(d);
+	    	}
+	    	lastClicked = outlineText;
+		});
+
+		$('body').on('mouseenter', '.list-group-line', function(evt) {
+			$(this).closest('.list-group').children('.list-countainer').each(function () {
+				$(this).children('.list-group-line').addClass('line-hover');
+			});
+		});
+
+		$('body').on('mouseleave', '.list-group-line', function(evt) {
+			$(this).closest('.list-group').children('.list-countainer').each(function () {
+				$(this).children('.list-group-line').removeClass('line-hover');
+			});
+		});
+
 		$('body').on('click', '.outline-text', function(evt) {
 		    if (ctrlIsPressed) {
 		    	$('.rb-red').removeClass('rb-red');

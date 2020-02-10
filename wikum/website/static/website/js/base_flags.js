@@ -4898,7 +4898,7 @@ var stringToColour = function(str) {
 
 function redOutlineBorder(element) {
 	$('.rb-red').removeClass('rb-red');
-	if (element.id !== 'viewAll') $(element).addClass('rb-red');
+	if (element && element.id !== 'viewAll') $(element).addClass('rb-red');
 	var child = $(element).next()[0];
 	$(child).addClass('rb-red');
 
