@@ -3544,16 +3544,19 @@ function createOutlineInsideString(d, outline='') {
 			var node = d.children[i];
 			let title = node.summary? stripHtml(node.summary).substring(0,20) : stripHtml(node.name).substring(0,20);
 			let state = getState(node);
-			outline += `<div class="list-group-item">`
-					+ `<div class="outline-item" id=${node.d_id}>`
-					+ `<span class="marker m-${state}" id="marker-${node.d_id}"></span>`
-					+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
-					+ title + `</span>`;
-			if ((state === 'summary' && node.replace && node.replace.length) || (node._children && node._children.length)) {
-				outline += '<span id="down-arrow">&#9660</span>';
-			}
-			outline += `</div>`;
-			outline += createOutlineInsideString(d.children[i]);
+			outline += `<div class="list-countainer">`;
+				outline += `<div class="list-group-line"> </div>`;
+				outline += `<div class="list-group-item">`
+						+ `<div class="outline-item" id=${node.d_id}>`
+						+ `<span class="marker m-${state}" id="marker-${node.d_id}"></span>`
+						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
+						+ title + `</span>`;
+				if ((state === 'summary' && node.replace && node.replace.length) || (node._children && node._children.length)) {
+					outline += '<span id="down-arrow">&#9660</span>';
+				}
+				outline += `</div>`;
+				outline += createOutlineInsideString(d.children[i]);
+				outline += `</div>`;
 			outline += `</div>`;
 		}
 		outline += `</div>`;

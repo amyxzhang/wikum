@@ -369,10 +369,33 @@ textarea {
 	width: 220px;
 }
 
+#outline .list-group {
+	display: flex;
+	flex-direction: column;
+}
+
+#outline .list-countainer {
+	display: flex;
+	flex-direction: row;
+	position: relative;
+}
+
+#outline .list-group-line {
+	background-color: #BEBEBE;
+	width: 2px;
+	max-width: 2px;
+	height: 100%;
+	position: absolute;
+    left: 0;
+    top: 0;
+}
+
+
 #outline .list-group-item {
 	border: none;
-	border-left: 1px solid #BEBEBE;
+	/* border-left: 1px solid #BEBEBE; */
 	padding: 10px 0 10px 15px;
+	background-color: transparent;
 }
 
 #outline .list-group-item:first-child {
@@ -389,11 +412,15 @@ textarea {
 	margin: 0;
 }
 
+#outline .list-group-item {
+	display: flex;
+	flex-direction: column;
+}
+
 #outline .outline-item {
 	align-items: center;
 	display: flex;
 	font-size: 12px;
-	height: 100%;
 }
 
 #outline .marker {
@@ -440,7 +467,7 @@ textarea {
 }
 
 .rb-red {
-	font-weight: bold;
+	/* font-weight: bold; */
 }
 
 text {
