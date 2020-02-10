@@ -148,7 +148,7 @@ $.ajax({type: 'GET',
 		$('body').on('click', '.list-group-line', function(evt) {
 			var selectGroup = $(this).closest('.list-group-item').children(":first").get(0);
 			d = selectGroup ? nodes_all.filter(o => o.d_id == selectGroup.id)[0] : nodes_all[0];
-			var outlineText = $(selectGroup).children('.outline-text').get(0);
+			var outlineText = $(selectGroup).children('.outline-text')[0];
 			var child = $(selectGroup).next().get(0);
 			if (lastClicked === outlineText) {
 	    		if (child) {
@@ -178,12 +178,13 @@ $.ajax({type: 'GET',
 			});
 		});
 
-		$('body').on('click', '.outline-text', function(evt) {
+		$('body').on('click', '.outline-text, .marker', function(evt) {
+			var outlineText = $(this).parent().children('.outline-text')[0];
 		    if (ctrlIsPressed) {
 		    	$('.rb-red').removeClass('rb-red');
-		    	let did = this.id.substring(13);
+		    	let did = outlineText.id.substring(13);
 		    	if (did !== 'viewAll') {
-		    		let outlineItem = $(this).parent()[0];
+		    		let outlineItem = $(outlineText).parent()[0];
 			    	if (!(did in clicked_dids)) {
 			    		clicked_dids[did] = 1;
 			    	} else if (clicked_dids[did] === 0) {
@@ -205,13 +206,12 @@ $.ajax({type: 'GET',
 		      		$('#box').highlight(highlight_text);
 		      	}
 		    } else {
-		    	var outlineItem = $(this).parent()[0];
-			    var child = $(this).parent().next()[0];
+		    	var outlineItem = $(outlineText).parent()[0];
+			    var child = $(outlineText).parent().next()[0];
 			    // show only this item and children (subtree)
-				let id = this.id.substring(13);
+				let id = outlineText.id.substring(13);
 			    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
-			    console.log(lastClicked);
-		    	if (lastClicked === this) {
+		    	if (lastClicked === outlineText) {
 		    		if (child) {
 			    		collapse(d);
 			    	}
@@ -224,12 +224,11 @@ $.ajax({type: 'GET',
 				    // show appropriate comment boxes
 				    show_text(d);
 		    	}
-		    	lastClicked = this;
-		    	console.log(lastClicked);
+		    	lastClicked = outlineText;
 		    }
 		});
 
-		var expandDelay=500, expandSetTimeoutConst;
+		var expandDelay=1000, expandSetTimeoutConst;
 		// // .outline-item functions
 		$('body').on('mouseenter', '.outline-item', function() {
 			// show #expand div
@@ -255,7 +254,7 @@ $.ajax({type: 'GET',
 
 		// viz functions
 		$('#viz').on('click', function(evt) {
-			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('outline-text'))) {
+			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('outline-text') || $(evt.target).hasClass('marker'))) {
 				redOutlineBorder($('#outline').children(":first").children('.list-group'));
 				show_text(nodes_all[0]);
 				lastClicked = $('#outline-text-viewAll');

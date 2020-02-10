@@ -453,6 +453,11 @@ textarea {
 	display: inline-block;
 }
 
+#outline .marker:hover {
+	cursor: pointer;
+	border: 1.5px solid black;
+}
+
 #outline .marker.outline-selected {
 	border: 1.5px solid black;
 }
