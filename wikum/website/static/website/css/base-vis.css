@@ -370,6 +370,17 @@ textarea {
     overflow-x: hidden;
 }
 
+#outline-text-viewAll .article-full {
+	visibility: hidden;
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+}
+
+#outline-text-viewAll:hover .article-full {
+  visibility: visible;
+}
+
 #outline .list-group {
 	display: flex;
 	flex-direction: column;
