@@ -194,12 +194,15 @@ $.ajax({type: 'GET',
 		    }
 		});
 
+		var expandDelay=500, expandSetTimeoutConst;
 		// // .outline-item functions
 		$('body').on('mouseenter', '.outline-item', function() {
 			// show #expand div
 			let id = this.id;
-			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
-			showdiv(d);
+			expandSetTimeoutConst = setTimeout(function() {
+					var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
+					showdiv(d);
+				}, expandDelay);
 		});
 
 		$('body').on('mouseleave', '.outline-item', function() {
@@ -207,6 +210,7 @@ $.ajax({type: 'GET',
 			let id = this.id;
 			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 			hidediv(d);
+			clearTimeout(expandSetTimeoutConst);
 		});
 
 		// $('body').on('mouseleave', '#expand', function() {
