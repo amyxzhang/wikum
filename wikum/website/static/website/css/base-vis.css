@@ -391,6 +391,10 @@ textarea {
     top: 0;
 }
 
+#outline .list-group-line.outline-selected {
+	background-color: red;
+}
+
 
 #outline .list-group-item {
 	border: none;
@@ -431,6 +435,10 @@ textarea {
 	width: 10px;
 	border-radius: 50%;
 	display: inline-block;
+}
+
+#outline .marker.outline-selected {
+	border: 1.5px solid black;
 }
 
 #outline .m-unsum_comment {

@@ -4899,6 +4899,17 @@ function redOutlineBorder(element) {
 	if (element.id !== 'viewAll') $(element).addClass('rb-red');
 	var child = $(element).next()[0];
 	$(child).addClass('rb-red');
+
+	$('.outline-selected').removeClass('outline-selected');
+	/* outline the circle */
+	if ($(element).children('.marker') && $(element).children('.marker').length) {
+		$(element).children('.marker').addClass('outline-selected');
+	}
+	/* highlight the line */
+	$(child).children('.list-countainer').each(function () {
+		$(this).children('.list-group-line').addClass('outline-selected');
+	});
+	
 }
 
 function color(d) {
