@@ -478,7 +478,7 @@ textarea {
 	background-color: rgb(238, 118, 0); 
 }
 
-#outline .m-sum_unsum_children {
+#outline .m-summary_partial {
 	background: linear-gradient(-45deg, rgb(161, 197, 209), rgb(161, 197, 209) 50%, white 50%, white 50%, rgb(238, 118, 0) 50%);
 }
 

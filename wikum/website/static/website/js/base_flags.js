@@ -3517,13 +3517,17 @@ function check_clicked_node(d, clicked_ids) {
 function getState(d) {
 	let state = 'unsum_comment';
 	if (d.replace_node) {
-		state = 'summary';
+		if (has_unsummarized_children(d)) {
+			state = 'summary_partial';
+		} else {
+			state = 'summary';
+		}
 	} else if (d.hiddennode) {
 		state = 'hidden';
 	} else if (d.collapsed && !(d.summarized == false)) {
 		state = 'sum_comment';
 	}
-	// todo: partial summarized state
+	// todo: improve speed of summary_partial
 	return state;
 }
 
@@ -3551,7 +3555,7 @@ function createOutlineInsideString(d, outline='') {
 						+ `<span class="marker m-${state}" id="marker-${node.d_id}"></span>`
 						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
 						+ title + `</span>`;
-				if ((state === 'summary' && node.replace && node.replace.length) || (node._children && node._children.length)) {
+				if (((state === 'summary' || state ==='summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length)) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
@@ -4642,22 +4646,28 @@ function mark_children_summarized(d) {
 	}
 }
 
-// only works if d showing in nodes_all
 function has_unsummarized_children(d) {
-	if (d.summarized == false) {
+	if (!d.summarized) {
 		return true;
 	} else {
+		// either summary node or summarized comment
+		var huc = false;
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
-				return false || has_unsummarized_children(d.children[i]);
+				huc = huc || has_unsummarized_children(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				huc = huc || has_unsummarized_children(d._children[i]);
 			}
 		}
 		if (d.replace) {
 			for (var i=0; i<d.replace.length; i++) {
-				return false || has_unsummarized_children(d.replace[i]);
+				huc = huc || has_unsummarized_children(d.replace[i]);
 			}
 		}
-		return false;
+		return huc;
 	}
 }
 
