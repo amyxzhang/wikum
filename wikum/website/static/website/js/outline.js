@@ -229,7 +229,6 @@ $.ajax({type: 'GET',
 		});
 
 		var expandDelay=1000, expandSetTimeoutConst;
-		// // .outline-item functions
 		$('body').on('mouseenter', '.outline-item', function() {
 			// show #expand div
 			let id = this.id;

@@ -459,7 +459,7 @@ textarea {
 }
 
 #outline .marker.outline-selected {
-	border: 1.5px solid black;
+	border: 1.5px solid red;
 }
 
 #outline .m-unsum_comment {
@@ -475,7 +475,11 @@ textarea {
 }
 
 #outline .m-summary {
-	background-color: rgb(238, 118, 0);
+	background-color: rgb(238, 118, 0); 
+}
+
+#outline .m-sum_unsum_children {
+	background: linear-gradient(-45deg, rgb(161, 197, 209), rgb(161, 197, 209) 50%, white 50%, white 50%, rgb(238, 118, 0) 50%);
 }
 
 #outline #viewAll {
@@ -512,6 +516,7 @@ text {
 	background: rgba(255,255,255,0.8);
 	border: 1px #cccccc solid;
 	text-align: right;
+	z-index: 100;
 }
 
 a {

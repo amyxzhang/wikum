@@ -4432,7 +4432,7 @@ function set_expand_position(d) {
 		node_width = (d.size + 400)/65;
 	}
 	$('#expand').css({top: bbox.top,
-		left: bbox.left - width});
+		left: bbox.left - width - 10});
 }
 
 function showdiv(d) {
@@ -4445,8 +4445,8 @@ function showdiv(d) {
 				if (text != '') {
 					text += '<BR>';
 				}
-				text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
-				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+				text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Subtree</a>';
+				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 				if (d.hid && d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
 				}				
@@ -4504,12 +4504,12 @@ function showdiv(d) {
 					if (text != '') {
 						text += '<BR>';
 					}
-					text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner +'">See Isolated Subtree</a>';
+					text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner +'">See Subtree</a>';
 				
 
 				}
 			}
-			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 
 			if (d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' hidden </a>';
@@ -4576,8 +4576,8 @@ function hide_replace_nodes(id) {
 	}
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -4605,8 +4605,8 @@ function show_replace_nodes(id) {
 
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 
 	}
 	if (text != '') {
