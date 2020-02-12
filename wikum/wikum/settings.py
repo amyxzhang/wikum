@@ -72,7 +72,7 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.wikum.csail.mit.edu', 'localhost', '128.52.139.135']
+ALLOWED_HOSTS = ['wikum.org', '.wikum.csail.mit.edu', 'localhost', '128.52.139.135']
 
 #database connection max age
 CONN_MAX_AGE = 0
