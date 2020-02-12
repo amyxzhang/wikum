@@ -38,16 +38,22 @@ def get_article(url, user, source, num):
             id = result['response'][0]['id']
 
         elif source.source_name == "Reddit":
-            r = praw.Reddit(client_id=PRAW_CLIENT_ID,
-                            client_secret=PRAW_CLIENT_SECRET,
-                            user_agent=USER_AGENT,
-                            username=PRAW_USERNAME,
-                            password=PRAW_PASSWORD
-                            )
-            submission = r.submission(url)
-            title = submission.title
-            link = url
-            id = submission.id
+            # r = praw.Reddit(client_id=PRAW_CLIENT_ID,
+            #                 client_secret=PRAW_CLIENT_SECRET,
+            #                 user_agent=USER_AGENT,
+            #                 username=PRAW_USERNAME,
+            #                 password=PRAW_PASSWORD
+            #                 )
+            # submission = r.submission(url)
+            # title = submission.title
+            # link = url
+            # id = submission.id
+
+            link = url + "/.json"
+            rr = requests.get(link, headers = {'User-agent': 'your bot 0.1'})
+            r = rr.json()
+            title = r[0]["data"]["children"][0]["data"]["title"]
+            id = r[0]["data"]["children"][0]["data"]["name"]
 
         elif source.source_name == "Wikipedia Talk Page":
             url_parts = url.split('/wiki/')
@@ -96,7 +102,6 @@ def get_article(url, user, source, num):
             link = urllib.parse.unquote(url)
             r = requests.get('https://join.gov.tw/joinComments/board/policy/{0}'.format(id))
             title = r.json()['result'][0]['board']['title']
-
         article, created = Article.objects.get_or_create(disqus_id=id, title=title, url=link, source=source, owner=user)
         article.last_updated = datetime.datetime.now()
         article.save()
@@ -354,21 +359,28 @@ def import_wiki_talk_posts(comments, article, reply_to, current_task, total_coun
     return total_count
 
 
-def get_reddit_posts(article, current_task, total_count):
-    r = praw.Reddit(client_id=PRAW_CLIENT_ID,
-                    client_secret=PRAW_CLIENT_SECRET,
-                    user_agent=USER_AGENT,
-                    username=PRAW_USERNAME,
-                    password=PRAW_PASSWORD
-                   )
+def get_reddit_posts(article, current_task, total_count, url):
+    # r = praw.Reddit(client_id=PRAW_CLIENT_ID,
+    #                 client_secret=PRAW_CLIENT_SECRET,
+    #                 user_agent=USER_AGENT,
+    #                 username=PRAW_USERNAME,
+    #                 password=PRAW_PASSWORD
+    #                )
     
-    submission = r.submission(submission_id=article.disqus_id)
+    # submission = r.submission(submission_id=article.disqus_id)
 
-    submission.comments.replace_more(limit=None, threshold=0)
+    # submission.comments.replace_more(limit=None, threshold=0)
 
-    all_forest_comments = submission.comments
+    # all_forest_comments = submission.comments
+    # print(submission)
 
-    import_reddit_posts(all_forest_comments, article, None, current_task, total_count)
+    # import_reddit_posts(all_forest_comments, article, None, current_task, total_count)
+    link = url + "/.json"
+    rr = requests.get(link, headers = {'User-agent': 'your bot 0.1'})
+    r = rr.json()
+    content = r[0]["data"]["children"][0]
+    r = r[1]["data"]["children"]
+    import_reddit_posts(r, article, None, current_task, total_count, content)
 
 def count_replies(article):
     comments = Comment.objects.filter(article=article)
@@ -464,70 +476,135 @@ def get_join_taiwan_posts(article, current_task, total_count):
         page += 1
 
 
-def import_reddit_posts(comments, article, reply_to, current_task, total_count):
+def import_reddit_posts(comments, article, reply_to, current_task, total_count, title=""):
+    if title == "":
+        if current_task and total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                    meta={'count': total_count})
 
-    if current_task and total_count % 3 == 0:
-        current_task.update_state(state='PROGRESS',
-                                  meta={'count': total_count})
+        for comment in comments:
+            print("recurse 1")
+            print(comment)
+            comment_id = comment["data"]["id"]
+            comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
 
-    for comment in comments:
+            if comment_wikum.count() == 0:
 
-        comment_id = comment.id
+                # from praw.errors import NotFound
+
+                try:
+                    author_id = comment["data"]["author_fullname"]
+                    comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
+                    if comment_author.count() > 0:
+                        comment_author = comment_author[0]
+                    else:
+                        comment_author = CommentAuthor.objects.create(username=comment["data"]["author"],
+                                                                disqus_id=author_id,
+                                                                joined_at=datetime.datetime.fromtimestamp(int(comment["data"]["created_utc"])),
+                                                                is_reddit=True,
+                                                                is_mod=comment["data"]["can_mod_post"],
+                                                                is_gold=comment["data"]["author_premium"],
+                                                                #   comment_karma=comment.author.comment_karma,
+                                                                #   link_karma=comment.author.link_karma
+                                                                )
+                except:
+                    comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=False)
+                # except NotFound:
+                #     comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=False)
+
+                html_text = comment["data"]["body"]
+                html_text = re.sub('<div class="md">', '', html_text)
+                html_text = re.sub('</div>', '', html_text)
+
+                total_count += 1
+
+                comment_wikum = Comment.objects.create(article = article,
+                                                author = comment_author,
+                                                text = html_text,
+                                                disqus_id = comment["data"]["id"],
+                                                reply_to_disqus = reply_to,
+                                                text_len = len(html_text),
+                                                likes = comment["data"]["ups"],
+                                                dislikes = comment["data"]["downs"],
+                                                reports = len(comment["data"]["user_reports"]),
+                                                points = comment["data"]["score"],
+                                                controversial_score = comment["data"]["controversiality"],
+                                                created_at=datetime.datetime.fromtimestamp(int(comment["data"]["created_utc"])),
+                                                edited = comment["data"]["edited"],
+                                                flagged = len(comment["data"]["user_reports"]) > 0,
+                                                #  deleted = comment["data"]["banned_by"] != None,
+                                                #  approved = comment["data"]["approved_by"] != None,
+                                                )
+                comment_wikum.import_order = comment_wikum.id
+                comment_wikum.save()
+
+                try:
+                    replies = comment["data"]["replies"]["data"]["children"]
+                    total_count = import_reddit_posts(replies, article, comment["data"]["id"], current_task, total_count)
+                except:
+                    pass
+
+        return total_count
+    else:
+        if current_task and total_count % 3 == 0:
+            current_task.update_state(state='PROGRESS',
+                                    meta={'count': total_count})
+        comment = title
+        comment_id = comment["data"]["id"]
         comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
 
         if comment_wikum.count() == 0:
 
-            from praw.errors import NotFound
+            # from praw.errors import NotFound
 
             try:
-                author_id = comment.author.id
+                author_id = comment["data"]["author_fullname"]
                 comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
                 if comment_author.count() > 0:
                     comment_author = comment_author[0]
                 else:
-                    comment_author = CommentAuthor.objects.create(username=comment.author.name,
-                                                              disqus_id=author_id,
-                                                              joined_at=datetime.datetime.fromtimestamp(int(comment.author.created_utc)),
-                                                              is_reddit=True,
-                                                              is_mod=comment.author.is_mod,
-                                                              is_gold=comment.author.is_gold,
-                                                              comment_karma=comment.author.comment_karma,
-                                                              link_karma=comment.author.link_karma
-                                                              )
-            except AttributeError:
+                    comment_author = CommentAuthor.objects.create(username=comment["data"]["author"],
+                                                            disqus_id=author_id,
+                                                            joined_at=datetime.datetime.fromtimestamp(int(comment["data"]["created_utc"])),
+                                                            is_reddit=True,
+                                                            is_mod=comment["data"]["can_mod_post"],
+                                                            is_gold=comment["data"]["author_premium"],
+                                                            #   comment_karma=comment.author.comment_karma,
+                                                            #   link_karma=comment.author.link_karma
+                                                            )
+            except:
                 comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=False)
-            except NotFound:
-                comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=False)
+            # except NotFound:
+            #     comment_author = CommentAuthor.objects.get(disqus_id='anonymous', is_wikipedia=False)
 
-            html_text = comment.body_html
+            html_text = comment["data"]["selftext"]
             html_text = re.sub('<div class="md">', '', html_text)
             html_text = re.sub('</div>', '', html_text)
 
             total_count += 1
 
             comment_wikum = Comment.objects.create(article = article,
-                                             author = comment_author,
-                                             text = html_text,
-                                             disqus_id = comment.id,
-                                             reply_to_disqus = reply_to,
-                                             text_len = len(html_text),
-                                             likes = comment.ups,
-                                             dislikes = comment.downs,
-                                             reports = len(comment.user_reports),
-                                             points = comment.score,
-                                             controversial_score = comment.controversiality,
-                                             created_at=datetime.datetime.fromtimestamp(int(comment.created_utc)),
-                                             edited = comment.edited,
-                                             flagged = len(comment.user_reports) > 0,
-                                             deleted = comment.banned_by != None,
-                                             approved = comment.approved_by != None,
-                                             )
+                                            author = comment_author,
+                                            text = html_text,
+                                            disqus_id = comment["data"]["id"],
+                                            reply_to_disqus = reply_to,
+                                            text_len = len(html_text),
+                                            likes = comment["data"]["ups"],
+                                            dislikes = comment["data"]["downs"],
+                                            reports = len(comment["data"]["user_reports"]),
+                                            points = comment["data"]["score"],
+                                            # controversial_score = comment["data"]["controversiality"],
+                                            created_at=datetime.datetime.fromtimestamp(int(comment["data"]["created_utc"])),
+                                            edited = comment["data"]["edited"],
+                                            flagged = len(comment["data"]["user_reports"]) > 0,
+                                            #  deleted = comment["data"]["banned_by"] != None,
+                                            #  approved = comment["data"]["approved_by"] != None,
+                                            )
             comment_wikum.import_order = comment_wikum.id
             comment_wikum.save()
-            replies = comment.replies
-            total_count = import_reddit_posts(replies, article, comment.id, current_task, total_count)
 
-    return total_count
+            total_count = import_reddit_posts(comments, article, None, current_task, total_count, "")
+        return total_count
 
 def import_disqus_posts(result, article):
     count = 0

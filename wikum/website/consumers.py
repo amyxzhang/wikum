@@ -16,7 +16,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
-from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, count_article
+from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse, delete_node
+from website.engine import count_words_shown, count_article
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ class WikumConsumer(WebsocketConsumer):
         # message['path'] = /ws/article/[article_name]/visualization_flags
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
+        self.user_to_locked_nodes = {}
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -47,6 +49,23 @@ class WikumConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
+        # Release locks held by user
+        username = self.scope["user"].username if self.scope["user"].is_authenticated else None
+        print(username)
+        ids = []
+        if username in self.user_to_locked_nodes:
+            ids = self.user_to_locked_nodes[username]
+        message_ids = ids[:]
+        data = {'to_lock': False, 'ids': ids, 'type': 'update_locks'}
+        message = {'user': username, 'type': 'update_locks', 'ids': message_ids, 'to_lock': False}
+        self.handle_update_locks(data, username)
+        async_to_sync(self.channel_layer.group_send)(
+            self.group_name,
+            {
+                'type': 'handle.data',
+                'message': message
+            }
+        )
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
             self.group_name,
@@ -70,14 +89,35 @@ class WikumConsumer(WebsocketConsumer):
         # conform to the expected message format.
         try:
             data = json.loads(text_data)
+            user = self.scope["user"]
+            req_user = user if user.is_authenticated else None
+            username = user.username if user.is_authenticated else None
+            if user.is_anonymous:
+                    username = "Anonymous"
             if 'type' in data:
                 data_type = data['type']
                 if data_type == 'new_node' or data_type == 'reply_comment':
-                    message = self.handle_message(data, self.scope["user"])
+                    message = self.handle_message(data, username)
                 elif data_type == 'tag_one' or data_type == 'tag_selected':
-                    message = self.handle_tags(data, self.scope["user"])
+                    message = self.handle_tags(data, username)
                 elif data_type == 'delete_tags':
-                    message = self.handle_delete_tags(data, self.scope["user"])
+                    message = self.handle_delete_tags(data, username)
+                elif data_type == 'update_locks':
+                    message = self.handle_update_locks(data, username)
+                elif data_type == 'summarize_comment':
+                    message = self.handle_summarize_comment(data, username)
+                elif data_type == 'summarize_selected':
+                    message = self.handle_summarize_selected(data, username)
+                elif data_type == 'summarize_comments':
+                    message = self.handle_summarize_comments(data, username)
+                elif data_type == 'hide_comment':
+                    message = self.handle_hide_comment(data, username)
+                elif data_type == 'hide_comments':
+                    message = self.handle_hide_comments(data, username)
+                elif data_type == 'hide_replies':
+                    message = self.handle_hide_replies(data, username)
+                elif data_type == 'delete_comment_summary':
+                    message = self.handle_delete_comment_summary(data, username)
         except ValueError:
             log.debug("ws message isn't json text=%s", text)
             return
@@ -91,12 +131,38 @@ class WikumConsumer(WebsocketConsumer):
                 }
             )
 
+    def mark_children_summarized(self, post):
+        post.summarized = True
+        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+        for child in children:
+            child.summarized = True
+            child.save()
+            self.mark_children_summarized(child)
+
+    def recurse_down_post(self, post):
+        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+        for child in children:
+            child.json_flatten = ""
+            child.save()
+            self.recurse_down_post(child)
+
+    def recurse_down_hidden(self, replies, count):
+        for reply in replies:
+            if not reply.hidden:
+                reply.hidden = True
+                reply.json_flatten = ''
+                reply.save()
+                count += 1
+                reps = Comment.objects.filter(reply_to_disqus=reply.disqus_id, article=reply.article)
+                count = self.recurse_down_hidden(reps, count)
+        return count
+
     def handle_data(self, event):
         message = event['message']
         self.send(text_data=json.dumps(message))
 
 
-    def handle_message(self, data, user):
+    def handle_message(self, data, username):
         article_id = self.article_id
         article = Article.objects.get(id=article_id)
         try:
@@ -157,35 +223,38 @@ class WikumConsumer(WebsocketConsumer):
 
                 new_comment.save()
                 action = data['type']
-                h = History.objects.create(user=req_user,
-                                           article=article,
-                                           action=action,
-                                           explanation=explanation)
-
-                h.comments.add(new_comment)
+                
                 recurse_up_post(new_comment)
 
                 recurse_down_num_subtree(new_comment)
 
                 # make_vector(new_comment, article)
                 article.comment_num = article.comment_num + 1
-                article.percent_complete = count_article(article)
+                words_shown = count_words_shown(article)
+                percent_complete = count_article(article)
+                h = History.objects.create(user=req_user,
+                                           article=article,
+                                           action=action,
+                                           explanation=explanation,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+                h.comments.add(new_comment)
+                article.percent_complete = percent_complete
+                article.words_shown = words_shown
                 article.last_updated = datetime.datetime.now(tz=timezone.utc)
 
                 article.save()
                 response_dict = {'comment': comment, 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
-                    response_dict['node_id'] = data['node_id']
+                    response_dict['parent_did'] = data['id']
                 return response_dict
-                #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
             else:
-                return {}
-                #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps({'comment': 'unauthorized'})})
+                return {'user': username}
         except Exception as e:
             print(e)
             return {}
 
-    def handle_tags(self, data, user):
+    def handle_tags(self, data, username):
         article_id = self.article_id
         article = Article.objects.get(id=article_id)
         try:
@@ -215,8 +284,9 @@ class WikumConsumer(WebsocketConsumer):
                     h = History.objects.create(user=req_user, 
                                                article=article,
                                                action='tag_comment',
-                                               explanation="Add tag %s to a comment" % t.text)
-                    
+                                               explanation="Add tag %s to a comment" % t.text,
+                                               words_shown=article.words_shown,
+                                               current_percent_complete=article.percent_complete)
                     h.comments.add(comment)
                     
                     article.last_updated = datetime.datetime.now(tz=timezone.utc)
@@ -230,12 +300,10 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
 
                 if affected:
-                    response_dict = {'color': color, 'type': data['type'], 'node_id': data['node_id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'd_id': data['id'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
                     return response_dict
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
                 else:
-                    return {}
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps({})})
+                    return {'user': username}
             elif data['type'] == 'tag_selected':
                 ids = data['ids']
                 comments = Comment.objects.filter(id__in=ids, hidden=False)
@@ -252,7 +320,9 @@ class WikumConsumer(WebsocketConsumer):
                     h = History.objects.create(user=req_user, 
                                                article=article,
                                                action='tag_comments',
-                                               explanation='Add tag %s to comments' % t.text)
+                                               explanation='Add tag %s to comments' % t.text,
+                                               words_shown=article.words_shown,
+                                               current_percent_complete=article.percent_complete)
                     article.last_updated = datetime.datetime.now(tz=timezone.utc)
                     article.save()
                 
@@ -266,17 +336,329 @@ class WikumConsumer(WebsocketConsumer):
                     generate_tags.delay(article_id)
                     
                 if len(affected_comms) > 0:
-                    response_dict = {'color': color, 'type': data['type'], 'node_ids': data['node_ids'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
+                    response_dict = {'user': username, 'color': color, 'type': data['type'], 'dids': data['ids'], 'tag': data['tag'], 'id_str': data['id_str'], 'did_str': data['id_str']}
                     return response_dict
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
                 else:
-                    return {}
-                    #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps({})})
+                    return {'user': username}
         except Exception as e:
             print(e)
             return {}
 
-    def handle_delete_tags(self, data, user):
+    def handle_update_locks(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            ids = data['ids']
+            if username not in self.user_to_locked_nodes:
+                self.user_to_locked_nodes[username] = []
+            for id in ids:
+                if username is not 'Anonymous':
+                    c = Comment.objects.get(id=id)
+                    if data['to_lock'] :
+                        self.user_to_locked_nodes[username].append(id)
+                        c.is_locked = True
+                    else:
+                        self.user_to_locked_nodes[username].remove(id)
+                        c.is_locked = False
+                    c.save()
+                    recurse_up_post(c)
+            res = {'user': username, 'type': data['type'], 'ids': data['ids'], 'to_lock': data['to_lock']}
+            return res
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+
+    def handle_summarize_comment(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            summary = data['comment']
+            top_summary, bottom_summary = get_summary(summary)
+
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            c = Comment.objects.get(id=id)
+            from_summary = c.summary + '\n----------\n' + c.extra_summary
+            c.summary = top_summary
+            c.extra_summary = bottom_summary
+            c.save()
+            
+            if from_summary != '':
+                action = 'edit_sum'
+                explanation = 'edit summary'
+            else :
+                action = 'sum_comment'
+                explanation = 'initial summary'
+                
+            recurse_up_post(c)
+            words_shown = count_words_shown(a)
+            percent_complete = count_article(a)
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action=action,
+                                       from_str=from_summary,
+                                       to_str=summary,
+                                       explanation=explanation,
+                                       words_shown=words_shown,
+                                       current_percent_complete=percent_complete)
+            
+            h.comments.add(c)
+            if from_summary == '':
+                a.summary_num = a.summary_num + 1
+                a.percent_complete = percent_complete
+            a.words_shown = words_shown
+            a.last_updated = datetime.datetime.now()
+            a.save()
+            res = {'user': username, 'type': data['type'], 'd_id': data['id']}
+            if 'wikipedia.org' in a.url:
+                if top_summary.strip() != '':
+                    res['top_summary'] = clean_parse(top_summary)
+                else:
+                    res['top_summary'] = ''
+                
+                res['top_summary_wiki'] = top_summary
+                
+                if bottom_summary.strip() != '':
+                    res['bottom_summary'] = clean_parse(bottom_summary)
+                else:
+                    res['bottom_summary'] = ''
+                
+                res['bottom_summary_wiki'] = bottom_summary
+                return res
+            else:
+                res['top_summary'] = top_summary
+                res['bottom_summary'] = bottom_summary
+                return res
+            
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_summarize_selected(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            ids = data['ids']
+            children_ids = data['children']
+            children_ids = [int(x) for x in children_ids]
+            child_id = data['child']
+            
+            delete_nodes = data['delete_nodes']
+            
+            summary = data['comment']
+            
+            top_summary, bottom_summary = get_summary(summary)
+            
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            comments = Comment.objects.filter(id__in=ids)
+            children = [c for c in comments if c.id in children_ids]
+            child = Comment.objects.get(id=child_id)
+            
+            lowest_child = children[0]
+            for c in children:
+                if c.import_order < lowest_child.import_order:
+                    lowest_child = c
+
+            new_id = random_with_N_digits(10)
+                
+            new_comment = Comment.objects.create(article=a, 
+                                                 is_replacement=True, 
+                                                 reply_to_disqus=child.reply_to_disqus,
+                                                 summarized=True,
+                                                 summary=top_summary,
+                                                 extra_summary=bottom_summary,
+                                                 disqus_id=new_id,
+                                                 points=child.points,
+                                                 text_len=len(summary),
+                                                 import_order=lowest_child.import_order)
+
+
+            for node in delete_nodes:
+                delete_node(node)
+
+            self.mark_children_summarized(new_comment)
+
+            recurse_up_post(new_comment)
+
+            recurse_down_num_subtree(new_comment)
+
+            a.summary_num = a.summary_num + 1
+            words_shown = count_words_shown(a)
+            percent_complete = count_article(a)
+            h = History.objects.create(user=req_user, 
+                                       article=a,
+                                       action='sum_selected',
+                                       to_str=summary,
+                                       explanation='initial summary of group of comments',
+                                       words_shown=words_shown,
+                                       current_percent_complete=percent_complete) 
+           
+            for c in children:
+                c.reply_to_disqus = new_id
+                c.save()
+                h.comments.add(c)
+                
+            h.comments.add(new_comment)
+            a.percent_complete = percent_complete
+            a.words_shown = words_shown
+            a.last_updated = datetime.datetime.now()
+            
+            a.save()
+            
+            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': child_id, 'children': children_ids}
+            res['size'] = data['size']
+            res['delete_summary_node_dids'] = data['delete_summary_node_dids']
+            if 'wikipedia.org' in a.url:
+                if top_summary.strip() != '':
+                    res['top_summary'] = clean_parse(top_summary)
+                else:
+                    res['top_summary'] = ''
+                
+                res['top_summary_wiki'] = top_summary
+                
+                if bottom_summary.strip() != '':
+                    res['bottom_summary'] = clean_parse(bottom_summary)
+                else:
+                    res['bottom_summary'] = ''
+                
+                res['bottom_summary_wiki'] = bottom_summary
+                res['user'] = username
+                res['type'] = data['type']
+                return res
+            else:
+                res['top_summary'] = top_summary
+                res['bottom_summary'] = bottom_summary
+                return res
+            
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_summarize_comments(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            summary = data['comment']
+            top_summary, bottom_summary = get_summary(summary)
+
+            delete_nodes = data['delete_nodes']
+            
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            c = Comment.objects.get(id=id)
+            percent_complete = a.percent_complete
+            words_shown = a.words_shown
+
+            if not c.is_replacement:
+                new_id = random_with_N_digits(10);
+                
+                new_comment = Comment.objects.create(article=a, 
+                                                     is_replacement=True, 
+                                                     reply_to_disqus=c.reply_to_disqus,
+                                                     summary=top_summary,
+                                                     summarized=True,
+                                                     extra_summary=bottom_summary,
+                                                     disqus_id=new_id,
+                                                     points=c.points,
+                                                     text_len=len(summary),
+                                                     import_order=c.import_order)
+
+                c.reply_to_disqus = new_id
+                c.save()
+                
+                d_id = new_comment.id
+
+                self.mark_children_summarized(new_comment)
+
+                recurse_up_post(new_comment)
+
+                recurse_down_num_subtree(new_comment)
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='sum_nodes',
+                                           to_str=summary,
+                                           explanation='initial summary of subtree',
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+                h.comments.add(new_comment)
+                
+            else:
+                from_summary = c.summary + '\n----------\n' + c.extra_summary
+                c.summary = top_summary
+                c.extra_summary=bottom_summary
+                c.save()
+                
+                d_id = c.id
+                
+                new_comment = c
+                recurse_down_num_subtree(new_comment)
+                recurse_up_post(c)
+                words_shown = count_words_shown(a)
+                h = History.objects.create(user=req_user, 
+                               article=a,
+                               action='edit_sum_nodes',
+                               from_str=from_summary,
+                               to_str=summary,
+                               explanation='edit summary of subtree',
+                               words_shown=words_shown,
+                               current_percent_complete=a.percent_complete)
+
+            for node in delete_nodes:
+                new_h = History.objects.create(user=req_user, 
+                               article=a,
+                               action='delete_node',
+                               from_str=node,
+                               to_str=c.id,
+                               explanation='promote summary',
+                               words_shown=a.words_shown,
+                               current_percent_complete=a.percent_complete)
+                delete_node(node)
+
+            h.comments.add(c)
+            if not c.is_replacement:
+                a.summary_num = a.summary_num + 1
+                a.percent_complete = percent_complete
+                a.words_shown = words_shown
+            a.last_updated = datetime.datetime.now()
+            a.save()
+            
+            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
+            res['subtype'] = data['subtype']
+            res['delete_summary_node_dids'] = data['delete_summary_node_dids']
+            if 'wikipedia.org' in a.url:
+                if top_summary.strip() != '':
+                    res['top_summary'] = clean_parse(top_summary)
+                else:
+                    res['top_summary'] = ''
+                
+                res['top_summary_wiki'] = top_summary
+                
+                if bottom_summary.strip() != '':
+                    res['bottom_summary'] = clean_parse(bottom_summary)
+                else:
+                    res['bottom_summary'] = ''
+                
+                res['bottom_summary_wiki'] = bottom_summary
+                return res
+            else:
+                res['top_summary'] = top_summary
+                res['bottom_summary'] = bottom_summary
+                return res
+            
+        except Exception as e:
+            print(e)
+            import traceback
+            print(traceback.format_exc())
+            return {'user': username}
+
+
+    def handle_delete_tags(self, data, username):
         article_id = self.article_id
         article = Article.objects.get(id=article_id)
         try:
@@ -304,12 +686,13 @@ class WikumConsumer(WebsocketConsumer):
                     comment.tags.remove(tag_exists[0])
                     affected_comments.append(comment)
                     affected = True
-                
             if affected:
                 h = History.objects.create(user=req_user, 
                                            article=a,
                                            action='delete_tag',
-                                           explanation="Deleted tag %s from comments" % tag)
+                                           explanation="Deleted tag %s from comments" % tag,
+                                           words_shown=a.words_shown,
+                                           current_percent_complete=a.percent_complete)
                 for comment in affected_comments:
                     h.comments.add(comment)
                 
@@ -323,14 +706,186 @@ class WikumConsumer(WebsocketConsumer):
                 from .tasks import generate_tags
                 generate_tags.delay(a.id)
 
-            response_dict = {'type': data['type'], 'node_ids': data['node_ids'], 'tag': data['tag']}
+            response_dict = {'type': data['type'], 'dids': data['ids'], 'tag': data['tag'], 'user': username}
             if affected:
                 response_dict['affected'] = 1
             else:
                 response_dict['affected'] = 0
             return response_dict
-            #Group('article-'+str(article_id), channel_layer=message.channel_layer).send({'text': json.dumps(response_dict)})
         except Exception as e:
             print(e)
-            return {}
+            return {'user': username}
 
+    def handle_hide_comment(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            explain = data['comment']
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            comment = Comment.objects.get(id=id)
+            if comment.is_replacement:
+                action = 'delete_sum'
+                self.recurse_down_post(comment)
+                delete_node(comment.id)
+                a.summary_num = a.summary_num - 1
+                a.percent_complete = count_article(a)
+                a.words_shown = count_words_shown(a)
+                a.last_updated = datetime.datetime.now()
+                a.save()
+                affected = False
+            else:
+                action = 'hide_comment'
+                if not comment.hidden:
+                    comment.hidden = True
+                    comment.save()
+                    affected = True
+                else:
+                    affected = False
+            
+            if affected:
+                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+                if parent.count() > 0:
+                    recurse_up_post(parent[0])
+
+                a.comment_num = a.comment_num - 1
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action=action,
+                                           explanation=explain,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+                c = Comment.objects.get(id=id)
+                h.comments.add(c)
+                a.percent_complete = percent_complete
+                a.words_shown = words_shown
+                a.last_updated = datetime.datetime.now()
+
+                a.save()
+
+            return {'d_id': data['id'], 'user': username, 'type': data['type']}
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_hide_comments(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            ids = data['ids']
+            explain = data['comment']
+            
+            affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
+            
+            if affected > 0:
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='hide_comments',
+                                           explanation=explain,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+                for id in ids:
+                    c = Comment.objects.get(id=id)
+                    h.comments.add(c)
+                    
+                    parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+                    if parent.count() > 0:
+                        recurse_up_post(parent[0])
+                
+                a.comment_num = a.comment_num - affected
+                a.percent_complete = percent_complete
+                a.words_shown = words_shown
+                a.last_updated = datetime.datetime.now()
+                a.save()
+
+            return {'dids': data['ids'], 'user': username, 'type': data['type']}
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_hide_replies(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            id = data['id']
+            explain = data['comment']
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            c = Comment.objects.get(id=id)
+
+            replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
+            
+            affected = self.recurse_down_hidden(replies, 0)
+            
+            if affected > 0:
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user, 
+                                           article=a,
+                                           action='hide_replies',
+                                           explanation=explain,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+                replies = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=a)
+                for reply in replies:
+                    h.comments.add(reply)
+                
+                recurse_up_post(c)
+                
+                ids = [reply.id for reply in replies]
+                
+                a.comment_num = a.comment_num - affected
+                a.percent_complete = percent_complete
+                a.words_shown = words_shown
+                a.last_updated = datetime.datetime.now()
+            
+                a.save()
+                
+                return {'d_id': data['id'], 'user': username, 'type': data['type'], 'ids': ids}
+            else:
+                return {'user': username}
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_delete_comment_summary(self, data, username):
+        try:
+            article_id = self.article_id
+            article = Article.objects.get(id=article_id)
+            comment_id = data['id']
+            explain = data['comment']
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+
+            comment = Comment.objects.get(id=comment_id)
+            if not comment.is_replacement:
+                comment.summary = ""
+                comment.save()
+                recurse_up_post(comment)
+                words_shown = count_words_shown(article)
+                percent_complete = count_article(article)
+                h = History.objects.create(user=req_user,
+                                           article=article,
+                                           action='delete_comment_sum',
+                                           explanation=explain,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+
+                h.comments.add(comment)
+                
+                article.percent_complete = percent_complete
+                article.words_shown = words_shown
+                article.last_updated = datetime.datetime.now()
+                article.save()
+                
+            return {'d_id': data['id'], 'user': username, 'type': data['type']}
+
+        except Exception as e:
+            print(e)
+            return {'user': username}

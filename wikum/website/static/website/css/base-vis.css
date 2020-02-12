@@ -319,9 +319,26 @@ div.selected {
 	color: white;
 }
 
+ul, ol {
+	line-height: 1em;
+}
+
 textarea {
 	font-size: 12px;
 	min-height: 50px;
+}
+
+.tinymce-content p {
+    padding: 0;
+    margin: 2px 0;
+}
+
+#box {
+	margin: 0 0 0 200px;
+}
+
+#box a {
+	word-break: break-all;
 }
 
 #box {
@@ -333,10 +350,7 @@ textarea {
 	min-width: 45%;
 	max-width: calc(100vw - 550px);
 	overflow-x: scroll;
-}
-
-#box a {
-	word-break: break-all;
+	z-index: 100;
 }
 
 #viz {
@@ -390,6 +404,21 @@ rect.selection {
     border: 1px gray solid;
 }
 
+#reply_comment_textarea {
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+#reply_comment_body {
+	width: 390px;
+}
+
+#reply-comment-form {
+ 	width: 400px;
+}
+
 .comment_box,
 .reply_comment_comment {
 	position: relative;
@@ -430,13 +459,30 @@ rect.selection {
 		/*color: var(--link-color);*/
 	}
 
+	.comment_box a.disabled {
+		color: hsl(207, 0%, 71%);
+		pointer-events: none;
+		cursor: default;
+	}
+
 	.comment_box footer {
+		display: none;
 		padding: 0;
 		margin: -.2em -1.2em;
+		transition-duration: 3s;
 		background: var(--background);
 		--background: hsl(195, 59%, 90%);
 		white-space: normal;
 	}
+		.comment_box footer a.disabled {
+			padding: .5em;
+			color: hsl(207, 0%, 71%);
+			font-weight: 500;
+			font-size: 13px;
+			display: inline-block;
+			pointer-events: none;
+			cursor: default;
+		}
 
 		.comment_box footer a {
 			padding: .5em;
@@ -951,6 +997,7 @@ form.modal-content {
 	position: fixed;
 	left:330px;
 	top: 100px;
+	z-index: 1000;
 }
 
 .editors {

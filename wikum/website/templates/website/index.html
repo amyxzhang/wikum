@@ -1406,9 +1406,8 @@
  			type: "POST",
  			data: "task_id=" + task_id,
 		}).done(function(task){
- 			console.log(task);
  			if (task.id != null) {
- 				article_id = task.id; 
+ 				article_id = task.id;
  			}
  			if (task.state == 'PROGRESS') {
  				if (task.result) {
@@ -1442,7 +1441,6 @@
 				owner = "None";
 			}
 			var article = $('#articleUrl').val();
- 			article = article.replace('#', '%23').replace('&', '%26');
 			$.ajax({
 				url: "import_article",
 				data: {

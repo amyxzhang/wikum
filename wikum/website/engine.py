@@ -156,27 +156,31 @@ def word_count(s):
         return 0
     return len(s.strip().split())
 
+def count_words_shown(art):
+    posts = Comment.objects.filter(article=art, reply_to_disqus=None, hidden=False)
+    val2 = {}
+    from website.views import recurse_viz
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, art, False)
+    count = count_unsummarized_words(0, val2) + count_summary_words(0, val2)
+    return count
 
 def count_article(art):
     posts = Comment.objects.filter(article=art, reply_to_disqus=None, hidden=False)
-        
+
     val2 = {}
     from website.views import recurse_viz
     val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, art, False)
     
     num_words_all = count_all_words(0, val2)
     num_words_still = count_unsummarized_words(0, val2)
-    
-    print(num_words_all)
-    print(num_words_still)
 
-    if num_words_all >= 250:
-        num_words_all = num_words_all - 250;
-        num_words_still = num_words_still - 250;
-    else:
-        half = old_div(num_words_all,2);
-        num_words_all = num_words_all - half;
-        num_words_still = num_words_still - half;
+    # if num_words_all >= 250:
+    #     num_words_all = num_words_all - 250;
+    #     num_words_still = num_words_still - 250;
+    # else:
+    #     half = old_div(num_words_all,2);
+    #     num_words_all = num_words_all - half;
+    #     num_words_still = num_words_still - half;
 
     if num_words_all != 0:
         value = round(((1.0 - float(float(num_words_still)/float(num_words_all))) * 100.0))
@@ -186,7 +190,25 @@ def count_article(art):
     if value > 100:
         value = 100
     return value
-    
+
+def count_summary_words(count, info):
+    if info.get('replace_node'):
+        if info.get('replace'):
+            for item in info['replace']:
+                count = count_summary_words(count, item)
+
+        if info.get('children'):
+            for item in info['children']:
+                count = count_summary_words(count, item)
+
+        if info.get('summary'):
+                count += word_count(info['summary'])
+                count += word_count(info['extra_summary'])
+    else:
+        if info.get('children'):
+            for item in info['children']:
+                count = count_summary_words(count, item)
+    return count
 
 def count_all_words(count, info):
     if info.get('replace_node'):
@@ -203,20 +225,27 @@ def count_all_words(count, info):
                 count = count_all_words(count, item)
 
         if info.get('name'):
-            count += word_count(info['name'])
-        
+            count += word_count(info['name'])      
     return count
     
 def count_unsummarized_words(count, info):
-    if info.get('children'):
-        for item in info['children']:
-            count = count_unsummarized_words(count, item)
+    if info.get('replace_node'):
+        if info.get('replace'):
+            for item in info['replace']:
+                count = count_unsummarized_words(count, item)
 
-    if info.get('summary'):
-        count += word_count(info['summary'])
-        count += word_count(info['extra_summary'])
-    elif info.get('name'):
-        count += word_count(info['name'])
-
+        if info.get('children'):
+            for item in info['children']:
+                count = count_unsummarized_words(count, item)
+    else:
+        if info.get('children'):
+            for item in info['children']:
+                count = count_unsummarized_words(count, item)
+        if info.get('summarized') == False:
+            if info.get('summary'):
+                count += word_count(info['summary'])
+                count += word_count(info['extra_summary'])
+            elif info.get('name'):
+                count += word_count(info['name'])
     return count
 

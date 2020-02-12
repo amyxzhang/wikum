@@ -93,6 +93,8 @@ INSTALLED_APPS = [
     'account',
 ]
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -108,6 +110,8 @@ MIDDLEWARE = [
     'account.middleware.TimezoneMiddleware',
     
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ROOT_URLCONF = 'wikum.urls'
 
