@@ -28,6 +28,12 @@ $(document).keyup(function(evt){
     }
 });
 
+document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+        ctrlIsPressed = false;
+    }
+});
+
 var nodes_all = null;
 
 var article_url = $('#article_url').text();
@@ -214,7 +220,6 @@ $.ajax({type: 'GET',
 			    		$('.outline-item#' + did).addClass('rb-red');
 			    	}
 			    }
-				
 				show_text('clicked');
 		  		if (highlight_text) {
 		      		$('#box').highlight(highlight_text);
