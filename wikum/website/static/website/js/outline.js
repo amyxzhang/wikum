@@ -96,9 +96,21 @@ $.ajax({type: 'GET',
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
+		$('body').on('mouseenter', '.marker', function() {
+			// hover gray background text
+			$(this).next().addClass('outline-hover');
+		});
+
+		$('body').on('mouseleave', '.marker', function() {
+			// circle marker in red
+			$(this).next().removeClass('outline-hover');
+		});
+
 		// .outline-text functions
 		var delay=500, setTimeoutConst;
 		$('body').on('mouseenter', '.outline-text', function() {
+			// circle marker in red
+			$(this).prev().addClass('outline-hover');
 			// highlight associated comment box
 			let did = this.id.substring(13);
 			if (did === 'viewAll') {
@@ -118,6 +130,8 @@ $.ajax({type: 'GET',
 		});
 
 		$('body').on('mouseleave', '.outline-text', function() {
+			// removed red circle marker
+			$(this).prev().removeClass('outline-hover');
 			// highlight associated comment box
 			let did = this.id.substring(13);
 			if (did === 'viewAll') {
@@ -253,7 +267,7 @@ $.ajax({type: 'GET',
 
 		// viz functions
 		$('#viz').on('click', function(evt) {
-			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('outline-text') || $(evt.target).hasClass('marker'))) {
+			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('list-group-item') || $(evt.target).hasClass('outline-item') || $(evt.target).hasClass('outline-text') || $(evt.target).hasClass('marker'))) {
 				redOutlineBorder($('#outline').children(":first").children('.list-group'));
 				show_text(nodes_all[0]);
 				lastClicked = $('#outline-text-viewAll');

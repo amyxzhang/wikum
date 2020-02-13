@@ -458,6 +458,10 @@ textarea {
 	border: 1.5px solid black;
 }
 
+#outline .marker.outline-hover {
+	border: 1.5px solid black;
+}
+
 #outline .marker.outline-selected {
 	border: 1.5px solid red;
 }
@@ -487,6 +491,11 @@ textarea {
 }
 
 #outline .outline-text:hover {
+	cursor: pointer;
+	background-color: #D3D3D3;
+}
+
+#outline .outline-text.outline-hover {
 	cursor: pointer;
 	background-color: #D3D3D3;
 }
