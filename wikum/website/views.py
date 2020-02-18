@@ -404,7 +404,7 @@ def summary_data(request):
     
     
     val2 = {}
-    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, False, sort)
     
     return JsonResponse({'posts': val2})
     
@@ -512,7 +512,7 @@ def clean_parse(text):
     else:
         return '<p>' + text + '</p>'
 
-def recurse_viz(parent, posts, replaced, article, is_collapsed):
+def recurse_viz(parent, posts, replaced, article, is_collapsed, sort='likes'):
     children = []
     hid_children = []
     replace_children = []
@@ -524,10 +524,11 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
     else:
         num_subtree_children = len(pids)
     
+    # Filters for comments in the article that are children of posts
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
-        if post.json_flatten == '':
-        #if True:
+        #if post.json_flatten == '':
+        if True:
             if post.author:
                 if post.author.anonymous:
                     author = "Anonymous"
@@ -598,15 +599,19 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                         editors.add('Anonymous')
                 v1['editors'] = list(editors)
             
-            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
+            # Filters for comments that are replies/children to post 
+            print("REPS FILTER ONLY:", reps.filter(reply_to_disqus=post.disqus_id))
+            print("REPS FILTER ORDER BY:", reps.filter(reply_to_disqus=post.disqus_id).order_by(sort_to_order_by(sort)))
+            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by(sort_to_order_by(sort))
             if c1.count() == 0:
                 vals = []
                 hid = []
                 rep = []
                 num_subchildren = 0
             else:
+                # recurse_viz on the replies/children to the post
                 replace_future = replaced or post.is_replacement
-                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement)
+                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement, sort)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
@@ -627,7 +632,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             replace_children.append(v1)
         else:
             children.append(v1)
-            
+    
     return children, hid_children, replace_children, num_subtree_children
 
         
@@ -1194,6 +1199,7 @@ def viz_data(request):
 
 
     if filter != '':
+        print("MADE IT TO FILTER")
         if filter.startswith("Tag: "):
             filter = filter[5:]
             if sort == 'id':
@@ -1228,6 +1234,9 @@ def viz_data(request):
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
         else:
             if sort == 'id':
+                print("START:", start)
+                print("END:", end)
+                print("IMPORT ORDER:", a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order'))
                 posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')[start:end]
@@ -1251,14 +1260,20 @@ def viz_data(request):
             
             is_collapsed = determine_is_collapsed(post, a)
 
-            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a, is_collapsed)
+            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a, is_collapsed, sort)
             
             val_child = recurse_get_parents(val2, post, a)
             val['children'].append(val_child['children'][0])
         
     else:
+        print("SORT ORDER HERE:", sort)
         if sort == 'id':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
+        elif sort == 'default':
+            print("START:", start)
+            print("END:", end)
+            print("IMPORT ORDER POINTS:", a.comment_set.filter(reply_to_disqus=None).order_by('-points'))
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
         elif sort == 'likes':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
         elif sort == "replies":
@@ -1272,9 +1287,27 @@ def viz_data(request):
         elif sort == 'oldest':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')[start:end]
         
-        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
-        
+        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False, sort)
+    print(val)
     return JsonResponse(val)
+
+def sort_to_order_by(sort):
+    if sort == 'id':
+        return 'import_order'
+    elif sort == 'default':
+        return '-points'
+    elif sort == 'likes':
+        return '-points'
+    elif sort == "replies":
+        return '-num_replies'
+    elif sort == "long":
+        return '-text_len'
+    elif sort == "short":
+        return 'text_len'
+    elif sort == 'newest':
+        return '-created_at'
+    elif sort == 'oldest':
+        return 'created_at'
     
 def cluster_data(request):
     
@@ -1436,7 +1469,7 @@ def subtree_data(request):
         
         is_collapsed = determine_is_collapsed(posts[0], a)
         
-        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, is_collapsed)
+        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, is_collapsed, sort)
         
         val = recurse_get_parents(val2, posts[0], a)
         val['no_subtree'] = False

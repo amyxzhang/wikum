@@ -117,6 +117,7 @@ class Comment(models.Model):
     text = models.TextField()
     disqus_id = models.CharField(max_length=70)
     reply_to_disqus = models.CharField(max_length=70, null=True, blank=True)
+    sibling_prev = models.CharField(max_length=70, null=True, blank=True)
     num_replies = models.IntegerField(default=0)
     text_len = models.IntegerField(default=0)
     
