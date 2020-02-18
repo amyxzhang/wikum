@@ -1605,8 +1605,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-			console.log(children_dids);
-			console.log(evt.data.dids);
 			data.children = children_dids;
 			data.child = lowest_d.d_id;
 			data.size = size;
