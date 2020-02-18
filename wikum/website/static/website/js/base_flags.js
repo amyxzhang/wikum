@@ -1605,6 +1605,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
+			console.log(children_dids);
+			console.log(evt.data.dids);
 			data.children = children_dids;
 			data.child = lowest_d.d_id;
 			data.size = size;
@@ -1995,7 +1997,6 @@ function handle_channel_summarize_selected(res) {
 	delete_summary_nodes = [];
 	delete_summary_node_ids = [];
 
-	console.log(new_d.collapsed);
 	if (!new_d.collapsed) {
 		if (new_d.children) {
 			for (var i=0; i<new_d.children.length; i++) {
