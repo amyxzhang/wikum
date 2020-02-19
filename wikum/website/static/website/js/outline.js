@@ -199,9 +199,11 @@ $.ajax({type: 'GET',
 		});
 
 		$('body').on('click', '.outline-text, .marker', function(evt) {
+			var parent = $(this).parent();
 			var outlineText = $(this).parent().children('.outline-text')[0];
 		    if (ctrlIsPressed) {
 		    	$('.rb-red').removeClass('rb-red');
+		    	$('.outline-selected').removeClass('outline-selected');
 		    	let did = outlineText.id.substring(13);
 		    	if (did !== 'viewAll') {
 		    		let outlineItem = $(outlineText).parent()[0];
@@ -218,6 +220,8 @@ $.ajax({type: 'GET',
 			    for (const did in clicked_dids) {
 			    	if (clicked_dids[did] === 1) {
 			    		$('.outline-item#' + did).addClass('rb-red');
+			    		/* outline the circle */
+						$('#marker-' + did).addClass('outline-selected');
 			    	}
 			    }
 				show_text('clicked');

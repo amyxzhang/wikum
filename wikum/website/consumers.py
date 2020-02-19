@@ -454,6 +454,8 @@ class WikumConsumer(WebsocketConsumer):
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
             comments = Comment.objects.filter(id__in=ids)
+            for c in comments:
+                c.summarized = True
             children = [c for c in comments if c.id in children_ids]
             child = Comment.objects.get(id=child_id)
             
@@ -478,8 +480,6 @@ class WikumConsumer(WebsocketConsumer):
 
             for node in delete_nodes:
                 delete_node(node)
-
-            self.mark_children_summarized(new_comment)
 
             recurse_up_post(new_comment)
 

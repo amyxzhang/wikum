@@ -1323,7 +1323,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		var objs = [];
 		var min_level = 50;
 		var did_str = '';
-		d3.selectAll('.clicked').each( function(data) {
+		$('.marker.outline-selected').each(function() {
+			var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 			if (!data.article) {
 				objs.push(data);
 				if (data.depth < min_level) {
@@ -1573,7 +1574,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			data.ids = evt.data.dids;
 
 			var objs = [];
-			d3.selectAll('.clicked').each( function(data) {
+			$('.marker.outline-selected').each(function() {
+				var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 				if (!data.article) {
 					objs.push(data);
 					if (data.depth < min_level) {
@@ -3549,7 +3551,7 @@ function createOutlineInsideString(d, outline='') {
 			let title = node.summary? stripHtml(node.summary).substring(0,20) : stripHtml(node.name).substring(0,20);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
-				outline += `<div class="list-group-line"> </div>`;
+				outline += `<div class="list-group-line" id="line-${node.d_id}"> </div>`;
 				outline += `<div class="list-group-item">`
 						+ `<div class="outline-item" id=${node.d_id}>`
 						+ `<span class="marker m-${state}" id="marker-${node.d_id}"></span>`
@@ -3594,22 +3596,23 @@ function createOutlineString(d) {
 	return outlineString;
 }
 
-function recurse_update_nodes_all(d, parent=undefined, all_children=[]) {
+function recurse_update_nodes_all(d, parent=undefined, all_children=[], depth=0) {
 	if (d.parent) d.parent = parent;
+	d.depth = depth;
 	all_children.push(d);
 	if (d.replace_node && d.replace) {
 		for (var i=0; i<d.replace.length; i++) {
-			recurse_update_nodes_all(d.replace[i], d, all_children);
+			recurse_update_nodes_all(d.replace[i], d, all_children, depth + 1);
 		}
 	}
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
-			recurse_update_nodes_all(d.children[i], d, all_children);
+			recurse_update_nodes_all(d.children[i], d, all_children, depth + 1);
 		}
 	}
 	if (d._children) {
 		for (var i=0; i<d._children.length; i++) {
-			recurse_update_nodes_all(d._children[i], d, all_children);
+			recurse_update_nodes_all(d._children[i], d, all_children, depth + 1);
 		}
 	}
 	return all_children;
@@ -3625,8 +3628,8 @@ function update_ids(nodes_all) {
 	return nodes_all;
 }
 
-function update_nodes_all(d) {
-	var nodes_all = recurse_update_nodes_all(d);
+function update_nodes_all(d, depth=0) {
+	var nodes_all = recurse_update_nodes_all(d, depth=depth);
 	for (var i = 1; i < nodes_all.length; i++) {
 		if (!nodes_all[i].parent) {
 			nodes_all[i].parent = nodes_all[0];
