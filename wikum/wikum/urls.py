@@ -30,7 +30,7 @@ urlpatterns = [
 #    url(r'^visualization_upvote', website_views.visualization_upvote),
     url(r'^visualization_flag', website_views.visualization_flag),
     
-#    url(r'^visualization', website_views.visualization),
+    url(r'^visualization', website_views.visualization),
     
     url(r'^author_info', website_views.author_info),
 
