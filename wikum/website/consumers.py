@@ -199,27 +199,33 @@ class WikumConsumer(WebsocketConsumer):
                 new_comment = None
                 explanation = ''
                 if data['type'] == 'new_node':
+                    current_last_child = article.last_child if article.last_child else None
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
                                                          disqus_id=new_id,
                                                          text=comment,
+                                                         sibling_prev=current_last_child,
                                                          summarized=False,
                                                          text_len=len(comment))
                     explanation = 'new comment'
+                    article.last_child = new_id
                 elif data['type'] == 'reply_comment':
                     id = data['id']
                     c = Comment.objects.get(id=id)
+                    current_last_child = c.last_child if c.last_child else None
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
                                                          reply_to_disqus=c.disqus_id,
                                                          disqus_id=new_id,
                                                          text=comment,
+                                                         sibling_prev=current_last_child,
                                                          summarized=False,
                                                          text_len=len(comment),
                                                          import_order=c.import_order)
                     explanation = 'reply to comment'
+                    c.last_child = new_id
 
                 new_comment.save()
                 action = data['type']

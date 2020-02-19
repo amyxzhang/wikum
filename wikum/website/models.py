@@ -31,6 +31,7 @@ class Article(models.Model):
 
     id = models.AutoField(primary_key=True)
     disqus_id = models.CharField(max_length=64, null=True, blank=True)
+    last_child = models.CharField(max_length=70, null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     title = models.TextField()
     url = models.URLField()
