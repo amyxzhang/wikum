@@ -3307,8 +3307,8 @@ function make_highlight() {
 	$('#inputHighlight').keyup(function (e) {
 	 	$('#box').unhighlight();
 	  	for (var i=1; i<nodes_all.length; i++) {
-				d3.select("#node_" + nodes_all[i].id)
-						.style("fill", color);
+	  		let did = nodes_all[i].d_id;
+	  		$('#marker-' + did).removeClass('highlight');
 		}
 
 		$('#count_result').text('0');
@@ -3321,8 +3321,8 @@ function make_highlight() {
 		  	for (var i=1; i<nodes_all.length; i++) {
 		  		text = nodes_all[i].name;
 		  		if (pattern.test(text.toLowerCase())) {
-		  			d3.select("#node_" + nodes_all[i].id)
-						.style("fill","#ffd700");
+		  			let did = nodes_all[i].d_id;
+	  				$('#marker-' + did).addClass('highlight');
 					count += 1;
 		  		}
 		  	}
@@ -3554,7 +3554,15 @@ function createOutlineInsideString(d, outline='') {
 				outline += `<div class="list-group-line" id="line-${node.d_id}"> </div>`;
 				outline += `<div class="list-group-item">`
 						+ `<div class="outline-item" id=${node.d_id}>`
-						+ `<span class="marker m-${state}" id="marker-${node.d_id}"></span>`
+						+ `<span class="marker m-${state}" id="marker-${node.d_id}" `;
+				if (colorby == "user" && (state == 'unsum_comment' || state == 'sum_comment')) {
+					var userColor = '#cccccc';
+					if (node.author && node.author != "Anonymous") {
+						userColor = stringToColour(node.author);
+					}
+					outline += `style="background-color:${userColor};"`;
+				} 
+				outline	+= `></span>`
 						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
 						+ title + `</span>`;
 				if (((state === 'summary' || state ==='summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length)) {
