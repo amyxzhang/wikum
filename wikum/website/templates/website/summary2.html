@@ -17,16 +17,15 @@
 	<div class="row">
 		<div class="col-lg-8 col-lg-offset-2">
 			<h1><a href="{{ article.url }}" title="Read the article in {{ source.source_name }}">{{ article.title }}</a></h1>
-			<a href="/visualization?article={{ article.url }}&num={{ num }}">{% trans "View Wikum Editing Interface" %}</a>
+			<a href="/visualization?id={{ article.id }}&owner={{ article.owner }}">{% trans "View Wikum Editing Interface" %}</a>
 			<BR>
-				{% trans "Interface:" %} <a href="/summary?article={{ url }}&num={{ num }}">0</a> | 
-				<a href="/summary1?article={{ url }}&num={{ num }}">1</a> | 
-				<a href="/summary2?article={{ url }}&num={{ num }}">2</a> |
-				<a href="/summary3?article={{ url }}&num={{ num }}">3</a> |
-				<a href="/summary4?article={{ url }}&num={{ num }}">4</a>
+				{% trans "Interface:" %} <a href="/summary?id={{ article.id }}&owner={{ article.owner }}">0</a> | 
+				<a href="/summary1?id={{ article.id }}&owner={{ article.owner }}">1</a> | 
+				<a href="/summary2?id={{ article.id }}&owner={{ article.owner }}">2</a> |
+				<a href="/summary3?id={{ article.id }}&owner={{ article.owner }}">3</a> |
+				<a href="/summary4?id={{ article.id }}&owner={{ article.owner }}">4</a>
 			<BR><BR>
 				{% trans "Full threading view, Auto-horizontal scrolling, 3 levels of context" %}
-
 				
 		</div>
 	</div>
