@@ -262,7 +262,6 @@ def author_info(request):
     author_info = {}
     if username and url:
         a = Article.objects.filter(url=url, owner=owner)[num]
-        print(a.url)
         if 'en.wikipedia' in a.url:
             author = CommentAuthor.objects.filter(username=username, is_wikipedia=True)
             if author.exists():
@@ -404,7 +403,7 @@ def summary_data(request):
     
     
     val2 = {}
-    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, False, sort)
+    val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     
     return JsonResponse({'posts': val2})
     
@@ -512,7 +511,7 @@ def clean_parse(text):
     else:
         return '<p>' + text + '</p>'
 
-def recurse_viz(parent, posts, replaced, article, is_collapsed, sort='likes'):
+def recurse_viz(parent, posts, replaced, article, is_collapsed, sort=None):
     children = []
     hid_children = []
     replace_children = []
@@ -599,10 +598,10 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed, sort='likes'):
                         editors.add('Anonymous')
                 v1['editors'] = list(editors)
             
-            # Filters for comments that are replies/children to post 
-            print("REPS FILTER ONLY:", reps.filter(reply_to_disqus=post.disqus_id))
-            print("REPS FILTER ORDER BY:", reps.filter(reply_to_disqus=post.disqus_id).order_by(sort_to_order_by(sort)))
-            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by(sort_to_order_by(sort))
+            # Filters for comments that are replies/children to post
+            c1 = reps.filter(reply_to_disqus=post.disqus_id)
+            if sort:
+                c1 = c1.order_by(sort_to_order_by(sort))
             if c1.count() == 0:
                 vals = []
                 hid = []
@@ -1000,7 +999,6 @@ def tags(request):
     else:
         owner = User.objects.get(username=owner)
     
-    print(request.GET['id'])
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
@@ -1199,7 +1197,6 @@ def viz_data(request):
 
 
     if filter != '':
-        print("MADE IT TO FILTER")
         if filter.startswith("Tag: "):
             filter = filter[5:]
             if sort == 'id':
@@ -1234,9 +1231,6 @@ def viz_data(request):
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
         else:
             if sort == 'id':
-                print("START:", start)
-                print("END:", end)
-                print("IMPORT ORDER:", a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order'))
                 posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')[start:end]
@@ -1260,19 +1254,15 @@ def viz_data(request):
             
             is_collapsed = determine_is_collapsed(post, a)
 
-            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a, is_collapsed, sort)
+            val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, [post], False, a, is_collapsed)
             
             val_child = recurse_get_parents(val2, post, a)
             val['children'].append(val_child['children'][0])
         
     else:
-        print("SORT ORDER HERE:", sort)
         if sort == 'id':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
         elif sort == 'default':
-            print("START:", start)
-            print("END:", end)
-            print("IMPORT ORDER POINTS:", a.comment_set.filter(reply_to_disqus=None).order_by('-points'))
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
         elif sort == 'likes':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
@@ -1287,8 +1277,7 @@ def viz_data(request):
         elif sort == 'oldest':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')[start:end]
         
-        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False, sort)
-    print(val)
+        val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     return JsonResponse(val)
 
 def sort_to_order_by(sort):
@@ -1469,7 +1458,7 @@ def subtree_data(request):
         
         is_collapsed = determine_is_collapsed(posts[0], a)
         
-        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, is_collapsed, sort)
+        val2['children'], val2['hid'], val2['replace'], num_subchildren = recurse_viz(None, posts, False, a, is_collapsed)
         
         val = recurse_get_parents(val2, posts[0], a)
         val['no_subtree'] = False
