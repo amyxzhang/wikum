@@ -332,7 +332,8 @@ def summary_page(request):
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    url = request.GET['article']
+    article_id = int(request.GET['id'])
+    article = Article.objects.get(id=article_id)
     next = request.GET.get('next')
     num = int(request.GET.get('num', 0))
     
@@ -341,19 +342,14 @@ def summary_page(request):
     else:
         next = int(next)
         
-    source = get_source(url) 
-        
-    article = get_article(url, owner, source, num)
+    source = article.source
     
     posts = get_posts(article)
     article.url = re.sub('&', '%26', article.url)
     article.url = re.sub('#', '%23', article.url)
 
     return {'article': article,
-            'url': article.url,
-            'source': article.source,
-            'num': num,
-            }
+            'source': article.source}
     
 @render_to('website/summary.html')
 def summary(request):

@@ -28,7 +28,7 @@ def import_article(url, owner):
                     get_disqus_posts(article, current_task, total_count)
 
                 elif article.source.source_name == "Reddit":
-                    get_reddit_posts(article, current_task, total_count)
+                    get_reddit_posts(article, current_task, total_count, url)
 
                 elif article.source.source_name == "Wikipedia Talk Page":
                     get_wiki_talk_posts(article, current_task, total_count)
