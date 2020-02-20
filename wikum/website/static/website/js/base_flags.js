@@ -3544,6 +3544,16 @@ function shorten(text, max_length) {
   return text.substr(0, text.lastIndexOf(' ', max_length));
 }
 
+function setMaxLength(depth) {
+	if (depth < 4) {
+		return 40;
+	} else if (4 <= depth && depth < 6) {
+		return 30;
+	} else {
+		return 20;
+	}
+}
+
 function createOutlineInsideString(d, outline='') {
 	/** type (for coloring):
 	  *  comment = normal comment
@@ -3555,7 +3565,8 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
-			let title = node.summary? shorten(stripHtml(node.summary), 20) : shorten(stripHtml(node.name), 20);
+			var maxLength = setMaxLength(node.depth);
+			let title = node.summary? shorten(stripHtml(node.summary), maxLength) : shorten(stripHtml(node.name), maxLength);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
 				outline += `<div class="list-group-line" id="line-${node.d_id}"> </div>`;
