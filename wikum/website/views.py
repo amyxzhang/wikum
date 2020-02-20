@@ -1383,9 +1383,9 @@ def subtree_data(request):
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    
+    print("REQUEST:", request.GET)
     comment_id = request.GET.get('comment_id', None)
-    
+    print("COMMENT ID:", comment_id)
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
 
@@ -1427,6 +1427,8 @@ def subtree_data(request):
             posts = None
 
     if posts:
+        for p in posts:
+            print("TEXT OF POST:", p.text)
         val2 = {}
         
         is_collapsed = determine_is_collapsed(posts[0], a)
