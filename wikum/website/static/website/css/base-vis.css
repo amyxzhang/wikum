@@ -453,6 +453,10 @@ textarea {
 	display: inline-block;
 }
 
+#outline .marker.highlight {
+	background-color: #ffd700;
+}
+
 #outline .marker:hover {
 	cursor: pointer;
 	border: 1.5px solid black;

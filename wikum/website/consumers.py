@@ -131,9 +131,10 @@ class WikumConsumer(WebsocketConsumer):
                 }
             )
 
-    def mark_children_summarized(self, post):
+    def mark_children_summarized(self, post, children=None):
         post.summarized = True
-        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+        if not children:
+            children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
         for child in children:
             child.summarized = True
             child.save()
@@ -500,9 +501,14 @@ class WikumConsumer(WebsocketConsumer):
                                                  text_len=len(summary),
                                                  import_order=lowest_child.import_order)
 
-
             for node in delete_nodes:
                 delete_node(node)
+
+            self.mark_children_summarized(new_comment, children)
+
+            for c in children:
+                c.reply_to_disqus = new_id
+                c.save()
 
             recurse_up_post(new_comment)
 
@@ -518,13 +524,10 @@ class WikumConsumer(WebsocketConsumer):
                                        explanation='initial summary of group of comments',
                                        words_shown=words_shown,
                                        current_percent_complete=percent_complete) 
-           
-            for c in children:
-                c.reply_to_disqus = new_id
-                c.save()
-                h.comments.add(c)
                 
             h.comments.add(new_comment)
+            for c in children:
+                h.comments.add(c)
             a.percent_complete = percent_complete
             a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
@@ -797,7 +800,7 @@ class WikumConsumer(WebsocketConsumer):
                 a.comment_num = a.comment_num - 1
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
-                h = History.objects.create(user=req_user, 
+                h = History.objects.create(user=req_user,
                                            article=a,
                                            action=action,
                                            explanation=explain,

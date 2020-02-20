@@ -219,8 +219,7 @@ $.ajax({type: 'GET',
 
 			    for (const did in clicked_dids) {
 			    	if (clicked_dids[did] === 1) {
-			    		$('.outline-item#' + did).addClass('rb-red');
-			    		
+			    		$('.outline-item#' + did).addClass('rb-red');	
 						/* outline the circle */
 						$('#marker-' + did).addClass('outline-selected');
 			    	}
