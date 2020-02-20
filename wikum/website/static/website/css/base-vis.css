@@ -404,11 +404,11 @@ textarea {
 }
 
 #outline .list-group-line.line-hover {
-	background-color: red;
+	background-color: black;
 }
 
 #outline .list-group-line.outline-selected {
-	background-color: red;
+	background-color: black;
 }
 
 
@@ -467,7 +467,7 @@ textarea {
 }
 
 #outline .marker.outline-selected {
-	border: 1.5px solid red;
+	border: 1.5px solid black;
 }
 
 #outline .m-unsum_comment {
@@ -494,6 +494,10 @@ textarea {
 	padding-left: 5px;
 }
 
+#outline .outline-title:hover {
+	cursor: pointer;
+}
+
 #outline .outline-text:hover {
 	cursor: pointer;
 	background-color: #D3D3D3;
@@ -511,10 +515,6 @@ textarea {
 
 .outline-item #down-arrow:hover {
 	cursor: pointer;
-}
-
-.rb-red {
-	/* font-weight: bold; */
 }
 
 text {

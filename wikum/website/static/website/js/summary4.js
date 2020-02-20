@@ -50,7 +50,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 
 $(document).ready(function () {
 	
-	var article_url = getParameterByName('article');
+	var article_url = $('#article_url').text();
 	var article_id = $("#article_id").text();
 	article_url = article_url.replace('#','%23');
 	var next = parseInt(getParameterByName('next'));

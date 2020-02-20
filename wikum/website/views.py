@@ -1383,9 +1383,7 @@ def subtree_data(request):
         owner = None
     else:
         owner = User.objects.get(username=owner)
-    
     comment_id = request.GET.get('comment_id', None)
-    
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
 

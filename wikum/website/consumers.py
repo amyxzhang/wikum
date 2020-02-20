@@ -36,6 +36,7 @@ class WikumConsumer(WebsocketConsumer):
         Called when the websocket is handshaking as part of initial connection.
         """
         # message['path'] = /ws/article/[article_name]/visualization_flags
+        # message['path'] = /ws/article/[article_name]/subtree
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
         self.user_to_locked_nodes = {}

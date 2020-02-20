@@ -3534,10 +3534,27 @@ function getState(d) {
 }
 
 function stripHtml(text) {
-	return text.replace(/<[^>]*>?/gm, '');
+	var stripped = text.replace(/<[^>]*>?/gm, '');
+	stripped = stripped.replace(/\"/g, "");
+	return stripped.replace('[quote]','');
 }
 
-function createOutlineInsideString(d, outline='') {
+function shorten(text, max_length) {
+  if (text.length <= max_length) return text;
+  return text.substr(0, text.lastIndexOf(' ', max_length));
+}
+
+function setMaxLength(depth) {
+	if (depth < 4) {
+		return 40;
+	} else if (4 <= depth && depth < 6) {
+		return 30;
+	} else {
+		return 20;
+	}
+}
+
+function createOutlineInsideString(d, outline='', depth=1) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -3548,7 +3565,8 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
-			let title = node.summary? stripHtml(node.summary).substring(0,20) : stripHtml(node.name).substring(0,20);
+			var maxLength = setMaxLength(depth);
+			let title = node.summary? shorten(stripHtml(node.summary), maxLength) : shorten(stripHtml(node.name), maxLength);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
 				outline += `<div class="list-group-line" id="line-${node.d_id}"> </div>`;
@@ -3569,7 +3587,7 @@ function createOutlineInsideString(d, outline='') {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i]);
+				outline += createOutlineInsideString(d.children[i], '', depth=depth+1);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
@@ -3597,7 +3615,7 @@ function createOutlineInsideString(d, outline='') {
 function createOutlineString(d) {
 	var title = $('#wikum-title').clone().children().remove().end().text();
 	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
-	outlineString += `<div id='viewAll' class='outline-item'><div class='outline-text' id='outline-text-viewAll'>${title}`;
+	outlineString += `<div id='viewAll'><div class='outline-title' id='outline-text-viewAll'>${title}`;
 	outlineString += `</div></div>`;
 	outlineString += createOutlineInsideString(d);
 	outlineString += '</div>';
@@ -4658,7 +4676,7 @@ function mark_children_summarized(d) {
 }
 
 function has_unsummarized_children(d) {
-	if (!d.summarized) {
+	if (!d.replace_node && d.summarized == false) {
 		return true;
 	} else {
 		// either summary node or summarized comment
