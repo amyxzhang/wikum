@@ -51,6 +51,7 @@ function display_comments(discuss_info_list, level, total_summary_text, auto_hid
 $(document).ready(function () {
 	
 	var article_url = getParameterByName('article');
+	var article_id = $("#article_id").text();
 	article_url = article_url.replace('#','%23');
 	var next = parseInt(getParameterByName('next'));
 	if (!next) {
@@ -64,7 +65,7 @@ $(document).ready(function () {
 	
 	$.ajax({ 
 	    type: 'GET', 
-	    url: '/summary_data?article=' + article_url + '&next=' + next + '&num=' + num + '&owner=' + owner, 
+	    url: '/summary_data?id=' + article_id + '&next=' + next + '&num=' + num + '&owner=' + owner, 
 	    dataType: 'json',
 	    success: function (data) { 
 	    	
@@ -77,7 +78,7 @@ $(document).ready(function () {
         	if (data.posts.children.length < 5) {
         		$('#link_next').html('<BR><P>End of discussion</P>');
         	} else {
-        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?article=' + article_url + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
+        		$('#link_next').html('<BR><P><a style="font-size: 16px;" href="/summary?id=' + article_id + '&next=' + (next+1) + '">See Next Page of Discussions &gt;&gt;</a></P>');
 			}
 			
 			click_arrows();	
