@@ -3534,7 +3534,13 @@ function getState(d) {
 }
 
 function stripHtml(text) {
-	return text.replace(/<[^>]*>?/gm, '');
+	var stripped = text.replace(/<[^>]*>?/gm, '');
+	return stripped.replace(/\"/g, "");
+}
+
+function shorten(text, max_length) {
+  if (text.length <= max_length) return text;
+  return text.substr(0, text.lastIndexOf(' ', max_length));
 }
 
 function createOutlineInsideString(d, outline='') {
@@ -3548,7 +3554,7 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
-			let title = node.summary? stripHtml(node.summary).substring(0,20) : stripHtml(node.name).substring(0,20);
+			let title = node.summary? shorten(stripHtml(node.summary), 20) : shorten(stripHtml(node.name), 20);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
 				outline += `<div class="list-group-line" id="line-${node.d_id}"> </div>`;
