@@ -197,9 +197,11 @@ class WikumConsumer(WebsocketConsumer):
                         author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
                 new_id = random_with_N_digits(10)
                 new_comment = None
+                prior_last_child = None
                 explanation = ''
                 if data['type'] == 'new_node':
-                    prior_last_child = article.last_child if article.last_child else None
+                    if article.last_child:
+                        prior_last_child = article.last_child
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
@@ -219,7 +221,8 @@ class WikumConsumer(WebsocketConsumer):
                 elif data['type'] == 'reply_comment':
                     id = data['id']
                     c = Comment.objects.get(id=id)
-                    prior_last_child = c.last_child if c.last_child else None
+                    if article.last_child:
+                        prior_last_child = c.last_child
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
@@ -240,6 +243,8 @@ class WikumConsumer(WebsocketConsumer):
                         c.first_child = new_comment
 
                 new_comment.save()
+                prior_last_child.save()
+                c.save()
                 action = data['type']
                 
                 recurse_up_post(new_comment)
@@ -575,11 +580,14 @@ class WikumConsumer(WebsocketConsumer):
                 new_id = random_with_N_digits(10);
                 sibling_prev = c.sibling_prev if c.sibling_prev else None
                 sibling_next = c.sibling_next if c.sibling_next else None
-                new_comment = Comment.objects.create(article=a, 
+                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+                new_comment = Comment.objects.create(article=a,
                                                      is_replacement=True, 
                                                      reply_to_disqus=c.reply_to_disqus,
                                                      sibling_prev=sibling_prev,
                                                      sibling_next=sibling_next,
+                                                     first_child=c,
+                                                     last_child=c,
                                                      summary=top_summary,
                                                      summarized=True,
                                                      extra_summary=bottom_summary,
@@ -592,8 +600,21 @@ class WikumConsumer(WebsocketConsumer):
                 c.save()
                 if sibling_prev:
                     sibling_prev.sibling_next = new_comment
+                    sibling_prev.save()
+                else:
+                    if parent:
+                        # c was the first child; update to new_comment
+                        parent.first_child = new_comment
                 if sibling_next:
                     sibling_next.sibling_prev = new_comment
+                    sibling_next.save()
+                else:
+                    if parent:
+                        # c was the last child; update to new_comment
+                        parent.last_child = new_comment
+                if parent:
+                    parent.save()
+
                 d_id = new_comment.id
 
                 self.mark_children_summarized(new_comment)
