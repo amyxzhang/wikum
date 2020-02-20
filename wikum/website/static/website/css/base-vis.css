@@ -494,6 +494,10 @@ textarea {
 	padding-left: 5px;
 }
 
+#outline .outline-title:hover {
+	cursor: pointer;
+}
+
 #outline .outline-text:hover {
 	cursor: pointer;
 	background-color: #D3D3D3;
