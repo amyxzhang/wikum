@@ -390,7 +390,6 @@ textarea {
 	display: flex;
 	flex-direction: row;
 	position: relative;
-	width: 18vw;
 }
 
 #outline .list-group-line {
