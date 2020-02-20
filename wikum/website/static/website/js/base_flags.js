@@ -4658,7 +4658,9 @@ function mark_children_summarized(d) {
 }
 
 function has_unsummarized_children(d) {
-	if (d.replace_node || d.summarized == false) {
+	if (d.summarized == false) {
+		return true;
+	} else {
 		// either summary node or summarized comment
 		var huc = false;
 		if (d.children) {
@@ -4677,8 +4679,6 @@ function has_unsummarized_children(d) {
 			}
 		}
 		return huc;
-	} else {
-		return true;
 	}
 }
 
