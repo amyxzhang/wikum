@@ -3535,7 +3535,8 @@ function getState(d) {
 
 function stripHtml(text) {
 	var stripped = text.replace(/<[^>]*>?/gm, '');
-	return stripped.replace(/\"/g, "");
+	stripped = stripped.replace(/\"/g, "");
+	return stripped.replace('[quote]','');
 }
 
 function shorten(text, max_length) {
