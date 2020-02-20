@@ -3615,7 +3615,7 @@ function createOutlineInsideString(d, outline='', depth=1) {
 function createOutlineString(d) {
 	var title = $('#wikum-title').clone().children().remove().end().text();
 	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
-	outlineString += `<div id='viewAll'><div class='outline-title' id='outline-text-viewAll'>${title}`;
+	outlineString += `<div id='viewAll' class='outline-title outline-item'><div class='outline-title' id='outline-text-viewAll'>${title}`;
 	outlineString += `</div></div>`;
 	outlineString += createOutlineInsideString(d);
 	outlineString += '</div>';
