@@ -4658,7 +4658,7 @@ function mark_children_summarized(d) {
 }
 
 function has_unsummarized_children(d) {
-	if (d.summarized == false) {
+	if (d.replace_node || d.summarized == false) {
 		// either summary node or summarized comment
 		var huc = false;
 		if (d.children) {
