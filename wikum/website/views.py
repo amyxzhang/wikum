@@ -506,7 +506,7 @@ def clean_parse(text):
     else:
         return '<p>' + text + '</p>'
 
-def recurse_viz(parent, posts, replaced, article, is_collapsed, sort=None):
+def recurse_viz(parent, posts, replaced, article, is_collapsed):
     children = []
     hid_children = []
     replace_children = []
@@ -521,8 +521,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed, sort=None):
     # Filters for comments in the article that are children of posts
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
-        #if post.json_flatten == '':
-        if True:
+        if post.json_flatten == '':
             if post.author:
                 if post.author.anonymous:
                     author = "Anonymous"
@@ -595,8 +594,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed, sort=None):
             
             # Filters for comments that are replies/children to post
             c1 = reps.filter(reply_to_disqus=post.disqus_id)
-            if sort:
-                c1 = c1.order_by(sort_to_order_by(sort))
             if c1.count() == 0:
                 vals = []
                 hid = []
@@ -605,7 +602,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed, sort=None):
             else:
                 # recurse_viz on the replies/children to the post
                 replace_future = replaced or post.is_replacement
-                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement, sort)
+                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
