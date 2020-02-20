@@ -379,7 +379,6 @@ def summary_data(request):
         owner = User.objects.get(username=owner)
 
     sort = request.GET.get('sort', 'id')
-    
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
