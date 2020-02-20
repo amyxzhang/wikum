@@ -11,10 +11,14 @@
 
 <div id="author_info"></div>
 <div id="viz">
+	<!-- Circle node view -->
 	{% if user == article.owner or article.access_mode == 0 or article.access_mode == 1 or permission and permission.access_level == 0 or permission and permission.access_level == 1 %}
 		<button type="button" class="btn btn-default" data-toggle="modal" data-backdrop="false"
 		data-target="#new_node_modal_box" id="create_new">{% trans "+" %}</button>
 	{% endif %}
+
+	<!-- Outline view -->
+	<div id="outline"></div>
 </div>
 <div id="box"></div>
 

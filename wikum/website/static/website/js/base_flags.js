@@ -1,5 +1,3 @@
-draggingNode = null;
-selectedNode = null;
 activeBox = null;
 
 delete_summary_nodes = [];
@@ -395,17 +393,15 @@ $('#reply_modal_box').on('show.bs.modal', function(e) {
 	var ids = [];
 	var dids = [];
 	var did_str = '';
-	var id_str = '';
 
 	highlight_box(id);
 	did_str += d.d_id;
-	id_str += d.id;
 
 	$.ajax({type: 'GET',	
 			url: '/log_data?data=open_reply_modal&did=' + did_str,	
 			success: function(res) {	
 			}	
-	});	
+	});
 
 	var class_sum = "";	
 	if (d.replace_node) {	
@@ -711,24 +707,23 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 					d.rating_flag.neutral = neu;
 					d.rating_flag.coverage = cov;
 					d.rating_flag.quality = qual;
-					
-					show_text(d);
 
 					for (var i=0; i < to_summarize.length; i++) {
 						to_summarize[i].summarized = true;
 						$('#comment_' + to_summarize[i].id).removeClass('unsummarized');
-						d3.select('#node_' + to_summarize[i].id).style('fill', color);
+						// d3.select('#node_' + to_summarize[i].id).style('fill', color);
 					}
 
 					for (var i=0; i < to_unsummarize.length; i++) {
 						to_unsummarize[i].summarized = false;
 						$('#comment_' + to_unsummarize[i].id).addClass('unsummarized');
-						d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
+						// d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
 					}
 
-					d3.select('#node_' + d.id).style('fill', color);
+					// d3.select('#node_' + d.id).style('fill', color);
 					make_progress_bar();
-
+					update(d);
+					show_text(d);
 				}
 			},
 			error: function() {
@@ -740,7 +735,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 });
 
 
-$('#tag_modal_box').on('show.bs.modal', function(e) {	
+$('#tag_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	var type = $(e.relatedTarget).data('type');
 	
@@ -749,12 +744,10 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 	var dids = [];
 	var overlapping_tags = [];
 	var did_str = '';
-	var id_str = '';
 
 	highlight_box(id);
 	if (type == "tag_one") {
 		did_str += d.d_id;
-		id_str += d.id;
 		$.ajax({type: 'GET',
 				url: '/log_data?data=open_tag_modal&did=' + did_str + '&type=' + type,
 				success: function(res) {
@@ -776,26 +769,20 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		var datas = [];
 		var min_level = 50;
 
-		$('.clicked').each(function(index) {
-			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
-			if (id_clicked != 1) {
+		$('#outline .rb-red').each(function(index) {
+			var data = nodes_all.filter(o => o.d_id == this.id)[0];
+			if (data) {
+				var id_clicked = data.id;
 				ids.push(id_clicked);
-				var data = nodes_all[id_clicked-1];
-
-				if (index == 0) {
-					overlapping_tags = data.tags;
-				} else {
-					for (var i=overlapping_tags.length; i>=0; i--) {
-						if (data.tags.indexOf(overlapping_tags[i]) == -1) {
-							overlapping_tags.splice(i, 1);
-						}
+				for (var i=overlapping_tags.length; i>=0; i--) {
+					if (data.tags.indexOf(overlapping_tags[i]) == -1) {
+						overlapping_tags.splice(i, 1);
 					}
 				}
 
 				datas.push(data);
 				dids.push(data.d_id);
 				did_str += data.d_id + ',';
-				id_str += data.id + ',';
 				if (data.depth < min_level) {
 					min_level = data.depth;
 				}
@@ -842,9 +829,9 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 		d_text += '<BR><div id="current_tags">Current tags: ';
 		for (var i=0; i<overlapping_tags.length; i++) {
 			if (is_dark(overlapping_tags[i][1])) {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +overlapping_tags[i][0] + '\')" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +overlapping_tags[i][0] + '\')" style="color: #FFFFFF; background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +overlapping_tags[i][0] + '\')" style="background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +overlapping_tags[i][0] + '\')" style="background-color: #' + overlapping_tags[i][1] + '">' + overlapping_tags[i][0] + ' &nbsp;x </button> ';
 			}
 		}
 		d_text += '</div><BR>';
@@ -890,8 +877,7 @@ $('#tag_modal_box').on('show.bs.modal', function(e) {
 			tag: tag,
 			article: article_id,
 			type: evt.data.type,
-			did_str: did_str,
-			id_str: id_str
+			did_str: did_str
 		};
 
 		if (evt.data.type == "tag_one") {
@@ -1084,7 +1070,7 @@ function cite_para(did, para_num) {
     copy_to_tinyMCE('[[comment_' + did + '_p' +  para_num + ']]\n');
 }
 
-function delete_tags(evt, dids, ids, tag) {
+function delete_tags(evt, dids, tag) {
 	var csrf = $('#csrf').text();
 	var data = {csrfmiddlewaretoken: csrf,
 		ids: dids,
@@ -1119,10 +1105,8 @@ function show_comment_text(text, did) {
 
 $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 		var $modalDiv = $(e.delegateTarget);
-  		var id = $(this).data('id');
-  		
-  		d = nodes_all[id-1];
-  		$('#confirm_delete_modal_box').modal('toggle');
+  		var did = $(this).data('did');
+  		d = nodes_all.filter(o => o.d_id == did)[0];
 		if (d.replace_node) {
 			var article_id = $('#article_id').text();
 			var csrf = $('#csrf').text();
@@ -1130,7 +1114,6 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				comment: '',
 				article: article_id,
 				id: d.d_id};
-			data.node_id = id;
 			data.type = 'hide_comment';
 			chatsock.send(JSON.stringify(data));
 		} else {
@@ -1144,11 +1127,12 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 			data.type = 'delete_comment_summary';
 			chatsock.send(JSON.stringify(data));
 		}
+		$('#confirm_delete_modal_box').modal('toggle');
 	});
 
 $('#confirm_delete_modal_box').on('show.bs.modal', function(e) {
-	var id = $(e.relatedTarget).data('id');
-  	$('.btn-ok', this).data('id', id);
+	var did = $(e.relatedTarget).data('did');
+  	$('.btn-ok', this).data('did', did);
 });
 
 
@@ -1339,7 +1323,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		var objs = [];
 		var min_level = 50;
 		var did_str = '';
-		d3.selectAll('.clicked').each( function(data) {
+		$('.marker.outline-selected').each(function() {
+			var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 			if (!data.article) {
 				objs.push(data);
 				if (data.depth < min_level) {
@@ -1589,7 +1574,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			data.ids = evt.data.dids;
 
 			var objs = [];
-			d3.selectAll('.clicked').each( function(data) {
+			$('.marker.outline-selected').each(function() {
+				var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 				if (!data.article) {
 					objs.push(data);
 					if (data.depth < min_level) {
@@ -1843,7 +1829,6 @@ function handle_channel_tags(res) {
 	if (res.color) {
 		var tag = res.tag;
 		var did_str = res.did_str;
-		var id_str = res.id_str;
 		if (res.type === 'tag_one') {
 			d = nodes_all.filter(o => o.d_id == res.d_id)[0];
 			d.tags.push([tag, res.color]);
@@ -1851,10 +1836,10 @@ function handle_channel_tags(res) {
 			d_text = '';
 			d_text2 = '';
 			if (is_dark(res.color)) {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' +tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' +tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			}
 
@@ -1876,10 +1861,10 @@ function handle_channel_tags(res) {
 			var d_text = '';
 			var d_text2 = '';
 			if (is_dark(res.color)) {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' + tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + tag + '\')" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			} else {
-				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + id_str + '\',\'' + tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
+				d_text += '<button class="btn btn-xs" onclick="delete_tags(event,\'' + did_str + '\',\'' + tag + '\')" style="background-color: #' + res.color + '">' + tag + ' &nbsp;x </button> ';
 				d_text2 += '<button class="btn btn-xs" style="color: #FFFFFF; background-color: #' + res.color + '">' + tag + '</button> ';
 			}
 
@@ -1890,13 +1875,16 @@ function handle_channel_tags(res) {
 			}
 
 			var list_dids = res.dids;
+			var c;
 			for (var i=0; i<list_dids.length; i++) {
-				let c = nodes_all.filter(o => o.d_id == list_dids[i])[0];
+				var tags2 = '' + d_text2;
+				c = nodes_all.filter(o => o.d_id == list_dids[i])[0];
+				console.log(tags);
 				c.tags.push([tag, res.color]);
 				if ($('#tags_' + c.id).html() == "") {
-					$('#tags_' + c.id).html('Tags: ' + d_text2);
+					$('#tags_' + c.id).html('Tags: ' + tags2);
 				} else {
-					$('#tags_' + c.id).append(d_text2);
+					$('#tags_' + c.id).append(tags2);
 				}
 			}
 		}
@@ -1956,6 +1944,7 @@ function handle_channel_summarize_selected(res) {
 		}
 	}
 	let lowest_d = nodes_all.filter(o => o.d_id == res.lowest_d)[0];
+	let position = lowest_d.parent.children.indexOf(lowest_d);
 	new_d = {d_id: res.d_id,
 			 name: "",
 			 summary: res.top_summary,
@@ -1992,7 +1981,7 @@ function handle_channel_summarize_selected(res) {
 		children[d].parent = new_d;
 	}
 
-	insert_node_to_children(new_d, new_d.parent);
+	insert_node_to_children(new_d, new_d.parent, position);
 
 	delete_summary_nodes = res.delete_summary_node_dids;
 	for (var i=0; i<delete_summary_nodes.length; i++) {
@@ -2032,7 +2021,7 @@ function handle_channel_summarize_selected(res) {
 			<a`;
 		if (new_d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}" data-did="${new_d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 		</footer>`;
 	}
@@ -2047,7 +2036,7 @@ function handle_channel_summarize_selected(res) {
 		text += `<footer><a`
 		if (new_d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
 		`;
 	}
@@ -2068,7 +2057,9 @@ function handle_channel_summarize_selected(res) {
 }
 
 function handle_channel_summarize_comments(res) {
+	// need to make children 
 	let d = nodes_all.filter(o => o.d_id == res.orig_did)[0];
+	let position = d.parent.children.indexOf(d);
 
 	if (res.subtype == "summarize") {
 
@@ -2106,8 +2097,7 @@ function handle_channel_summarize_comments(res) {
 		}
 
 		d.parent = new_d;
-
-		insert_node_to_children(new_d, new_d.parent);
+		insert_node_to_children(new_d, new_d.parent, position);
 
 		console.log(new_d.collapsed);
 		if (!new_d.collapsed) {
@@ -2123,9 +2113,7 @@ function handle_channel_summarize_comments(res) {
 			}
 		}
 
-
 		update(new_d.parent);
-
 
 		d3.select("#node_" + new_d.id)
 		.style("fill", color);
@@ -2136,8 +2124,6 @@ function handle_channel_summarize_comments(res) {
 		delete_children_boxes(new_d.replace[0]);
 
 		d = new_d;
-	} else {
-		update(d.parent);
 	}
 
 	delete_summary_nodes = res.delete_summary_node_dids;
@@ -2164,7 +2150,7 @@ function handle_channel_summarize_comments(res) {
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}" data-did="${d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 		</footer>`;
 	}
@@ -2180,7 +2166,7 @@ function handle_channel_summarize_comments(res) {
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}" data-did="${d.d_id}">Delete Summary</a>
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>
 		</footer>`;
 	}
@@ -2191,11 +2177,14 @@ function handle_channel_summarize_comments(res) {
 	show_text(nodes_all[0]);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	make_progress_bar();
+	nodes_all = update_nodes_all(nodes_all[0]);
+	if (res.subtype == "edit_summarize") update(d.parent);
 }
 
 function handle_channel_delete_tags(res) {
 	var dids = res.dids;
 	var tag = res.tag;
+	console.log("delete tags");
 	if (res.type === 'delete_tags') {
 	    if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 		$('#current_tags').children().each(function(index, element) {
@@ -2245,12 +2234,15 @@ function handle_channel_delete_comment_summary(res) {
 }
 
 function handle_channel_hide_comment(res) {
-	let id = nodes_all.filter(o => o.d_id == res.d_id)[0].id;
+	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
+	let id = d.id;
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
-	hide_node(id);
+	show_text(nodes_all[0]);
+	if (!d.replace_node) hide_node(id);
 	make_progress_bar();
+	update(d.parent);
 }
 
 function handle_channel_hide_comments(res) {
@@ -2263,13 +2255,13 @@ function handle_channel_hide_comments(res) {
 	}
 	show_text(nodes_all[0]);
 	make_progress_bar();
+	update(nodes_all[0]);
 }
 
 function handle_channel_hide_replies(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
-	d3.select('#node_' + d.parent.id).style('fill', color);
 
 	if (d.children) {
 		ids = [];
@@ -2291,6 +2283,7 @@ function handle_channel_hide_replies(res) {
 		}
 	}
 	make_progress_bar();
+	update(d);
 }
 
 function get_upvote_downvote(id) {
@@ -2331,6 +2324,8 @@ function delete_summary_node(id) {
 	$('#comment_' +id).remove();
 
 	d = nodes_all[id-1];
+	let position = d.parent.children.indexOf(d);
+
 	if (d.replace_node) {
 		parent = d.parent;
 
@@ -2372,18 +2367,18 @@ function delete_summary_node(id) {
 		if (d.replace) {
 			for (var i=0; i<d.replace.length; i++) {
 				d.replace[i].parent = parent;
-				insert_node_to_children(d.replace[i], parent);
+				insert_node_to_children(d.replace[i], parent, position);
 			}
 		}
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
 				d.children[i].parent = parent;
-				insert_node_to_children(d.children[i], parent);
+				insert_node_to_children(d.children[i], parent, position);
 			}
 		} else if (d._children) {
 			for (var i=0; i<d._children.length; i++) {
 				d._children[i].parent = parent;
-				insert_node_to_children(d._children[i], parent);
+				insert_node_to_children(d._children[i], parent, position);
 			}
 		}
 	}
@@ -2441,19 +2436,15 @@ function cascade_collapses(d) {
 	}
 }
 
-function insert_node_to_children(node_insert, node_parent) {
+function insert_node_to_children(node_insert, node_parent, position = undefined) {
 	added = false;
 	if (!node_parent.children) {
 		node_parent.children = [];
 	}
-
 	if (node_parent.children) {
-		for (var i=0; i<node_parent.children.length; i++) {
-			if (node_parent.children[i].size < node_insert.size) {
-				node_parent.children.splice(i, 0, node_insert);
-				added = true;
-				break;
-			}
+		if (position !== undefined && position <= node_parent.children.length) {
+			node_parent.children.splice(position, 0, node_insert);
+			added = true;
 		}
 
 		if (!added) {
@@ -2461,19 +2452,15 @@ function insert_node_to_children(node_insert, node_parent) {
 		}
 
 	} else if (node_parent.replace) {
-		for (var i=0; i<node_parent.replace.length; i++) {
-			if (node_parent.replace[i].size < node_insert.size) {
-				node_parent.replace.splice(i, 0, node_insert);
-				added = true;
-				break;
-			}
+		if (position !== undefined && position <= node_parent.replace.length) {
+			node_parent.children.splice(position, 0, node_insert);
+			added = true;
 		}
 
 		if (!added) {
 			node_parent.replace.push(node_insert);
 		}
 	}
-
 }
 
 
@@ -3320,8 +3307,8 @@ function make_highlight() {
 	$('#inputHighlight').keyup(function (e) {
 	 	$('#box').unhighlight();
 	  	for (var i=1; i<nodes_all.length; i++) {
-				d3.select("#node_" + nodes_all[i].id)
-						.style("fill", color);
+	  		let did = nodes_all[i].d_id;
+	  		$('#marker-' + did).removeClass('highlight');
 		}
 
 		$('#count_result').text('0');
@@ -3334,8 +3321,8 @@ function make_highlight() {
 		  	for (var i=1; i<nodes_all.length; i++) {
 		  		text = nodes_all[i].name;
 		  		if (pattern.test(text.toLowerCase())) {
-		  			d3.select("#node_" + nodes_all[i].id)
-						.style("fill","#ffd700");
+		  			let did = nodes_all[i].d_id;
+	  				$('#marker-' + did).addClass('highlight');
 					count += 1;
 		  		}
 		  	}
@@ -3370,108 +3357,19 @@ function dragstart(d) {
 }
 
 
-function initiateDrag(d, domNode) {
-    draggingNode = d;
-
-    d3.selectAll(".clicked").classed("clicked", false);
-    unhighlight_all();
-
-    d3.select(domNode).select('.ghostCircle').attr('pointer-events', 'none');
-        d3.selectAll('.ghostCircle').attr('class', 'ghostCircle show');
-        d3.select(domNode).attr('class', 'node activeDrag');
-
-
-    svg.selectAll("g.node").sort(function(a, b) { // select the parent and sort the path's
-            if (a.id != draggingNode.id) return 1; // a is not the hovered element, send "a" to the back
-            else return -1; // a is the hovered element, bring "a" to the front
-        });
-
-    nodes = tree.nodes(d);
-
-    // if nodes has children, remove the links and nodes
-    if (nodes.length > 1) {
-        // remove link paths
-        links = tree.links(nodes);
-        nodePaths = svg.selectAll("path.link")
-            .data(links, function(d) {
-                return d.target.id;
-            }).remove();
-        // remove child nodes
-        nodesExit = svg.selectAll("g.node")
-            .data(nodes, function(d) {
-                return d.id;
-            }).filter(function(d, i) {
-                if (d.id == draggingNode.id) {
-                    return false;
-                }
-                return true;
-            }).remove();
-    }
-
-    // remove parent link
-    parentLink = tree.links(tree.nodes(draggingNode.parent));
-    svg.selectAll('path.link').filter(function(d, i) {
-        if (d.target.id == draggingNode.id) {
-            return true;
-        }
-        return false;
-    }).remove();
-
-    dragStarted = null;
+function collapse(d) {
+	if (d.replace_node) {
+		hide_replace_nodes(d.id);
+	} else {
+		collapse_node(d.id);
+	}
 }
-
-function dragmove(d) {
-    if (d.article || d.parent_node) {
-        return;
-    }
-    if (dragStarted) {
-        domNode = this;
-        initiateDrag(d, domNode);
-        dragStarted = null;
-    }
-
-    $('#expand').hide();
-
-
-    x = d3.event.x, y = d3.event.y;
-
-	node = d3.select(this);
-	node.attr("transform", "translate(" + x+ "," + y + ")");
-	updateTempConnector();
-}
-
-  var overCircle = function(d) {
-  		if (d != draggingNode) {
-	        selectedNode = d;
-	        updateTempConnector();
-	    }
-    };
-    var outCircle = function(d) {
-        selectedNode = null;
-        updateTempConnector();
-    };
-
- var updateTempConnector = function() {
-        if (draggingNode !== null && selectedNode !== null) {
-        	node = d3.select('#node_' + selectedNode.id);
-            node.attr("r", 20)
-            	.attr('class', 'selected');
-
-        } else {
-        	d3.selectAll('.selected')
-        	.classed("selected", false)
-        	.attr('r', function(d) {
-        		return (d.size + 400 )/65;
-        	});
-        }
-};
-
 
 function expand(d) {
 	if (d.replace_node) {
 		show_replace_nodes(d.id);
 	} else {
-		expand_recurs(d);
+		expand_node(d.id);
 	}
 }
 
@@ -3502,53 +3400,53 @@ function expand_all(id) {
 	d = nodes_all[id-1];
 	recurse_expand_all(d);
 	update(d);
+	$('.outline-item#' + d.d_id).find("#down-arrow").remove();
+	redOutlineBorder($('.outline-item#' + d.d_id));
+	show_text(d);
 }
 
-function dragend(d) {
- 	if (d.article || d.parent_node) {
-        return;
-    }
-
-    domNode = this;
-    if (selectedNode) {
-        save_node_position();
-    } else {
-
-    	d.x0 = 0;
-		d.y0 = 0;
-
-		node = d3.select(this);
-		node
-		.attr("transform", "translate(" + d.y0 + "," + d.x0 + ")")
-		.attr("r", function(d) {
-
-	    	if (d.replace_node || d.summary != '') {
-				num_words = wordCount(d.summary + ' ' + d.extra_summary)
-			} else {
-				num_words = wordCount(d.name)
-			}
-
-	      	total = num_words/20 + 5;
-
-
-	      	if (total > 18) {
-	      		return 15;
-	      	} else if (total < 8) {
-	      		return 8;
-	      	} else {
-	      		return total;
-	      	}
-	    });
-        endDrag();
-    }
+function setSortables() {
+	var nestedSortables = document.getElementsByClassName("nested-sortable");
+	// Loop through each nested sortable element
+	for (var i = 0; i < nestedSortables.length; i++) {
+		if (nestedSortables[i].id !== 'nestedOutline') {
+			new Sortable(nestedSortables[i], {
+				group: 'nested',
+				animation: 150,
+				fallbackOnBody: true,
+				swapThreshold: 0.65,
+				onStart: function(evt) {
+					$('#expand').hide();
+				},
+				onEnd: function (evt) {
+			        var dragItem, newParent;
+			        let outlineItem = $(evt.item).find('.outline-item').get(0);
+			        if (outlineItem) dragItem = nodes_all.filter(o => o.d_id == outlineItem.id)[0];
+			        let ns = $(evt.to).closest('.nested-sortable');
+			        let outlineParent = ns.parent().find('.outline-item').get(0);
+			        if (outlineParent) {
+			        	if (outlineParent.id === 'viewAll') {
+			        		newParent = nodes_all[0];
+			        	} else {
+			        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
+			        	}
+			        } 
+			        console.log(dragItem);
+			        console.log(newParent);
+			        if (dragItem && newParent) save_node_position(dragItem, newParent);
+			        // update(draggingNode.parent);
+			    }
+			});
+		}
+	}
 }
 
-function save_node_position() {
+function save_node_position(dragItem, newParent) {
 
 	var csrf = $('#csrf').text();
 	data = {csrfmiddlewaretoken: csrf,
-			new_parent: selectedNode.d_id,
-			node: draggingNode.d_id};
+			new_parent: newParent.d_id,
+			node: dragItem.d_id};
 
 	$.ajax({
 		type: 'POST',
@@ -3558,70 +3456,37 @@ function save_node_position() {
 
 
 			// now remove the element from the parent, and insert it into the new elements children
-	        var index = draggingNode.parent.children.indexOf(draggingNode);
+	        var index = dragItem.parent.children.indexOf(dragItem);
 	        if (index > -1) {
-	            draggingNode.parent.children.splice(index, 1);
+	            dragItem.parent.children.splice(index, 1);
 	        }
-	        draggingNode.parent = selectedNode;
-	        if (typeof selectedNode.children !== 'undefined' || typeof selectedNode._children !== 'undefined') {
-	            if (typeof selectedNode.children !== 'undefined') {
-	            	insert_node_to_children(draggingNode, selectedNode);
+	        dragItem.parent = newParent;
+	        if (typeof newParent.children !== 'undefined' || typeof newParent._children !== 'undefined') {
+	            if (typeof newParent.children !== 'undefined') {
+	            	insert_node_to_children(dragItem, newParent);
 	            } else {
-	            	insert_node_to_un_children(draggingNode, selectedNode);
+	            	insert_node_to_un_children(dragItem, newParent);
 	            }
 	        } else {
-	        	if (selectedNode.replace_node) {
-	        		insert_node_to_replace(draggingNode, selectedNode);
+	        	if (newParent.replace_node) {
+	        		insert_node_to_replace(dragItem, newParent);
 	        	} else {
-	        		selectedNode.children = [];
-	            	selectedNode.children.push(draggingNode);
+	        		newParent.children = [];
+	            	newParent.children.push(dragItem);
 	        	}
 	        }
 	        // Make sure that the node being added to is expanded so user can see added node is correctly moved
-	        expand(selectedNode);
+	        //expand(newParent);
 
-	        draggingNode.x0 = 0;
-			draggingNode.y0 = 0;
-
-	        endDrag();
+	        dragItem.x0 = 0;
+			dragItem.y0 = 0;
 
 			success_noty();
 		},
 		error: function() {
-
-			draggingNode.x0 = 0;
-			draggingNode.y0 = 0;
-
-			node = d3.select('#node_' + draggingNode.id);
-			node.attr("transform", "translate(" + draggingNode.y0 + "," + draggingNode.x0 + ")")
-				.attr("r", function(d) {
-			      	return (d.size + 400 )/65;
-			    });
-
-	        endDrag();
-
 			error_noty();
 		}
 	});
-}
-
-
-function endDrag() {
-    selectedNode = null;
-    d3.selectAll('.ghostCircle').attr('class', 'ghostCircle');
-    d3.select(domNode).attr('class', 'node');
-    // now restore the mouseover event or we won't be able to drag a 2nd time
-    d3.select(domNode).select('.ghostCircle').attr('pointer-events', '');
-    updateTempConnector();
-    if (draggingNode !== null) {
-
-    	d3.select("#node_" + draggingNode.id)
-			.attr("transform", "translate(" + 0 + "," + 0 + ")");
-
-        update(draggingNode.parent);
-
-        draggingNode = null;
-    }
 }
 
 function count_children(d) {
@@ -3651,247 +3516,163 @@ function check_clicked_node(d, clicked_ids) {
 	return true;
 }
 
-function update(source) {
-  // Compute the flattened node list. TODO use d3.layout.hierarchy.
-  var nodes = tree.nodes(root);
+function getState(d) {
+	let state = 'unsum_comment';
+	if (d.replace_node) {
+		if (has_unsummarized_children(d)) {
+			state = 'summary_partial';
+		} else {
+			state = 'summary';
+		}
+	} else if (d.hiddennode) {
+		state = 'hidden';
+	} else if (d.collapsed && !(d.summarized == false)) {
+		state = 'sum_comment';
+	}
+	// todo: improve speed of summary_partial
+	return state;
+}
 
-  var height = Math.max($(window).height() - 250, 100 + nodes.length * barHeight + margin.top + margin.bottom);
+function stripHtml(text) {
+	return text.replace(/<[^>]*>?/gm, '');
+}
 
-  d3.select("svg").transition()
-      .duration(duration)
-      .attr("height", height);
+function createOutlineInsideString(d, outline='') {
+	/** type (for coloring):
+	  *  comment = normal comment
+	  *  unsum = unsummarized comment under a summary node
+	  *	 summary = summary
+	  *  psum = partially summarized comment
+	  */
+	if (d.children && d.children.length) {
+		outline += `<div class="list-group nested-sortable">`;
+		for (var i=0; i<d.children.length; i++) {
+			var node = d.children[i];
+			let title = node.summary? stripHtml(node.summary).substring(0,20) : stripHtml(node.name).substring(0,20);
+			let state = getState(node);
+			outline += `<div class="list-countainer">`;
+				outline += `<div class="list-group-line" id="line-${node.d_id}"> </div>`;
+				outline += `<div class="list-group-item">`
+						+ `<div class="outline-item" id=${node.d_id}>`
+						+ `<span class="marker m-${state}" id="marker-${node.d_id}" `;
+				if (colorby == "user" && (state == 'unsum_comment' || state == 'sum_comment')) {
+					var userColor = '#cccccc';
+					if (node.author && node.author != "Anonymous") {
+						userColor = stringToColour(node.author);
+					}
+					outline += `style="background-color:${userColor};"`;
+				} 
+				outline	+= `></span>`
+						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
+						+ title + `</span>`;
+				if (((state === 'summary' || state ==='summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length)) {
+					outline += '<span id="down-arrow">&#9660</span>';
+				}
+				outline += `</div>`;
+				outline += createOutlineInsideString(d.children[i]);
+				outline += `</div>`;
+			outline += `</div>`;
+		}
+		outline += `</div>`;
+	}
+	// else if (d.replace && d.replace.length) {
+	// 	// todo: default to collapsed
+	// 	outline += `<div class="list-group nested-sortable">`;
+	// 	for (var i=0; i<d.replace.length; i++) {
+	// 		let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
+	// 		let state = getState(d.replace[i]);
+	// 		outline += `<div class="list-group-item">`
+	// 				+ `<div class="outline-item" id=${d.replace[i].d_id}>`
+	// 				+ `<span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span>`
+	// 				+ `<span class="outline-text t-${state}" id="outline-text-${d.replace[i].d_id}">`
+	// 				+ title + `</span></div>`;
+	// 		outline += createOutlineInsideString(d.replace[i]);
+	// 		outline += `</div>`;
+	// 	}
+	// 	outline += `</div>`;
+	// }
+	return outline
+}
 
-  d3.select("rect").transition()
-      .duration(duration)
-      .attr("height", height);
+function createOutlineString(d) {
+	var title = $('#wikum-title').clone().children().remove().end().text();
+	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
+	outlineString += `<div id='viewAll' class='outline-item'><div class='outline-text' id='outline-text-viewAll'>${title}`;
+	outlineString += `</div></div>`;
+	outlineString += createOutlineInsideString(d);
+	outlineString += '</div>';
+	return outlineString;
+}
 
-  d3.select(self.frameElement).transition()
-      .duration(duration)
-      .style("height", height + "px");
+function recurse_update_nodes_all(d, parent=undefined, all_children=[], depth=0) {
+	if (d.parent) d.parent = parent;
+	d.depth = depth;
+	all_children.push(d);
+	if (d.replace_node && d.replace) {
+		for (var i=0; i<d.replace.length; i++) {
+			recurse_update_nodes_all(d.replace[i], d, all_children, depth + 1);
+		}
+	}
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			recurse_update_nodes_all(d.children[i], d, all_children, depth + 1);
+		}
+	}
+	if (d._children) {
+		for (var i=0; i<d._children.length; i++) {
+			recurse_update_nodes_all(d._children[i], d, all_children, depth + 1);
+		}
+	}
+	return all_children;
+}
 
-  // Compute the "layout".
-  nodes.forEach(function(n, i) {
-    n.x = (i * barHeight) + 100;
-    n.y = n.y + 100;
-  });
+function update_ids(nodes_all) {
+	let counter = 0;
+	nodes_all = nodes_all.map(function (node) {
+		counter += 1;
+		node['id'] = counter;
+		return node;
+	});
+	return nodes_all;
+}
 
-  // Update the nodes…
-  var node = svg.selectAll("g.node")
-      .data(nodes, function(d) {
-	      	if (d.id) {
-	      		nodes_all[d.id-1] = d;
-	      		return d.id;
-	      	} else {
-	      		d.id = ++i;
-	      		nodes_all[d.id-1] = d;
-	      		return d.id;
-	      	}
-      	});
+function update_nodes_all(d, depth=0) {
+	var nodes_all = recurse_update_nodes_all(d, depth=depth);
+	for (var i = 1; i < nodes_all.length; i++) {
+		if (!nodes_all[i].parent) {
+			nodes_all[i].parent = nodes_all[0];
+		}
+	}
+	nodes_all = update_ids(nodes_all);
+	return nodes_all;
+}
 
-  var nodeEnter = node.enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-      .style("opacity", 1e-6);
-
-  var node_drag = d3.behavior.drag()
-  	.origin(function(d) { return {x: 0, y: 0}; })
-    .on("dragstart", dragstart)
-    .on("drag", dragmove)
-    .on("dragend", dragend);
-
-
-  // Enter any new nodes at the parent's previous position.
-  nodeEnter.append("path")
-  	  .attr("d", function(d) {
-  	  	if (!(d.children || d._children || d.replace_node)) {
-  	  		return "M0,5c0-1.4,0-5,0-5s3.7,0,5,0c2.8,0,5,2.2,5,5s-2.2,5-5,5S0,7.8,0,5z";
-  	  	} else {
-  	  		return "M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0";
-  	  	}
-  	  })
-      .attr("height", barHeight)
-      .style("stroke-width", stroke_width)
-      .style("stroke", stroke)
-      .style("fill", color)
-      .attr("id", function(d) { return 'node_' + d.id; })
-      .attr("vector-effect", "non-scaling-stroke")
-      .style("transform", function(d) {
-      		if (d.article) {
-	      		return "";
-	      	}
-
-			if (d.replace_node || d.summary != '') {
-				num_words = wordCount(d.summary + ' ' + d.extra_summary)
-			} else {
-				num_words = wordCount(d.name)
-			}
-
-	      	total = num_words/20 + 5;
-
-	      	if ((total/10 < 1.3) && !(d.children || d._children || d.replace_node)) {
-	      		return "scale(1.3)";
-	      	}
-
-	      	if (total > 18) {
-	      		return "scale(1.5)";
-	      	} else if (total < 8) {
-	      		return "scale(0.8)";
-	      	} else {
-	      		return `scale(${total/10})`;
-	      	}
-      })
-      .on("click", function(d) {
-      	
-      	if (d3.event.ctrlKey || d3.event.metaKey) {
-      		clicked = d3.selectAll(".clicked")[0];
-
-			console.log(clicked.length);
-      		clicked_ids = [];
-      		
-      		for (var i=0; i<clicked.length; i++) {
-      			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
-      		}
-      		
-    		if ($('#node_' + d.id).css('stroke-width') == "0px") {
-    			clicked_ids.push(d.id);
-    			highlight_node(d.id);
-    		} else if ( clicked.length == nodes_all.length - 2) {
-    			unhighlight_all();
-    			clicked_ids = [];
-    			clicked_ids.push(d.id);
-    			highlight_node(d.id);
-    		} else {
-    			var index = clicked_ids.indexOf(d.id);
-				if (index !== -1) array.splice(index, 1);
-				unhighlight_node(d.id);
-    		}
-    		
-    		show_text('clicked');
-      		if (highlight_text) {
-	      		$('#box').highlight(highlight_text);
-	      	}
-      		
-      		
-	    } else {
-
-      		clicked = d3.selectAll(".clicked")[0];
-      		clicked_ids = [];
-
-      		if ($('#node_' + d.id).css('stroke-width') != "0px") {
-      			clicked_ids.push(d.id);
-      		}
-
-      		for (var i=0; i<clicked.length; i++) {
-      			clicked_ids.push(parseInt(clicked[i].id.substring(5)));
-      		}
-
-      		if (!d.parent_node) {
-      			if (d.replace_node) {
-      				if (d.replace.length > 0) {
-      					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
-      						show_replace_nodes(d.id);
-      					}
-      				} else {
-      					if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
-      						hide_replace_nodes(d.id);
-      					}
-      				}
-      			}
-
-		      	if (check_clicked_node(d, clicked_ids) && count_children(d) == clicked_ids.length) {
-		      		click_node(d.id);
-		      	}
-		    }
-	      	d3.selectAll(".clicked").classed("clicked", false);
-	      	unhighlight_all();
-	      	show_text(d);
-	      	$('#box').scrollTop(0);
-	      	if (highlight_text) {
-	      		$('#box').highlight(highlight_text);
-	      	}
-	      }
-
-      })
-      .on("mouseover", showdiv)
-      .on("mouseout", hidediv)
-      .call(node_drag);
-
-	nodeEnter.append("circle")
-            .attr('class', 'ghostCircle')
-            .attr("r", 20)
-            .attr("opacity", 0.0) // change this to zero to hide the target area
-        .style("fill", "red")
-            .attr('pointer-events', 'mouseover')
-            .on("mouseover", function(node) {
-                overCircle(node);
-            })
-            .on("mouseout", function(node) {
-                outCircle(node);
-            });
-
-  // Transition nodes to their new position.
-  nodeEnter.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-      .style("opacity", 1);
-
-  node.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-      .style("opacity", 1)
-    .select("rect")
-      .style("fill", color);
-
-  // Transition exiting nodes to the parent's new position.
-  node.exit().transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-      .style("opacity", 1e-6)
-      .remove();
-
-  // Update the links…
-  var link = svg.selectAll("path.link")
-      .data(tree.links(nodes), function(d) {
-      	if (d.source.article) {
-      		return null;
-      	} else {
-      		return d.target.id;
-      	}
-      	});
-
-  // Enter any new links at the parent's previous position.
-  link.enter().insert("path", "g")
-      .attr("class", "link")
-      .attr("d", function(d) {
-    	var o = {x: source.x0, y: source.y0};
-    	return diagonal({source: o, target: o});
-      })
-      .attr("id", function(d) {
-     	return 'link_' + d.source.id + '_' + d.target.id;
-      })
-    .transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition links to their new position.
-  link.transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition exiting nodes to the parent's new position.
-  link.exit().transition()
-      .duration(duration)
-      .attr("d", function(d) {
-        var o = {x: source.x, y: source.y};
-        return diagonal({source: o, target: o});
-      })
-      .remove();
-
-  // Stash the old positions for transition.
-  nodes.forEach(function(d) {
-    d.x0 = d.x;
-    d.y0 = d.y;
-  });
+/**
+ * Updates the outline view
+ * Replace with the following update() to return to d3 node view
+ */
+function update(d) {
+	// Replace element and all of its children with updated version in the outline view
+	// (should be in correct order for update(some_parent) b/c of insert_node_to_children)
+	var outline_item;
+	if (d.article) {
+		outline_item = $('.outline-item#viewAll');
+	} else {
+		outline_item = $('.outline-item#' + d.d_id);
+	}
+	let children = $(outline_item).next();
+	var inside_string = createOutlineInsideString(d);
+	if (children && children.length) {
+		children_group = children[0];
+		$(children_group).replaceWith(inside_string);
+	} else {
+		// no children, need to create
+		if ($(outline_item).parent() && $(outline_item).parent().length) {
+			$($(outline_item).parent().get(0)).append(inside_string);
+		}
+	}
+	nodes_all = update_nodes_all(nodes_all[0]);
+	setSortables();
 }
 
 function is_click() {
@@ -3931,9 +3712,7 @@ function hide_node(id) {
 		}
 	}
 
-	update(parent);
-
-	d3.select('#node_' + parent.id).style('fill', color);
+	// d3.select('#node_' + parent.id).style('fill', color);
 	return null;
 }
 
@@ -3980,46 +3759,47 @@ function expand_recurs(d) {
 	    d.children = d._children;
 	    d._children = null;
 	  }
-	if (d.children) {
+	if (d.children && d.children.length) {
 		for (var i=0; i<d.children.length; i++) {
 			expand_recurs(d.children[i]);
 		}
+		return true;
 	}
+	return false;
 }
 
 
 function collapse_node(id) {
-  d = nodes_all[id-1];
+	var d = nodes_all[id-1];
 	if (d._children) {
 	    d.children = d._children;
 	    d._children = null;
-	  }
-	if (d.children) {
-		for (var i=0; i<d.children.length; i++) {
-			collapse_recurs(d.children[i]);
-		}
 	}
-  update(d);
-  setTimeout( function(){
-    show_text('clicked');
-  }  , 2000 );
-
-  return null;
+	if (d.children && d.children.length) {
+		collapse_recurs(d);
+		var outlineItem = '.outline-item#' + d.d_id;
+		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
+		update(d);
+		show_text(d);
+	}
 }
 
 
 function expand_node(id) {
-  d = nodes_all[id-1];
-  expand_recurs(d);
-  update(d);
-  return null;
+	var d = nodes_all[id-1];
+	var updated = expand_recurs(d);
+	if (updated) {
+		update(d);
+		$('.outline-item#' + d.d_id).find("#down-arrow").remove();
+		redOutlineBorder($('.outline-item#' + d.d_id));
+		show_text(d);
+	}
 }
 
 
 function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
-
 
 
 function construct_comment(d) {
@@ -4181,7 +3961,7 @@ function construct_comment(d) {
 				text += '<a ';
 				if (d.is_locked) text += 'class="disabled" ';
 				text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
-				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '">Delete Comment Summary</a> | ';
+				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '" data-did="' + d.d_id +'">Delete Comment Summary</a> | ';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate Summary</a></P>';
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
@@ -4195,7 +3975,7 @@ function construct_comment(d) {
 				text += `<a `;
 				if (d.is_locked) text += `class="disabled" `;
 				text += `data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary</a>
-				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}">Delete Summary</a>
+				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${d.id}" data-did="${d.d_id}">Delete Summary</a>
 				<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#tag_modal_box" data-type="tag_one" data-id="${d.id}">Tag Summary</a>
 				<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${d.id}">Evaluate Summary</a>`;
 			}
@@ -4207,7 +3987,7 @@ function construct_comment(d) {
 		 if (!summary && d.name.length > 300) {
 			text += '<footer>';
 	
-			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
+			if (((!d.children || !d.children.length) && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a ';
@@ -4236,7 +4016,7 @@ function construct_comment(d) {
 			text += '</footer>';
 		} else if (!d.replace_node) {
 			text += '<footer>';
-			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
+			if ((!d.children || !d.children.length) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
@@ -4267,7 +4047,7 @@ function construct_comment(d) {
 		if (!summary && d.name.length > 300) {
 			text += '<footer>';
 	
-			if ((!d.children && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
+			if (((!d.children || !d.children.length) && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a ';
 					if (d.is_locked) text += 'class="disabled" ';
@@ -4292,7 +4072,7 @@ function construct_comment(d) {
 			text += '</footer>';
 		} else if (!d.replace_node) {
 			text += '<footer>';
-			if ((!d.children) || (d.hashidden && d.children.length == d.hidconstant)) {
+			if ((!d.children || !d.children.length) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#hide_modal_box" data-type="hide_comment" data-id="' + d.id + '">Mark Unimportant</a>';
@@ -4336,7 +4116,7 @@ function get_subtree_box(text, d, level) {
 			var hiddennode = d.children[i].hiddennode && !d.children[i].replace_node? "hiddennode" : "";
 
 
-			text += `<article class="comment_box ${summaryClass} ${summarized} ${levelClass} ${collapsed} ${summary} ${hiddennode}" id="comment_${d.children[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${summarized} ${levelClass} ${collapsed} ${summary} ${hiddennode}" data-did=${d.children[i].d_id} id="comment_${d.children[i].id}">`;
 
 			text +=  construct_comment(d.children[i]);
 			text += '</article>';
@@ -4410,6 +4190,7 @@ function show_text(d) {
 		if (d.article) {
 			var text = '';
 			text = get_subtree_box(text, d, 0);
+			redOutlineBorder(document.getElementById("viewAll"));
 		} else {
 			var summaryClass = d.replace_node? "summary_box" : "";
 			var summarized = d.summarized!=null && !d.summarized? "unsummarized" : "";
@@ -4417,7 +4198,7 @@ function show_text(d) {
 			var summary = d.summary && !d.replace_node? "summary" : "";
 			var hiddennode = d.hiddennode && !d.replace_node? "hiddennode" : "";
 
-			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" id="comment_${d.id}">`;
+			var text = `<article class="comment_box ${summaryClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" data-did=${d.d_id} id="comment_${d.id}">`;
 
 			if (d.depth > 1
                 	) {
@@ -4434,6 +4215,7 @@ function show_text(d) {
 			text += '</article>';
 			highlight_node(d.id);
 			text = get_subtree_box(text, d, 1);
+			redOutlineBorder($('.outline-item#' + d.d_id));
 		}
 		$('#box').html(text);
 		//author_hover();
@@ -4450,8 +4232,9 @@ function show_text(d) {
 		clear_box_top();
 		var objs = [];
 		var min_level = 50;
-		d3.selectAll('.clicked').each( function(data) {
-			if (!data.article) {
+		$('#outline .rb-red').each( function() {
+			var data = nodes_all.filter(o => o.d_id == this.id)[0];
+			if (data && !data.article) {
 				objs.push(data);
 				if (data.depth < min_level) {
 					min_level = data.depth;
@@ -4475,7 +4258,7 @@ function show_text(d) {
 			var summary = objs[i].summary && !objs[i].replace_node? "summary" : "";
 			var hiddennode = objs[i].hiddennode && !objs[i].replace_node? "hiddennode" : "";
 
-			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" id="comment_${objs[i].id}">`;
+			text += `<article class="comment_box ${summaryClass} ${levelClass} ${collapsed} ${summarized} ${summary} ${hiddennode}" data-did=${objs[i].d_id} id="comment_${objs[i].id}">`;
 
 			if (!level && objs[i].depth > 1) {
 			    if (!summary)
@@ -4495,34 +4278,33 @@ function show_text(d) {
 		};
 	}
 
+	var delay=500, setTimeoutConst;
 	$('.comment_box').hover(
 		  function() {
+		    var did = parseInt(this.dataset.did);
 		    var id = parseInt(this.id.substring(8));
-		    extra_highlight_node(id);
+		    extra_highlight_node(did, id);
+		    setTimeoutConst = setTimeout(function() {
+				$('#viz').scrollTo('#outline-text-' + did, 500);
+			}, delay);
 		  }, function() {
+		    var did = parseInt(this.dataset.did);
 		    var id = parseInt(this.id.substring(8));
-		    unextra_highlight_node(id);
+		    unextra_highlight_node(did, id);
+		    clearTimeout(setTimeoutConst);
 		  }
 	);
 
 }
 
-function extra_highlight_node(id) {
-	if (id != 1) {
-		d3.select("#node_" + id)
-			.style("stroke","#d73c37")
-			.style("stroke-width", stroke_width);
-		highlight_box(id);
-	}
+function extra_highlight_node(did, id) {
+	$('#outline-text-' + did).css('background-color', '#D3D3D3');
+	highlight_box(id);
 }
 
-function unextra_highlight_node(id) {
-	if (id != 1) {
-		d3.select("#node_" + id)
-			.style("stroke","#000000")
-			.style("stroke-width", stroke_width);
-		highlight_box(id);
-	}
+function unextra_highlight_node(did, id) {
+	$('#outline-text-' + did).css('background-color', '');
+	highlight_box(id);
 }
 
 function author_hover() {
@@ -4651,7 +4433,12 @@ function highlight_box(id) {
 }
 
 function set_expand_position(d) {
-	var offset = $('svg').offset();
+	var bbox;
+	if (d.article) {
+		bbox = $('.outline-item#viewAll').get(0).getBoundingClientRect();
+	} else {
+		bbox = $('.outline-item#' + d.d_id).get(0).getBoundingClientRect();
+	}
 	var width = $('#expand').width();
 	var node_width = 0;
 	if (d.article) {
@@ -4659,8 +4446,8 @@ function set_expand_position(d) {
 	} else {
 		node_width = (d.size + 400)/65;
 	}
-	$('#expand').css({top: offset.top + d.x + 22,
-		left: offset.left + d.y + ((d.size + 100)/60) - width + 10 - node_width});
+	$('#expand').css({top: bbox.top,
+		left: bbox.left - width - 10});
 }
 
 function showdiv(d) {
@@ -4673,8 +4460,8 @@ function showdiv(d) {
 				if (text != '') {
 					text += '<BR>';
 				}
-				text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
-				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+				text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Subtree</a>';
+				text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 				if (d.hid && d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' Hidden </a>';
 				}				
@@ -4732,12 +4519,12 @@ function showdiv(d) {
 					if (text != '') {
 						text += '<BR>';
 					}
-					text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner +'">See Isolated Subtree</a>';
+					text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner +'">See Subtree</a>';
 				
 
 				}
 			}
-			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+			text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 
 			if (d.hid.length > 0) {
 					text += '<BR><a onclick="show_hidden(' + d.id + ')"> Show ' + d.hid.length + ' hidden </a>';
@@ -4775,13 +4562,13 @@ function showdiv(d) {
 			set_expand_position(d);
 		}
 
-		if (d3.select(this).classed("clicked")) {
-			extra_highlight_node(d.id);
-			highlight_box(d.id);
-			hover_timer = window.setTimeout(function(d) {
-				$("#box").scrollTo("#comment_" + d.id, 500);
-			}, 500, d);
-		}
+		// if (d3.select(this).classed("clicked")) {
+		// 	extra_highlight_node(d.id);
+		// 	highlight_box(d.id);
+		// 	hover_timer = window.setTimeout(function(d) {
+		// 		$("#box").scrollTo("#comment_" + d.id, 500);
+		// 	}, 500, d);
+		// }
 	}
 }
 
@@ -4789,7 +4576,7 @@ function hide_replace_nodes(id) {
 	d = nodes_all[id-1];
 
 	delete_children_boxes(d);
-	if (d.children) {
+	if (d.children && d.children.length) {
 		if (!d.replace) {
 			d.replace = [];
 		}
@@ -4798,11 +4585,14 @@ function hide_replace_nodes(id) {
 		}
 		d.children = null;
 		update(d);
+		var outlineItem = '.outline-item#' + d.d_id;
+		if (!$(outlineItem).find('#down-arrow').length) $(outlineItem).append('<span id="down-arrow">&#9660</span>');
+		show_text(d);
 	}
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 	}
 	if (text != '') {
 		$('#expand').html(text);
@@ -4813,7 +4603,7 @@ function hide_replace_nodes(id) {
 
 function show_replace_nodes(id) {
 	d = nodes_all[id-1];
-	if (d.replace) {
+	if (d.replace && d.replace.length) {
 		if (!d.children) {
 			d.children = [];
 		}
@@ -4823,12 +4613,15 @@ function show_replace_nodes(id) {
 		}
 		d.replace = [];
 		update(d);
+		$('.outline-item#' + d.d_id).find("#down-arrow").remove();
+		redOutlineBorder($('.outline-item#' + d.d_id));
+		show_text(d);
 	}
 
 	text = '';
 	if (comment_id != d.d_id) {
-		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Isolated Subtree</a>';
-		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand everything</a>';
+		text += '<a href="/subtree?id=' + article_id + '&comment_id=' + d.d_id + '&owner=' + owner + '">See Subtree</a>';
+		text += '<BR><a onclick="expand_all(' + d.id + ')">Expand all</a>';
 
 	}
 	if (text != '') {
@@ -4864,22 +4657,28 @@ function mark_children_summarized(d) {
 	}
 }
 
-// only works if d showing in nodes_all
 function has_unsummarized_children(d) {
-	if (d.summarized == false) {
+	if (!d.summarized) {
 		return true;
 	} else {
+		// either summary node or summarized comment
+		var huc = false;
 		if (d.children) {
 			for (var i=0; i<d.children.length; i++) {
-				return false || has_unsummarized_children(d.children[i]);
+				huc = huc || has_unsummarized_children(d.children[i]);
+			}
+		}
+		if (d._children) {
+			for (var i=0; i<d._children.length; i++) {
+				huc = huc || has_unsummarized_children(d._children[i]);
 			}
 		}
 		if (d.replace) {
 			for (var i=0; i<d.replace.length; i++) {
-				return false || has_unsummarized_children(d.replace[i]);
+				huc = huc || has_unsummarized_children(d.replace[i]);
 			}
 		}
-		return false;
+		return huc;
 	}
 }
 
@@ -4936,6 +4735,8 @@ function show_hidden(id) {
 		d.hid = [];
 		d.hashidden = true;
 		update(d);
+		show_text(d);
+		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 }
 
@@ -4977,6 +4778,8 @@ function hide_hidden(id) {
 	if (d.hashidden) {
 		d.hashidden = false;
 		update(d);
+		show_text(d);
+		redOutlineBorder($('.outline-item#' + d.d_id));
 	}
 }
 
@@ -5013,12 +4816,11 @@ function recurse_get_unsummarized(d, unsummarized_children=[]) {
 }
 
 function hidediv(d) {
-	if (!isMouseDown && d3.select(this).classed("clicked")) {
+	if (!isMouseDown) {
 		unextra_highlight_node(d.id);
 	}
 	window.clearTimeout(hover_timer);
 	timer = setTimeout(remove_dic, 100);
-
 }
 
 function remove_dic() {
@@ -5113,6 +4915,24 @@ var stringToColour = function(str) {
     colour += ('00' + value.toString(16)).substr(-2);
   }
   return colour;
+}
+
+function redOutlineBorder(element) {
+	$('.rb-red').removeClass('rb-red');
+	if (element && element.id !== 'viewAll') $(element).addClass('rb-red');
+	var child = $(element).next()[0];
+	$(child).addClass('rb-red');
+
+	$('.outline-selected').removeClass('outline-selected');
+	/* outline the circle */
+	if ($(element).children('.marker') && $(element).children('.marker').length) {
+		$(element).children('.marker').addClass('outline-selected');
+	}
+	/* highlight the line */
+	$(child).children('.list-countainer').each(function () {
+		$(this).children('.list-group-line').addClass('outline-selected');
+	});
+	
 }
 
 function color(d) {
