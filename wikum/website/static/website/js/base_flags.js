@@ -3554,7 +3554,7 @@ function setMaxLength(depth) {
 	}
 }
 
-function createOutlineInsideString(d, outline='') {
+function createOutlineInsideString(d, outline='', depth=1) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -3565,7 +3565,7 @@ function createOutlineInsideString(d, outline='') {
 		outline += `<div class="list-group nested-sortable">`;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
-			var maxLength = setMaxLength(node.depth);
+			var maxLength = setMaxLength(depth);
 			let title = node.summary? shorten(stripHtml(node.summary), maxLength) : shorten(stripHtml(node.name), maxLength);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
@@ -3587,7 +3587,7 @@ function createOutlineInsideString(d, outline='') {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i]);
+				outline += createOutlineInsideString(d.children[i], '', depth=depth+1);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
