@@ -1390,6 +1390,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', dids);
 		dids_in_use = dids;
 		send_update_locks(dids, true);
+		console.log(dids);
 	} else {
 
 		var id = $(e.relatedTarget).data('id');
@@ -1572,14 +1573,11 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		if (evt.data.type == "summarize_selected") {
 			data.ids = evt.data.dids;
-
 			var objs = [];
 			$('.marker.outline-selected').each(function() {
 				var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 				if (!data.article) {
 					objs.push(data);
-					console.log(data);
-					console.log(data.depth);
 					if (data.depth < min_level) {
 						min_level = data.depth;
 					}
@@ -1587,27 +1585,29 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			});
 
 			children = [];
-			children_dids = [];
 			lowest_id = 50000;
 			lowest_d = null;
+			highest_id = -1;
+			highest_d = null;
 			size = 0;
-			console.log(min_level);
 			for (var i=0; i<objs.length; i++) {
 				if (objs[i].depth == min_level) {
 					children.push(objs[i]);
-					children_dids.push(objs[i].d_id);
 					if (objs[i].id < lowest_id) {
 						lowest_id = objs[i].id;
 						lowest_d = objs[i];
+					}
+					if (objs[i].id > highest_id) {
+						highest_id = objs[i].id;
+						highest_d = objs[i];
 					}
 					if (objs[i].size > size) {
 						size = objs[i].size;
 					}
 				}
 			}
-			console.log(lowest_d);
-			data.children = children_dids;
-			data.child = lowest_d.d_id;
+			data.first_selected = lowest_d.d_id;
+			data.last_selected = highest_d.d_id;
 			data.size = size;
 			data.type = "summarize_selected"
 			chatsock.send(JSON.stringify(data));
@@ -1947,25 +1947,25 @@ function handle_channel_summarize_selected(res) {
 			children.push(child);
 		}
 	}
-	let lowest_d = nodes_all.filter(o => o.d_id == res.lowest_d)[0];
-	let position = lowest_d.parent.children.indexOf(lowest_d);
+	let highest_d = nodes_all.filter(o => o.d_id == res.highest_d)[0];
+	let position = highest_d.parent.children.indexOf(highest_d) - 1;
 	new_d = {d_id: res.d_id,
 			 name: "",
 			 summary: res.top_summary,
 			 summarized: true,
 			 extra_summary: res.bottom_summary,
-			 parent: lowest_d.parent,
+			 parent: highest_d.parent,
 			 replace: children,
 			 author: "",
 			 tags: [],
-			 collapsed: lowest_d.parent.collapsed,
+			 collapsed: highest_d.parent.collapsed,
 			 replace_node: true,
 			 size: res.size,
-			 depth: lowest_d.depth,
-			 x: lowest_d.x,
-			 x0: lowest_d.x0,
-			 y: lowest_d.y,
-			 y0: lowest_d.y0,
+			 depth: highest_d.depth,
+			 x: highest_d.x,
+			 x0: highest_d.x0,
+			 y: highest_d.y,
+			 y0: highest_d.y0,
 			};
 			
 	if (article_url.indexOf('wikipedia.org') !== -1) {
@@ -2047,7 +2047,7 @@ function handle_channel_summarize_selected(res) {
 	// TODO(stian8): add options for commenting: Reply
 
 	for (var i=0; i<children.length; i++) {
-		if (children[i] == lowest_d) {
+		if (children[i] == highest_d) {
 			$('#comment_' + children[i].id).html(text);
 			$('#comment_' + children[i].id).addClass('summary_box');
 			$('#comment_' + children[i].id).attr('id', 'comment_' + new_d.id);
