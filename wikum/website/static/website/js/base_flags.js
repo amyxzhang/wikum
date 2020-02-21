@@ -3545,7 +3545,7 @@ function shorten(text, max_length) {
 }
 
 function setMaxLength(depth) {
-	return 70 - depth * 5;
+	return Math.max(70 - depth * 5, 20);
 }
 
 function createOutlineInsideString(d, outline='', depth=0) {
