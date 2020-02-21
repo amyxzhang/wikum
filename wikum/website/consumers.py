@@ -533,16 +533,22 @@ class WikumConsumer(WebsocketConsumer):
                         next_unselected_sib = comment
                         while next_unselected_sib in comments:
                             next_unselected_sib = next_unselected_sib.sibling_next
+                        # Set pointers
                         next_unselected_sib.sibling_prev = comment.sibling_prev
+                        next_unselected_sib.save()
                         if comment.sibling_prev:
                             comment.sibling_prev.sibling_next = next_unselected_sib
+                            comment.sibling_prev.save()
                     if comment.sibling_next not in comments:
                         prev_unselected_sib = comment
                         while prev_unselected_sib in comments:
                             prev_unselected_sib = prev_unselected_sib.sibling_prev
+                        # Set pointers
                         prev_unselected_sib.sibling_next = comment.sibling_next
+                        prev_unselected_sib.save()
                         if comment.sibling_next:
                             comment.sibling_next.sibling_prev = prev_unselected_sib
+                            comment.sibling_next.save()
                 else:
                     # last selected comment is where new_comment goes
                     if comment == parent.last_child:
@@ -550,11 +556,14 @@ class WikumConsumer(WebsocketConsumer):
                     else:
                         new_comment.sibling_next = comment.sibling_next
                         comment.sibling_next.sibling_prev = new_comment
+                        comment.sibling_next.save()
                     if comment == parent.first_child:
                         new_comment.sibling_prev = None
                     else:
                         new_comment.sibling_prev = comment.sibling_prev
                         comment.sibling_prev.sibling_next = new_comment
+                        comment.sibling_prev.save()
+                    new_comment.save()
 
             # Set the sibling pointers in the selected comments
             for index, comment in enumerate(comments):
@@ -569,7 +578,6 @@ class WikumConsumer(WebsocketConsumer):
                     comment.sibling_next = comments[index + 1]
                 comment.reply_to_disqus = new_id
                 comment.save()
-
 
             recurse_up_post(new_comment)
 
