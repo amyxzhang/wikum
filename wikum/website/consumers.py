@@ -214,7 +214,9 @@ class WikumConsumer(WebsocketConsumer):
                                                          summarized=False,
                                                          text_len=len(comment))
                     explanation = 'new comment'
-                    prior_last_child.sibling_next = new_comment
+                    if prior_last_child:
+                        prior_last_child.sibling_next = new_comment
+                        prior_last_child.save()
                     # assumes always adds to end
                     article.last_child = new_comment
                     if not article.first_child:
@@ -237,16 +239,17 @@ class WikumConsumer(WebsocketConsumer):
                                                          text_len=len(comment),
                                                          import_order=c.import_order)
                     explanation = 'reply to comment'
-                    prior_last_child.sibling_next = new_comment
+                    if prior_last_child:
+                        prior_last_child.sibling_next = new_comment
+                        prior_last_child.save()
                     # assumes always adds to end
                     c.last_child = new_comment
                     if not c.first_child:
                         # first reply
                         c.first_child = new_comment
+                    c.save()
 
                 new_comment.save()
-                prior_last_child.save()
-                c.save()
                 action = data['type']
                 
                 recurse_up_post(new_comment)
