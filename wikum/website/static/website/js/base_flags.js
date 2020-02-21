@@ -3548,16 +3548,10 @@ function shorten(text, max_length) {
 }
 
 function setMaxLength(depth) {
-	if (depth < 4) {
-		return 40;
-	} else if (4 <= depth && depth < 6) {
-		return 30;
-	} else {
-		return 20;
-	}
+	return Math.max(70 - depth * 5, 20);
 }
 
-function createOutlineInsideString(d, outline='', depth=1) {
+function createOutlineInsideString(d, outline='', depth=0) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -3566,6 +3560,7 @@ function createOutlineInsideString(d, outline='', depth=1) {
 	  */
 	if (d.children && d.children.length) {
 		outline += `<div class="list-group nested-sortable">`;
+		depth += 1;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
 			var maxLength = setMaxLength(depth);
@@ -3590,7 +3585,7 @@ function createOutlineInsideString(d, outline='', depth=1) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i], '', depth=depth+1);
+				outline += createOutlineInsideString(d.children[i], '', depth);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
@@ -4306,7 +4301,7 @@ function show_text(d) {
 		    var id = parseInt(this.id.substring(8));
 		    extra_highlight_node(did, id);
 		    setTimeoutConst = setTimeout(function() {
-				$('#viz').scrollTo('#outline-text-' + did, 500);
+				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y'});
 			}, delay);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);

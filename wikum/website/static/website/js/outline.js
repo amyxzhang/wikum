@@ -114,7 +114,7 @@ $.ajax({type: 'GET',
 
 		// .outline-text functions
 		var delay=500, setTimeoutConst;
-		$('body').on('mouseenter', '.outline-text', function() {
+		$('body').on('mouseenter', '.outline-text, #outline-text-viewAll', function() {
 			// circle marker in red
 			$(this).prev().addClass('outline-hover');
 			// highlight associated comment box
