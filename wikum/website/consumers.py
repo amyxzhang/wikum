@@ -863,10 +863,26 @@ class WikumConsumer(WebsocketConsumer):
                     affected = False
             
             if affected:
-                c = Comment.objects.get(id=id)
-                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+                parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                 if parent.count() > 0:
-                    recurse_up_post(parent[0])
+                    parent = parent[0]
+                else:
+                    parent = None
+                if parent and parent.last_child == comment:
+                    parent.last_child = comment.sibling_prev
+                    parent.save()
+                if parent and parent.first_child == comment:
+                    parent.first_child = comment.sibling_next
+                    parent.save()
+                if comment.sibling_prev:
+                    comment.sibling_prev.sibling_next = comment.sibling_next
+                    comment.sibling_prev.save()
+                if comment.sibling_next:
+                    comment.sibling_next.sibling_prev = comment.sibling_prev
+                    comment.sibling_next.save()
+                if parent:
+                    recurse_up_post(parent)
+
                 a.comment_num = a.comment_num - 1
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
@@ -876,7 +892,7 @@ class WikumConsumer(WebsocketConsumer):
                                            explanation=explain,
                                            words_shown=words_shown,
                                            current_percent_complete=percent_complete)
-                h.comments.add(c)
+                h.comments.add(comment)
                 a.percent_complete = percent_complete
                 a.words_shown = words_shown
                 a.last_updated = datetime.datetime.now()
@@ -944,6 +960,8 @@ class WikumConsumer(WebsocketConsumer):
             if affected > 0:
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
+                c.first_child = None
+                c.last_child = None
                 h = History.objects.create(user=req_user, 
                                            article=a,
                                            action='hide_replies',
