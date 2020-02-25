@@ -529,23 +529,27 @@ class WikumConsumer(WebsocketConsumer):
             # Set sibling pointers for siblings of selected comments
             for index, comment in enumerate(comments):
                 if index < len(comments) - 1:
+                    print("COMMENT VARIABLE", comment)
                     if comment.sibling_prev not in comments:
                         next_unselected_sib = comment
                         while next_unselected_sib in comments:
                             next_unselected_sib = next_unselected_sib.sibling_next
                         # Set pointers
-                        next_unselected_sib.sibling_prev = comment.sibling_prev
-                        next_unselected_sib.save()
+                        if next_unselected_sib:
+                            next_unselected_sib.sibling_prev = comment.sibling_prev
+                            next_unselected_sib.save()
                         if comment.sibling_prev:
                             comment.sibling_prev.sibling_next = next_unselected_sib
                             comment.sibling_prev.save()
                     if comment.sibling_next not in comments:
                         prev_unselected_sib = comment
+                        print("PREV UNSELECTED SIB", prev_unselected_sib)
                         while prev_unselected_sib in comments:
                             prev_unselected_sib = prev_unselected_sib.sibling_prev
                         # Set pointers
-                        prev_unselected_sib.sibling_next = comment.sibling_next
-                        prev_unselected_sib.save()
+                        if prev_unselected_sib:
+                            prev_unselected_sib.sibling_next = comment.sibling_next
+                            prev_unselected_sib.save()
                         if comment.sibling_next:
                             comment.sibling_next.sibling_prev = prev_unselected_sib
                             comment.sibling_next.save()
@@ -555,14 +559,16 @@ class WikumConsumer(WebsocketConsumer):
                         new_comment.sibling_next = None
                     else:
                         new_comment.sibling_next = comment.sibling_next
-                        comment.sibling_next.sibling_prev = new_comment
-                        comment.sibling_next.save()
+                        if comment.sibling_next:
+                            comment.sibling_next.sibling_prev = new_comment
+                            comment.sibling_next.save()
                     if comment == parent.first_child:
                         new_comment.sibling_prev = None
                     else:
                         new_comment.sibling_prev = comment.sibling_prev
-                        comment.sibling_prev.sibling_next = new_comment
-                        comment.sibling_prev.save()
+                        if comment.sibling_prev:
+                            comment.sibling_prev.sibling_next = new_comment
+                            comment.sibling_prev.save()
                     new_comment.save()
 
             # Set the sibling pointers in the selected comments
@@ -943,20 +949,40 @@ class WikumConsumer(WebsocketConsumer):
                     parent.last_child = new_last_child
                 parent.save()
 
-                # Set the sibling pointers of the deleted comments
-
-
                 h = History.objects.create(user=req_user, 
                                            article=a,
                                            action='hide_comments',
                                            explanation=explain,
                                            words_shown=words_shown,
                                            current_percent_complete=percent_complete)
-                for id in ids:
-                    c = Comment.objects.get(id=id)
-                    h.comments.add(c)
-                    
-                    parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+
+                # Set the sibling pointers of the deleted comments
+                for index, comment in enumerate(comments):
+                    h.comments.add(comment)
+                    if comment.sibling_prev not in comments:
+                        next_unselected_sib = comment
+                        while next_unselected_sib in comments:
+                            next_unselected_sib = next_unselected_sib.sibling_next
+                        # Set pointers
+                        if next_unselected_sib:
+                            next_unselected_sib.sibling_prev = comment.sibling_prev
+                            next_unselected_sib.save()
+                        if comment.sibling_prev:
+                            comment.sibling_prev.sibling_next = next_unselected_sib
+                            comment.sibling_prev.save()
+                    if comment.sibling_next not in comments:
+                        prev_unselected_sib = comment
+                        while prev_unselected_sib in comments:
+                            prev_unselected_sib = prev_unselected_sib.sibling_prev
+                        # Set pointers
+                        if prev_unselected_sib:
+                            prev_unselected_sib.sibling_next = comment.sibling_next
+                            prev_unselected_sib.save()
+                        if comment.sibling_next:
+                            comment.sibling_next.sibling_prev = prev_unselected_sib
+                            comment.sibling_next.save()
+
+                    parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                     if parent.count() > 0:
                         recurse_up_post(parent[0])
                 

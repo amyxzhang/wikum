@@ -357,7 +357,7 @@ textarea {
 	float: left;
 	height: calc(100vh - 100px);
     margin: 100px 0px 0px 0px;
-    max-width: 500px;
+    width: 500px;
     overflow: auto;
     padding-top: 15px;
     overflow-x: hidden;
