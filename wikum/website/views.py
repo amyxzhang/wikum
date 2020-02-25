@@ -661,6 +661,8 @@ def delete_node(did):
             
             for child in children:
                 child.reply_to_disqus = parent_id
+                c.first_child.sibling_prev = c.sibling_prev
+                c.last_child.sibling_next = c.sibling_next
                 child.json_flatten = ''
                 child.save()
             
