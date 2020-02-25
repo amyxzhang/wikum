@@ -512,7 +512,7 @@ class WikumConsumer(WebsocketConsumer):
             self.mark_children_summarized(new_comment, comments)
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
-            if parent:
+            if parent.count() > 0:
                 parent = parent[0]
             else:
                 parent = a
@@ -861,13 +861,13 @@ class WikumConsumer(WebsocketConsumer):
                     affected = True
                 else:
                     affected = False
-            
+
             if affected:
                 parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     parent = parent[0]
                 else:
-                    parent = None
+                    parent = a
                 if parent and parent.last_child == comment:
                     parent.last_child = comment.sibling_prev
                     parent.save()
@@ -912,12 +912,40 @@ class WikumConsumer(WebsocketConsumer):
             
             ids = data['ids']
             explain = data['comment']
+            first_selected_id = data['first_selected']
+            last_selected_id = data['last_selected']
+            first_selected = Comment.objects.get(id=first_selected_id)
+            last_selected = Comment.objects.get(id=last_selected_id)
             
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
+            comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
             
             if affected > 0:
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
+
+                # Get the parent and set its first and last child pointers
+                parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
+                if parent.count() > 0:
+                    parent = parent[0]
+                else:
+                    parent = a
+                # Set the parent's last_child and first_child pointers
+                if first_selected == parent.first_child:
+                    new_first_child = first_selected
+                    while new_first_child in comments:
+                        new_first_child = new_first_child.sibling_next
+                    parent.first_child = new_first_child
+                if last_selected == parent.last_child:
+                    new_last_child = last_selected
+                    while new_last_child in comments:
+                        new_last_child = new_last_child.sibling_prev
+                    parent.last_child = new_last_child
+                parent.save()
+
+                # Set the sibling pointers of the deleted comments
+
+
                 h = History.objects.create(user=req_user, 
                                            article=a,
                                            action='hide_comments',
@@ -962,6 +990,7 @@ class WikumConsumer(WebsocketConsumer):
                 percent_complete = count_article(a)
                 c.first_child = None
                 c.last_child = None
+                c.save()
                 h = History.objects.create(user=req_user, 
                                            article=a,
                                            action='hide_replies',

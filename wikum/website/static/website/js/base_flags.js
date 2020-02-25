@@ -1048,6 +1048,40 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		} else if (evt.data.type == "hide_all_selected") {
 			data.ids = evt.data.dids;
 			data.node_ids = evt.data.ids;
+
+			var min_level = 50;
+			var objs = [];
+			$('.marker.outline-selected').each(function() {
+				var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
+				if (!data.article) {
+					objs.push(data);
+					if (data.depth < min_level) {
+						min_level = data.depth;
+					}
+				}
+			});
+
+			lowest_id = 50000;
+			lowest_d = null;
+			highest_id = -1;
+			highest_d = null;
+			for (var i=0; i<objs.length; i++) {
+				if (objs[i].depth == min_level) {
+					if (objs[i].id < lowest_id) {
+						lowest_id = objs[i].id;
+						lowest_d = objs[i];
+					}
+					if (objs[i].id > highest_id) {
+						highest_id = objs[i].id;
+						highest_d = objs[i];
+					}
+				}
+			}
+			
+			data.first_selected = lowest_d.d_id;
+			data.last_selected = highest_d.d_id;
+			console.log(lowest_d.d_id);
+			console.log(data.last_selected);
 			data.type = 'hide_comments';
 			chatsock.send(JSON.stringify(data));
 		} else {
@@ -1606,6 +1640,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
+
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
 			data.size = size;
