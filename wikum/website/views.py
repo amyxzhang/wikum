@@ -333,13 +333,13 @@ def summary_page(request):
         owner = User.objects.get(username=owner)
     article_id = int(request.GET['id'])
     article = Article.objects.get(id=article_id)
-    next = request.GET.get('next')
+    next_page = request.GET.get('next')
     num = int(request.GET.get('num', 0))
     
-    if not next:
-        next = 0
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
         
     source = article.source
     
@@ -377,22 +377,32 @@ def summary_data(request):
     else:
         owner = User.objects.get(username=owner)
 
-    sort = request.GET.get('sort', 'id')
+    sort = request.GET.get('sort', 'default')
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
-    next = request.GET.get('next')
-    if not next:
-        next = 0
+    next_page = request.GET.get('next')
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
         
-    start = 15 * next
-    end = (15 * next) + 15
+    start = 15 * next_page
+    end = (15 * next_page) + 15
     
     
     if sort == 'id':
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('import_order')[start:end]
+    elif sort == 'default':
+        top_comments = a.comment_set.filter(reply_to_disqus=None, hidden=False)
+        posts = []
+        current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+        if current_node:
+            posts.append(current_node)
+            while current_node and current_node.sibling_next:
+                current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                if current_node:
+                    posts.append(current_node)
     else:
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
     
@@ -594,7 +604,17 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
             # Filters for comments that are replies/children to post
             c1 = reps.filter(reply_to_disqus=post.disqus_id)
-            if c1.count() == 0:
+            sorted_posts = []
+            current_node = next((c for c in c1 if c.disqus_id == post.first_child), None)
+            if current_node:
+                sorted_posts.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in c1 if c.disqus_id == current_node.sibling_next), None)
+                    if current_node:
+                        sorted_posts.append(current_node)
+            c1 = sorted_posts
+
+            if len(sorted_posts) == 0:
                 vals = []
                 hid = []
                 rep = []
@@ -667,10 +687,26 @@ def delete_node(did):
                 parent_node.first_child = c.first_child
             parent_node.save()
 
-            first_child = Comment.objects.get(disqus_id=c.first_child, article=article)
-            last_child = Comment.objects.get(disqus_id=c.last_child, article=article)
-            sibling_prev = Comment.objects.get(disqus_id=c.sibling_prev, article=article)
-            sibling_next = Comment.objects.get(disqus_id=c.sibling_next, article=article)
+            first_child = Comment.objects.filter(disqus_id=c.first_child, article=article)
+            if first_child.count() > 0:
+                first_child = first_child[0]
+            else:
+                first_child = None
+            last_child = Comment.objects.filter(disqus_id=c.last_child, article=article)
+            if last_child.count() > 0:
+                last_child = last_child[0]
+            else:
+                last_child = None
+            sibling_prev = Comment.objects.filter(disqus_id=c.sibling_prev, article=article)
+            if sibling_prev.count() > 0:
+                sibling_prev = sibling_prev[0]
+            else:
+                sibling_prev = None
+            sibling_next = Comment.objects.filter(disqus_id=c.sibling_next, article=article)
+            if sibling_next.count() > 0:
+                sibling_next = sibling_next[0]
+            else:
+                sibling_next = None
             first_child.sibling_prev = c.sibling_prev
             first_child.save()
             last_child.sibling_next = c.sibling_next
@@ -1191,16 +1227,16 @@ def viz_data(request):
     else:
         owner = User.objects.get(username=owner)
     sort = request.GET.get('sort')
-    next = request.GET.get('next')
+    next_page = request.GET.get('next')
     filter = request.GET.get('filter', '')
     
-    if not next:
-        next = 0
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
         
-    start = 15 * next
-    end = (15 * next) + 15
+    start = 15 * next_page
+    end = (15 * next_page) + 15
     
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
@@ -1274,10 +1310,18 @@ def viz_data(request):
             val['children'].append(val_child['children'][0])
         
     else:
-        if sort == 'id':
+        if sort == 'default':
+            top_comments = a.comment_set.filter(reply_to_disqus=None)
+            posts = []
+            current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+            if current_node:
+                posts.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                    if current_node:
+                        posts.append(current_node)
+        elif sort == 'id':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
-        elif sort == 'default':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
         elif sort == 'likes':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
         elif sort == "replies":
@@ -1297,8 +1341,6 @@ def viz_data(request):
 def sort_to_order_by(sort):
     if sort == 'id':
         return 'import_order'
-    elif sort == 'default':
-        return '-points'
     elif sort == 'likes':
         return '-points'
     elif sort == "replies":
@@ -1417,7 +1459,7 @@ def cluster_data(request):
     
 def subtree_data(request):
     sort = request.GET.get('sort', None)
-    next = request.GET.get('next', None)
+    next_page = request.GET.get('next', None)
     owner = request.GET.get('owner', None)
      
     if not owner or owner == "None":
@@ -1431,10 +1473,10 @@ def subtree_data(request):
     least = 2
     most = 6
     
-    if not next:
-        next = 0
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
     
     
     if comment_id and comment_id != 'null':
@@ -1457,11 +1499,11 @@ def subtree_data(request):
         else:
             posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             count = posts_all.count()
-            next = random.randint(0,count-1)
+            next_page = random.randint(0,count-1)
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)     
             
-        if posts.count() > next:
-            posts = [posts[next]]
+        if posts.count() > next_page:
+            posts = [posts[next_page]]
         else:
             posts = None
 

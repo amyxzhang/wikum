@@ -961,11 +961,11 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		var datas = [];
 		var min_level = 50;
 		var did_str = '';
-		$('.clicked').each(function(index) {
-			var id_clicked = parseInt($(this)[0].id.substring(5), 10);
-			if (id_clicked != 1) {
-				ids.push(id_clicked);
-				var data = nodes_all[id_clicked-1];
+		$('.marker.outline-selected').each(function() {
+			console.log(this.id);
+			var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
+			if (!data.article) {
+				ids.push(data.id);
 				datas.push(data);
 				dids.push(data.d_id);
 				did_str += data.d_id + ',';
@@ -1052,6 +1052,7 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 			var min_level = 50;
 			var objs = [];
 			$('.marker.outline-selected').each(function() {
+				console.log(this.id);
 				var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 				if (!data.article) {
 					objs.push(data);
@@ -1618,7 +1619,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				}
 			});
 
-			children = [];
+			children_dids = [];
 			lowest_id = 50000;
 			lowest_d = null;
 			highest_id = -1;
@@ -1626,7 +1627,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			size = 0;
 			for (var i=0; i<objs.length; i++) {
 				if (objs[i].depth == min_level) {
-					children.push(objs[i]);
+					children_dids.push(objs[i].d_id);
 					if (objs[i].id < lowest_id) {
 						lowest_id = objs[i].id;
 						lowest_d = objs[i];
@@ -1640,7 +1641,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-
+			data.children = children_dids;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
 			data.size = size;
