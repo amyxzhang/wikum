@@ -143,10 +143,7 @@ class WikumConsumer(WebsocketConsumer):
 
     def recurse_down_post(self, post):
         children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=self.article_id)
-        print("POST", post.text)
-        print("CHILDREN LENGTH", len(children))
         for child in children:
-            print('CHILD RECURSE DOWN:', child.text)
             child.json_flatten = ""
             child.save()
             self.recurse_down_post(child)
@@ -489,6 +486,7 @@ class WikumConsumer(WebsocketConsumer):
             
             # comments in order
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
+            comment_disqus_ids = [c.disqus_id for c in comments]
             first_selected = Comment.objects.get(id=first_selected_id)
             last_selected = Comment.objects.get(id=last_selected_id)
             
@@ -503,8 +501,8 @@ class WikumConsumer(WebsocketConsumer):
             new_comment = Comment.objects.create(article=a,
                                                  is_replacement=True,
                                                  reply_to_disqus=first_selected.reply_to_disqus,
-                                                 first_child = first_selected,
-                                                 last_child = last_selected,
+                                                 first_child = first_selected.disqus_id,
+                                                 last_child = last_selected.disqus_id,
                                                  summarized=True,
                                                  summary=top_summary,
                                                  extra_summary=bottom_summary,
@@ -519,73 +517,54 @@ class WikumConsumer(WebsocketConsumer):
             self.mark_children_summarized(new_comment, comments)
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
+            
             if parent.count() > 0:
                 parent = parent[0]
             else:
                 parent = a
             # Set the parent's last_child and first_child pointers
-            if last_selected == parent.last_child:
-                parent.last_child = new_comment
-            if first_selected == parent.first_child:
-                new_first_child = first_selected
-                while new_first_child in comments:
+            if last_selected.disqus_id == parent.last_child:
+                parent.last_child = new_id
+            if first_selected.disqus_id == parent.first_child:
+                new_first_child = first_selected.disqus_id
+                while new_first_child in comment_disqus_ids:
                     new_first_child = new_first_child.sibling_next
                 parent.first_child = new_first_child
             parent.save()
 
-            # Set sibling pointers for siblings of selected comments
-            for index, comment in enumerate(comments):
-                if index < len(comments) - 1:
-                    print("COMMENT VARIABLE", comment)
-                    if comment.sibling_prev not in comments:
-                        next_unselected_sib = comment
-                        while next_unselected_sib in comments:
-                            next_unselected_sib = next_unselected_sib.sibling_next
-                        # Set pointers
-                        if next_unselected_sib:
-                            next_unselected_sib.sibling_prev = comment.sibling_prev
-                            next_unselected_sib.save()
-                        if comment.sibling_prev:
-                            comment.sibling_prev.sibling_next = next_unselected_sib
-                            comment.sibling_prev.save()
-                    if comment.sibling_next not in comments:
-                        prev_unselected_sib = comment
-                        print("PREV UNSELECTED SIB", prev_unselected_sib)
-                        while prev_unselected_sib in comments:
-                            prev_unselected_sib = prev_unselected_sib.sibling_prev
-                        # Set pointers
-                        if prev_unselected_sib:
-                            prev_unselected_sib.sibling_next = comment.sibling_next
-                            prev_unselected_sib.save()
-                        if comment.sibling_next:
-                            comment.sibling_next.sibling_prev = prev_unselected_sib
-                            comment.sibling_next.save()
+            all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
+            unselected_children = [c for c in all_children if c not in comments]
+            for index, comment in enumerate(unselected_children):
+                if index == 0:
+                    comment.sibling_prev = None
+                    if len(unselected_children) > 1:
+                        comment.sibling_next = unselected_children[index + 1].disqus_id
+                    else:
+                        comment.sibling_next = None
+                elif index == len(unselected_children) - 1:
+                    comment.sibling_next = new_id
+                    new_comment.sibling_prev = comment.disqus_id
+                    if len(unselected_children) > 1:
+                        comment.sibling_prev = unselected_children[index - 1].disqus_id
                 else:
-                    # last selected comment is where new_comment goes
-                    if comment == parent.last_child:
-                        new_comment.sibling_next = None
-                    else:
-                        new_comment.sibling_next = comment.sibling_next
-                        if comment.sibling_next:
-                            comment.sibling_next.sibling_prev = new_comment
-                            comment.sibling_next.save()
-                    if comment == parent.first_child:
-                        new_comment.sibling_prev = None
-                    else:
-                        new_comment.sibling_prev = comment.sibling_prev
-                        if comment.sibling_prev:
-                            comment.sibling_prev.sibling_next = new_comment
-                            comment.sibling_prev.save()
-                    new_comment.save()
+                    comment.sibling_next = unselected_children[index + 1].disqus_id
+                    comment.sibling_prev = unselected_children[index - 1].disqus_id
+                comment.save()
 
             # Set the sibling pointers in the selected comments
             for index, comment in enumerate(comments):
                 if index == 0:
                     comment.sibling_prev = None
-                    comment.sibling_next = comments[index + 1]
+                    if len(comments) > 1:
+                        comment.sibling_next = comments[index + 1]
+                    else:
+                        comment.sibling_next = None
                 elif index == len(comments) - 1:
                     comment.sibling_next = None
-                    comment.sibling_prev = comments[index - 1]
+                    if len(comments) > 1:
+                        comment.sibling_prev = comments[index - 1]
+                    else:
+                        comment.sibling_prev = None
                 else:
                     comment.sibling_prev = comments[index - 1]
                     comment.sibling_next = comments[index + 1]
@@ -670,8 +649,8 @@ class WikumConsumer(WebsocketConsumer):
                                                      reply_to_disqus=c.reply_to_disqus,
                                                      sibling_prev=sibling_prev,
                                                      sibling_next=sibling_next,
-                                                     first_child=c,
-                                                     last_child=c,
+                                                     first_child=c.disqus_id,
+                                                     last_child=c.disqus_id,
                                                      summary=top_summary,
                                                      summarized=True,
                                                      extra_summary=bottom_summary,
@@ -681,22 +660,28 @@ class WikumConsumer(WebsocketConsumer):
                                                      import_order=c.import_order)
 
                 parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
+                sibling_prev_node = None
+                sibling_next_node = None
+                if sibling_prev:
+                    sibling_prev_node = Comment.objects.get(disqus_id=sibling_prev, article=a)
+                if sibling_next:
+                    sibling_next_node = Comment.objects.get(disqus_id=sibling_next, article=a)
                 if parent:
                     parent = parent[0]
                 else:
                     parent = a
                 if sibling_prev:
-                    sibling_prev.sibling_next = new_comment
-                    sibling_prev.save()
+                    sibling_prev_node.sibling_next = new_id
+                    sibling_prev_node.save()
                 else:
                     # c was the first child; update to new_comment
-                    parent.first_child = new_comment
+                    parent.first_child = new_id
                 if sibling_next:
-                    sibling_next.sibling_prev = new_comment
-                    sibling_next.save()
+                    sibling_next_node.sibling_prev = new_id
+                    sibling_next_node.save()
                 else:
                     # c was the last child; update to new_comment
-                    parent.last_child = new_comment
+                    parent.last_child = new_id
                 c.reply_to_disqus = new_id
                 c.save()
                 parent.save()
@@ -708,6 +693,7 @@ class WikumConsumer(WebsocketConsumer):
                 recurse_up_post(new_comment)
 
                 recurse_down_num_subtree(new_comment)
+
                 words_shown = count_words_shown(a)
                 percent_complete = count_article(a)
                 h = History.objects.create(user=req_user, 
@@ -718,10 +704,6 @@ class WikumConsumer(WebsocketConsumer):
                                            words_shown=words_shown,
                                            current_percent_complete=percent_complete)
                 h.comments.add(new_comment)
-                print('SUMMARIZE COMMENTS ORIGINAL LAST CHILD summary', parent.last_child.summary)
-                print('SUMMARIZE COMMENTS ORIGINAL LAST CHILD text', parent.last_child.text)
-                print('SUMMARIZE COMMENTS ARTICLE LAST CHILD summary', a.last_child.summary)
-                print('SUMMARIZE COMMENTS ARTICLE LAST CHILD text', a.last_child.text)
                 
             else:
                 from_summary = c.summary + '\n----------\n' + c.extra_summary
@@ -866,12 +848,9 @@ class WikumConsumer(WebsocketConsumer):
                 delete_node(comment.id)
                 a.percent_complete = count_article(a)
                 a.words_shown = count_words_shown(a)
-                print("GOT HERE 2")
                 a.last_updated = datetime.datetime.now()
-                print("GOT HERE 3")
                 a.save()
                 affected = False
-                print("GOT HERE 5")
             else:
                 action = 'hide_comment'
                 if not comment.hidden:
@@ -882,26 +861,26 @@ class WikumConsumer(WebsocketConsumer):
                     affected = False
 
             if affected:
-                print("GOT HERE 6")
                 parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
+                parent_node = a
                 if parent.count() > 0:
-                    parent = parent[0]
-                else:
-                    parent = a
-                if parent and parent.last_child == comment:
-                    parent.last_child = comment.sibling_prev
-                    parent.save()
-                if parent and parent.first_child == comment:
-                    parent.first_child = comment.sibling_next
-                    parent.save()
+                    parent_node = parent[0]
+                if parent_node and parent_node.last_child == comment.disqus_id:
+                    parent_node.last_child = comment.sibling_prev
+                    parent_node.save()
+                if parent_node and parent_node.first_child == comment.disqus_id:
+                    parent_node.first_child = comment.sibling_next
+                    parent_node.save()
                 if comment.sibling_prev:
-                    comment.sibling_prev.sibling_next = comment.sibling_next
-                    comment.sibling_prev.save()
+                    sibling_prev = Comment.objects.get(disqus_id=comment.sibling_prev, article=a)
+                    sibling_prev.sibling_next = comment.sibling_next
+                    sibling_prev.save()
                 if comment.sibling_next:
-                    comment.sibling_next.sibling_prev = comment.sibling_prev
-                    comment.sibling_next.save()
-                if parent:
-                    recurse_up_post(parent)
+                    sibling_next = Comment.objects.get(disqus_id=comment.sibling_next, article=a)
+                    sibling_next.sibling_prev = comment.sibling_prev
+                    sibling_next.save()
+                if parent.count() > 0:
+                    recurse_up_post(parent_node)
 
                 a.comment_num = a.comment_num - 1
                 words_shown = count_words_shown(a)
@@ -937,6 +916,7 @@ class WikumConsumer(WebsocketConsumer):
             
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
+            comment_disqus_ids = [c.disqus_id for c in comments]
             
             if affected > 0:
                 words_shown = count_words_shown(a)
@@ -949,14 +929,14 @@ class WikumConsumer(WebsocketConsumer):
                 else:
                     parent = a
                 # Set the parent's last_child and first_child pointers
-                if first_selected == parent.first_child:
-                    new_first_child = first_selected
-                    while new_first_child in comments:
+                if first_selected.disqus_id == parent.first_child:
+                    new_first_child = first_selected.disqus_id
+                    while new_first_child in comment_disqus_ids:
                         new_first_child = new_first_child.sibling_next
                     parent.first_child = new_first_child
                 if last_selected == parent.last_child:
-                    new_last_child = last_selected
-                    while new_last_child in comments:
+                    new_last_child = last_selected.disqus_id
+                    while new_last_child in comment_disqus_ids:
                         new_last_child = new_last_child.sibling_prev
                     parent.last_child = new_last_child
                 parent.save()
@@ -969,31 +949,26 @@ class WikumConsumer(WebsocketConsumer):
                                            current_percent_complete=percent_complete)
 
                 # Set the sibling pointers of the deleted comments
-                for index, comment in enumerate(comments):
-                    h.comments.add(comment)
-                    if comment.sibling_prev not in comments:
-                        next_unselected_sib = comment
-                        while next_unselected_sib in comments:
-                            next_unselected_sib = next_unselected_sib.sibling_next
-                        # Set pointers
-                        if next_unselected_sib:
-                            next_unselected_sib.sibling_prev = comment.sibling_prev
-                            next_unselected_sib.save()
-                        if comment.sibling_prev:
-                            comment.sibling_prev.sibling_next = next_unselected_sib
-                            comment.sibling_prev.save()
-                    if comment.sibling_next not in comments:
-                        prev_unselected_sib = comment
-                        while prev_unselected_sib in comments:
-                            prev_unselected_sib = prev_unselected_sib.sibling_prev
-                        # Set pointers
-                        if prev_unselected_sib:
-                            prev_unselected_sib.sibling_next = comment.sibling_next
-                            prev_unselected_sib.save()
-                        if comment.sibling_next:
-                            comment.sibling_next.sibling_prev = prev_unselected_sib
-                            comment.sibling_next.save()
+                all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
+                unselected_children = [c for c in all_children if c not in comments]
+                for index, comment in enumerate(unselected_children):
+                    if index == 0:
+                        comment.sibling_prev = None
+                        if len(unselected_children) > 1:
+                            comment.sibling_next = unselected_children[index + 1].disqus_id
+                        else:
+                            comment.sibling_next = None
+                    elif index == len(unselected_children) - 1:
+                        comment.sibling_next = None
+                        if len(unselected_children) > 1:
+                            comment.sibling_prev = unselected_children[index - 1].disqus_id
+                    else:
+                        comment.sibling_next = unselected_children[index + 1].disqus_id
+                        comment.sibling_prev = unselected_children[index - 1].disqus_id
+                    comment.save()
 
+                for comment in comments:
+                    h.comments.add(comment)
                     parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                     if parent.count() > 0:
                         recurse_up_post(parent[0])

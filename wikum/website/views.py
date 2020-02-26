@@ -661,29 +661,31 @@ def delete_node(did):
             
             children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
 
-            if parent_node.last_child == c:
+            if parent_node.last_child == c.disqus_id:
                 parent_node.last_child = c.last_child
-            if parent_node.first_child == c:
+            if parent_node.first_child == c.disqus_id:
                 parent_node.first_child = c.first_child
             parent_node.save()
+
+            first_child = Comment.objects.get(disqus_id=c.first_child, article=article)
+            last_child = Comment.objects.get(disqus_id=c.last_child, article=article)
+            sibling_prev = Comment.objects.get(disqus_id=c.sibling_prev, article=article)
+            sibling_next = Comment.objects.get(disqus_id=c.sibling_next, article=article)
+            first_child.sibling_prev = c.sibling_prev
+            first_child.save()
+            last_child.sibling_next = c.sibling_next
+            last_child.save()
+            if c.sibling_prev is not None:
+                sibling_prev.sibling_next = c.first_child
+                sibling_prev.save()
+            if c.sibling_next is not None:
+                sibling_next.sibling_prev = c.last_child
+                sibling_next.save()
+
             for child in children:
                 child.reply_to_disqus = parent_id
-                c.first_child.sibling_prev = c.sibling_prev
-                c.first_child.save()
-                c.last_child.sibling_next = c.sibling_next
-                c.last_child.save()
-                if c.sibling_prev is not None:
-                    c.sibling_prev.sibling_next = c.first_child
-                    c.sibling_prev.save()
-                if c.sibling_next is not None:
-                    c.sibling_next.sibling_prev = c.last_child
-                    c.sibling_next.save()
                 child.json_flatten = ''
                 child.save()
-            print('PARENT LAST CHILD', parent_node.last_child.text)
-            print('PARENT FIRST CHILD', parent_node.first_child.text)
-            print('SIBLING PREV NEXT SIB', c.sibling_prev.sibling_next.text)
-            print('CHILD PREV SIB', c.first_child.sibling_prev.text)
             c.delete()
         
             if parent.count() > 0:
