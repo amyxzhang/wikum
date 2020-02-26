@@ -229,7 +229,7 @@ def poll_status(request):
                 else:
                     owner = User.objects.get(username=request.session['owner'])
                 
-                a = Article.objects.filter(url=request.session['url'], owner=owner)
+                a = Article.objects.filter(url=request.session['url']+ "/.json", owner=owner)
                 if a.exists():
                     data['id'] = a[0].id
                     comment_count = a[0].comment_set.count()
@@ -239,7 +239,6 @@ def poll_status(request):
                         data['state'] = 'FAILURE'
         request.session['url'] = None
             
-
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
 
