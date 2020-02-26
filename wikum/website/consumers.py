@@ -997,17 +997,20 @@ class WikumConsumer(WebsocketConsumer):
                     parent = parent[0]
                 else:
                     parent = a
+                all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
+                unselected_children = [c for c in all_children if c not in children and c != new_comment]
                 # Set the parent's last_child and first_child pointers
                 if first_selected.disqus_id == parent.first_child:
-                    new_first_child = first_selected.disqus_id
-                    while new_first_child in comment_disqus_ids:
-                        new_first_child = new_first_child.sibling_next
-                    parent.first_child = new_first_child
+                    if len(unselected_children) > 0:
+                        parent.first_child = unselected_children[0]
+                    else:
+                        parent.first_child = None
+                    
                 if last_selected == parent.last_child:
-                    new_last_child = last_selected.disqus_id
-                    while new_last_child in comment_disqus_ids:
-                        new_last_child = new_last_child.sibling_prev
-                    parent.last_child = new_last_child
+                    if len(unselected_children) > 0:
+                        parent.last_child = unselected_children[-1]
+                    else:
+                        parent.last_child = None
                 parent.save()
 
                 h = History.objects.create(user=req_user, 
@@ -1018,8 +1021,6 @@ class WikumConsumer(WebsocketConsumer):
                                            current_percent_complete=percent_complete)
 
                 # Set the sibling pointers of the deleted comments
-                all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
-                unselected_children = [c for c in all_children if c not in comments]
                 for index, comment in enumerate(unselected_children):
                     if index == 0:
                         comment.sibling_prev = None
