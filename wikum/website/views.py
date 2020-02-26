@@ -390,7 +390,7 @@ def summary_data(request):
     start = 15 * next_page
     end = (15 * next_page) + 15
     
-    
+    print("SORT", sort)
     if sort == 'id':
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('import_order')[start:end]
     elif sort == 'default':

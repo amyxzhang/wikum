@@ -962,7 +962,6 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 		var min_level = 50;
 		var did_str = '';
 		$('.marker.outline-selected').each(function() {
-			console.log(this.id);
 			var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 			if (!data.article) {
 				ids.push(data.id);
@@ -1052,7 +1051,6 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 			var min_level = 50;
 			var objs = [];
 			$('.marker.outline-selected').each(function() {
-				console.log(this.id);
 				var data = nodes_all.filter(o => o.d_id == this.id.substring(7))[0];
 				if (!data.article) {
 					objs.push(data);
@@ -1062,12 +1060,14 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 				}
 			});
 
+			var children = []
 			lowest_id = 50000;
 			lowest_d = null;
 			highest_id = -1;
 			highest_d = null;
 			for (var i=0; i<objs.length; i++) {
 				if (objs[i].depth == min_level) {
+					children.push(objs[i].d_id);
 					if (objs[i].id < lowest_id) {
 						lowest_id = objs[i].id;
 						lowest_d = objs[i];
@@ -1078,11 +1078,9 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-			
+			data.children = children;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
-			console.log(lowest_d.d_id);
-			console.log(data.last_selected);
 			data.type = 'hide_comments';
 			chatsock.send(JSON.stringify(data));
 		} else {
@@ -1425,7 +1423,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', dids);
 		dids_in_use = dids;
 		send_update_locks(dids, true);
-		console.log(dids);
 	} else {
 
 		var id = $(e.relatedTarget).data('id');
@@ -2021,7 +2018,7 @@ function handle_channel_summarize_selected(res) {
 		children[d].parent = new_d;
 	}
 
-	insert_node_to_children(new_d, new_d.parent, position);
+	insert_node_to_children(new_d, new_d.parent);
 
 	delete_summary_nodes = res.delete_summary_node_dids;
 	for (var i=0; i<delete_summary_nodes.length; i++) {

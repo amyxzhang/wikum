@@ -553,7 +553,7 @@ class WikumConsumer(WebsocketConsumer):
             
             # comments in order
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
-            children = [Comment.objects.get(id=comment_id) for comment_id in children_ids]
+            children = [c for c in comments if c.id in children_ids]
             comment_disqus_ids = [c.disqus_id for c in children]
             first_selected = Comment.objects.get(id=first_selected_id)
             last_selected = Comment.objects.get(id=last_selected_id)
@@ -604,7 +604,6 @@ class WikumConsumer(WebsocketConsumer):
 
             
             for index, comment in enumerate(unselected_children):
-                print('UNSELECTED:', comment.summary if comment.is_replacement else comment.text)
                 if index == 0:
                     comment.sibling_prev = None
                     if len(unselected_children) > 1:
@@ -623,7 +622,6 @@ class WikumConsumer(WebsocketConsumer):
 
             # Set the sibling pointers in the selected comments
             for index, comment in enumerate(children):
-                print('SELECTED:', comment.summary if comment.is_replacement else comment.text)
                 if index == 0:
                     comment.sibling_prev = None
                     if len(children) > 1:
@@ -977,6 +975,7 @@ class WikumConsumer(WebsocketConsumer):
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
             ids = data['ids']
+            children_ids = data['children']
             explain = data['comment']
             first_selected_id = data['first_selected']
             last_selected_id = data['last_selected']
@@ -985,6 +984,7 @@ class WikumConsumer(WebsocketConsumer):
             
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
+            children = [c for c in comments if c.id in children_ids]
             comment_disqus_ids = [c.disqus_id for c in comments]
             
             if affected > 0:
@@ -998,7 +998,7 @@ class WikumConsumer(WebsocketConsumer):
                 else:
                     parent = a
                 all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
-                unselected_children = [c for c in all_children if c not in children and c != new_comment]
+                unselected_children = [c for c in all_children if c not in children]
                 # Set the parent's last_child and first_child pointers
                 if first_selected.disqus_id == parent.first_child:
                     if len(unselected_children) > 0:
