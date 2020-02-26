@@ -135,15 +135,18 @@ class WikumConsumer(WebsocketConsumer):
     def mark_children_summarized(self, post, children=None):
         post.summarized = True
         if not children:
-            children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+            children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=self.article_id)
         for child in children:
             child.summarized = True
             child.save()
             self.mark_children_summarized(child)
 
     def recurse_down_post(self, post):
-        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=self.article_id)
+        print("POST", post.text)
+        print("CHILDREN LENGTH", len(children))
         for child in children:
+            print('CHILD RECURSE DOWN:', child.text)
             child.json_flatten = ""
             child.save()
             self.recurse_down_post(child)
@@ -673,8 +676,6 @@ class WikumConsumer(WebsocketConsumer):
                                                      text_len=len(summary),
                                                      import_order=c.import_order)
 
-                c.reply_to_disqus = new_id
-                c.save()
                 parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=a)
                 if parent:
                     parent = parent[0]
@@ -692,6 +693,8 @@ class WikumConsumer(WebsocketConsumer):
                 else:
                     # c was the last child; update to new_comment
                     parent.last_child = new_comment
+                c.reply_to_disqus = new_id
+                c.save()
                 parent.save()
 
                 d_id = new_comment.id
@@ -711,6 +714,10 @@ class WikumConsumer(WebsocketConsumer):
                                            words_shown=words_shown,
                                            current_percent_complete=percent_complete)
                 h.comments.add(new_comment)
+                print('SUMMARIZE COMMENTS ORIGINAL LAST CHILD summary', parent.last_child.summary)
+                print('SUMMARIZE COMMENTS ORIGINAL LAST CHILD text', parent.last_child.text)
+                print('SUMMARIZE COMMENTS ARTICLE LAST CHILD summary', a.last_child.summary)
+                print('SUMMARIZE COMMENTS ARTICLE LAST CHILD text', a.last_child.text)
                 
             else:
                 from_summary = c.summary + '\n----------\n' + c.extra_summary
@@ -853,12 +860,14 @@ class WikumConsumer(WebsocketConsumer):
                 action = 'delete_sum'
                 self.recurse_down_post(comment)
                 delete_node(comment.id)
-                a.summary_num = a.summary_num - 1
                 a.percent_complete = count_article(a)
                 a.words_shown = count_words_shown(a)
+                print("GOT HERE 2")
                 a.last_updated = datetime.datetime.now()
+                print("GOT HERE 3")
                 a.save()
                 affected = False
+                print("GOT HERE 5")
             else:
                 action = 'hide_comment'
                 if not comment.hidden:
@@ -869,6 +878,7 @@ class WikumConsumer(WebsocketConsumer):
                     affected = False
 
             if affected:
+                print("GOT HERE 6")
                 parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                 if parent.count() > 0:
                     parent = parent[0]
@@ -902,9 +912,7 @@ class WikumConsumer(WebsocketConsumer):
                 a.percent_complete = percent_complete
                 a.words_shown = words_shown
                 a.last_updated = datetime.datetime.now()
-
                 a.save()
-
             return {'d_id': data['id'], 'user': username, 'type': data['type']}
         except Exception as e:
             print(e)

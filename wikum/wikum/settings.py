@@ -146,7 +146,7 @@ DATABASES = {
         'PASSWORD': MYSQL["PASSWORD"],# Not used with sqlite3.
         'HOST': MYSQL["HOST"], # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
-        'STORAGE_ENGINE': 'MyISAM'
+        'STORAGE_ENGINE': 'MyISAM / INNODB / ETC'
     }
 }
 

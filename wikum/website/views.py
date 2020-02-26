@@ -644,28 +644,38 @@ def delete_comment_recurse(post, article):
    
 def delete_node(did):
     try:
-    
         c = Comment.objects.get(id=did)
         article = c.article
         
         if c.is_replacement:
             remove_summarized(c)
             parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
+            parent_node = parent
             
             if parent.count() > 0:
                 parent_id = parent[0].disqus_id
+                parent_node = parent[0]
             else:
                 parent_id = None
+                parent_node = article
             
             children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
-            
+
+            if parent_node.last_child == c:
+                parent_node.last_child = c.last_child
+            if parent_node.first_child == c:
+                parent_node.first_child = c.first_child
+            parent_node.save()
             for child in children:
                 child.reply_to_disqus = parent_id
                 c.first_child.sibling_prev = c.sibling_prev
                 c.last_child.sibling_next = c.sibling_next
+                if c.sibling_prev:
+                    c.sibling_prev.sibling_next = c.first_child
+                if c.sibling_next:
+                    c.sibling_next.sibling_prev = c.last_child
                 child.json_flatten = ''
                 child.save()
-            
             c.delete()
         
             if parent.count() > 0:
