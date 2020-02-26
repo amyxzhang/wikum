@@ -204,52 +204,56 @@ class WikumConsumer(WebsocketConsumer):
                 new_comment = None
                 prior_last_child = None
                 explanation = ''
+                prior_last_child_id = None
                 if data['type'] == 'new_node':
                     if article.last_child:
-                        prior_last_child = article.last_child
+                        prior_last_child = Comment.objects.get(disqus_id=article.last_child)
+                        prior_last_child_id = prior_last_child.disqus_id
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
                                                          disqus_id=new_id,
                                                          text=comment,
-                                                         sibling_prev=prior_last_child,
+                                                         sibling_prev=prior_last_child_id,
                                                          sibling_next=None,
                                                          summarized=False,
                                                          text_len=len(comment))
                     explanation = 'new comment'
                     if prior_last_child:
-                        prior_last_child.sibling_next = new_comment
+                        prior_last_child.sibling_next = new_id
                         prior_last_child.save()
                     # assumes always adds to end
-                    article.last_child = new_comment
+                    article.last_child = new_id
                     if not article.first_child:
                         # first comment in article
-                        article.first_child = new_comment
+                        article.first_child = new_id
                 elif data['type'] == 'reply_comment':
                     id = data['id']
                     c = Comment.objects.get(id=id)
-                    if article.last_child:
-                        prior_last_child = c.last_child
+                    prior_last_child_id = None
+                    if c.last_child:
+                        prior_last_child = Comment.objects.get(disqus_id=c.last_child)
+                        prior_last_child_id = prior_last_child.disqus_id
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
                                                          reply_to_disqus=c.disqus_id,
                                                          disqus_id=new_id,
                                                          text=comment,
-                                                         sibling_prev=prior_last_child,
+                                                         sibling_prev=prior_last_child_id,
                                                          sibling_next=None,
                                                          summarized=False,
                                                          text_len=len(comment),
                                                          import_order=c.import_order)
                     explanation = 'reply to comment'
                     if prior_last_child:
-                        prior_last_child.sibling_next = new_comment
+                        prior_last_child.sibling_next = new_id
                         prior_last_child.save()
                     # assumes always adds to end
-                    c.last_child = new_comment
+                    c.last_child = new_id
                     if not c.first_child:
                         # first reply
-                        c.first_child = new_comment
+                        c.first_child = new_id
                     c.save()
 
                 new_comment.save()
