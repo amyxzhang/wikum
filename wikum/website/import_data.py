@@ -483,14 +483,10 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count, 
                                     meta={'count': total_count})
 
         for comment in comments:
-            print("recurse 1")
-            print(comment)
             comment_id = comment["data"]["id"]
             comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
 
             if comment_wikum.count() == 0:
-
-                # from praw.errors import NotFound
 
                 try:
                     author_id = comment["data"]["author_fullname"]
@@ -498,7 +494,6 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count, 
                     if comment_author.count() > 0:
                         comment_author = comment_author[0]
                     else:
-                        print("NEVER SHOULD HAPPEN")
                         comment_author = CommentAuthor.objects.create(username=comment["data"]["author"],
                                                                 disqus_id=author_id,
                                                                 joined_at=datetime.datetime.fromtimestamp(int(comment["data"]["created_utc"])),
@@ -556,15 +551,12 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count, 
 
         if comment_wikum.count() == 0:
 
-            # from praw.errors import NotFound
-
             try:
                 author_id = comment["data"]["author_fullname"]
                 comment_author = CommentAuthor.objects.filter(disqus_id=author_id)
                 if comment_author.count() > 0:
                     comment_author = comment_author[0]
                 else:
-                    print("SHOULD BE HAPPENING")
                     comment_author = CommentAuthor.objects.create(username=comment["data"]["author"],
                                                             disqus_id=author_id,
                                                             joined_at=datetime.datetime.fromtimestamp(int(comment["data"]["created_utc"])),

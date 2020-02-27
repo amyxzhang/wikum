@@ -237,6 +237,15 @@ def poll_status(request):
                         a.delete()
                         data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
                         data['state'] = 'FAILURE'
+                else:
+                    a = Article.objects.filter(url=request.session['url'], owner=owner)
+                    if a.exists():
+                        data['id'] = a[0].id
+                        comment_count = a[0].comment_set.count()
+                        if comment_count == 0:
+                            a.delete()
+                            data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
+                            data['state'] = 'FAILURE'
         request.session['url'] = None
             
     json_data = json.dumps(data)
