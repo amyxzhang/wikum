@@ -75,7 +75,7 @@ def import_article(url, owner):
                 article.save()
                 count_replies(article)
 
-            set_link_article(article, article)
+            #set_link_article(article, article)
             article.save()
         else:
             return 'FAILURE-ARTICLE'

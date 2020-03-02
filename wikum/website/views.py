@@ -287,12 +287,10 @@ def author_info(request):
 def import_article(request):       
     data = 'Fail'
     if request.is_ajax():
-        print("HELLO VIEWS")
         from .tasks import import_article
         owner = request.GET.get('owner', 'None')
         url = request.GET['article']
         job = import_article.delay(url, owner)
-        print("HELLO VIEWS???")
         
         request.session['task_id'] = job.id
         request.session['url'] = url
@@ -598,23 +596,25 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
             # Filters for comments that are replies/children to post
             c1 = reps.filter(reply_to_disqus=post.disqus_id)
-            sorted_posts = []
-            print("POST:", post.text)
-            print("POST FIRST CHILD ID:", post.first_child)
-            print("c1 disqus ids:", [c.disqus_id for c in c1])
-            current_node = next((c for c in c1 if c.disqus_id == post.first_child), None)
-            print("CURRENT NODE:", current_node.text if current_node else "NONE")
-            if current_node:
-                sorted_posts.append(current_node)
-                print("CURRENT NODE:", current_node.text)
-                print("SIBLING NEXT:", current_node.sibling_next)
-                while current_node and current_node.sibling_next:
-                    current_node = next((c for c in c1 if c.disqus_id == current_node.sibling_next), None)
-                    if current_node:
-                        print("NEW CURRENT NODE:", current_node.text)
-                        sorted_posts.append(current_node)
-            print("C1:" , c1)
-            print('SORTED POSTS OF C1:', sorted_posts)
+            sorted_posts = c1
+            # sorted_posts = []
+            # print("POST:", post.text)
+            # print("POST ID:", post.id)
+            # print("POST FIRST CHILD ID:", post.first_child)
+            # print("c1 disqus ids:", [c.disqus_id for c in c1])
+            # current_node = next((c for c in c1 if c.disqus_id == post.first_child), None)
+            # print("CURRENT NODE:", current_node.text if current_node else "NONE")
+            # if current_node:
+            #     sorted_posts.append(current_node)
+            #     print("CURRENT NODE:", current_node.text)
+            #     print("SIBLING NEXT:", current_node.sibling_next)
+            #     while current_node and current_node.sibling_next:
+            #         current_node = next((c for c in c1 if c.disqus_id == current_node.sibling_next), None)
+            #         if current_node:
+            #             print("NEW CURRENT NODE:", current_node.text)
+            #             sorted_posts.append(current_node)
+            # print("C1:" , c1)
+            # print('SORTED POSTS OF C1:', sorted_posts)
             if len(sorted_posts) == 0:
                 vals = []
                 hid = []
@@ -1303,7 +1303,7 @@ def viz_data(request):
             top_comments = a.comment_set.filter(reply_to_disqus=None)
             posts = []
             current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
-            print("TOP COMMENTS:", top_comments)
+            print("TOP COMMENTS:", [c.id for c in top_comments])
             if current_node:
                 posts.append(current_node)
                 while current_node and current_node.sibling_next:
