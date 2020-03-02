@@ -5,6 +5,40 @@ from celery.exceptions import Ignore
 from website.import_data import get_source, get_article, get_disqus_posts,\
     get_reddit_posts, count_replies, get_wiki_talk_posts, get_decide_proposal_posts, get_join_taiwan_posts
 from django.contrib.auth.models import User
+from website.models import Comment
+
+def set_link_article(node, article):
+    if node == article:
+        disqus_id = None
+    else:
+        disqus_id = node.disqus_id
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article).order_by('import_order')
+    if len(children) == 0:
+        node.first_child = None
+        node.last_child = None
+        node.save()
+    else:
+        node.first_child = children[0].disqus_id
+        node.last_child = children[len(children)-1].disqus_id
+        node.save()
+        if len(children) == 1:
+            children[0].sibling_prev = None
+            children[0].sibling_next = None
+            children[0].save()
+            set_link_article(children[0], article)
+        else:
+            for index, child in enumerate(children):
+                if index == 0:
+                    child.sibling_prev = None
+                    child.sibling_next = children[index + 1].disqus_id
+                elif index == len(children)-1:
+                    child.sibling_next = None
+                    child.sibling_prev = children[index - 1].disqus_id
+                else:
+                    child.sibling_prev = children[index - 1].disqus_id
+                    child.sibling_next = children[index + 1].disqus_id
+                child.save()
+                set_link_article(child, article)
 
 
 @shared_task
@@ -17,7 +51,6 @@ def import_article(url, owner):
             user = None
         else:
             user = User.objects.get(username=owner)
-
         article = get_article(url, user, source, 0)
         if article:
             posts = article.comment_set
@@ -41,6 +74,9 @@ def import_article(url, owner):
                 article.comment_num = article.comment_set.count()
                 article.save()
                 count_replies(article)
+
+            set_link_article(article, article)
+            article.save()
         else:
             return 'FAILURE-ARTICLE'
     else:

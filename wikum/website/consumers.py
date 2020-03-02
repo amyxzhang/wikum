@@ -602,25 +602,24 @@ class WikumConsumer(WebsocketConsumer):
                     parent.first_child = new_id
             parent.save()
 
-            
-            for index, comment in enumerate(unselected_children):
-                if index == 0:
-                    comment.sibling_prev = None
-                    if len(unselected_children) > 1:
+            if len(unselected_children) == 1:
+                comment = unselected_children[0]
+                comment.sibling_prev = None
+                comment.sibling_next = new_id
+                comment.save()
+            else:
+                for index, comment in enumerate(unselected_children):
+                    if index == 0:
+                        comment.sibling_prev = None
                         comment.sibling_next = unselected_children[index + 1].disqus_id
-                    else:
-                        comment.sibling_next = None
-                elif index == len(unselected_children) - 1:
-                    comment.sibling_next = new_id
-                    new_comment.sibling_prev = comment.disqus_id
-                    if len(unselected_children) > 1:
+                    if index == len(unselected_children) - 1:
+                        comment.sibling_next = new_id
+                        new_comment.sibling_prev = comment.disqus_id
                         comment.sibling_prev = unselected_children[index - 1].disqus_id
                     else:
-                        comment.sibling_prev = None
-                else:
-                    comment.sibling_next = unselected_children[index + 1].disqus_id
-                    comment.sibling_prev = unselected_children[index - 1].disqus_id
-                comment.save()
+                        comment.sibling_next = unselected_children[index + 1].disqus_id
+                        comment.sibling_prev = unselected_children[index - 1].disqus_id
+                    comment.save()
 
             # Set the sibling pointers in the selected comments
             for index, comment in enumerate(children):
@@ -630,7 +629,7 @@ class WikumConsumer(WebsocketConsumer):
                         comment.sibling_next = children[index + 1].disqus_id
                     else:
                         comment.sibling_next = None
-                elif index == len(children) - 1:
+                if index == len(children) - 1:
                     comment.sibling_next = None
                     if len(children) > 1:
                         comment.sibling_prev = children[index - 1].disqus_id
@@ -1114,24 +1113,24 @@ class WikumConsumer(WebsocketConsumer):
                                            words_shown=words_shown,
                                            current_percent_complete=percent_complete)
 
-                # Set the sibling pointers of the deleted comments
-                for index, comment in enumerate(unselected_children):
-                    if index == 0:
-                        comment.sibling_prev = None
-                        if len(unselected_children) > 1:
+                # Set the sibling pointers of the siblings of the deleted comments
+                if len(unselected_children) == 1:
+                    comment = unselected_children[0]
+                    comment.sibling_prev = None
+                    comment.sibling_next = None
+                    comment.save()
+                else:
+                    for index, comment in enumerate(unselected_children):
+                        if index == 0:
+                            comment.sibling_prev = None
                             comment.sibling_next = unselected_children[index + 1].disqus_id
-                        else:
+                        elif index == len(unselected_children) - 1:
                             comment.sibling_next = None
-                    elif index == len(unselected_children) - 1:
-                        comment.sibling_next = None
-                        if len(unselected_children) > 1:
                             comment.sibling_prev = unselected_children[index - 1].disqus_id
                         else:
-                            comment.sibling_prev = None
-                    else:
-                        comment.sibling_next = unselected_children[index + 1].disqus_id
-                        comment.sibling_prev = unselected_children[index - 1].disqus_id
-                    comment.save()
+                            comment.sibling_next = unselected_children[index + 1].disqus_id
+                            comment.sibling_prev = unselected_children[index - 1].disqus_id
+                        comment.save()
 
                 for comment in comments:
                     h.comments.add(comment)

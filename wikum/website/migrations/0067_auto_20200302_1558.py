@@ -10,14 +10,15 @@ def set_links_all_articles(apps, schema_editor):
     '''
     Article = apps.get_model('website', 'Article')
     for article in Article.objects.all():
-        set_link_article(article)
+        set_link_article(apps, article, article)
 
-def set_link_article(node):
+def set_link_article(apps, node, article):
     if node == article:
         disqus_id = None
     else:
         disqus_id = node.disqus_id
-    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=post.article).order_by('import_order')
+    Comment = apps.get_model('website', 'Comment')
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article).order_by('import_order')
     if len(children) == 0:
         node.first_child = None
         node.last_child = None
@@ -30,7 +31,7 @@ def set_link_article(node):
             children[0].sibling_prev = None
             children[0].sibling_next = None
             children[0].save()
-            set_link_article(children[0])
+            set_link_article(apps, children[0], article)
         else:
             for index, child in enumerate(children):
                 if index == 0:
@@ -43,7 +44,7 @@ def set_link_article(node):
                     child.sibling_prev = children[index - 1].disqus_id
                     child.sibling_next = children[index + 1].disqus_id
                 child.save()
-                set_link_article(child)
+                set_link_article(apps, child, article)
 
 class Migration(migrations.Migration):
 

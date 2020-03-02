@@ -1,0 +1,992 @@
+[2020-03-02 17:11:43,223: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 17:12:40,446: WARNING/ForkPoolWorker-2] HELLO GET ARTICLE
+[2020-03-02 17:12:40,976: WARNING/ForkPoolWorker-2] HELLO REACHED???
+[2020-03-02 17:12:40,978: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:12:40,988: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Article.last_updated received a naive datetime (2020-03-02 17:12:40.976257) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:40,992: WARNING/ForkPoolWorker-2] HELLO REACHED PAST???
+[2020-03-02 17:12:41,016: WARNING/ForkPoolWorker-2] HELLO FINISHED ARTICLE
+[2020-03-02 17:12:41,269: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:12:43,198: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 17:08:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:43,954: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 17:33:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:44,716: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 17:46:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:45,634: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 17:53:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:46,509: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 17:47:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:49,452: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 18:11:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:50,318: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 18:18:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:51,047: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 23:48:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:52,570: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-07 20:01:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:12:53,913: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-07 20:06:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:24,435: WARNING/ForkPoolWorker-1] HELLO GET ARTICLE
+[2020-03-02 17:19:24,860: WARNING/ForkPoolWorker-1] HELLO REACHED???
+[2020-03-02 17:19:24,862: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:19:24,876: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Article.last_updated received a naive datetime (2020-03-02 17:19:24.852734) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:24,881: WARNING/ForkPoolWorker-1] HELLO REACHED PAST???
+[2020-03-02 17:19:24,888: WARNING/ForkPoolWorker-1] HELLO FINISHED ARTICLE
+[2020-03-02 17:19:25,116: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:19:26,559: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 22:07:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:27,234: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-05 22:11:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:28,237: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-18 04:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:29,093: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-18 20:58:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:29,896: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-27 22:35:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:30,761: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-27 23:08:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:31,826: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-29 13:02:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:33,228: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-27 15:41:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:33,785: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-28 15:51:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:19:34,594: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-28 17:27:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:21:14,932: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 17:21:52,082: WARNING/ForkPoolWorker-2] HELLO GET ARTICLE
+[2020-03-02 17:21:52,943: WARNING/ForkPoolWorker-2] HELLO FINISHED ARTICLE
+[2020-03-02 17:21:53,328: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:21:55,689: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2015-05-12 07:51:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:21:56,326: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-03-22 17:42:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:21:57,619: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-04-15 02:06:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:21:59,205: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-08-29 15:58:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:00,354: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-08-29 16:06:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:01,171: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-08-29 16:13:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:02,039: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-08-29 19:41:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:02,847: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-10-29 16:22:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:03,058: ERROR/ForkPoolWorker-2] Task website.tasks.import_article[55155a91-1e36-4faa-844f-6535d66b6bd9] raised unexpected: NameError("name 'Comment' is not defined")
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/app/trace.py", line 385, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/app/trace.py", line 648, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/website/tasks.py", line 84, in import_article
+    set_link_article(article, article)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/website/tasks.py", line 14, in set_link_article
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article).order_by('import_order')
+NameError: name 'Comment' is not defined
+[2020-03-02 17:22:38,299: WARNING/ForkPoolWorker-1] HELLO GET ARTICLE
+[2020-03-02 17:22:38,951: WARNING/ForkPoolWorker-1] HELLO FINISHED ARTICLE
+[2020-03-02 17:22:39,264: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:22:40,624: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-11-20 15:03:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:41,591: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-11-21 03:33:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:42,690: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2011-01-16 18:34:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:43,435: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-05-16 05:01:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:44,101: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-11-20 14:59:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:45,086: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2009-09-11 18:34:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:45,759: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2011-07-30 04:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:22:45,897: ERROR/ForkPoolWorker-1] Task website.tasks.import_article[fadf9749-e7f4-4650-be32-4b5ecc448914] raised unexpected: NameError("name 'Comment' is not defined")
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/app/trace.py", line 385, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/app/trace.py", line 648, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/website/tasks.py", line 84, in import_article
+    set_link_article(article, article)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/website/tasks.py", line 14, in set_link_article
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article).order_by('import_order')
+NameError: name 'Comment' is not defined
+[2020-03-02 17:23:38,621: WARNING/ForkPoolWorker-2] HELLO GET ARTICLE
+[2020-03-02 17:23:39,185: WARNING/ForkPoolWorker-2] HELLO FINISHED ARTICLE
+[2020-03-02 17:23:41,296: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-09-14 08:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:23:43,061: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-04 16:52:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:23:44,171: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-04 18:13:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:23:44,935: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-19 20:49:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:23:45,037: ERROR/ForkPoolWorker-2] Task website.tasks.import_article[30a53d58-3935-4842-aef4-e2aed6b39b1a] raised unexpected: NameError("name 'Comment' is not defined")
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/app/trace.py", line 385, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/app/trace.py", line 648, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/website/tasks.py", line 84, in import_article
+    set_link_article(article, article)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/website/tasks.py", line 14, in set_link_article
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article).order_by('import_order')
+NameError: name 'Comment' is not defined
+[2020-03-02 17:24:50,835: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 17:25:53,259: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 318, in start
+    blueprint.start(self)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/bootsteps.py", line 119, in start
+    step.start(parent)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 596, in start
+    c.loop(*c.loop_args())
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/loops.py", line 91, in asynloop
+    next(loop)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/asynchronous/hub.py", line 362, in create_loop
+    cb(*cbargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 1101, in on_readable
+    self.cycle.on_readable(fileno)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 345, in on_readable
+    chan.handlers[type]()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 676, in _receive
+    ret.append(self._receive_one(c))
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 687, in _receive_one
+    response = c.parse_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3185, in parse_response
+    response = self._execute(conn, conn.read_response)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3159, in _execute
+    return command(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 700, in read_response
+    response = self._parser.read_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 457, in read_response
+    self.read_from_socket()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 416, in read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2020-03-02 17:26:10,599: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 17:26:22,101: WARNING/ForkPoolWorker-2] HELLO GET ARTICLE
+[2020-03-02 17:26:22,887: WARNING/ForkPoolWorker-2] HELLO FINISHED ARTICLE
+[2020-03-02 17:26:23,220: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:26:24,958: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2005-04-15 08:25:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:26:26,015: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2005-04-17 14:57:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:26:26,897: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2008-03-12 16:16:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:26:27,804: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2008-03-18 20:18:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:26:29,180: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2010-01-21 09:41:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:26:29,273: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:26:29,279: WARNING/ForkPoolWorker-2] <QuerySet [<Comment: Comment object (3333)>, <Comment: Comment object (3334)>, <Comment: Comment object (3335)>, <Comment: Comment object (3336)>, <Comment: Comment object (3337)>]>
+[2020-03-02 17:26:29,286: WARNING/ForkPoolWorker-2] ==2005==
+
+This is from the "The Market for Lemons" page:
+
+"The term "lemon," meaning a defective (typically used) car, did not enter the language of economics as a result of this paper. Instead, it came from the famous "Lemon" Volkswagen advertisement of the 1960s."
+
+Which is correct?
+
+[[User:TaintedMustard|TaintedMustard]] 08:25, 15 Apr 2005 (UTC)
+[2020-03-02 17:26:29,287: WARNING/ForkPoolWorker-2] Well, it doesn't look good when one page links to another that contradicts it. I'll remove the "entered the language" part but keep the link to the article.
+
+[[User:TaintedMustard|TaintedMustard]] 14:57, 17 Apr 2005 (UTC)
+[2020-03-02 17:26:29,288: WARNING/ForkPoolWorker-2] I've heard that a lemon is also a Russian term for a million dollars. Is this true? And if it is, does it merit mention on this page? --[[Special:Contributions/137.122.200.45|137.122.200.45]] ([[User talk:137.122.200.45|talk]]) 16:16, 12 March 2008 (UTC)
+[2020-03-02 17:26:29,289: WARNING/ForkPoolWorker-2] ==Edits made Mar 18 2008==
+
+Performed disambiguation clean-up as per [[MOS:DAB]]
+
+* Added Wiktionary link
+
+* Removed links to 2 songs titled "Lemon Tree"; there are already links to them on the [[Lemon Tree]] dab page
+
+* Also moved link for [[Lemon Myrtle]] to the [[Lemon Tree]] dab page since it seemed more logical
+
+* Created [[Lemon (surname)]] page and moved people with the name "Lemon" to that page.
+
+* Added links to [[Lemon (surname)]] and [[Lemon Tree]] to "See also" section.
+
+* Removed "See also [[The Market for Lemons]]" from the entry for [[lemon (automobile)]].  The "Market" link is mentioned on [[lemon (automobile)]]
+
+* Also removed the following for they do not belong on a "Lemon" disambiguation page. These are topics which include the word "lemon", but are not senses of of the word "lemon" that correspond to encyclopedic topics whose articles could logically be titled simply "Lemon":
+
+** [[lemon battery]], is a battery made using a lemon.
+
+** [[Lemon Demon]], Neil Cicierega's internet band.
+
+** [[Salts of Lemon]], a bleaching agent made from [[Potassium oxalate]] (and the links were both red anyway...)
+
+[[User:Marchije|Marchije]] ([[User talk:Marchije|talk]]) 20:18, 18 March 2008 (UTC)
+[2020-03-02 17:26:29,289: WARNING/ForkPoolWorker-2] == Requested move ==
+
+<div class="boilerplate" style="background-color: #efe; margin: 2em 0 0 0; padding: 0 10px 0 10px; border: 1px dotted #aaa;"><!-- Template:RM top -->
+:''The following discussion is an archived discussion of a [[WP:RM|requested move]]. <span style="color:red">'''Please do not modify it.'''</span> Subsequent comments should be made in a new section on the talk page. No further edits should be made to this section. ''
+
+The result of the move request was: consensus was for no move <small>[[User:JohnBlackburne|JohnBlackburne]]</small><sup>[[User_talk:JohnBlackburne|words]]</sup><sub style="margin-left:-5.0ex;">[[Special:Contributions/JohnBlackburne|deeds]]</sub> 09:41, 21 January 2010 (UTC)
+
+----
+
+[[:Lemon (disambiguation)]]  [[Lemon]]  Move disambiguation page to base name [[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 15:29, 13 January 2010 (UTC)
+
+* [[Lemon]]  <s>[[Lemon (fruit)]]</s> [[Citrus limon]]
+
+"Lemon" usually refers to the fruit, but Wikipedia content related to the fruit is distributed among several articles.  --[[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 15:29, 13 January 2010 (UTC)
+
+* '''Oppose''' Isn't the ''citrus limon'' the main form of [[lemon]]? The fruit is surely the primary search target. Also, if you're suggesting that Wikipedia articles are about the fruit, then the proposed taget [[Lemon (fruit)]] doesn't really make sense. [[Special:Contributions/84.92.117.93|84.92.117.93]] ([[User talk:84.92.117.93|talk]]) 19:03, 13 January 2010 (UTC)
+:The fruit and the article [[Lemon]] are not one and the same.  I am finding way too many incoming links to [[Lemon]] that intend one of the other articles about lemons.  --[[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 21:59, 13 January 2010 (UTC)
+
+*'''Oppose''', the fruit is the primary use.&nbsp;&nbsp;[[User:Ukexpat|ukexpat]] ([[User talk:Ukexpat|talk]]) 21:56, 13 January 2010 (UTC)
+::Something was wrong with the bot ... the movereq template looks okay but the bot-generated summary is mixed up.  I have fixed it, I hope.  Also, I think 84.92.117.93 is correct:  the article is about the species, not the fruit.  If (when) someone removes tangents concerning derivative products, what will remain is a species page. --[[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 22:11, 13 January 2010 (UTC)
+:::I don't completely understand. The movereq doesn't list [[Citrus limon]], your intended target for [[Lemon]]. It's slightly weird how one of the two is listed on top in the text and another in the {{tl|movereq}} and on [[WP:RM]], but not sure whether that's your problem. [[User talk:Ucucha|Ucucha]] 22:19, 13 January 2010 (UTC)
+::::The RM bot notice below suggests something is wrong, yes. I changed the movereq template now; hope that sorts things out for the bot. [[User talk:Ucucha|Ucucha]] 22:22, 13 January 2010 (UTC)
+:And on the merits of this: I think [[WP:FLORA]] suggests having an article about the plant on ''[[Citrus limon]]'' and an article about the fruit at [[lemon]]. It is clearly the primary topic. [[User talk:Ucucha|Ucucha]] 22:25, 13 January 2010 (UTC)
+
+*'''Oppose'''.  The fruit/plant is the primary meaning.  [[WP:FLORA]] does not require separate articles for the fruit and the plant and separation not necessary in this case (the article is only 15K).   <span style="border:1px solid blue;padding:1px;">[[User talk:AjaxSmack|<font style="color:#fef;background:navy;">''' AjaxSmack '''</font>]]</span> 04:57, 14 January 2010 (UTC)
+
+*'''Oppose''' the fruit is primary meaning, and whatever the incoming links say, Wikipedia is not representative of common usage, since many common topics get deleted from Wikipedia due to (A) not a recipe book (B) not a compendium of all human work and knowledge no matter how itrivial (C) etc. The use of incoming links to justify renaming the primary meaning to a dab is not supportable in ever. [[Special:Contributions/76.66.197.17|76.66.197.17]] ([[User talk:76.66.197.17|talk]]) 05:16, 14 January 2010 (UTC)
+
+*'''Support''' - in the interests of minimising the use of pages with parenthetical explanatory bits in the article names, and per [[WP:FLORA]] naming. [[User:Casliber|Casliber]] ([[User talk:Casliber|talk]] '''''' [[Special:Contributions/Casliber|contribs]]) 05:29, 14 January 2010 (UTC)
+
+*'''Oppose'''. A lemon is a fruit; that is a compelling primary use. So long as the fruit and the plant taxon are treated in a single article, the article should be at [[Lemon]]. If you want to split the article into a fruit article and a taxon article, go right ahead: but leave the fruit article at [[Lemon]]. [[User talk:Hesperian|Hesperian]] 06:50, 14 January 2010 (UTC)
+
+*'''Oppose'''. The fruit is the primary use, and the article should be about the fruit. ''[[Citrus limon]]'' should be a separate article about the plant. If they are not ready to split, the article should be at [[Lemon]].--[[User:Curtis Clark|Curtis Clark]] ([[User talk:Curtis Clark|talk]]) 14:50, 14 January 2010 (UTC)
+
+*'''Oppose'''. The fruit is the primary use. [[User:Kingdon|Kingdon]] ([[User talk:Kingdon|talk]]) 16:35, 14 January 2010 (UTC)
+
+*'''Oppose'''. Intuitively obvious primary topic and no evidence presented to the contrary. [[User:Bkonrad|older]]  [[User talk:Bkonrad|wiser]] 17:06, 17 January 2010 (UTC)
+
+*'''Comment''' - Una Smith seems to suggest that the current article '''[[Lemon]]''' (to be renamed '''[[Citrus limon]]''') is not an article on the fruit, which is what she wants fixed. The article certainly ''looks'' like it's about both the plant and the fruit (including culinary use). Is there information about the fruit which is only in other articles, and which should be moved to this main article? That seems a more user-friendly solution. [[Special:Contributions/86.178.229.168|86.178.229.168]] ([[User talk:86.178.229.168|talk]]) 19:14, 17 January 2010 (UTC)
+
+*'''Comment'''. I reorganized the subject headings, but left the cleanup flag intact. The changes I made do not resolve this discussion, but the page does look different. [[User:Obankston|Obankston]] ([[User talk:Obankston|talk]]) 07:41, 18 January 2010 (UTC)
+
+*'''Oppose''' with an essentially "not now" reason, to start with. There seems to be some concern about organizational structure, which should be addressed prior to considering any RM's. I do hav eto say as well that the "Intuitively obvious primary topic" !votes above are fairly compelling as well.<br/> [[User:Ohms law|<i>V</i> = <i>I</i> * <i>R</i>]] ([[User talk:Ohms law|talk to Ohms law]]) 07:56, 18 January 2010 (UTC)
+*'''Oppose''' Don't be so bloody ridiculous!  How many people going into their local shop would ask for a ''Citrus limon''?  They want ''lemons'', which is exactly what this ludicrous proposal deserves! [[User:Skinsmoke|Skinsmoke]] ([[User talk:Skinsmoke|talk]]) 12:36, 19 January 2010 (UTC)
+
+*'''Oppose''' A lemon is a lemon. Clear case of primary use for the fruit, although it should be noted that in the colloquial Welsh of north Wales a ''lemon'' can also mean a ''[[lunatic|fruitcake]]''... [[User:Enaidmawr|Enaidmawr]] ([[User talk:Enaidmawr|talk]]) 23:49, 19 January 2010 (UTC)
+
+*'''Oppose''' We are ordinary people. We are not biologists. --[[User:supernorton|super'''n'''orton]] 09:09, 21 January 2010 (UTC)
+
+:''The above discussion is preserved as an archive of a [[WP:RM|requested move]].  <span style="color:red">'''Please do not modify it.'''</span> Subsequent comments should be made in a new section on this talk page. No further edits should be made to this section.</div><!-- Template:RM bottom -->
+[2020-03-02 17:26:29,290: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:26:29,300: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:26:29,332: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:26:29,494: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:26:29,559: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:26:29,578: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:26:29,607: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:26:29,618: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:26:29,654: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:26:29,659: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:26:29,767: WARNING/ForkPoolWorker-2] FIRST CHILD
+[2020-03-02 17:26:29,768: WARNING/ForkPoolWorker-2] ==2005==
+
+This is from the "The Market for Lemons" page:
+
+"The term "lemon," meaning a defective (typically used) car, did not enter the language of economics as a result of this paper. Instead, it came from the famous "Lemon" Volkswagen advertisement of the 1960s."
+
+Which is correct?
+
+[[User:TaintedMustard|TaintedMustard]] 08:25, 15 Apr 2005 (UTC)
+[2020-03-02 17:26:29,797: WARNING/ForkPoolWorker-2] LAST CHILD
+[2020-03-02 17:26:29,799: WARNING/ForkPoolWorker-2] == Requested move ==
+
+<div class="boilerplate" style="background-color: #efe; margin: 2em 0 0 0; padding: 0 10px 0 10px; border: 1px dotted #aaa;"><!-- Template:RM top -->
+:''The following discussion is an archived discussion of a [[WP:RM|requested move]]. <span style="color:red">'''Please do not modify it.'''</span> Subsequent comments should be made in a new section on the talk page. No further edits should be made to this section. ''
+
+The result of the move request was: consensus was for no move <small>[[User:JohnBlackburne|JohnBlackburne]]</small><sup>[[User_talk:JohnBlackburne|words]]</sup><sub style="margin-left:-5.0ex;">[[Special:Contributions/JohnBlackburne|deeds]]</sub> 09:41, 21 January 2010 (UTC)
+
+----
+
+[[:Lemon (disambiguation)]]  [[Lemon]]  Move disambiguation page to base name [[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 15:29, 13 January 2010 (UTC)
+
+* [[Lemon]]  <s>[[Lemon (fruit)]]</s> [[Citrus limon]]
+
+"Lemon" usually refers to the fruit, but Wikipedia content related to the fruit is distributed among several articles.  --[[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 15:29, 13 January 2010 (UTC)
+
+* '''Oppose''' Isn't the ''citrus limon'' the main form of [[lemon]]? The fruit is surely the primary search target. Also, if you're suggesting that Wikipedia articles are about the fruit, then the proposed taget [[Lemon (fruit)]] doesn't really make sense. [[Special:Contributions/84.92.117.93|84.92.117.93]] ([[User talk:84.92.117.93|talk]]) 19:03, 13 January 2010 (UTC)
+:The fruit and the article [[Lemon]] are not one and the same.  I am finding way too many incoming links to [[Lemon]] that intend one of the other articles about lemons.  --[[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 21:59, 13 January 2010 (UTC)
+
+*'''Oppose''', the fruit is the primary use.&nbsp;&nbsp;[[User:Ukexpat|ukexpat]] ([[User talk:Ukexpat|talk]]) 21:56, 13 January 2010 (UTC)
+::Something was wrong with the bot ... the movereq template looks okay but the bot-generated summary is mixed up.  I have fixed it, I hope.  Also, I think 84.92.117.93 is correct:  the article is about the species, not the fruit.  If (when) someone removes tangents concerning derivative products, what will remain is a species page. --[[User:Una Smith|Una Smith]] ([[User talk:Una Smith|talk]]) 22:11, 13 January 2010 (UTC)
+:::I don't completely understand. The movereq doesn't list [[Citrus limon]], your intended target for [[Lemon]]. It's slightly weird how one of the two is listed on top in the text and another in the {{tl|movereq}} and on [[WP:RM]], but not sure whether that's your problem. [[User talk:Ucucha|Ucucha]] 22:19, 13 January 2010 (UTC)
+::::The RM bot notice below suggests something is wrong, yes. I changed the movereq template now; hope that sorts things out for the bot. [[User talk:Ucucha|Ucucha]] 22:22, 13 January 2010 (UTC)
+:And on the merits of this: I think [[WP:FLORA]] suggests having an article about the plant on ''[[Citrus limon]]'' and an article about the fruit at [[lemon]]. It is clearly the primary topic. [[User talk:Ucucha|Ucucha]] 22:25, 13 January 2010 (UTC)
+
+*'''Oppose'''.  The fruit/plant is the primary meaning.  [[WP:FLORA]] does not require separate articles for the fruit and the plant and separation not necessary in this case (the article is only 15K).   <span style="border:1px solid blue;padding:1px;">[[User talk:AjaxSmack|<font style="color:#fef;background:navy;">''' AjaxSmack '''</font>]]</span> 04:57, 14 January 2010 (UTC)
+
+*'''Oppose''' the fruit is primary meaning, and whatever the incoming links say, Wikipedia is not representative of common usage, since many common topics get deleted from Wikipedia due to (A) not a recipe book (B) not a compendium of all human work and knowledge no matter how itrivial (C) etc. The use of incoming links to justify renaming the primary meaning to a dab is not supportable in ever. [[Special:Contributions/76.66.197.17|76.66.197.17]] ([[User talk:76.66.197.17|talk]]) 05:16, 14 January 2010 (UTC)
+
+*'''Support''' - in the interests of minimising the use of pages with parenthetical explanatory bits in the article names, and per [[WP:FLORA]] naming. [[User:Casliber|Casliber]] ([[User talk:Casliber|talk]] '''''' [[Special:Contributions/Casliber|contribs]]) 05:29, 14 January 2010 (UTC)
+
+*'''Oppose'''. A lemon is a fruit; that is a compelling primary use. So long as the fruit and the plant taxon are treated in a single article, the article should be at [[Lemon]]. If you want to split the article into a fruit article and a taxon article, go right ahead: but leave the fruit article at [[Lemon]]. [[User talk:Hesperian|Hesperian]] 06:50, 14 January 2010 (UTC)
+
+*'''Oppose'''. The fruit is the primary use, and the article should be about the fruit. ''[[Citrus limon]]'' should be a separate article about the plant. If they are not ready to split, the article should be at [[Lemon]].--[[User:Curtis Clark|Curtis Clark]] ([[User talk:Curtis Clark|talk]]) 14:50, 14 January 2010 (UTC)
+
+*'''Oppose'''. The fruit is the primary use. [[User:Kingdon|Kingdon]] ([[User talk:Kingdon|talk]]) 16:35, 14 January 2010 (UTC)
+
+*'''Oppose'''. Intuitively obvious primary topic and no evidence presented to the contrary. [[User:Bkonrad|older]]  [[User talk:Bkonrad|wiser]] 17:06, 17 January 2010 (UTC)
+
+*'''Comment''' - Una Smith seems to suggest that the current article '''[[Lemon]]''' (to be renamed '''[[Citrus limon]]''') is not an article on the fruit, which is what she wants fixed. The article certainly ''looks'' like it's about both the plant and the fruit (including culinary use). Is there information about the fruit which is only in other articles, and which should be moved to this main article? That seems a more user-friendly solution. [[Special:Contributions/86.178.229.168|86.178.229.168]] ([[User talk:86.178.229.168|talk]]) 19:14, 17 January 2010 (UTC)
+
+*'''Comment'''. I reorganized the subject headings, but left the cleanup flag intact. The changes I made do not resolve this discussion, but the page does look different. [[User:Obankston|Obankston]] ([[User talk:Obankston|talk]]) 07:41, 18 January 2010 (UTC)
+
+*'''Oppose''' with an essentially "not now" reason, to start with. There seems to be some concern about organizational structure, which should be addressed prior to considering any RM's. I do hav eto say as well that the "Intuitively obvious primary topic" !votes above are fairly compelling as well.<br/> [[User:Ohms law|<i>V</i> = <i>I</i> * <i>R</i>]] ([[User talk:Ohms law|talk to Ohms law]]) 07:56, 18 January 2010 (UTC)
+*'''Oppose''' Don't be so bloody ridiculous!  How many people going into their local shop would ask for a ''Citrus limon''?  They want ''lemons'', which is exactly what this ludicrous proposal deserves! [[User:Skinsmoke|Skinsmoke]] ([[User talk:Skinsmoke|talk]]) 12:36, 19 January 2010 (UTC)
+
+*'''Oppose''' A lemon is a lemon. Clear case of primary use for the fruit, although it should be noted that in the colloquial Welsh of north Wales a ''lemon'' can also mean a ''[[lunatic|fruitcake]]''... [[User:Enaidmawr|Enaidmawr]] ([[User talk:Enaidmawr|talk]]) 23:49, 19 January 2010 (UTC)
+
+*'''Oppose''' We are ordinary people. We are not biologists. --[[User:supernorton|super'''n'''orton]] 09:09, 21 January 2010 (UTC)
+
+:''The above discussion is preserved as an archive of a [[WP:RM|requested move]].  <span style="color:red">'''Please do not modify it.'''</span> Subsequent comments should be made in a new section on this talk page. No further edits should be made to this section.</div><!-- Template:RM bottom -->
+[2020-03-02 17:33:48,454: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 318, in start
+    blueprint.start(self)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/bootsteps.py", line 119, in start
+    step.start(parent)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 596, in start
+    c.loop(*c.loop_args())
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/loops.py", line 91, in asynloop
+    next(loop)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/asynchronous/hub.py", line 362, in create_loop
+    cb(*cbargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 1101, in on_readable
+    self.cycle.on_readable(fileno)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 345, in on_readable
+    chan.handlers[type]()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 676, in _receive
+    ret.append(self._receive_one(c))
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 687, in _receive_one
+    response = c.parse_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3185, in parse_response
+    response = self._execute(conn, conn.read_response)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3159, in _execute
+    return command(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 700, in read_response
+    response = self._parser.read_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 457, in read_response
+    self.read_from_socket()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 416, in read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2020-03-02 17:34:18,272: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 17:34:54,974: WARNING/ForkPoolWorker-2] HELLO GET ARTICLE
+[2020-03-02 17:34:55,385: WARNING/ForkPoolWorker-2] HELLO FINISHED ARTICLE
+[2020-03-02 17:34:55,673: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:34:57,723: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2008-07-03 20:25:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:34:57,821: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:34:57,828: WARNING/ForkPoolWorker-2] <QuerySet [<Comment: Comment object (3338)>, <Comment: Comment object (3339)>]>
+[2020-03-02 17:34:57,834: WARNING/ForkPoolWorker-2] {{WikiProject Food and drink|class=start|importance=Low}}
+
+{{WikiProject Plants|class=start|importance=Low}}
+[2020-03-02 17:34:57,835: WARNING/ForkPoolWorker-2] ==[[WP:FOOD|WikiProject Food and drink]] Tagging==
+
+This article talk page was automatically added with {{tl|WikiProject Food and drink}} banner as it falls under [[:Category:Food]] or [[User:TinucherianBot/Autotagg/WPFOOD/Category:Foods|one of its subcategories]]. If you find this addition an error, Kindly undo the changes and update the inappropriate categories if needed. The bot was instructed to tagg these articles upon consenus from WikiProject Food and drink. You can find the related request for tagging [[User:TinucherianBot/Autotagg/WPFOOD#Request_5|here]] . Maximum and carefull attention was done to avoid any wrongly tagging any categories , but mistakes may happen... If you have concerns , please inform on the [[Wikipedia talk:WikiProject Food and drink|project talk page]] -- [[User:TinucherianBot|TinucherianBot]] ([[User talk:TinucherianBot|talk]]) 20:25, 3 July 2008 (UTC)
+[2020-03-02 17:34:57,837: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:34:57,844: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:34:57,870: WARNING/ForkPoolWorker-2] CHILDREN
+[2020-03-02 17:34:57,873: WARNING/ForkPoolWorker-2] <QuerySet []>
+[2020-03-02 17:34:57,919: WARNING/ForkPoolWorker-2] FIRST CHILD
+[2020-03-02 17:34:57,920: WARNING/ForkPoolWorker-2] {{WikiProject Food and drink|class=start|importance=Low}}
+
+{{WikiProject Plants|class=start|importance=Low}}
+[2020-03-02 17:34:57,932: WARNING/ForkPoolWorker-2] LAST CHILD
+[2020-03-02 17:34:57,933: WARNING/ForkPoolWorker-2] ==[[WP:FOOD|WikiProject Food and drink]] Tagging==
+
+This article talk page was automatically added with {{tl|WikiProject Food and drink}} banner as it falls under [[:Category:Food]] or [[User:TinucherianBot/Autotagg/WPFOOD/Category:Foods|one of its subcategories]]. If you find this addition an error, Kindly undo the changes and update the inappropriate categories if needed. The bot was instructed to tagg these articles upon consenus from WikiProject Food and drink. You can find the related request for tagging [[User:TinucherianBot/Autotagg/WPFOOD#Request_5|here]] . Maximum and carefull attention was done to avoid any wrongly tagging any categories , but mistakes may happen... If you have concerns , please inform on the [[Wikipedia talk:WikiProject Food and drink|project talk page]] -- [[User:TinucherianBot|TinucherianBot]] ([[User talk:TinucherianBot|talk]]) 20:25, 3 July 2008 (UTC)
+[2020-03-02 17:36:48,869: WARNING/ForkPoolWorker-1] HELLO GET ARTICLE
+[2020-03-02 17:36:49,506: WARNING/ForkPoolWorker-1] HELLO FINISHED ARTICLE
+[2020-03-02 17:36:49,788: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:36:51,976: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-08-27 17:35:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:53,956: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-06-05 04:32:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:54,616: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-10-04 16:30:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:55,324: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-10-23 14:54:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:56,079: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2008-07-03 18:57:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:56,874: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2009-12-07 20:40:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:57,618: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2010-01-06 19:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:58,297: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2010-03-15 14:23:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:59,137: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2011-09-17 10:10:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:36:59,983: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2012-01-11 11:42:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:00,726: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2012-05-21 13:42:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:01,518: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2012-06-14 02:29:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:02,293: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2013-03-04 15:44:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:03,082: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2013-05-30 12:16:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:04,104: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2014-12-07 17:48:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:04,756: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2014-12-09 15:15:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:06,537: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2015-12-19 02:34:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:07,278: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2015-12-19 02:40:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:08,281: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-05-24 23:46:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:09,184: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-11-25 08:29:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:10,064: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2017-12-10 09:41:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:10,835: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-01-11 20:16:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:37:11,115: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,120: WARNING/ForkPoolWorker-1] <QuerySet [<Comment: Comment object (3340)>, <Comment: Comment object (3341)>, <Comment: Comment object (3342)>, <Comment: Comment object (3343)>, <Comment: Comment object (3344)>, <Comment: Comment object (3345)>, <Comment: Comment object (3346)>, <Comment: Comment object (3347)>, <Comment: Comment object (3348)>, <Comment: Comment object (3350)>, <Comment: Comment object (3351)>, <Comment: Comment object (3353)>, <Comment: Comment object (3354)>, <Comment: Comment object (3355)>, <Comment: Comment object (3356)>, <Comment: Comment object (3357)>, <Comment: Comment object (3358)>, <Comment: Comment object (3359)>, <Comment: Comment object (3361)>, <Comment: Comment object (3362)>, '...(remaining elements truncated)...']>
+[2020-03-02 17:37:11,145: WARNING/ForkPoolWorker-1] {{WikiProjectBannerShell|1=
+{{WikiProject Food and drink|class=c
+| b1 <!--Referencing & citations--> = no
+| b2 <!--Coverage & accuracy    --> = yes
+| b3 <!--Structure              --> = yes
+| b4 <!--Grammar & style        --> = yes
+| b5 <!--Supporting materials   --> = yes
+| b6 <!--Accessibility          --> = yes
+|importance=mid|auto = yes}}
+{{WikiProject Plants|class=c|importance=Mid}}
+{{WikiProject China|class=c|importance=mid}}
+{{WP India|class=c|importance=low}}}}
+[2020-03-02 17:37:11,145: WARNING/ForkPoolWorker-1] ==Untitled==
+
+* i would like to know what can be used in the place of Citron when cooking.
+
+* the closest is a lemon which is considered as a citron hybrid--[[User:Johnbrewe|Johnbrewe]] 17:35, 27 August 2007 (UTC)
+[2020-03-02 17:37:11,145: WARNING/ForkPoolWorker-1] * the picture may be updated to a nicer one--[[User:Johnbrewe|Johnbrewe]] 17:35, 27 August 2007 (UTC)
+[2020-03-02 17:37:11,146: WARNING/ForkPoolWorker-1] "the juice of the citron is high in vitamin C" ?! A citron has little to no juice, the bulk of the fruit being pith. (Certainly, the pith is indeed, very high in Vitamin C.)  <small class="autosigned">&nbsp;Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[Special:Contributions/71.125.207.182|71.125.207.182]] ([[User talk:71.125.207.182|talk]]) 04:32, 5 June 2016 (UTC)</small><!-- Template:Unsigned IP --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,146: WARNING/ForkPoolWorker-1] == England? ==
+
+"Candying is done mainly in England, France and the United States" - does this actually MEAN "England" specifically, or is it just the careless use of the word when "United Kingdom" is meant? [[User:86.132.138.205|86.132.138.205]] 16:30, 4 October 2007 (UTC)
+[2020-03-02 17:37:11,146: WARNING/ForkPoolWorker-1] Follow this link [http://www.vinetreeorchards.com/citron.htm]  <small>Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[User:Johnbrewe|Johnbrewe]] ([[User talk:Johnbrewe|talk]]  [[Special:Contributions/Johnbrewe|contribs]]) 14:54, 23 October 2007 (UTC)</small><!-- Template:Unsigned --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,147: WARNING/ForkPoolWorker-1] ==[[WP:FOOD|WikiProject Food and drink]] Tagging==
+
+This article talk page was automatically added with {{tl|WikiProject Food and drink}} banner as it falls under [[:Category:Food]] or [[User:TinucherianBot/Autotagg/WPFOOD/Category:Foods|one of its subcategories]]. If you find this addition an error, Kindly undo the changes and update the inappropriate categories if needed. The bot was instructed to tagg these articles upon consenus from WikiProject Food and drink. You can find the related request for tagging [[User:TinucherianBot/Autotagg/WPFOOD#Request_5|here]] . Maximum and carefull attention was done to avoid any wrongly tagging any categories , but mistakes may happen... If you have concerns , please inform on the [[Wikipedia talk:WikiProject Food and drink|project talk page]] -- [[User:TinucherianBot|TinucherianBot]] ([[User talk:TinucherianBot|talk]]) 18:57, 3 July 2008 (UTC)
+[2020-03-02 17:37:11,147: WARNING/ForkPoolWorker-1] ==Dubious==
+
+"In Swedish the citron is named Suckatcitron, - the citron of Succoth"
+
+This is probably just a coincidence (or a folk etymology). According to the entry [http://g3.spraakdata.gu.se/saob/show.phtml?filenr=2/35/74439.html ''suckat''] ([[succade]]) in the etymological dictionary of the [[Swedish Academy]] ([[SAOB]]) the word is loanword from Italian where the word ''zuccata'' means candied pumpkin (''zucca''). The word ''zucca'', in its turn, is connected to an Indo-european root meaning "dry". /[[Special:Contributions/78.69.59.235|78.69.59.235]] ([[User talk:78.69.59.235|talk]]) 20:40, 7 December 2009 (UTC)
+[2020-03-02 17:37:11,147: WARNING/ForkPoolWorker-1] See the references at [[Succade]], that this word too, was possibly derived from it's Jewish ritual use. Personnaly, I think that this is not right, but the explanation fits still better for the Swedish name.[[User:Critisizer|Critisizer]] ([[User talk:Critisizer|talk]]) 19:00, 6 January 2010 (UTC)
+[2020-03-02 17:37:11,148: WARNING/ForkPoolWorker-1] == Ludicrous Contradiction ==
+
+The first section, the summary prior to the ToC, states the etymology of the name has nothing to do with medicine. The first section after the ToC explains how and why the fruit's use was mainly medicinal.  <small><span class="autosigned"> Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[User:Leegee23|Leegee23]] ([[User talk:Leegee23|talk]]  [[Special:Contributions/Leegee23|contribs]]) 10:10, 17 September 2011 (UTC)</span></small><!-- Template:Unsigned --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,148: WARNING/ForkPoolWorker-1] == Origin and distribution ==
+
+Surely it is not correct to describe Yemen as being in the Far East, is it? [[User:Dawright12|Dawright12]] ([[User talk:Dawright12|talk]]) 11:42, 11 January 2012 (UTC)
+[2020-03-02 17:37:11,148: WARNING/ForkPoolWorker-1] == Lemon ==
+
+The lemon is a hybrid of the citron and bitter orange (which is itself a hybrid of pummelo and the mandarin). Here is the paper- http://journal.ashspublications.org/content/126/3/309.full.pdf.[[Special:Contributions/137.111.13.167|137.111.13.167]] ([[User talk:137.111.13.167|talk]]) 02:29, 14 June 2012 (UTC)
+[2020-03-02 17:37:11,148: WARNING/ForkPoolWorker-1] == edible? ==
+
+This is being sold under the name Cedrat here in Montreal in fruit stores, as edible.  One store has one at the checkout, cut open, and you can have a piece.  Is there an edible variety specifically called 'cedrat' (the personnel called it cedrat in French and English)?  --[[User:Richardson mcphillips|Richardson mcphillips]] ([[User talk:Richardson mcphillips|talk]]) 15:44, 4 March 2013 (UTC)
+[2020-03-02 17:37:11,149: WARNING/ForkPoolWorker-1] == Citron (etROG) has a Direct relation to Judaism ==
+
+I was surprise that no one mentioned it.  <span style="font-size: smaller;" class="autosigned"> Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[Special:Contributions/85.64.177.192|85.64.177.192]] ([[User talk:85.64.177.192|talk]]) 12:16, 30 May 2013 (UTC)</span><!-- Template:Unsigned IP --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,149: WARNING/ForkPoolWorker-1] ==Perfumery section largely irrelevant (and copyvio)==
+
+The Perfumery section that is listed here reads like a cut and paste from the perfume maker's advertising flyer, even includes a capsule summary of what Citron is, in an Encyclopedia entry about citron!  I belive that this section should be deleted outright.  Any opposed?  <small class="autosigned">&nbsp;Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[Special:Contributions/184.65.60.154|184.65.60.154]] ([[User talk:184.65.60.154|talk]]) 17:48, 7 December 2014 (UTC)</small><!-- Template:Unsigned IP --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,149: WARNING/ForkPoolWorker-1] Indeed, it is clearly pasted in without regard for copyright statements or for relevance. See next section. [[User:Sminthopsis84|Sminthopsis84]] ([[User talk:Sminthopsis84|talk]]) 15:15, 9 December 2014 (UTC)
+[2020-03-02 17:37:11,150: WARNING/ForkPoolWorker-1] == Copyright problem removed ==
+
+Prior content in this article duplicated one or more previously published sources. The material was copied from: http://www.fragrantica.com. Copied or closely paraphrased material has been rewritten or removed and must not be restored, ''unless'' it is duly released under a compatible license. (For more information, please see [[Wikipedia:COPYRIGHT#Using_copyrighted_work_from_others|"using copyrighted works from others"]] if you are not the copyright holder of this material, or [[Wikipedia:Donating copyrighted materials|"donating copyrighted materials"]] if you are.) For [[Wikipedia:Copyrights|legal reasons]], we cannot accept [[Wikipedia:Copyrights|copyrighted]] text or images borrowed from other web sites or published material; such additions will be deleted. Contributors may use copyrighted publications as a source of ''information'', and according to [[fair use]] may copy sentences and phrases, provided they are included in quotation marks and referenced properly. The material may also be rewritten, but only if it does not infringe on the copyright of the original ''or'' [[Wikipedia:Plagiarism|plagiarize]] from that source. Therefore such paraphrased portions must provide their source. Please see our [[Wikipedia:NFC#Text|guideline on non-free text]] for how to properly implement limited quotations of copyrighted text. Wikipedia takes copyright violations very seriously, and persistent violators '''will''' be [[Wikipedia:Blocking policy|blocked]] from editing. While we appreciate contributions, we must require all contributors to understand and comply with these policies. Thank you. <!-- Template:Cclean --> [[User:Sminthopsis84|Sminthopsis84]] ([[User talk:Sminthopsis84|talk]]) 15:15, 9 December 2014 (UTC)
+[2020-03-02 17:37:11,150: WARNING/ForkPoolWorker-1] == Contradiction in botanical description ==
+
+There is the statement "The flowers are generally unisexual providing self-pollination..." under "Plant" in "Description and Variation".  This is contradictory.  Unisexual flowers have either male or female parts but not both, and self pollination of course requires both.  <small class="autosigned">&nbsp;Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[Special:Contributions/108.56.145.198|108.56.145.198]] ([[User talk:108.56.145.198|talk]]) 02:34, 19 December 2015 (UTC)</small><!-- Template:Unsigned IP --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,151: WARNING/ForkPoolWorker-1] == Citron != Yuzu/Yuja? ==
+
+The reference to Koreans' culinary use of "citron" is a bit confusing. Koreans commonly drink a hot beverage made with honey and citrus fruit preserves called [[yujacha]]. In Korea, it's often labeled in English as "citron tea," but that may be a bad translation or maybe even just marketing (although U.S. ingredient labels for the stuff also call it citron). According to Wikipedia, the fruit in [[yujacha]] ([[yuzu]]) is suspected to be a hybrid of two other citrus fruits and neither of them are citron. The Korean and Japanese translations for [[citron]] do not point to [[yuzu|the fruit in yujacha either]]. I'm inclined to think the reference to Korean yujacha should be removed on this page because this article isn't about [[yuzu|yuja/yuzu]].  <small class="autosigned">&nbsp;Preceding [[Wikipedia:Signatures|unsigned]] comment added by [[Special:Contributions/76.111.5.136|76.111.5.136]] ([[User talk:76.111.5.136|talk]]) 23:46, 24 May 2016 (UTC)</small><!-- Template:Unsigned IP --> <!--Autosigned by SineBot-->
+[2020-03-02 17:37:11,151: WARNING/ForkPoolWorker-1] == External links modified ==
+
+Hello fellow Wikipedians,
+
+I have just modified {{plural:9|one external link|9 external links}} on [[Citron]]. Please take a moment to review [https://en.wikipedia.org/w/index.php?diff=prev&oldid=751381281 my edit]. If you have any questions, or need the bot to ignore the links, or the page altogether, please visit [[User:Cyberpower678/FaQs#InternetArchiveBot|this simple FaQ]] for additional information. I made the following changes:
+
+*Added archive https://web.archive.org/web/20070930062855/http://www.cretancitron.gr/ to http://www.cretancitron.gr/
+
+*Added archive https://web.archive.org/web/20131224161117/http://www.frlht.org/rasayana/matulunga to http://www.frlht.org/rasayana/matulunga
+
+*Added archive https://web.archive.org/web/20110726070406/http://www.fshs.org/Proceedings/Password%20Protected/2002%20Vol.%20115/301-303(Widmer).pdf to http://www.fshs.org/Proceedings/Password%20Protected/2002%20Vol.%20115/301-303(Widmer).pdf
+
+*Added archive https://web.archive.org/web/20141003160852/http://www.med.nyu.edu/content?ChunkIID=13971 to http://www.med.nyu.edu/content?ChunkIID=13971
+
+*Added archive https://web.archive.org/web/20080921214001/http://grande.nal.usda.gov:80/ibids/index.php?mode2=detail&origin=ibids_references&therow=796030 to http://grande.nal.usda.gov/ibids/index.php?mode2=detail&origin=ibids_references&therow=796030
+
+*Added archive https://web.archive.org/web/20080308005736/http://lib.ucr.edu:80/agnic/webber/Vol1/Chapter4.html to http://lib.ucr.edu/agnic/webber/Vol1/Chapter4.html#acid
+
+*Added archive https://web.archive.org/web/20070808020133/http://lib.ucr.edu:80/agnic/webber/Vol1/Chapter1.htm to http://lib.ucr.edu/agnic/webber/Vol1/Chapter1.htm#origin
+
+*Added archive https://web.archive.org/web/20080410153755/http://www.fao.org/AG/agp/agps/Pgrfa/pdf/nepal.pdf to http://www.fao.org/AG/agp/agps/Pgrfa/pdf/nepal.pdf
+
+*Added archive https://web.archive.org/web/20110606041237/http://www.flavorandfortune.com/dataaccess/article.php?ID=162 to http://www.flavorandfortune.com/dataaccess/article.php?ID=162
+
+When you have finished reviewing my changes, please set the ''checked'' parameter below to '''true''' or '''failed''' to let others know (documentation at {{tlx|Sourcecheck}}).
+
+{{sourcecheck|checked=false}}
+
+Cheers.[[User:InternetArchiveBot|'''<span style="color:darkgrey;font-family:monospace">InternetArchiveBot</span>''']] <span style="color:green;font-family:Rockwell">([[User talk:InternetArchiveBot|Report bug]])</span> 08:29, 25 November 2016 (UTC)
+[2020-03-02 17:37:11,151: WARNING/ForkPoolWorker-1] == External links modified ==
+
+Hello fellow Wikipedians,
+
+I have just modified 2 external links on [[Citron]]. Please take a moment to review [[special:diff/814692107|my edit]]. If you have any questions, or need the bot to ignore the links, or the page altogether, please visit [[User:Cyberpower678/FaQs#InternetArchiveBot|this simple FaQ]] for additional information. I made the following changes:
+
+*Added archive https://web.archive.org/web/20071217173424/http://www.botgard.ucla.edu/html/botanytextbooks/economicbotany/Citrus/index.html to http://www.botgard.ucla.edu/html/botanytextbooks/economicbotany/Citrus/index.html
+
+*Added archive https://web.archive.org/web/20071217123624/http://www.alchemy-works.com/herb_citron.html to http://www.alchemy-works.com/herb_citron.html
+
+When you have finished reviewing my changes, you may follow the instructions on the template below to fix any issues with the URLs.
+
+{{sourcecheck|checked=false|needhelp=}}
+
+Cheers.[[User:InternetArchiveBot|'''<span style="color:darkgrey;font-family:monospace">InternetArchiveBot</span>''']] <span style="color:green;font-family:Rockwell">([[User talk:InternetArchiveBot|Report bug]])</span> 09:41, 10 December 2017 (UTC)
+[2020-03-02 17:37:11,152: WARNING/ForkPoolWorker-1] == External links modified ==
+
+Hello fellow Wikipedians,
+
+I have just modified one external link on [[Citron]]. Please take a moment to review [[special:diff/819882555|my edit]]. If you have any questions, or need the bot to ignore the links, or the page altogether, please visit [[User:Cyberpower678/FaQs#InternetArchiveBot|this simple FaQ]] for additional information. I made the following changes:
+
+*Added archive https://web.archive.org/web/20070822234415/http://plantbiology.ucr.edu/people/?Roose to http://plantbiology.ucr.edu/people/?Roose
+
+When you have finished reviewing my changes, you may follow the instructions on the template below to fix any issues with the URLs.
+
+{{sourcecheck|checked=false|needhelp=}}
+
+Cheers.[[User:InternetArchiveBot|'''<span style="color:darkgrey;font-family:monospace">InternetArchiveBot</span>''']] <span style="color:green;font-family:Rockwell">([[User talk:InternetArchiveBot|Report bug]])</span> 20:16, 11 January 2018 (UTC)
+[2020-03-02 17:37:11,152: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,156: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,201: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,204: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,218: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,224: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,250: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,253: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,284: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,287: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,300: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,304: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,337: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,340: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,355: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,374: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,387: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,399: WARNING/ForkPoolWorker-1] <QuerySet [<Comment: Comment object (3349)>]>
+[2020-03-02 17:37:11,408: WARNING/ForkPoolWorker-1] :Seems far-fetched to me. At least the Academy begs to differ, and they are supposed to be the authority on Swedish language, aren't they?. /[[Special:Contributions/78.69.59.235|78.69.59.235]] ([[User talk:78.69.59.235|talk]]) 14:23, 15 March 2010 (UTC)
+[2020-03-02 17:37:11,412: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,418: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,462: WARNING/ForkPoolWorker-1] FIRST CHILD
+[2020-03-02 17:37:11,463: WARNING/ForkPoolWorker-1] :Seems far-fetched to me. At least the Academy begs to differ, and they are supposed to be the authority on Swedish language, aren't they?. /[[Special:Contributions/78.69.59.235|78.69.59.235]] ([[User talk:78.69.59.235|talk]]) 14:23, 15 March 2010 (UTC)
+[2020-03-02 17:37:11,472: WARNING/ForkPoolWorker-1] LAST CHILD
+[2020-03-02 17:37:11,472: WARNING/ForkPoolWorker-1] :Seems far-fetched to me. At least the Academy begs to differ, and they are supposed to be the authority on Swedish language, aren't they?. /[[Special:Contributions/78.69.59.235|78.69.59.235]] ([[User talk:78.69.59.235|talk]]) 14:23, 15 March 2010 (UTC)
+[2020-03-02 17:37:11,476: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,485: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,515: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,518: WARNING/ForkPoolWorker-1] <QuerySet [<Comment: Comment object (3352)>]>
+[2020-03-02 17:37:11,521: WARNING/ForkPoolWorker-1] :Let's remove that odd paragraph. [[User:JoshuSasori|JoshuSasori]] ([[User talk:JoshuSasori|talk]]) 13:42, 21 May 2012 (UTC)
+[2020-03-02 17:37:11,523: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,526: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,566: WARNING/ForkPoolWorker-1] FIRST CHILD
+[2020-03-02 17:37:11,566: WARNING/ForkPoolWorker-1] :Let's remove that odd paragraph. [[User:JoshuSasori|JoshuSasori]] ([[User talk:JoshuSasori|talk]]) 13:42, 21 May 2012 (UTC)
+[2020-03-02 17:37:11,581: WARNING/ForkPoolWorker-1] LAST CHILD
+[2020-03-02 17:37:11,593: WARNING/ForkPoolWorker-1] :Let's remove that odd paragraph. [[User:JoshuSasori|JoshuSasori]] ([[User talk:JoshuSasori|talk]]) 13:42, 21 May 2012 (UTC)
+[2020-03-02 17:37:11,597: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,601: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,614: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,635: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,652: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,656: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,692: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,698: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,714: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,739: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,758: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,767: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,787: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,798: WARNING/ForkPoolWorker-1] <QuerySet [<Comment: Comment object (3360)>]>
+[2020-03-02 17:37:11,819: WARNING/ForkPoolWorker-1] :I removed the statement. Thanks for pointing this out! [[User:Mz7|Mz7]] ([[User talk:Mz7|talk]]) 02:40, 19 December 2015 (UTC)
+[2020-03-02 17:37:11,821: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,824: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,851: WARNING/ForkPoolWorker-1] FIRST CHILD
+[2020-03-02 17:37:11,851: WARNING/ForkPoolWorker-1] :I removed the statement. Thanks for pointing this out! [[User:Mz7|Mz7]] ([[User talk:Mz7|talk]]) 02:40, 19 December 2015 (UTC)
+[2020-03-02 17:37:11,871: WARNING/ForkPoolWorker-1] LAST CHILD
+[2020-03-02 17:37:11,871: WARNING/ForkPoolWorker-1] :I removed the statement. Thanks for pointing this out! [[User:Mz7|Mz7]] ([[User talk:Mz7|talk]]) 02:40, 19 December 2015 (UTC)
+[2020-03-02 17:37:11,874: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,881: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,911: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,915: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,930: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,949: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:11,961: WARNING/ForkPoolWorker-1] CHILDREN
+[2020-03-02 17:37:11,966: WARNING/ForkPoolWorker-1] <QuerySet []>
+[2020-03-02 17:37:12,021: WARNING/ForkPoolWorker-1] FIRST CHILD
+[2020-03-02 17:37:12,021: WARNING/ForkPoolWorker-1] {{WikiProjectBannerShell|1=
+{{WikiProject Food and drink|class=c
+| b1 <!--Referencing & citations--> = no
+| b2 <!--Coverage & accuracy    --> = yes
+| b3 <!--Structure              --> = yes
+| b4 <!--Grammar & style        --> = yes
+| b5 <!--Supporting materials   --> = yes
+| b6 <!--Accessibility          --> = yes
+|importance=mid|auto = yes}}
+{{WikiProject Plants|class=c|importance=Mid}}
+{{WikiProject China|class=c|importance=mid}}
+{{WP India|class=c|importance=low}}}}
+[2020-03-02 17:37:12,053: WARNING/ForkPoolWorker-1] LAST CHILD
+[2020-03-02 17:37:12,054: WARNING/ForkPoolWorker-1] == External links modified ==
+
+Hello fellow Wikipedians,
+
+I have just modified one external link on [[Citron]]. Please take a moment to review [[special:diff/819882555|my edit]]. If you have any questions, or need the bot to ignore the links, or the page altogether, please visit [[User:Cyberpower678/FaQs#InternetArchiveBot|this simple FaQ]] for additional information. I made the following changes:
+
+*Added archive https://web.archive.org/web/20070822234415/http://plantbiology.ucr.edu/people/?Roose to http://plantbiology.ucr.edu/people/?Roose
+
+When you have finished reviewing my changes, you may follow the instructions on the template below to fix any issues with the URLs.
+
+{{sourcecheck|checked=false|needhelp=}}
+
+Cheers.[[User:InternetArchiveBot|'''<span style="color:darkgrey;font-family:monospace">InternetArchiveBot</span>''']] <span style="color:green;font-family:Rockwell">([[User talk:InternetArchiveBot|Report bug]])</span> 20:16, 11 January 2018 (UTC)
+[2020-03-02 17:47:48,951: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 17:48:59,455: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 17:49:01,040: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2006-07-16 15:11:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:49:01,821: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2017-09-24 10:04:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 17:49:02,472: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-03-01 11:23:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:08:54,438: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 318, in start
+    blueprint.start(self)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/bootsteps.py", line 119, in start
+    step.start(parent)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 596, in start
+    c.loop(*c.loop_args())
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/loops.py", line 91, in asynloop
+    next(loop)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/asynchronous/hub.py", line 362, in create_loop
+    cb(*cbargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 1101, in on_readable
+    self.cycle.on_readable(fileno)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 345, in on_readable
+    chan.handlers[type]()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 676, in _receive
+    ret.append(self._receive_one(c))
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 687, in _receive_one
+    response = c.parse_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3185, in parse_response
+    response = self._execute(conn, conn.read_response)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3159, in _execute
+    return command(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 700, in read_response
+    response = self._parser.read_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 457, in read_response
+    self.read_from_socket()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 416, in read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2020-03-02 18:09:05,546: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 18:10:12,399: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:10:14,180: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-04-28 13:12:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:32,777: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:11:35,323: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-19 02:51:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:36,286: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-29 01:35:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:37,452: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-29 02:05:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:38,169: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-04 07:58:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:39,119: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-04 10:54:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:40,065: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-28 14:46:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:41,497: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-29 05:55:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:43,088: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-30 13:59:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:45,256: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-30 21:56:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:46,809: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-31 06:39:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:49,305: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-31 08:07:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:51,298: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-31 15:46:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:52,620: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-18 05:15:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:53,516: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-21 11:33:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:54,505: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-22 10:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:56,007: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-25 17:49:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:11:56,941: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-25 16:31:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:13:32,996: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 318, in start
+    blueprint.start(self)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/bootsteps.py", line 119, in start
+    step.start(parent)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 596, in start
+    c.loop(*c.loop_args())
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/loops.py", line 91, in asynloop
+    next(loop)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/asynchronous/hub.py", line 362, in create_loop
+    cb(*cbargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 1101, in on_readable
+    self.cycle.on_readable(fileno)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 345, in on_readable
+    chan.handlers[type]()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 676, in _receive
+    ret.append(self._receive_one(c))
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 687, in _receive_one
+    response = c.parse_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3185, in parse_response
+    response = self._execute(conn, conn.read_response)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 3159, in _execute
+    return command(*args, **kwargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 700, in read_response
+    response = self._parser.read_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 457, in read_response
+    self.read_from_socket()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 416, in read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2020-03-02 18:13:49,630: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 18:14:27,085: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:14:29,143: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-06-26 08:08:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:14:29,960: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-06-27 08:30:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:14:31,196: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-09-23 06:32:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:14:31,981: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-09-23 07:08:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:15,406: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:15:17,704: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-16 04:47:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:18,857: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-09 09:34:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:19,881: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-16 17:31:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:21,454: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-16 19:38:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:23,380: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-16 20:41:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:24,307: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-17 07:28:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:25,134: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-17 07:43:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:26,259: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-17 11:51:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:27,397: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-17 17:33:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:28,294: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-10 12:41:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:30,365: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-11 14:51:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:31,619: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-25 17:36:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:32,439: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-13 23:18:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:33,198: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-26 02:11:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:34,002: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-21 19:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:35,668: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-25 17:39:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:37,066: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-26 02:23:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:37,830: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-10 10:36:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:38,946: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-12 00:29:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:39,959: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-04 07:13:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:41,055: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-11 11:36:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:42,311: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-11 12:20:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:15:44,002: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-11 14:16:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:18:46,630: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 18:19:06,689: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:19:08,402: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-07-18 15:36:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:19:09,405: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-08-15 00:25:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:19:10,276: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-08-18 16:54:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:19:11,015: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-24 04:58:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:19:11,959: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-24 17:59:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:21:52,272: WARNING/MainProcess] consumer: Connection to broker lost. Trying to re-establish the connection...
+Traceback (most recent call last):
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 318, in start
+    blueprint.start(self)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/bootsteps.py", line 119, in start
+    step.start(parent)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/consumer/consumer.py", line 596, in start
+    c.loop(*c.loop_args())
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/worker/loops.py", line 91, in asynloop
+    next(loop)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/asynchronous/hub.py", line 362, in create_loop
+    cb(*cbargs)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 1101, in on_readable
+    self.cycle.on_readable(fileno)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 345, in on_readable
+    chan.handlers[type]()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/kombu/transport/redis.py", line 724, in _brpop_read
+    **options)
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/client.py", line 853, in parse_response
+    response = connection.read_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 700, in read_response
+    response = self._parser.read_response()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 457, in read_response
+    self.read_from_socket()
+  File "/Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/redis/connection.py", line 416, in read_from_socket
+    raise ConnectionError(SERVER_CLOSED_CONNECTION_ERROR)
+redis.exceptions.ConnectionError: Connection closed by server.
+[2020-03-02 18:22:12,598: WARNING/MainProcess] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/celery/fixups/django.py:202: UserWarning: Using settings.DEBUG leads to a memory leak, never use this setting in production environments!
+  warnings.warn('Using settings.DEBUG leads to a memory leak, never '
+[2020-03-02 18:22:28,812: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:22:30,300: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-12-29 08:18:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:30,994: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2016-11-18 06:16:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:31,747: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2017-08-02 00:14:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:32,432: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2017-11-17 19:26:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:33,181: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-02-16 22:12:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:33,871: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-08-21 19:57:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:34,756: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-08-22 05:52:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:35,495: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-08-22 06:21:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:22:36,122: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-07-08 18:35:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:22,495: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/wikitools/api.py:108: FutureWarning: The querycontinue option is deprecated and will be removed
+in a future release, use the new queryGen function instead
+for queries requring multiple requests
+  for queries requring multiple requests""", FutureWarning)
+[2020-03-02 18:23:25,242: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-07 03:12:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:25,843: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-07 03:19:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:26,561: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-09 06:25:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:27,189: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-13 11:42:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:27,898: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-16 12:28:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:29,007: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-16 16:39:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:29,920: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-21 19:36:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:23:30,652: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-21 07:00:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:25:07,891: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-21 13:42:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:25:09,143: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-23 19:40:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:29:10,758: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2007-04-12 06:19:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:29:11,391: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2008-08-29 23:47:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:29:12,534: WARNING/ForkPoolWorker-2] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-10-12 09:28:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:12,735: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-07-20 08:53:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:13,675: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-12-27 21:29:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:15,339: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-11-15 23:37:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:16,560: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-09 01:11:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:17,745: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-09 01:53:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:18,577: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-24 09:29:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:32:19,662: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-02-02 19:01:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:36:26,575: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2017-12-30 06:09:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:36:27,618: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2018-06-28 14:48:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:36:28,379: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-01-11 11:42:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:36:29,185: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-01-11 13:59:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:36:29,900: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2019-06-26 19:33:00) while time zone support is active.
+  RuntimeWarning)
+[2020-03-02 18:36:30,690: WARNING/ForkPoolWorker-1] /Users/sunnytian/Dropbox (MIT)/wikum/wikum/env3/lib/python3.7/site-packages/django/db/models/fields/__init__.py:1421: RuntimeWarning: DateTimeField Comment.created_at received a naive datetime (2020-01-16 17:50:00) while time zone support is active.
+  RuntimeWarning)

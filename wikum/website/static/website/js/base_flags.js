@@ -3639,22 +3639,6 @@ function createOutlineInsideString(d, outline='', depth=0) {
 		}
 		outline += `</div>`;
 	}
-	// else if (d.replace && d.replace.length) {
-	// 	// todo: default to collapsed
-	// 	outline += `<div class="list-group nested-sortable">`;
-	// 	for (var i=0; i<d.replace.length; i++) {
-	// 		let title = d.replace[i].summary? d.replace[i].summary.substring(0,20) : d.replace[i].name.substring(0,20);
-	// 		let state = getState(d.replace[i]);
-	// 		outline += `<div class="list-group-item">`
-	// 				+ `<div class="outline-item" id=${d.replace[i].d_id}>`
-	// 				+ `<span class="marker m-${state}" id="marker-${d.replace[i].d_id}">&#183</span>`
-	// 				+ `<span class="outline-text t-${state}" id="outline-text-${d.replace[i].d_id}">`
-	// 				+ title + `</span></div>`;
-	// 		outline += createOutlineInsideString(d.replace[i]);
-	// 		outline += `</div>`;
-	// 	}
-	// 	outline += `</div>`;
-	// }
 	return outline
 }
 
