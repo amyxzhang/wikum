@@ -480,15 +480,6 @@ def mark_children_summarized(post):
         child.summarized = True
         child.save()
         mark_children_summarized(child)
-
-def remove_summarized(post):
-    post.summarized = False
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
-    for child in children:
-        if not child.is_replacement:
-            child.summarized = False
-            child.save()
-            remove_summarized(child)
     
 def clean_parse(text):
     text = parser.parse(text).strip()
@@ -661,75 +652,6 @@ def delete_comment_recurse(post, article):
         delete_comment_recurse(child, article)
     post.delete()
 
-   
-def delete_node(did):
-    try:
-        c = Comment.objects.get(id=did)
-        article = c.article
-        
-        if c.is_replacement:
-            remove_summarized(c)
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
-            parent_node = parent
-            
-            if parent.count() > 0:
-                parent_id = parent[0].disqus_id
-                parent_node = parent[0]
-            else:
-                parent_id = None
-                parent_node = article
-            
-            children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
-
-            if parent_node.last_child == c.disqus_id:
-                parent_node.last_child = c.last_child
-            if parent_node.first_child == c.disqus_id:
-                parent_node.first_child = c.first_child
-            parent_node.save()
-
-            first_child = Comment.objects.filter(disqus_id=c.first_child, article=article)
-            if first_child.count() > 0:
-                first_child = first_child[0]
-            else:
-                first_child = None
-            last_child = Comment.objects.filter(disqus_id=c.last_child, article=article)
-            if last_child.count() > 0:
-                last_child = last_child[0]
-            else:
-                last_child = None
-            sibling_prev = Comment.objects.filter(disqus_id=c.sibling_prev, article=article)
-            if sibling_prev.count() > 0:
-                sibling_prev = sibling_prev[0]
-            else:
-                sibling_prev = None
-            sibling_next = Comment.objects.filter(disqus_id=c.sibling_next, article=article)
-            if sibling_next.count() > 0:
-                sibling_next = sibling_next[0]
-            else:
-                sibling_next = None
-            first_child.sibling_prev = c.sibling_prev
-            first_child.save()
-            last_child.sibling_next = c.sibling_next
-            last_child.save()
-            if c.sibling_prev is not None:
-                sibling_prev.sibling_next = c.first_child
-                sibling_prev.save()
-            if c.sibling_next is not None:
-                sibling_next.sibling_prev = c.last_child
-                sibling_next.save()
-
-            for child in children:
-                child.reply_to_disqus = parent_id
-                child.json_flatten = ''
-                child.save()
-            c.delete()
-        
-            if parent.count() > 0:
-                recurse_up_post(parent[0])
-            article.summary_num = article.summary_num - 1
-    except Exception as e:
-        print(e)
-
 
 def get_summary(summary):
     
@@ -774,23 +696,75 @@ def move_comments(request):
     try:
         new_parent_id = request.POST['new_parent']
         node_id = request.POST['node']
+        sibling_prev = request.POST['sibling_before']
+        sibling_next = request.POST['sibling_after']
+        print('SIB PREV ID:', sibling_prev)
+        print('SIB NEXT ID:', sibling_next)
         
         req_user = request.user if request.user.is_authenticated else None
         
         comment = Comment.objects.get(id=node_id)
         
+        # Set child and sibling pointers of surrounding nodes in original location
         old_parent = None
         if comment.reply_to_disqus:
             old_parent = Comment.objects.get(disqus_id=comment.reply_to_disqus)
+        else:
+            old_parent = comment.article
+        if old_parent.first_child == comment.disqus_id:
+            old_parent.first_child = comment.sibling_next
+        if old_parent.last_child == comment.disqus_id:
+            old_parent.last_child = comment.sibling_prev
+        old_parent.save()
+
+        if comment.sibling_prev:
+            comment_prev = Comment.objects.filter(disqus_id=comment.sibling_prev)
+            if comment_prev.count() > 0:
+                comment_prev = comment_prev[0]
+                comment_prev.sibling_next = comment.sibling_next
+                comment_prev.save()
+        if comment.sibling_next:
+            comment_next = Comment.objects.filter(disqus_id=comment.sibling_next)
+            if comment_next.count() > 0:
+                comment_next = comment_next[0]
+                comment_next.sibling_prev = comment.sibling_prev
+                comment_next.save()
         
         article = comment.article
         article.last_updated = datetime.datetime.now()
         article.save()
         
-        new_parent_comment = Comment.objects.get(id=new_parent_id)
+        new_parent = None
+        if new_parent_id == 'article':
+            new_parent = article
+        else:
+            new_parent = Comment.objects.get(id=new_parent_id)
         
-        comment.reply_to_disqus = new_parent_comment.disqus_id
-        comment.save()
+        # Set child and sibling pointers of surrounding nodes in new location
+        if sibling_prev == 'None':
+            comment.sibling_prev = None
+            new_parent.first_child = comment.disqus_id
+        else:
+            new_comment_prev = Comment.objects.filter(id=sibling_prev)
+            if new_comment_prev.count() > 0:
+                new_comment_prev = new_comment_prev[0]
+                comment.sibling_prev = new_comment_prev.disqus_id
+                new_comment_prev.sibling_next = comment.disqus_id
+                new_comment_prev.save()
+        if sibling_next == 'None':
+            comment.sibling_next = None
+            new_parent.last_child = comment.disqus_id
+        else:
+            new_comment_next = Comment.objects.filter(id=sibling_next)
+            if new_comment_next.count() > 0:
+                new_comment_next = new_comment_next[0]
+                comment.sibling_next = new_comment_next.disqus_id
+                new_comment_next.sibling_prev = comment.disqus_id
+                new_comment_next.save()
+        if new_parent == article:
+            comment.reply_to_disqus = None
+        else:
+            comment.reply_to_disqus = new_parent.disqus_id
         
         h = History.objects.create(user=req_user, 
                                        article=article,
@@ -798,14 +772,18 @@ def move_comments(request):
                                        explanation='Move comment')
 
         h.comments.add(comment)
-        if old_parent:
-            h.comments.add(old_parent)
-
-        recurse_up_post(new_parent_comment)
-        
-        if old_parent:
+        if new_parent != article:
+            recurse_up_post(new_parent)
+        if old_parent and old_parent != article:
             recurse_up_post(old_parent)
-        
+            h.comments.add(old_parent)
+        recurse_up_post(comment)
+
+        new_parent.save()
+        comment.save()
+
+        first_child = Comment.objects.get(disqus_id=new_parent.first_child)
+        print("New parent's first child:", first_child.summary if first_child.is_replacement else first_child.text)
         return JsonResponse({})
     
     except Exception as e:

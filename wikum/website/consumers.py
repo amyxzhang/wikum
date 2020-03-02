@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
-from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse, delete_node
+from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse
 from website.engine import count_words_shown, count_article
 
 log = logging.getLogger(__name__)
@@ -580,7 +580,7 @@ class WikumConsumer(WebsocketConsumer):
                                                  import_order=lowest_child.import_order)
 
             for node in delete_nodes:
-                delete_node(node)
+                self.delete_node(node, a)
 
             self.mark_children_summarized(new_comment, children)
             # Get the parent
@@ -803,7 +803,7 @@ class WikumConsumer(WebsocketConsumer):
                                explanation='promote summary',
                                words_shown=a.words_shown,
                                current_percent_complete=a.percent_complete)
-                delete_node(node)
+                self.delete_node(node, a)
 
             h.comments.add(c)
             if not c.is_replacement:
@@ -900,6 +900,89 @@ class WikumConsumer(WebsocketConsumer):
             print(e)
             return {'user': username}
 
+    def remove_summarized(self, post):
+        post.summarized = False
+        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
+        for child in children:
+            if not child.is_replacement:
+                child.summarized = False
+                child.save()
+                self.remove_summarized(child)
+
+    def delete_node(self, did, article):
+        try:
+            c = Comment.objects.get(id=did)
+            
+            if c.is_replacement:
+                self.remove_summarized(c)
+                parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
+                parent_node = parent
+                
+                if parent.count() > 0:
+                    parent_id = parent[0].disqus_id
+                    parent_node = parent[0]
+                else:
+                    parent_id = None
+                    parent_node = article
+                
+                children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
+                if parent_node.last_child == c.disqus_id:
+                    parent_node.last_child = c.last_child
+                if parent_node.first_child == c.disqus_id:
+                    parent_node.first_child = c.first_child
+                parent_node.save()
+                first = Comment.objects.get(disqus_id=parent_node.first_child)
+
+                first_child = Comment.objects.filter(disqus_id=c.first_child, article=article)
+                if first_child.count() > 0:
+                    first_child = first_child[0]
+                else:
+                    first_child = None
+                last_child = Comment.objects.filter(disqus_id=c.last_child, article=article)
+                if last_child.count() > 0:
+                    last_child = last_child[0]
+                else:
+                    last_child = None
+                sibling_prev = Comment.objects.filter(disqus_id=c.sibling_prev, article=article)
+                if sibling_prev.count() > 0:
+                    sibling_prev = sibling_prev[0]
+                else:
+                    sibling_prev = None
+                sibling_next = Comment.objects.filter(disqus_id=c.sibling_next, article=article)
+                if sibling_next.count() > 0:
+                    sibling_next = sibling_next[0]
+                else:
+                    sibling_next = None
+                if first_child:
+                    first_child.sibling_prev = c.sibling_prev
+                    first_child.save()
+                if last_child:
+                    last_child.sibling_next = c.sibling_next
+                    last_child.save()
+                if c.sibling_prev is not None:
+                    sibling_prev.sibling_next = c.first_child
+                    sibling_prev.save()
+                if c.sibling_next is not None:
+                    sibling_next.sibling_prev = c.last_child
+                    sibling_next.save()
+
+                for child in children:
+                    child.reply_to_disqus = parent_id
+                    child.json_flatten = ''
+                    recurse_up_post(child)
+                    child.save()
+                c.delete()
+                
+                if parent.count() > 0:
+                    recurse_up_post(parent_node)
+                    recurse_down_num_subtree(parent_node)
+
+                parent_node.save()
+                article.summary_num = article.summary_num - 1
+                article.save()
+        except Exception as e:
+            print(e)
+
     def handle_hide_comment(self, data, username):
         try:
             article_id = self.article_id
@@ -907,12 +990,21 @@ class WikumConsumer(WebsocketConsumer):
             id = data['id']
             explain = data['comment']
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
-            
             comment = Comment.objects.get(id=id)
+
+            parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
+            parent_node = parent
+            
+            if parent.count() > 0:
+                parent_node = parent[0]
+            else:
+                parent_node = a
+            
             if comment.is_replacement:
                 action = 'delete_sum'
+                first = Comment.objects.get(disqus_id=parent_node.first_child)
                 self.recurse_down_post(comment)
-                delete_node(comment.id)
+                self.delete_node(comment.id, a)
                 a.percent_complete = count_article(a)
                 a.words_shown = count_words_shown(a)
                 a.last_updated = datetime.datetime.now()

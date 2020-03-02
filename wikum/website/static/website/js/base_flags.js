@@ -3457,6 +3457,8 @@ function setSortables() {
 				onEnd: function (evt) {
 			        var dragItem, newParent;
 			        let outlineItem = $(evt.item).find('.outline-item').get(0);
+			        var siblingBefore = $(outlineItem).closest('.list-countainer').prev('.list-countainer').find('.outline-item').get(0);
+			        var siblingAfter = $(outlineItem).closest('.list-countainer').next('.list-countainer').find('.outline-item').get(0);
 			        if (outlineItem) dragItem = nodes_all.filter(o => o.d_id == outlineItem.id)[0];
 			        let ns = $(evt.to).closest('.nested-sortable');
 			        let outlineParent = ns.parent().find('.outline-item').get(0);
@@ -3469,7 +3471,9 @@ function setSortables() {
 			        } 
 			        console.log(dragItem);
 			        console.log(newParent);
-			        if (dragItem && newParent) save_node_position(dragItem, newParent);
+			        console.log(siblingBefore);
+			        console.log(siblingAfter);
+			        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter);
 			        // update(draggingNode.parent);
 			    }
 			});
@@ -3477,12 +3481,27 @@ function setSortables() {
 	}
 }
 
-function save_node_position(dragItem, newParent) {
+function save_node_position(dragItem, newParent, siblingBefore, siblingAfter) {
 
 	var csrf = $('#csrf').text();
 	data = {csrfmiddlewaretoken: csrf,
-			new_parent: newParent.d_id,
 			node: dragItem.d_id};
+	if (newParent.article) {
+		data.new_parent = 'article';
+	} else {
+		data.new_parent = newParent.d_id;
+	}
+	if (siblingBefore) {
+		data.sibling_before = siblingBefore.id;
+	} else {
+		data.sibling_before = 'None';
+	}
+
+	if (siblingAfter) {
+		data.sibling_after = siblingAfter.id;
+	} else {
+		data.sibling_after = 'None';
+	}
 
 	$.ajax({
 		type: 'POST',
@@ -3720,6 +3739,9 @@ function update(d) {
 			$($(outline_item).parent().get(0)).append(inside_string);
 		}
 	}
+	$('#marker-' + d.d_id).removeClass();
+	var state = getState(d);
+	$('#marker-' + d.d_id).addClass('marker m-' + state);
 	nodes_all = update_nodes_all(nodes_all[0]);
 	setSortables();
 }
