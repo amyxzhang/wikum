@@ -2,6 +2,49 @@
 
 from django.db import migrations, models
 
+# Reset all links in the articles by ID value
+def set_links_all_articles(apps, schema_editor):
+    '''
+    We can't import the Post model directly as it may be a newer
+    version than this migration expects. We use the historical version.
+    '''
+    Article = apps.get_model('website', 'Article')
+    for article in Article.objects.all():
+        set_link_article(article)
+
+def set_link_article(node):
+    if node == article:
+        disqus_id = None
+    else:
+        disqus_id = node.disqus_id
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=post.article).order_by('import_order')
+    if len(children) == 0:
+        node.first_child = None
+        node.last_child = None
+        node.save()
+    else:
+        node.first_child = children[0].disqus_id
+        node.last_child = children[len(children)-1].disqus_id
+        node.save()
+        if len(children) == 1:
+            children[0].sibling_prev = None
+            children[0].sibling_next = None
+            children[0].save()
+            set_link_article(children[0])
+        else:
+            for index, child in enumerate(children):
+                if index == 0:
+                    child.sibling_prev = None
+                    child.sibling_next = children[index + 1].disqus_id
+                elif index == len(children)-1:
+                    child.sibling_next = None
+                    child.sibling_prev = children[index - 1].disqus_id
+                else:
+                    child.sibling_prev = children[index - 1].disqus_id
+                    child.sibling_next = children[index + 1].disqus_id
+                child.save()
+                set_link_article(child)
+
 
 class Migration(migrations.Migration):
 
@@ -40,4 +83,5 @@ class Migration(migrations.Migration):
             name='sibling_prev',
             field=models.CharField(blank=True, max_length=70, null=True),
         ),
+        migrations.RunPython(set_links_all_articles),
     ]

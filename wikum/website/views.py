@@ -390,7 +390,6 @@ def summary_data(request):
     start = 15 * next_page
     end = (15 * next_page) + 15
     
-    print("SORT", sort)
     if sort == 'id':
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('import_order')[start:end]
     elif sort == 'default':
@@ -698,8 +697,6 @@ def move_comments(request):
         node_id = request.POST['node']
         sibling_prev = request.POST['sibling_before']
         sibling_next = request.POST['sibling_after']
-        print('SIB PREV ID:', sibling_prev)
-        print('SIB NEXT ID:', sibling_next)
         
         req_user = request.user if request.user.is_authenticated else None
         
@@ -783,7 +780,6 @@ def move_comments(request):
         comment.save()
 
         first_child = Comment.objects.get(disqus_id=new_parent.first_child)
-        print("New parent's first child:", first_child.summary if first_child.is_replacement else first_child.text)
         return JsonResponse({})
     
     except Exception as e:

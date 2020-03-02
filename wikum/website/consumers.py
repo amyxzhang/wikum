@@ -615,6 +615,8 @@ class WikumConsumer(WebsocketConsumer):
                     new_comment.sibling_prev = comment.disqus_id
                     if len(unselected_children) > 1:
                         comment.sibling_prev = unselected_children[index - 1].disqus_id
+                    else:
+                        comment.sibling_prev = None
                 else:
                     comment.sibling_next = unselected_children[index + 1].disqus_id
                     comment.sibling_prev = unselected_children[index - 1].disqus_id
@@ -1124,6 +1126,8 @@ class WikumConsumer(WebsocketConsumer):
                         comment.sibling_next = None
                         if len(unselected_children) > 1:
                             comment.sibling_prev = unselected_children[index - 1].disqus_id
+                        else:
+                            comment.sibling_prev = None
                     else:
                         comment.sibling_next = unselected_children[index + 1].disqus_id
                         comment.sibling_prev = unselected_children[index - 1].disqus_id

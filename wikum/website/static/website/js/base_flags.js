@@ -3469,10 +3469,6 @@ function setSortables() {
 			        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
 			        	}
 			        } 
-			        console.log(dragItem);
-			        console.log(newParent);
-			        console.log(siblingBefore);
-			        console.log(siblingAfter);
 			        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter);
 			        // update(draggingNode.parent);
 			    }
