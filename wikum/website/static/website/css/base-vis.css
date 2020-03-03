@@ -1161,9 +1161,14 @@ form.modal-content {
 
 #controldiv {
 	position: fixed;
-	left:330px;
-	top: 100px;
-	z-index: 1000;
+    left: 15px;
+    top: 145px;
+    z-index: 1000;
+}
+
+#controldiv .btn-xs {
+	font-size: 11px;
+	max-width: 85px;
 }
 
 .editors {
