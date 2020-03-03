@@ -27,10 +27,23 @@
 	<script src={% static "website/js/jquery-ui.min.js" %}></script>
 	<script src={% static "website/js/jquery.noty.packaged.min.js" %}></script>
 	<script src={% static "website/js/jquery.highlight.js" %}></script>
+	<script src={% static "website/js/sortable.min.js" %}></script>
 	<script src={% static "website/js/typeahead.bundle.js" %}></script>
 	<script src={% static "website/js/reconnecting-websocket.min.js" %}></script>
+	<script src="https://cdn.tiny.cloud/1/eows4bvgmlbllqnglakryiwa42vtmudh2l2iql3paypmptkx/tinymce/5/tinymce.min.js"></script>
+	<script>tinymce.init({
+		selector:'#summarize_multiple_modal_box textarea',
+		plugins: "lists",
+		height : "250px",
+		menubar: false,
+		toolbar: 'undo redo | styleselect | bold italic underline | alignleft aligncenter | numlist | outdent indent | forecolor backcolor',
+		force_br_newlines : true,
+        force_p_newlines : false,
+        nonbreaking_force_tab: false,
+        forced_root_block : ''});
+    </script>
 
     <script src={% static "website/js/base_flags.js" %}></script>
-	<script src={% static "website/js/visualization.js" %}></script>
+	<script src={% static "website/js/outline.js" %}></script>
 
 {% endblock %}

@@ -72,7 +72,7 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.wikum.csail.mit.edu', 'localhost', '128.52.139.135']
+ALLOWED_HOSTS = ['wikum.org', '.wikum.csail.mit.edu', 'localhost', '128.52.139.135']
 
 #database connection max age
 CONN_MAX_AGE = 0
@@ -93,6 +93,8 @@ INSTALLED_APPS = [
     'account',
 ]
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -108,6 +110,8 @@ MIDDLEWARE = [
     'account.middleware.TimezoneMiddleware',
     
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ROOT_URLCONF = 'wikum.urls'
 

@@ -23,6 +23,7 @@ application = ProtocolTypeRouter({
         URLRouter([
             # URLRouter just takes standard Django path() or url() entries.
             path('ws/article/<article_id>/visualization_flags', WikumConsumer),
+            path('ws/article/<article_id>/subtree', WikumConsumer),
         ]),
     ),
 

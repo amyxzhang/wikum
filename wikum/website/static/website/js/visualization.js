@@ -244,7 +244,7 @@ d3.json(`/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&o
   	flare.y0 = 100;
 
   	nodes_all = tree.nodes(flare);
-
+  	console.log(nodes_all);
   	update(root = flare);
   	
 	// show_all_unsummarized(nodes_all[0]);

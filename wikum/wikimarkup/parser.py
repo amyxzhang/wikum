@@ -1076,19 +1076,20 @@ class BaseParser(object):
                 i += 1
             else:
                 space, name = bits[i:i+2]
-                if space.strip().lower() in self.internalLinkHooks:
-                    sb.append(self.internalLinkHooks[space.strip().lower()](
-                        self, space, name))
-                elif space and space.startswith(':') and \
-                     ':' in self.internalLinkHooks:
-                    sb.append(self.internalLinkHooks[':'](self, space, name))
-                elif '*' in self.internalLinkHooks:
-                    sb.append(self.internalLinkHooks['*'](self, space, name))
-                elif bits[i]:
-                    sb.append('[[%s:%s]]' % (bits[i], bits[i+1]))
-                else:
-                    sb.append('[[%s]]' % bits[i+1])
-                i += 2
+                if not space is None:
+                    if space.strip().lower() in self.internalLinkHooks:
+                        sb.append(self.internalLinkHooks[space.strip().lower()](
+                            self, space, name))
+                    elif space and space.startswith(':') and \
+                         ':' in self.internalLinkHooks:
+                        sb.append(self.internalLinkHooks[':'](self, space, name))
+                    elif '*' in self.internalLinkHooks:
+                        sb.append(self.internalLinkHooks['*'](self, space, name))
+                    elif bits[i]:
+                        sb.append('[[%s:%s]]' % (bits[i], bits[i+1]))
+                    else:
+                        sb.append('[[%s]]' % bits[i+1])
+                    i += 2
         return ''.join(sb)
 
     def replaceInternalTemplates(self, text):

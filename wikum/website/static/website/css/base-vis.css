@@ -123,7 +123,7 @@ a:hover {
 	line-height: 12px;
 	border-radius: 15px;
 	position: absolute;
-	top: 120px;
+	top: 115px;
 	left: 70px;
 }
 
@@ -319,9 +319,26 @@ div.selected {
 	color: white;
 }
 
+ul, ol {
+	line-height: 1em;
+}
+
 textarea {
 	font-size: 12px;
 	min-height: 50px;
+}
+
+.tinymce-content p {
+    padding: 0;
+    margin: 2px 0;
+}
+
+#box {
+	margin: 0 0 0 200px;
+}
+
+#box a {
+	word-break: break-all;
 }
 
 #box {
@@ -333,14 +350,171 @@ textarea {
 	min-width: 45%;
 	max-width: calc(100vw - 550px);
 	overflow-x: scroll;
-}
-
-#box a {
-	word-break: break-all;
+	z-index: 100;
 }
 
 #viz {
 	float: left;
+	height: calc(100vh - 100px);
+    margin: 100px 0px 0px 0px;
+    max-width: calc(100vw - 550px);
+    min-width: 45%;
+    overflow: auto;
+    padding-top: 15px;
+    
+}
+
+#outline {
+	margin-left: 100px;
+	width: 30vw;
+    overflow-x: hidden;
+}
+
+#outline-text-viewAll .article-full {
+	visibility: hidden;
+	/* Position the tooltip */
+	position: absolute;
+	z-index: 1;
+}
+
+#outline-text-viewAll:hover .article-full {
+  visibility: visible;
+}
+
+#outline .list-group {
+	display: flex;
+	flex-direction: column;
+}
+
+#outline .list-countainer {
+	display: flex;
+	flex-direction: row;
+	position: relative;
+}
+
+#outline .list-group-line {
+	background-color: #BEBEBE;
+	width: 2px;
+	max-width: 2px;
+	height: 100%;
+	position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+}
+
+#outline .list-group-line.line-hover {
+	background-color: black;
+}
+
+#outline .list-group-line.outline-selected {
+	background-color: black;
+}
+
+
+#outline .list-group-item {
+	border: none;
+	/* border-left: 1px solid #BEBEBE; */
+	padding: 10px 0 10px 15px;
+	background-color: transparent;
+}
+
+#outline .list-group-item:first-child {
+	border-top-right-radius: 0px;
+	border-top-left-radius: 0px;
+}
+
+#outline .list-group-item:last-child {
+	border-bottom-right-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+
+#outline .list-group {
+	margin: 0;
+}
+
+#outline .list-group-item {
+	display: flex;
+	flex-direction: column;
+}
+
+#outline .outline-item {
+	align-items: center;
+	display: flex;
+	font-size: 12px;
+}
+
+#outline .marker {
+    margin-left: -3.7px;
+    margin-right: 5px;
+    height: 10px;
+	width: 10px;
+	border-radius: 50%;
+	display: inline-block;
+}
+
+#outline .marker.highlight {
+	background-color: #ffd700;
+}
+
+#outline .marker:hover {
+	cursor: pointer;
+	border: 1.5px solid black;
+}
+
+#outline .marker.outline-hover {
+	border: 1.5px solid black;
+}
+
+#outline .marker.outline-selected {
+	border: 1.5px solid black;
+}
+
+#outline .m-unsum_comment {
+	background-color: rgb(161, 197, 209);
+}
+
+#outline .m-sum_comment {
+	background-color: rgb(248, 200, 153);
+}
+
+#outline .m-hidden {
+	background-color: #990000;
+}
+
+#outline .m-summary {
+	background-color: rgb(238, 118, 0); 
+}
+
+#outline .m-summary_partial {
+	background: linear-gradient(-45deg, rgb(161, 197, 209), rgb(161, 197, 209) 50%, white 50%, white 50%, rgb(238, 118, 0) 50%);
+}
+
+#outline #viewAll {
+	padding-left: 5px;
+}
+
+#outline .outline-title:hover {
+	cursor: pointer;
+}
+
+#outline .outline-text:hover {
+	cursor: pointer;
+	background-color: #D3D3D3;
+}
+
+#outline .outline-text.outline-hover {
+	cursor: pointer;
+	background-color: #D3D3D3;
+}
+
+.outline-item #down-arrow {
+	font-size: 10px;
+	padding-left: 5px;
+}
+
+.outline-item #down-arrow:hover {
+	cursor: pointer;
 }
 
 text {
@@ -355,6 +529,7 @@ text {
 	background: rgba(255,255,255,0.8);
 	border: 1px #cccccc solid;
 	text-align: right;
+	z-index: 100;
 }
 
 a {
@@ -388,6 +563,21 @@ rect.selection {
     max-height: 100px;
     overflow-y: scroll;
     border: 1px gray solid;
+}
+
+#reply_comment_textarea {
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+#reply_comment_body {
+	width: 390px;
+}
+
+#reply-comment-form {
+ 	width: 400px;
 }
 
 .comment_box,
@@ -430,13 +620,30 @@ rect.selection {
 		/*color: var(--link-color);*/
 	}
 
+	.comment_box a.disabled {
+		color: hsl(207, 0%, 71%);
+		pointer-events: none;
+		cursor: default;
+	}
+
 	.comment_box footer {
+		display: none;
 		padding: 0;
 		margin: -.2em -1.2em;
+		transition-duration: 3s;
 		background: var(--background);
 		--background: hsl(195, 59%, 90%);
 		white-space: normal;
 	}
+		.comment_box footer a.disabled {
+			padding: .5em;
+			color: hsl(207, 0%, 71%);
+			font-weight: 500;
+			font-size: 13px;
+			display: inline-block;
+			pointer-events: none;
+			cursor: default;
+		}
 
 		.comment_box footer a {
 			padding: .5em;
@@ -951,6 +1158,7 @@ form.modal-content {
 	position: fixed;
 	left:330px;
 	top: 100px;
+	z-index: 1000;
 }
 
 .editors {
