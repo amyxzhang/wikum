@@ -228,16 +228,32 @@ def poll_status(request):
                     owner = None
                 else:
                     owner = User.objects.get(username=request.session['owner'])
-                urlparsed = urllib.parse.unquote(request.session['url'])
-                articles_list = Article.objects.filter(url=urlparsed, owner=owner)
-                if len(articles_list):
-                    a = articles_list[0]
-                    data['id'] = a.id
-                    comment_count = a.comment_set.count()
+                
+                a = Article.objects.filter(url=request.session['url']+ "/.json", owner=owner)
+                if a.exists():
+                    data['id'] = a[0].id
+                    comment_count = a[0].comment_set.count()
+                    
+#                 urlparsed = urllib.parse.unquote(request.session['url'])
+#                 articles_list = Article.objects.filter(url=urlparsed, owner=owner)
+#                 if len(articles_list):
+#                     a = articles_list[0]
+#                     data['id'] = a.id
+#                     comment_count = a.comment_set.count()
+
                     if comment_count == 0:
                         a.delete()
                         data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
                         data['state'] = 'FAILURE'
+                else:
+                    a = Article.objects.filter(url=request.session['url'], owner=owner)
+                    if a.exists():
+                        data['id'] = a[0].id
+                        comment_count = a[0].comment_set.count()
+                        if comment_count == 0:
+                            a.delete()
+                            data['result'] = 'This article\'s comments cannot be ingested by Wikum because of API limitations'
+                            data['state'] = 'FAILURE'
         request.session['url'] = None
 
     json_data = json.dumps(data)
