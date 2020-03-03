@@ -153,7 +153,10 @@ $.ajax({type: 'GET',
 			var child = $(this).parent().next()[0];
 			let id = outlineItem.id;
 			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
-	    	if (child) {
+	    	if (d.replace && d.replace.length) {
+	    		expand(d);
+	    	}
+	    	else if (child) {
 	    		collapse(d);
 	    	}
 	    	else {
@@ -167,7 +170,10 @@ $.ajax({type: 'GET',
 			var outlineText = $(selectGroup).children('.outline-text')[0];
 			var child = $(selectGroup).next().get(0);
 			if (lastClicked === outlineText) {
-	    		if (child) {
+	    		if (d.replace && d.replace.length) {
+		    		expand(d);
+		    	}
+		    	else if (child) {
 		    		collapse(d);
 		    	}
 		    	else {
@@ -231,7 +237,10 @@ $.ajax({type: 'GET',
 				let id = outlineText.id.substring(13);
 			    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 		    	if (lastClicked === outlineText) {
-		    		if (child) {
+		    		if (d.replace && d.replace.length) {
+			    		expand(d);
+			    	}
+		    		else if (child) {
 			    		collapse(d);
 			    	}
 			    	else {
