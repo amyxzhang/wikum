@@ -1097,13 +1097,13 @@ class WikumConsumer(WebsocketConsumer):
                 # Set the parent's last_child and first_child pointers
                 if first_selected.disqus_id == parent.first_child:
                     if len(unselected_children) > 0:
-                        parent.first_child = unselected_children[0]
+                        parent.first_child = unselected_children[0].disqus_id
                     else:
                         parent.first_child = None
                     
                 if last_selected == parent.last_child:
                     if len(unselected_children) > 0:
-                        parent.last_child = unselected_children[-1]
+                        parent.last_child = unselected_children[-1].disqus_id
                     else:
                         parent.last_child = None
                 parent.save()
