@@ -1423,8 +1423,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		$('#summarize_multiple_modal_box').attr('summarize_multiple_modal_box_dids', dids);
 		dids_in_use = dids;
 		send_update_locks(dids, true);
-	} else {
-
+	} else {	
 		var id = $(e.relatedTarget).data('id');
 		var did = $(e.relatedTarget).data('did');
 		
@@ -1498,18 +1497,9 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			}
 
 			if (d.extra_summary != '') {
-				if (article_url.indexOf('wikipedia.org') !== -1) {
-					tinymce.get('summarize_multiple_comment_textarea').setContent(d.sumwiki + '\n----------\n' + d.extrasumwiki);
-				} else {
-					tinymce.get('summarize_multiple_comment_textarea').setContent(d.summary + '\n----------\n' + d.extra_summary);
-				}
+				tinyMCE.activeEditor.setContent(d.summary + '\n----------\n' + d.extra_summary);
 			} else {
-				if (article_url.indexOf('wikipedia.org') !== -1) {
-					tinymce.get('summarize_multiple_comment_textarea').setContent(d.sumwiki);
-				}
-				else {
-					tinymce.get('summarize_multiple_comment_textarea').setContent(d.summary);
-				}
+				tinyMCE.activeEditor.setContent(d.summary);
 			}
 
 			$('#summarize_multiple_comment_text').text('Edit the summary for this entire subtree of comments.');
