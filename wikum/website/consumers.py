@@ -752,6 +752,8 @@ class WikumConsumer(WebsocketConsumer):
                     # c was the last child; update to new_comment
                     parent.last_child = new_id
                 c.reply_to_disqus = new_id
+                c.sibling_prev = None
+                c.sibling_next = None
                 c.save()
                 parent.save()
 
@@ -816,6 +818,7 @@ class WikumConsumer(WebsocketConsumer):
             res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
             res['subtype'] = data['subtype']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
+            self.print_pointers(c)
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)

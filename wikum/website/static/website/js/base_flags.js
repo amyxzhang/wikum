@@ -3632,7 +3632,7 @@ function createOutlineInsideString(d, outline='', depth=0) {
 				outline	+= `></span>`
 						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
 						+ title + `</span>`;
-				if ((state === 'summary' && node.replace && node.replace.length) || (node._children && node._children.length)) {
+				if (((state === 'summary' || state === 'summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length)) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
