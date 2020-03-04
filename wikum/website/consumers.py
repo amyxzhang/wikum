@@ -554,7 +554,6 @@ class WikumConsumer(WebsocketConsumer):
             # comments in order
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
             children = [c for c in comments if c.id in children_ids]
-            comment_disqus_ids = [c.disqus_id for c in children]
             first_selected = Comment.objects.get(id=first_selected_id)
             last_selected = Comment.objects.get(id=last_selected_id)
             
@@ -585,7 +584,7 @@ class WikumConsumer(WebsocketConsumer):
             self.mark_children_summarized(new_comment, children)
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
-            all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
+            all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, hidden=False, article=a)
             unselected_children = [c for c in all_children if c not in children and c != new_comment]
             
             if parent.count() > 0:
@@ -1080,7 +1079,8 @@ class WikumConsumer(WebsocketConsumer):
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
             children = [c for c in comments if c.id in children_ids]
-            comment_disqus_ids = [c.disqus_id for c in comments]
+            for c in children:
+                print("child:", c.text)
             
             if affected > 0:
                 words_shown = count_words_shown(a)
@@ -1092,7 +1092,7 @@ class WikumConsumer(WebsocketConsumer):
                     parent = parent[0]
                 else:
                     parent = a
-                all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, article=a)
+                all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, hidden=False, article=a)
                 unselected_children = [c for c in all_children if c not in children]
                 # Set the parent's last_child and first_child pointers
                 if first_selected.disqus_id == parent.first_child:
@@ -1101,7 +1101,7 @@ class WikumConsumer(WebsocketConsumer):
                     else:
                         parent.first_child = None
                     
-                if last_selected == parent.last_child:
+                if last_selected.disqus_id == parent.last_child:
                     if len(unselected_children) > 0:
                         parent.last_child = unselected_children[-1].disqus_id
                     else:
@@ -1139,6 +1139,9 @@ class WikumConsumer(WebsocketConsumer):
                     parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                     if parent.count() > 0:
                         recurse_up_post(parent[0])
+
+                for c in unselected_children:
+                    self.print_pointers(c)
                 
                 a.comment_num = a.comment_num - affected
                 a.percent_complete = percent_complete

@@ -3444,6 +3444,7 @@ function setSortables() {
 		if (nestedSortables[i].id !== 'nestedOutline' && is_hidden == false) {
 			new Sortable(nestedSortables[i], {
 				group: 'nested',
+				direction: 'vertical',
 				animation: 150,
 				fallbackOnBody: true,
 				swapThreshold: 0.65,
@@ -3494,6 +3495,7 @@ function save_node_position(dragItem, newParent, siblingBefore, siblingAfter) {
 	} else {
 		data.sibling_after = 'None';
 	}
+	console.log(data.new_parent);
 
 	$.ajax({
 		type: 'POST',
