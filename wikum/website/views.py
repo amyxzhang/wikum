@@ -584,7 +584,8 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
     # Filters for comments in the article that are children of posts
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
-        if True:
+        if post.json_flatten == '':
+        #if True:
             if post.author:
                 if post.author.anonymous:
                     author = "Anonymous"
