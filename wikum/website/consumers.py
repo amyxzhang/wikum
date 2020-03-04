@@ -818,7 +818,6 @@ class WikumConsumer(WebsocketConsumer):
             res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
             res['subtype'] = data['subtype']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
-            self.print_pointers(c)
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
