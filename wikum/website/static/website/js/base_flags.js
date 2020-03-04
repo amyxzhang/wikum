@@ -3435,7 +3435,13 @@ function setSortables() {
 	var nestedSortables = document.getElementsByClassName("nested-sortable");
 	// Loop through each nested sortable element
 	for (var i = 0; i < nestedSortables.length; i++) {
-		if (nestedSortables[i].id !== 'nestedOutline') {
+		var markerlist = $(nestedSortables[i]).find('.marker');
+		var is_hidden = false;
+		if (markerlist.length) {
+			is_hidden = $($(nestedSortables[i]).find('.marker')[0]).hasClass('m-hidden');
+		}
+		
+		if (nestedSortables[i].id !== 'nestedOutline' && is_hidden == false) {
 			new Sortable(nestedSortables[i], {
 				group: 'nested',
 				animation: 150,
@@ -3488,9 +3494,6 @@ function save_node_position(dragItem, newParent, siblingBefore, siblingAfter) {
 	} else {
 		data.sibling_after = 'None';
 	}
-	console.log("sib before: " + data.sibling_before);
-	console.log("sib after: " + data.sibling_after);
-	console.log("new parent: " + data.new_parent);
 
 	$.ajax({
 		type: 'POST',
@@ -3524,7 +3527,7 @@ function save_node_position(dragItem, newParent, siblingBefore, siblingAfter) {
 
 	        dragItem.x0 = 0;
 			dragItem.y0 = 0;
-
+			setSortables();
 			success_noty();
 		},
 		error: function() {
@@ -4454,7 +4457,7 @@ function construct_box_top(objs) {
 	if (accepted && count > 1 && !parent_node.replace_node) {
 		text += '<BR> <a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize</a><BR>';
 	}
-	if (accepted || accepted2) {
+	if (accepted) {
 		text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a><BR>';
 	}
 	text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#tag_modal_box" data-type="tag_selected">Tag Selected</a>';
