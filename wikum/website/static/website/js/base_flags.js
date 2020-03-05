@@ -1754,6 +1754,9 @@ chatsock.onmessage = function(message) {
 	else if (res.type === 'summarize_comments') {
 		handle_channel_summarize_comments(res);
 	}
+	else if (res.type === 'move_comments') {
+		handle_channel_move_comments(res);
+	}
 	else if (res.type == 'delete_tags') {
 		handle_channel_delete_tags(res);
 	}
@@ -2252,6 +2255,60 @@ function handle_channel_delete_tags(res) {
 	}
 }
 
+function handle_channel_move_comments(res) {
+	var dragItem, oldParent, newParent, prevSib;
+	if (res.old_parent_id == 'article') {
+		oldParent = nodes_all[0];
+	}
+	if (res.new_parent_id == 'article') {
+		newParent = nodes_all[0];
+	}
+	for (var i=0; i < nodes_all.length; i++) {
+		var did = nodes_all[i].d_id;
+		if (did == res.node_id) {
+			dragItem = nodes_all[i];
+		}
+		if (!oldParent && did == res.old_parent_id) {
+			oldParent = nodes_all[i];
+		}
+		if (!newParent && did == res.new_parent_id) {
+			newParent = nodes_all[i];
+		}
+		if (did == res.prev_sib_id) {
+			prevSib = nodes_all[i];
+		}
+	}
+
+	var index = dragItem.parent.children.indexOf(dragItem);
+    if (index > -1) {
+        dragItem.parent.children.splice(index, 1);
+    }
+    dragItem.parent = newParent;
+    if (typeof newParent.children !== 'undefined' || typeof newParent._children !== 'undefined') {
+        if (typeof newParent.children !== 'undefined') {
+        	// set position using res.position of where it is getting inserted for all three of the following methods
+        	insert_node_to_children(dragItem, newParent, res.position);
+        } else {
+        	insert_node_to_un_children(dragItem, newParent);
+        }
+    } else {
+    	if (newParent.replace_node) {
+    		insert_node_to_replace(dragItem, newParent);
+    	} else {
+    		newParent.children = [];
+        	newParent.children.push(dragItem);
+    	}
+    }
+    // Make sure that the node being added to is expanded so user can see added node is correctly moved
+    //expand(newParent);
+
+    dragItem.x0 = 0;
+	dragItem.y0 = 0;
+	setSortables();
+	update(oldParent);
+	update(newParent);
+}
+
 function handle_channel_delete_comment_summary(res) {
 	let id = nodes_all.filter(o => o.d_id == res.d_id)[0].id;
 	delete_comment_summary(id);
@@ -2471,20 +2528,24 @@ function insert_node_to_children(node_insert, node_parent, position = undefined)
 		if (position !== undefined && position <= node_parent.children.length) {
 			node_parent.children.splice(position, 0, node_insert);
 			added = true;
+			console.log('CHILDREN');
 		}
 
 		if (!added) {
 			node_parent.children.push(node_insert);
+			console.log('NEW');
 		}
 
 	} else if (node_parent.replace) {
 		if (position !== undefined && position <= node_parent.replace.length) {
-			node_parent.children.splice(position, 0, node_insert);
+			node_parent.replace.splice(position, 0, node_insert);
 			added = true;
+			console.log('REPLACE');
 		}
 
 		if (!added) {
 			node_parent.replace.push(node_insert);
+			console.log('NEW REPLACE');
 		}
 	}
 }
@@ -3465,8 +3526,8 @@ function setSortables() {
 			        	} else {
 			        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
 			        	}
-			        } 
-			        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter);
+			        }
+			        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
 			        // update(draggingNode.parent);
 			    }
 			});
@@ -3474,11 +3535,13 @@ function setSortables() {
 	}
 }
 
-function save_node_position(dragItem, newParent, siblingBefore, siblingAfter) {
+function save_node_position(dragItem, newParent, siblingBefore, siblingAfter, position) {
 
 	var csrf = $('#csrf').text();
 	data = {csrfmiddlewaretoken: csrf,
-			node: dragItem.d_id};
+			node: dragItem.d_id,
+			type: 'move_comments',
+			position: position};
 	if (newParent.article) {
 		data.new_parent = 'article';
 	} else {
@@ -3495,47 +3558,8 @@ function save_node_position(dragItem, newParent, siblingBefore, siblingAfter) {
 	} else {
 		data.sibling_after = 'None';
 	}
-	console.log(data.new_parent);
 
-	$.ajax({
-		type: 'POST',
-		url: '/move_comments',
-		data: data,
-		success: function(res) {
-
-
-			// now remove the element from the parent, and insert it into the new elements children
-	        var index = dragItem.parent.children.indexOf(dragItem);
-	        if (index > -1) {
-	            dragItem.parent.children.splice(index, 1);
-	        }
-	        dragItem.parent = newParent;
-	        if (typeof newParent.children !== 'undefined' || typeof newParent._children !== 'undefined') {
-	            if (typeof newParent.children !== 'undefined') {
-	            	insert_node_to_children(dragItem, newParent);
-	            } else {
-	            	insert_node_to_un_children(dragItem, newParent);
-	            }
-	        } else {
-	        	if (newParent.replace_node) {
-	        		insert_node_to_replace(dragItem, newParent);
-	        	} else {
-	        		newParent.children = [];
-	            	newParent.children.push(dragItem);
-	        	}
-	        }
-	        // Make sure that the node being added to is expanded so user can see added node is correctly moved
-	        //expand(newParent);
-
-	        dragItem.x0 = 0;
-			dragItem.y0 = 0;
-			setSortables();
-			success_noty();
-		},
-		error: function() {
-			error_noty();
-		}
-	});
+	chatsock.send(JSON.stringify(data));
 }
 
 function count_children(d) {

@@ -111,6 +111,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_summarize_selected(data, username)
                 elif data_type == 'summarize_comments':
                     message = self.handle_summarize_comments(data, username)
+                elif data_type == 'move_comments':
+                    message = self.handle_move_comments(data, username)
                 elif data_type == 'hide_comment':
                     message = self.handle_hide_comment(data, username)
                 elif data_type == 'hide_comments':
@@ -843,6 +845,143 @@ class WikumConsumer(WebsocketConsumer):
             print(traceback.format_exc())
             return {'user': username}
 
+    def handle_move_comments(self, data, username):
+        try:
+            new_parent_id = data['new_parent']
+            node_id = data['node']
+            sibling_prev = data['sibling_before']
+            sibling_next = data['sibling_after']
+            
+            req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
+            
+            comment = Comment.objects.get(id=node_id)
+            article = Article.objects.get(id=self.article_id)
+            
+            # Set child and sibling pointers of surrounding nodes in original location
+            old_parent = None
+            if comment.reply_to_disqus:
+                old_parent = Comment.objects.get(disqus_id=comment.reply_to_disqus, article=article)
+            else:
+                old_parent = article
+
+            new_parent = None
+            if new_parent_id == 'article':
+                new_parent = article
+            else:
+                new_parent = Comment.objects.get(id=new_parent_id, article=article)
+
+            if old_parent.first_child == comment.disqus_id:
+                old_parent.first_child = comment.sibling_next
+            if old_parent.last_child == comment.disqus_id:
+                old_parent.last_child = comment.sibling_prev
+            old_parent.save()
+
+            # old comment siblings
+            comment_prev = None
+            comment_next = None
+            if comment.sibling_prev:
+                comment_prev = Comment.objects.filter(disqus_id=comment.sibling_prev, article=article)
+                if comment_prev.count() > 0:
+                    comment_prev = comment_prev[0]
+                    comment_prev.sibling_next = comment.sibling_next
+                    comment_prev.save()
+                    recurse_up_post(comment_prev)
+                    recurse_down_num_subtree(comment_prev)
+            if comment.sibling_next:
+                comment_next = Comment.objects.filter(disqus_id=comment.sibling_next, article=article)
+                if comment_next.count() > 0:
+                    comment_next = comment_next[0]
+                    comment_next.sibling_prev = comment.sibling_prev
+                    comment_next.save()
+                    recurse_up_post(comment_next)
+                    recurse_down_num_subtree(comment_next)
+
+            # Set child and sibling pointers of surrounding nodes in new location
+            if new_parent == old_parent:
+                self.set_sibling_pointers(old_parent, old_parent, comment, sibling_prev, sibling_next, article)
+            elif comment_prev and comment_prev == new_parent:
+                self.set_sibling_pointers(old_parent, comment_prev, comment, sibling_prev, sibling_next, article)
+            elif comment_next and comment_next == new_parent:
+                self.set_sibling_pointers(old_parent, comment_next, comment, sibling_prev, sibling_next, article)
+            elif sibling_prev and old_parent != article and int(sibling_prev) == int(old_parent.id):
+                print("NEW SIB PREV IS THE OLD PARENT")
+                self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, True, False)
+            elif sibling_next and old_parent != article and int(sibling_next) == int(old_parent.id):
+                print("NEW SIB NEXT IS THE OLD PARENT")
+                self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, False, True)
+            else:
+                self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article)
+            
+            article.last_updated = datetime.datetime.now()
+            article.save()
+            
+            comment.save()
+            h = History.objects.create(user=req_user, 
+                                           article=article,
+                                           action='move_comment',
+                                           explanation='Move comment')
+
+            h.comments.add(comment)
+            
+            if old_parent and old_parent != article:
+                recurse_up_post(old_parent)
+                recurse_down_num_subtree(old_parent)
+                h.comments.add(old_parent)
+
+            recurse_up_post(comment)
+            if comment_prev:
+                self.print_pointers(comment_prev)
+            if comment_next:
+                self.print_pointers(comment_next)
+            old_parent_id = 'article' if old_parent == article else old_parent.id
+            prev_sib_id = sibling_prev if sibling_prev else 'None'
+            res = {'position': data['position'], 'new_parent_id': new_parent_id, 'node_id': node_id, 'old_parent_id': old_parent_id, 'type': data['type']}
+            return res
+        
+        except Exception as e:
+            print(e)
+            import traceback
+            print(traceback.format_exc())
+            return {'user': username}
+
+    def set_sibling_pointers(self, old_parent, new_parent, comment, sibling_prev, sibling_next, article, is_newsibprev_oldparent=False, is_newsibnext_oldparent=False):
+        if sibling_prev == 'None':
+            comment.sibling_prev = None
+            new_parent.first_child = comment.disqus_id
+        else:
+            if is_newsibprev_oldparent:
+                comment.sibling_prev = old_parent.disqus_id
+                old_parent.sibling_next = comment.disqus_id
+                old_parent.save()
+            else:
+                new_comment_prev = Comment.objects.get(id=sibling_prev, article=article)
+                if new_comment_prev:
+                    comment.sibling_prev = new_comment_prev.disqus_id
+                    new_comment_prev.sibling_next = comment.disqus_id
+                    new_comment_prev.save()
+        if sibling_next == 'None':
+            comment.sibling_next = None
+            new_parent.last_child = comment.disqus_id
+        else:
+            if is_newsibnext_oldparent:
+                comment.sibling_next = old_parent.disqus_id
+                old_parent.sibling_prev = comment.disqus_id
+                old_parent.save()
+            else:
+                new_comment_next = Comment.objects.get(id=sibling_next, article=article)
+                if new_comment_next:
+                    comment.sibling_next = new_comment_next.disqus_id
+                    new_comment_next.sibling_prev = comment.disqus_id
+                    new_comment_next.save()
+        if new_parent == article:
+            comment.reply_to_disqus = None
+        else:
+            comment.reply_to_disqus = new_parent.disqus_id
+        new_parent.save()
+        comment.save()
+        if new_parent != article:
+            recurse_up_post(new_parent)
+            recurse_down_num_subtree(new_parent)
 
     def handle_delete_tags(self, data, username):
         article_id = self.article_id
