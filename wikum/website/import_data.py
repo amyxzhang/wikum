@@ -484,14 +484,10 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count, 
                                     meta={'count': total_count})
 
         for comment in comments:
-            print("recurse 1")
-            print(comment)
             comment_id = comment["data"]["id"]
             comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
 
             if comment_wikum.count() == 0:
-
-                # from praw.errors import NotFound
 
                 try:
                     author_id = comment["data"]["author_fullname"]
@@ -555,8 +551,6 @@ def import_reddit_posts(comments, article, reply_to, current_task, total_count, 
         comment_wikum = Comment.objects.filter(disqus_id=comment_id, article=article)
 
         if comment_wikum.count() == 0:
-
-            # from praw.errors import NotFound
 
             try:
                 author_id = comment["data"]["author_fullname"]
