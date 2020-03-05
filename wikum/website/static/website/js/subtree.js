@@ -183,11 +183,7 @@ article_url = article_url.replace('#','%23');
 
 var sort = getParameterByName('sort');
 if (!sort) {
-	if (article_url.indexOf('wikipedia.org') !== -1) {
-		sort = "id";
-	} else {
-		sort = "likes";
-	}
+	sort = 'default';
 }
 var next = parseInt(getParameterByName('next'));
 if (!next) {
@@ -289,38 +285,39 @@ d3.json('/subtree_data?id=' + article_id + '&sort=' + sort + '&next=' + next + '
 });
 
 function make_dropdown() {
-
 	var sort_num = 0;
-	if (sort == "likes") {
+	if (sort == "id") {
 		sort_num = 1;
-	} else if (sort == "replies") {
+	} else if (sort == "likes") {
 		sort_num = 2;
-	} else if (sort == "long") {
+	} else if (sort == "replies") {
 		sort_num = 3;
-	} else if (sort == "short") {
+	} else if (sort == "long") {
 		sort_num = 4;
-	} else if (sort == "newest") {
+	} else if (sort == "short") {
 		sort_num = 5;
-	} else if (sort == "oldest") {
+	} else if (sort == "newest") {
 		sort_num = 6;
+	} else if (sort == "oldest") {
+		sort_num = 7;
 	}
-	
-  $('#menu-sort').children().eq(sort_num).css({'background-color': '#42dca3'});
-  $('#menu-sort').children().eq(sort_num).addClass('disabled-menu');
-  
-  $('#menu-sort').children().eq(sort_num).children().first().on('click', function() {
+
+	$('#menu-sort').children().eq(sort_num).css({'background-color': '#42dca3'});
+	$('#menu-sort').children().eq(sort_num).addClass('disabled-menu');
+
+	$('#menu-sort').children().eq(sort_num).children().first().on('click', function() {
 	    return false;
 	});
-	
-  var url = "/subtree?id=" + article_id + '&owner=' + owner + '&colorby=' + colorby  + '&sort=';
-  $('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'id'));
-  $('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'likes'));
-  $('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'replies'));
-  $('#menu-sort').children().eq(3).children().first().attr('href', String(url + 'long'));
-  $('#menu-sort').children().eq(4).children().first().attr('href', String(url + 'short'));
-  $('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'newest'));
-  $('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'oldest'));
-  
+
+	var url = "/visualization_flags?id=" + article_id + '&filter=' + filter + '&owner=' + owner + '&colorby=' + colorby  + '&sort=';
+	$('#menu-sort').children().eq(0).children().first().attr('href', String(url + 'default'));
+	$('#menu-sort').children().eq(1).children().first().attr('href', String(url + 'id'));
+	$('#menu-sort').children().eq(2).children().first().attr('href', String(url + 'likes'));
+	$('#menu-sort').children().eq(3).children().first().attr('href', String(url + 'replies'));
+	$('#menu-sort').children().eq(4).children().first().attr('href', String(url + 'long'));
+	$('#menu-sort').children().eq(5).children().first().attr('href', String(url + 'short'));
+	$('#menu-sort').children().eq(6).children().first().attr('href', String(url + 'newest'));
+	$('#menu-sort').children().eq(7).children().first().attr('href', String(url + 'oldest'));
 }
 
 function make_color() {

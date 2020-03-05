@@ -3490,44 +3490,46 @@ function expand_all(id) {
 }
 
 function setSortables() {
-	var nestedSortables = document.getElementsByClassName("nested-sortable");
-	// Loop through each nested sortable element
-	for (var i = 0; i < nestedSortables.length; i++) {
-		var markerlist = $(nestedSortables[i]).find('.marker');
-		var is_hidden = false;
-		if (markerlist.length) {
-			is_hidden = $($(nestedSortables[i]).find('.marker')[0]).hasClass('m-hidden');
-		}
-		
-		if (nestedSortables[i].id !== 'nestedOutline' && is_hidden == false) {
-			new Sortable(nestedSortables[i], {
-				group: 'nested',
-				direction: 'vertical',
-				animation: 150,
-				fallbackOnBody: true,
-				swapThreshold: 0.65,
-				onStart: function(evt) {
-					$('#expand').hide();
-				},
-				onEnd: function (evt) {
-			        var dragItem, newParent;
-			        let outlineItem = $(evt.item).find('.outline-item').get(0);
-			        var siblingBefore = $(outlineItem).closest('.list-countainer').prev('.list-countainer').find('.outline-item').get(0);
-			        var siblingAfter = $(outlineItem).closest('.list-countainer').next('.list-countainer').find('.outline-item').get(0);
-			        if (outlineItem) dragItem = nodes_all.filter(o => o.d_id == outlineItem.id)[0];
-			        let ns = $(evt.to).closest('.nested-sortable');
-			        let outlineParent = ns.parent().find('.outline-item').get(0);
-			        if (outlineParent) {
-			        	if (outlineParent.id === 'viewAll') {
-			        		newParent = nodes_all[0];
-			        	} else {
-			        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
-			        	}
-			        }
-			        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
-			        // update(draggingNode.parent);
-			    }
-			});
+	if (sort == 'default') {
+		var nestedSortables = document.getElementsByClassName("nested-sortable");
+		// Loop through each nested sortable element
+		for (var i = 0; i < nestedSortables.length; i++) {
+			var markerlist = $(nestedSortables[i]).find('.marker');
+			var is_hidden = false;
+			if (markerlist.length) {
+				is_hidden = $($(nestedSortables[i]).find('.marker')[0]).hasClass('m-hidden');
+			}
+			
+			if (nestedSortables[i].id !== 'nestedOutline' && is_hidden == false) {
+				new Sortable(nestedSortables[i], {
+					group: 'nested',
+					direction: 'vertical',
+					animation: 150,
+					fallbackOnBody: true,
+					swapThreshold: 0.65,
+					onStart: function(evt) {
+						$('#expand').hide();
+					},
+					onEnd: function (evt) {
+				        var dragItem, newParent;
+				        let outlineItem = $(evt.item).find('.outline-item').get(0);
+				        var siblingBefore = $(outlineItem).closest('.list-countainer').prev('.list-countainer').find('.outline-item').get(0);
+				        var siblingAfter = $(outlineItem).closest('.list-countainer').next('.list-countainer').find('.outline-item').get(0);
+				        if (outlineItem) dragItem = nodes_all.filter(o => o.d_id == outlineItem.id)[0];
+				        let ns = $(evt.to).closest('.nested-sortable');
+				        let outlineParent = ns.parent().find('.outline-item').get(0);
+				        if (outlineParent) {
+				        	if (outlineParent.id === 'viewAll') {
+				        		newParent = nodes_all[0];
+				        	} else {
+				        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
+				        	}
+				        }
+				        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
+				        // update(draggingNode.parent);
+				    }
+				});
+			}
 		}
 	}
 }
