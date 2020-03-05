@@ -2307,6 +2307,7 @@ function handle_channel_move_comments(res) {
 	setSortables();
 	update(oldParent);
 	update(newParent);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 }
 
 function handle_channel_delete_comment_summary(res) {
