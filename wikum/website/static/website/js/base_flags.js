@@ -2279,21 +2279,43 @@ function handle_channel_move_comments(res) {
 		}
 	}
 
-	var index = dragItem.parent.children.indexOf(dragItem);
-    if (index > -1) {
-        dragItem.parent.children.splice(index, 1);
-    }
+	var index = -1;
+	if (dragItem.parent.children && dragItem.parent.children.length){
+		index = dragItem.parent.children.indexOf(dragItem);
+		if (index > -1) {
+	        dragItem.parent.children.splice(index, 1);
+	    }
+	} else if (dragItem.parent._children && dragItem.parent._children.length) {
+		index = dragItem.parent._children.indexOf(dragItem);
+		if (index > -1) {
+	        dragItem.parent._children.splice(index, 1);
+	    }
+	} else if (dragItem.parent.replace && dragItem.parent.replace.length) {
+		index = dragItem.parent.replace.indexOf(dragItem);
+		if (index > -1) {
+	        dragItem.parent.replace.splice(index, 1);
+	    }
+	}
+
     dragItem.parent = newParent;
+    if (!dragItem.replace_node) {
+    	dragItem.summarized = false;
+    }
+
+    var notCollapsedSummary = !newParent.replace || (newParent.replace && !newParent.replace.length);
+    var notCollapsedComment = !newParent._children || (newParent._children && !newParent._children.length);
     if (typeof newParent.children !== 'undefined' || typeof newParent._children !== 'undefined') {
-        if (typeof newParent.children !== 'undefined') {
-        	// set position using res.position of where it is getting inserted for all three of the following methods
+        if (typeof newParent.children !== 'undefined' && notCollapsedComment && notCollapsedSummary) {
+        	// check that the length of replace and _children are 0
         	insert_node_to_children(dragItem, newParent, res.position);
+        } else if (newParent.replace_node) {
+        	insert_node_to_replace(dragItem, newParent, res.position);
         } else {
-        	insert_node_to_un_children(dragItem, newParent);
+        	insert_node_to_un_children(dragItem, newParent, res.position);
         }
     } else {
     	if (newParent.replace_node) {
-    		insert_node_to_replace(dragItem, newParent);
+    		insert_node_to_replace(dragItem, newParent, res.position);
     	} else {
     		newParent.children = [];
         	newParent.children.push(dragItem);
@@ -2557,31 +2579,39 @@ function insert_node_to_children(node_insert, node_parent, position = undefined)
 
 
 
-function insert_node_to_un_children(node_insert, node_parent) {
+function insert_node_to_un_children(node_insert, node_parent, position = undefined) {
 	added = false;
-	for (var i=0; i<node_parent._children.length; i++) {
-		if (node_parent._children[i].size < node_insert.size) {
-			node_parent._children.splice(i, 0, node_insert);
-			added = true;
-			break;
-		}
+	if (!node_parent._children) {
+		node_parent._children = [];
 	}
-	if (!added) {
-		node_parent._children.push(node_insert);
+	if (node_parent._children) {
+		if (position !== undefined && position <= node_parent._children.length) {
+			node_parent._children.splice(position, 0, node_insert);
+			added = true;
+		}
+
+		if (!added) {
+			node_parent._children.push(node_insert);
+		}
+
 	}
 }
 
-function insert_node_to_replace(node_insert, node_parent) {
+function insert_node_to_replace(node_insert, node_parent, position = undefined) {
 	added = false;
-	for (var i=0; i<node_parent.replace.length; i++) {
-		if (node_parent.replace[i].size < node_insert.size) {
-			node_parent.replace.splice(i, 0, node_insert);
-			added = true;
-			break;
-		}
+	if (!node_parent.replace) {
+		node_parent.replace = [];
 	}
-	if (!added) {
-		node_parent.replace.push(node_insert);
+	if (node_parent.replace) {
+		if (position !== undefined && position <= node_parent.replace.length) {
+			node_parent.replace.splice(position, 0, node_insert);
+			added = true;
+		}
+
+		if (!added) {
+			node_parent.replace.push(node_insert);
+		}
+
 	}
 }
 
