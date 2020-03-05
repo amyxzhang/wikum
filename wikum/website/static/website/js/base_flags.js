@@ -3507,9 +3507,25 @@ function setSortables() {
 					animation: 150,
 					fallbackOnBody: true,
 					swapThreshold: 0.65,
-					onStart: function(evt) {
+					onStart: function (evt) {
 						$('#expand').hide();
 					},
+					// onMove: function (evt) {
+					// 	$('.outline-item').hover(
+					// 		  function() {
+					// 		    var did = this.id;
+					// 		    extra_highlight_node(did, id);
+					// 		    setTimeoutConst = setTimeout(function() {
+					// 				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y'});
+					// 			}, delay);
+					// 		  }, function() {
+					// 		    var did = parseInt(this.dataset.did);
+					// 		    var id = parseInt(this.id.substring(8));
+					// 		    unextra_highlight_node(did, id);
+					// 		    clearTimeout(setTimeoutConst);
+					// 		  }
+					// 	);
+					// },
 					onEnd: function (evt) {
 				        var dragItem, newParent;
 				        let outlineItem = $(evt.item).find('.outline-item').get(0);
@@ -3627,8 +3643,8 @@ function createOutlineInsideString(d, outline='', depth=0) {
 	  *	 summary = summary
 	  *  psum = partially summarized comment
 	  */
+	outline += `<div class="list-group nested-sortable">`;
 	if (d.children && d.children.length) {
-		outline += `<div class="list-group nested-sortable">`;
 		depth += 1;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
@@ -3658,8 +3674,8 @@ function createOutlineInsideString(d, outline='', depth=0) {
 				outline += `</div>`;
 			outline += `</div>`;
 		}
-		outline += `</div>`;
 	}
+	outline += `</div>`;
 	return outline
 }
 
