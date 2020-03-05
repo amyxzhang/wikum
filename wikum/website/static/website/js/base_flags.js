@@ -3710,7 +3710,7 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i], '', depth, shouldExpand);
+				outline += createOutlineInsideString(d.children[i], '', depth=depth+1, shouldExpand);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
