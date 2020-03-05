@@ -2307,6 +2307,7 @@ function handle_channel_move_comments(res) {
 	setSortables();
 	update(oldParent);
 	update(newParent);
+	show_text(newParent);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 }
 
@@ -2323,10 +2324,10 @@ function handle_channel_hide_comment(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
-	show_text(nodes_all[0]);
 	if (!d.replace_node) hide_node(id);
 	make_progress_bar();
 	update(d.parent);
+	show_text(nodes_all[0]);
 }
 
 function handle_channel_hide_comments(res) {
@@ -2337,9 +2338,9 @@ function handle_channel_hide_comments(res) {
 		$('#comment_' + id).remove();
 		hide_node(id);
 	}
-	show_text(nodes_all[0]);
 	make_progress_bar();
 	update(nodes_all[0]);
+	show_text(nodes_all[0]);
 }
 
 function handle_channel_hide_replies(res) {
@@ -2368,6 +2369,7 @@ function handle_channel_hide_replies(res) {
 	}
 	make_progress_bar();
 	update(d);
+	show_text(nodes_all[0]);
 }
 
 function get_upvote_downvote(id) {

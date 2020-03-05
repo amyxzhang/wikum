@@ -886,7 +886,6 @@ class WikumConsumer(WebsocketConsumer):
                     comment_prev.sibling_next = comment.sibling_next
                     comment_prev.save()
                     recurse_up_post(comment_prev)
-                    recurse_down_num_subtree(comment_prev)
             if comment.sibling_next:
                 comment_next = Comment.objects.filter(disqus_id=comment.sibling_next, article=article)
                 if comment_next.count() > 0:
@@ -894,18 +893,19 @@ class WikumConsumer(WebsocketConsumer):
                     comment_next.sibling_prev = comment.sibling_prev
                     comment_next.save()
                     recurse_up_post(comment_next)
-                    recurse_down_num_subtree(comment_next)
 
             # Set child and sibling pointers of surrounding nodes in new location
             if new_parent == old_parent:
                 self.set_sibling_pointers(old_parent, old_parent, comment, sibling_prev, sibling_next, article)
             elif comment_prev and comment_prev == new_parent:
+                print("Old sibling prev is now the new parent")
                 self.set_sibling_pointers(old_parent, comment_prev, comment, sibling_prev, sibling_next, article)
             elif comment_next and comment_next == new_parent:
+                print("Old sibling next is now the new parent")
                 self.set_sibling_pointers(old_parent, comment_next, comment, sibling_prev, sibling_next, article)
-            elif sibling_prev and old_parent != article and int(sibling_prev) == int(old_parent.id):
+            elif sibling_prev != 'None' and old_parent != article and int(sibling_prev) == int(old_parent.id):
                 self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, True, False)
-            elif sibling_next and old_parent != article and int(sibling_next) == int(old_parent.id):
+            elif sibling_next != 'None' and old_parent != article and int(sibling_next) == int(old_parent.id):
                 self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, False, True)
             else:
                 self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article)
@@ -923,7 +923,6 @@ class WikumConsumer(WebsocketConsumer):
             
             if old_parent and old_parent != article:
                 recurse_up_post(old_parent)
-                recurse_down_num_subtree(old_parent)
                 h.comments.add(old_parent)
 
             recurse_up_post(comment)
