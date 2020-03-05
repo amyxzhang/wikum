@@ -3636,14 +3636,16 @@ function setMaxLength(depth) {
 	return Math.max(70 - depth * 5, 20);
 }
 
-function createOutlineInsideString(d, outline='', depth=0) {
+function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
 	  *	 summary = summary
 	  *  psum = partially summarized comment
 	  */
-	outline += `<div class="list-group nested-sortable">`;
+	if (!shouldExpand) {
+		outline += `<div class="list-group nested-sortable">`;
+	}
 	if (d.children && d.children.length) {
 		depth += 1;
 		for (var i=0; i<d.children.length; i++) {
@@ -3666,16 +3668,17 @@ function createOutlineInsideString(d, outline='', depth=0) {
 				outline	+= `></span>`
 						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
 						+ title + `</span>`;
-				if (((state === 'summary' || state === 'summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length)) {
+				var shouldExpand = ((state === 'summary' || state === 'summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length);
+				if (shouldExpand) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i], '', depth);
+				outline += createOutlineInsideString(d.children[i], '', depth, shouldExpand);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
 	}
-	outline += `</div>`;
+	if (!shouldExpand) outline += `</div>`;
 	return outline
 }
 
@@ -3746,7 +3749,9 @@ function update(d) {
 		outline_item = $('.outline-item#' + d.d_id);
 	}
 	let children = $(outline_item).next();
-	var inside_string = createOutlineInsideString(d);
+	let state = getState(d);
+	var shouldExpand = ((state === 'summary' || state === 'summary_partial') && d.replace && d.replace.length) || (d._children && d._children.length);
+	var inside_string = createOutlineInsideString(d, '', d.depth, shouldExpand);
 	if (children && children.length) {
 		children_group = children[0];
 		$(children_group).replaceWith(inside_string);
@@ -3757,7 +3762,6 @@ function update(d) {
 		}
 	}
 	$('#marker-' + d.d_id).removeClass();
-	var state = getState(d);
 	$('#marker-' + d.d_id).addClass('marker m-' + state);
 	nodes_all = update_nodes_all(nodes_all[0]);
 	setSortables();
@@ -4524,8 +4528,11 @@ function set_expand_position(d) {
 	var bbox;
 	if (d.article) {
 		bbox = $('.outline-item#viewAll').get(0).getBoundingClientRect();
-	} else {
-		bbox = $('.outline-item#' + d.d_id).get(0).getBoundingClientRect();
+	} else if (d.d_id) {
+		let item = $('.outline-item#' + d.d_id);
+		if (item) {
+			bbox = item.get(0).getBoundingClientRect();
+		}
 	}
 	var width = $('#expand').width();
 	var node_width = 0;

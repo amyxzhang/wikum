@@ -150,13 +150,12 @@ $.ajax({type: 'GET',
 
 		$('body').on('click', '#down-arrow', function(evt) {
 			var outlineItem = $(this).parent()[0];
-			var child = $(this).parent().next()[0];
 			let id = outlineItem.id;
 			var d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
 	    	if (d.replace && d.replace.length) {
 	    		expand(d);
 	    	}
-	    	else if (child) {
+	    	else if (d.children && d.children.length) {
 	    		collapse(d);
 	    	}
 	    	else {
@@ -168,12 +167,11 @@ $.ajax({type: 'GET',
 			var selectGroup = $(this).closest('.list-group-item').children(":first").get(0);
 			d = selectGroup ? nodes_all.filter(o => o.d_id == selectGroup.id)[0] : nodes_all[0];
 			var outlineText = $(selectGroup).children('.outline-text')[0];
-			var child = $(selectGroup).next().get(0);
 			if (lastClicked === outlineText) {
 	    		if (d.replace && d.replace.length) {
 		    		expand(d);
 		    	}
-		    	else if (child) {
+		    	else if (d.children && d.children.length) {
 		    		collapse(d);
 		    	}
 		    	else {
@@ -232,7 +230,6 @@ $.ajax({type: 'GET',
 		      	}
 		    } else {
 		    	var outlineItem = $(outlineText).parent()[0];
-			    var child = $(outlineText).parent().next()[0];
 			    // show only this item and children (subtree)
 				let id = outlineText.id.substring(13);
 			    d = id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == id)[0];
@@ -240,7 +237,7 @@ $.ajax({type: 'GET',
 		    		if (d.replace && d.replace.length) {
 			    		expand(d);
 			    	}
-		    		else if (child) {
+		    		else if (d.children && d.children.length) {
 			    		collapse(d);
 			    	}
 			    	else {
