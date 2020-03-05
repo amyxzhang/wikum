@@ -2528,24 +2528,20 @@ function insert_node_to_children(node_insert, node_parent, position = undefined)
 		if (position !== undefined && position <= node_parent.children.length) {
 			node_parent.children.splice(position, 0, node_insert);
 			added = true;
-			console.log('CHILDREN');
 		}
 
 		if (!added) {
 			node_parent.children.push(node_insert);
-			console.log('NEW');
 		}
 
 	} else if (node_parent.replace) {
 		if (position !== undefined && position <= node_parent.replace.length) {
 			node_parent.replace.splice(position, 0, node_insert);
 			added = true;
-			console.log('REPLACE');
 		}
 
 		if (!added) {
 			node_parent.replace.push(node_insert);
-			console.log('NEW REPLACE');
 		}
 	}
 }

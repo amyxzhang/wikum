@@ -904,10 +904,8 @@ class WikumConsumer(WebsocketConsumer):
             elif comment_next and comment_next == new_parent:
                 self.set_sibling_pointers(old_parent, comment_next, comment, sibling_prev, sibling_next, article)
             elif sibling_prev and old_parent != article and int(sibling_prev) == int(old_parent.id):
-                print("NEW SIB PREV IS THE OLD PARENT")
                 self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, True, False)
             elif sibling_next and old_parent != article and int(sibling_next) == int(old_parent.id):
-                print("NEW SIB NEXT IS THE OLD PARENT")
                 self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, False, True)
             else:
                 self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article)
@@ -929,10 +927,6 @@ class WikumConsumer(WebsocketConsumer):
                 h.comments.add(old_parent)
 
             recurse_up_post(comment)
-            if comment_prev:
-                self.print_pointers(comment_prev)
-            if comment_next:
-                self.print_pointers(comment_next)
             old_parent_id = 'article' if old_parent == article else old_parent.id
             prev_sib_id = sibling_prev if sibling_prev else 'None'
             res = {'position': data['position'], 'new_parent_id': new_parent_id, 'node_id': node_id, 'old_parent_id': old_parent_id, 'type': data['type']}
@@ -1278,9 +1272,6 @@ class WikumConsumer(WebsocketConsumer):
                     parent = Comment.objects.filter(disqus_id=comment.reply_to_disqus, article=a)
                     if parent.count() > 0:
                         recurse_up_post(parent[0])
-
-                for c in unselected_children:
-                    self.print_pointers(c)
                 
                 a.comment_num = a.comment_num - affected
                 a.percent_complete = percent_complete
