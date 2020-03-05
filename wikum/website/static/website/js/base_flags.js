@@ -3680,7 +3680,8 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 	  *	 summary = summary
 	  *  psum = partially summarized comment
 	  */
-	if (!shouldExpand) {
+	var noArrow = !shouldExpand;
+	if (noArrow) {
 		outline += `<div class="list-group nested-sortable">`;
 	}
 	if (d.children && d.children.length) {
@@ -3715,7 +3716,7 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 			outline += `</div>`;
 		}
 	}
-	if (!shouldExpand) outline += `</div>`;
+	if (noArrow) outline += `</div>`;
 	return outline
 }
 
