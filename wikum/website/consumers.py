@@ -928,7 +928,7 @@ class WikumConsumer(WebsocketConsumer):
             recurse_up_post(comment)
             old_parent_id = 'article' if old_parent == article else old_parent.id
             prev_sib_id = sibling_prev if sibling_prev else 'None'
-            res = {'position': data['position'], 'new_parent_id': new_parent_id, 'node_id': node_id, 'old_parent_id': old_parent_id, 'type': data['type']}
+            res = {'position': data['position'], 'user': username, 'new_parent_id': new_parent_id, 'node_id': node_id, 'old_parent_id': old_parent_id, 'type': data['type']}
             return res
         
         except Exception as e:

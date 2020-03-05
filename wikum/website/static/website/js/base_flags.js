@@ -2307,8 +2307,13 @@ function handle_channel_move_comments(res) {
 	setSortables();
 	update(oldParent);
 	update(newParent);
-	show_text(newParent);
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
+	
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		success_noty();
+		show_text(newParent);
+	} else {
+		show_text(nodes_all[0]);
+	}
 }
 
 function handle_channel_delete_comment_summary(res) {
@@ -2321,12 +2326,12 @@ function handle_channel_delete_comment_summary(res) {
 function handle_channel_hide_comment(res) {
 	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
 	let id = d.id;
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	$('#comment_' + id).remove();
 	delete_summary_node(id);
 	if (!d.replace_node) hide_node(id);
 	make_progress_bar();
 	update(d.parent);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	show_text(nodes_all[0]);
 }
 
