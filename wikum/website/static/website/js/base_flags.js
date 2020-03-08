@@ -8,6 +8,7 @@ current_summarize_d_id = [];
 var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
 var article_id = $('#article_id').text();
+var lastClicked = null;
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
@@ -2298,7 +2299,7 @@ function handle_channel_move_comments(res) {
 	}
 
     dragItem.parent = newParent;
-    if (!dragItem.replace_node) {
+    if (!dragItem.replace_node && newParent != oldParent) {
     	dragItem.summarized = false;
     }
 
@@ -4307,10 +4308,12 @@ function highlight_link(from_id, to_id) {
 function show_parent(id) {
 	d = nodes_all[id-1];
 	unextra_highlight_node(id);
-	parent = d.parent;
-	highlight_node(parent.id);
-	highlight_link(parent.id, id);
-	show_text('clicked');
+	// parent = d.parent;
+	// highlight_node(parent.id);
+	// highlight_link(parent.id, id);
+	show_text(d.parent);
+	var outlineItem = $('.outline-item#' + d.parent.d_id);
+	redOutlineBorder(outlineItem);
 }
 
 function show_text(d) {
@@ -5065,7 +5068,7 @@ function redOutlineBorder(element) {
 	$(child).children('.list-countainer').each(function () {
 		$(this).children('.list-group-line').addClass('outline-selected');
 	});
-	
+	lastClicked = $(element).children('.outline-text')[0];
 }
 
 function color(d) {
