@@ -1169,6 +1169,12 @@ form.modal-content {
 #controldiv .btn-xs {
 	font-size: 11px;
 	max-width: 85px;
+	margin: 3px;
+}
+
+#paginate {
+	display: flex;
+    flex-direction: column;
 }
 
 .editors {
