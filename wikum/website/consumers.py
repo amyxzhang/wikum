@@ -545,6 +545,8 @@ class WikumConsumer(WebsocketConsumer):
             unselected_children_ids = data['unselected_children']
             first_selected_id = data['first_selected']
             last_selected_id = data['last_selected']
+            last_shown_child_id = data['last_shown_child']
+            first_shown_child_id = data['first_shown_child']
             
             delete_nodes = data['delete_nodes']
             
@@ -560,6 +562,19 @@ class WikumConsumer(WebsocketConsumer):
             unselected_children = [Comment.objects.get(id=comment_id) for comment_id in unselected_children_ids]
             first_selected = Comment.objects.get(id=first_selected_id)
             last_selected = Comment.objects.get(id=last_selected_id)
+            last_shown_child = None
+            first_shown_child = None
+            last_shown_child_sibnext = None
+            first_shown_child_sibprev = None
+            # first_shown_child_id and last_shown_child_id are 'None' when there is no next page and the parent is article
+            if last_shown_child_id != 'None':
+                last_shown_child = Comment.objects.get(id=last_shown_child_id)
+                if last_shown_child.sibling_next != None:
+                    last_shown_child_sibnext = Comment.objects.get(disqus_id=last_shown_child.sibling_next)
+            if first_shown_child_id != 'None':
+                first_shown_child = Comment.objects.get(id=first_shown_child_id)
+                if first_shown_child.sibling_prev != None:
+                    first_shown_child_sibprev = Comment.objects.get(disqus_id=first_shown_child.sibling_prev)
             
             lowest_child = children[0]
             for c in children:
@@ -586,6 +601,7 @@ class WikumConsumer(WebsocketConsumer):
                 self.delete_node(node, a)
 
             self.mark_children_summarized(new_comment, children)
+
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
             
@@ -593,6 +609,7 @@ class WikumConsumer(WebsocketConsumer):
                 parent = parent[0]
             else:
                 parent = a
+            original_last_child = Comment.objects.get(disqus_id=parent.last_child, article=a)
             # Set the parent's last_child and first_child pointers
             parent.last_child = new_id
             if first_selected.disqus_id == parent.first_child:
@@ -610,11 +627,27 @@ class WikumConsumer(WebsocketConsumer):
             else:
                 for index, comment in enumerate(unselected_children):
                     if index == 0:
-                        comment.sibling_prev = None
+                        if first_shown_child_id == 'None' and first_shown_child_sibprev != None:
+                            comment.sibling_prev = None
+                        else:
+                            comment.sibling_prev = first_shown_child_sibprev.disqus_id
+                            first_shown_child_sibprev.sibling_next = comment.disqus_id
+                            first_shown_child_sibprev.save()
+                            recurse_up_post(first_shown_child_sibprev)
                         comment.sibling_next = unselected_children[index + 1].disqus_id
                     elif index == len(unselected_children) - 1:
-                        comment.sibling_next = new_id
-                        new_comment.sibling_prev = comment.disqus_id
+                        if last_shown_child_id == 'None' and last_shown_child_sibnext != None:
+                            comment.sibling_next = new_id
+                            new_comment.sibling_prev = comment.disqus_id
+                        else:
+                            original_last_child.sibling_next = new_id
+                            new_comment.sibling_prev = original_last_child.disqus_id
+                            comment.sibling_next = last_shown_child_sibnext.disqus_id
+                            last_shown_child_sibnext.sibling_prev = comment.disqus_id
+                            original_last_child.save()
+                            last_shown_child_sibnext.save()
+                            recurse_up_post(original_last_child)
+                            recurse_up_post(last_shown_child_sibnext)
                         comment.sibling_prev = unselected_children[index - 1].disqus_id
                     else:
                         comment.sibling_next = unselected_children[index + 1].disqus_id

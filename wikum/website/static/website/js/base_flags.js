@@ -1635,9 +1635,18 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 				}
 			}
 			var parent_of_minlevel = lowest_d.parent;
+			var last_shown_child = 'None';
+			var first_shown_child = 'None';
+			if (parent_of_minlevel === nodes_all[0] && $('#next_page').length > 0) {
+				last_shown_child = parent_of_minlevel.children[parent_of_minlevel.children.length-1].d_id;
+				first_shown_child = parent_of_minlevel.children[0].d_id;
+			}
+
 			var all_children_dids = parent_of_minlevel.children.map(c => c.d_id);
 			var unselected_children_dids = all_children_dids.filter((el) => !children_dids.includes(el));
 			data.children = children_dids;
+			data.last_shown_child = last_shown_child;
+			data.first_shown_child = first_shown_child;
 			data.unselected_children = unselected_children_dids;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
@@ -2084,6 +2093,10 @@ function handle_channel_summarize_selected(res) {
 			} else {
 				$('#comment_' + children[i].id).remove();
 			}
+		}
+	} else {
+		for (var i=0; i<children.length; i++) {
+			$('#comment_' + children[i].id).remove();
 		}
 	}
 	clear_box_top();
