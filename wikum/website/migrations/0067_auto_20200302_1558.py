@@ -18,7 +18,7 @@ def set_link_article(apps, node, article):
     else:
         disqus_id = node.disqus_id
     Comment = apps.get_model('website', 'Comment')
-    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article).order_by('import_order')
+    children = Comment.objects.filter(reply_to_disqus=disqus_id, article=article, hidden=False).order_by('import_order')
     if len(children) == 0:
         node.first_child = None
         node.last_child = None

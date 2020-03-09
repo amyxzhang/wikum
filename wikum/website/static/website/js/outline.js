@@ -7,7 +7,6 @@ var highlighted_text = null;
 var highlighted_comm = null;
 var highlight_text = null;
 var ctrlIsPressed = false;
-var lastClicked = null;
 var clicked_dids = {};
 var article_id = $('#article_id').text();
 
