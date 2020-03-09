@@ -594,8 +594,7 @@ class WikumConsumer(WebsocketConsumer):
             else:
                 parent = a
             # Set the parent's last_child and first_child pointers
-            if last_selected.disqus_id == parent.last_child:
-                parent.last_child = new_id
+            parent.last_child = new_id
             if first_selected.disqus_id == parent.first_child:
                 if len(unselected_children) > 0:
                     parent.first_child = unselected_children[0].disqus_id
@@ -610,6 +609,7 @@ class WikumConsumer(WebsocketConsumer):
                 comment.save()
             else:
                 for index, comment in enumerate(unselected_children):
+                    print(comment.summary if comment.is_replacement else comment.text)
                     if index == 0:
                         comment.sibling_prev = None
                         comment.sibling_next = unselected_children[index + 1].disqus_id
@@ -668,6 +668,7 @@ class WikumConsumer(WebsocketConsumer):
             res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
             res['size'] = data['size']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
+            self.print_pointers(new_comment)
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
@@ -1114,6 +1115,7 @@ class WikumConsumer(WebsocketConsumer):
                 parent_node.save()
                 article.summary_num = article.summary_num - 1
                 article.save()
+                self.print_pointers(first_child)
         except Exception as e:
             print(e)
 
