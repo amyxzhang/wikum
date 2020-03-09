@@ -113,13 +113,13 @@ $.ajax({type: 'GET',
 		if (next > 0) {
 			var prev = next - 1;
 		  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter +  '&next=';
-		   text += '<a class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
+		   text += '<a id="prev_page" class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
 		
 		}
 		if (count == 15) {
 			var next_sub = next + 1;
 		  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter + '&next=';
-		  text += ' <a class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
+		  text += ' <a id="next_page" class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
 		 
 		}
 		 $('#paginate').html(text);
