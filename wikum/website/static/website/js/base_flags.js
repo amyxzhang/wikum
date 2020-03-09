@@ -1079,7 +1079,12 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
+			var parent_of_minlevel = lowest_d.parent;
+			var all_children_dids = parent_of_minlevel.children.map(c => c.d_id);
+			var unselected_children_dids = all_children_dids.filter((el) => !children.includes(el));
+
 			data.children = children;
+			data.unselected_children = unselected_children_dids;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
 			data.type = 'hide_comments';
@@ -1632,7 +1637,6 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 			var parent_of_minlevel = lowest_d.parent;
 			var all_children_dids = parent_of_minlevel.children.map(c => c.d_id);
 			var unselected_children_dids = all_children_dids.filter((el) => !children_dids.includes(el));
-			console.log(unselected_children_dids);
 			data.children = children_dids;
 			data.unselected_children = unselected_children_dids;
 			data.first_selected = lowest_d.d_id;
