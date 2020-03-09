@@ -1842,25 +1842,24 @@ function handle_channel_message(res) {
 			insert_node_to_children(new_d, d);
 		}
 	}
-	update(new_d.parent);
+	if (res.type === 'reply_comment' ||$('#next_page').length === 0) {
+		update(new_d.parent);
 
-	var text = construct_comment(new_d);
-	$('#comment_' + new_d.d_id).html(text);
-	$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
-	//author_hover();
-	show_text(nodes_all[0]);
-	
-	d3.select("#node_" + new_d.d_id).style("fill",color);
-	if (res.type === 'reply_comment') d3.select('#node_' + d.id).style('fill', color);
+		var text = construct_comment(new_d);
+		$('#comment_' + new_d.d_id).html(text);
+		$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
+		//author_hover();
+		show_text(nodes_all[0]);
 
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
-		$("#box").scrollTo("#comment_" + new_d.id, 500);
+		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+			$("#box").scrollTo("#comment_" + new_d.id, 500);
+		}
+		$('#comment_' + new_d.id)
+		  .animate({borderColor:'red'}, 400)
+		  .delay(400)
+		  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
+		highlight_box(new_d.d_id);
 	}
-	$('#comment_' + new_d.id)
-	  .animate({borderColor:'red'}, 400)
-	  .delay(400)
-	  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
-	highlight_box(new_d.d_id);
 	make_progress_bar();
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 }
@@ -2044,51 +2043,47 @@ function handle_channel_summarize_selected(res) {
 			}
 		}
 	}
+	if ($('#next_page').length === 0) {
+		update(new_d.parent);
 
-	update(new_d.parent);
+		show_text(nodes_all[0]);
 
-	show_text(nodes_all[0]);
+		var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
+		
+		if ($('#access_mode').attr('data-access') == "0") {
+			text += `<footer>
+				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
+				<a`;
+			if (new_d.is_locked) text += `class="disabled" `;
+			text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
+				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}" data-did="${new_d.d_id}">Delete Summary</a>
+				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
+			</footer>`;
+		}
 
-	d3.select("#node_" + new_d.id)
-	.style("fill",color);
+		else if ($('#access_mode').attr('data-access') == "1") {
+			text += `<footer>
+				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
+			</footer>`;
+		}
 
-	var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
-	
-	if ($('#access_mode').attr('data-access') == "0") {
-		text += `<footer>
-			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
-			<a`;
-		if (new_d.is_locked) text += `class="disabled" `;
-		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}" data-did="${new_d.d_id}">Delete Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
-		</footer>`;
-	}
+		else if ($('#access_mode').attr('data-access') == "2") {
+			text += `<footer><a`
+			if (new_d.is_locked) text += `class="disabled" `;
+			text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
+				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete Summary</a>
+				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
+			`;
+		}
 
-	else if ($('#access_mode').attr('data-access') == "1") {
-		text += `<footer>
-			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
-		</footer>`;
-	}
-
-	else if ($('#access_mode').attr('data-access') == "2") {
-		text += `<footer><a`
-		if (new_d.is_locked) text += `class="disabled" `;
-		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete Summary</a>
-			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate Summary</a>
-		`;
-	}
-
-	// TODO(stian8): add options for commenting: Reply
-
-	for (var i=0; i<children.length; i++) {
-		if (children[i] == highest_d) {
-			$('#comment_' + children[i].id).html(text);
-			$('#comment_' + children[i].id).addClass('summary_box');
-			$('#comment_' + children[i].id).attr('id', 'comment_' + new_d.id);
-		} else {
-			$('#comment_' + children[i].id).remove();
+		for (var i=0; i<children.length; i++) {
+			if (children[i] == highest_d) {
+				$('#comment_' + children[i].id).html(text);
+				$('#comment_' + children[i].id).addClass('summary_box');
+				$('#comment_' + children[i].id).attr('id', 'comment_' + new_d.id);
+			} else {
+				$('#comment_' + children[i].id).remove();
+			}
 		}
 	}
 	clear_box_top();
