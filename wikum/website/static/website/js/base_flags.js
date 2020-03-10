@@ -1201,6 +1201,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 	activeBox = 'summarize';
 
 	var type = $(e.relatedTarget).data('type');
+	$('#empty_warning_single').text('');
 
 	var ids = [];
 	var dids = [];
@@ -1323,8 +1324,12 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 		evt.preventDefault();
 		dids_in_use = [];
 		send_update_locks([did], false);
-		$('#summarize_modal_box').modal('toggle');
 		var comment = $('#summarize_comment_textarea').val().trim();
+		if (comment === '') {
+			$('#empty_warning_single').text('Summary cannot be empty');
+			return false;
+		}
+		$('#summarize_modal_box').modal('toggle');
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,
@@ -1342,6 +1347,7 @@ $('#summarize_modal_box').on('show.bs.modal', function(e) {
 $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 	activeBox = 'summarize_multiple';
+	$('#empty_warning_multiple').text('');
 
 	$("#summarize_multiple_modal_box").css({
 	    'margin-top': function () {
@@ -1588,8 +1594,14 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 	$('#summarize_multiple_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
-		$('#summarize_multiple_modal_box').modal('toggle');
+		tinymce.triggerSave();
 		var comment = tinyMCE.get('summarize_multiple_comment_textarea').getContent().trim();
+		if (comment === '') {
+			$('#empty_warning_multiple').text('Summary cannot be empty');
+			return false;
+		}
+		$('#summarize_multiple_modal_box').modal('toggle');
+		if (comment)
 		var article_id = $('#article_id').text();
 		var csrf = $('#csrf').text();
 		var data = {csrfmiddlewaretoken: csrf,

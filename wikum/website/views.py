@@ -1281,6 +1281,8 @@ def viz_data(request):
                     current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
                     if current_node:
                         posts.append(current_node)
+            for c in posts:
+                print_pointers(c, a)
         elif sort == 'id':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
         elif sort == 'likes':
