@@ -390,6 +390,7 @@ textarea {
 	display: flex;
 	flex-direction: row;
 	position: relative;
+	max-width: max-content;
 }
 
 #outline .list-group-line {
@@ -415,7 +416,7 @@ textarea {
 #outline .list-group-item {
 	border: none;
 	/* border-left: 1px solid #BEBEBE; */
-	padding: 10px 0 10px 15px;
+	padding: 10px 10px 10px 15px;
 	background-color: transparent;
 }
 
@@ -534,7 +535,7 @@ text {
 	background: rgba(255,255,255,0.8);
 	border: 1px #cccccc solid;
 	text-align: right;
-	z-index: 100;
+	z-index: 1000;
 }
 
 a {
@@ -632,7 +633,6 @@ rect.selection {
 	}
 
 	.comment_box footer {
-		display: none;
 		padding: 0;
 		margin: -.2em -1.2em;
 		transition-duration: 3s;

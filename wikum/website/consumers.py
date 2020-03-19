@@ -954,6 +954,7 @@ class WikumConsumer(WebsocketConsumer):
             
             if new_parent != old_parent:
                 self.mark_children_unsummarized(comment)
+            recurse_down_num_subtree(comment)
             article.last_updated = datetime.datetime.now()
             article.save()
             

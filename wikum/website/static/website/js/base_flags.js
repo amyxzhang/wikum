@@ -376,17 +376,6 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	});
 });
 
-$(document).on('mouseover', '.comment_box', function() {
-	$(this).find('footer').css('display', 'block');
-});
-
-$(document).on('mouseleave', '.comment_box', function() {
-	let did = $(this).find('footer a').data('did');
-	if ($('div[data-reply-did="' + did + '"]').is(":visible") == false) {
-		$(this).find('footer').css('display', 'none');
-	}
-});
-
 $('#reply_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	$("#reply_comment_textarea").val('');
