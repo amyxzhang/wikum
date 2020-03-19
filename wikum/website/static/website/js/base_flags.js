@@ -1080,7 +1080,8 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-
+			console.log(children);
+			console.log(data.ids);
 			data.children = children;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
@@ -2051,8 +2052,6 @@ function handle_channel_summarize_selected(res) {
 		children[d].parent = new_d;
 	}
 
-	insert_node_to_children(new_d, new_d.parent);
-
 	delete_summary_nodes = res.delete_summary_node_dids;
 	for (var i=0; i<delete_summary_nodes.length; i++) {
 		let node = nodes_all.filter(o => o.d_id == delete_summary_nodes[i])[0];
@@ -2075,6 +2074,7 @@ function handle_channel_summarize_selected(res) {
 		}
 	}
 	if ($('#next_page').length === 0) {
+		insert_node_to_children(new_d, new_d.parent);
 		update(new_d.parent);
 
 		show_text(nodes_all[0]);
@@ -2341,7 +2341,7 @@ function handle_channel_move_comments(res) {
 
     dragItem.parent = newParent;
     if (!dragItem.replace_node && newParent != oldParent) {
-    	dragItem.summarized = false;
+    	mark_children_unsummarized(dragItem);
     }
 
     var notCollapsedSummary = !newParent.replace || (newParent.replace && !newParent.replace.length);
@@ -4841,10 +4841,32 @@ function mark_children_summarized(d) {
 			mark_children_summarized(d.children[i]);
 		}
 	}
+	if (d._children) {
+		for (var i=0; i<d._children.length; i++) {
+			d._children[i].summarized = true;
+			mark_children_summarized(d._children[i]);
+		}
+	}
 	if (d.replace) {
 		for (var i=0; i<d.replace.length; i++) {
 			d.replace[i].summarized = true;
 			mark_children_summarized(d.replace[i]);
+		}
+	}
+}
+
+function mark_children_unsummarized(d) {
+	if (!d.replace_node) d.summarized = false;
+	if (d.children) {
+		for (var i=0; i<d.children.length; i++) {
+			if (!d.replace_node) d.children[i].summarized = false;
+			mark_children_unsummarized(d.children[i]);
+		}
+	}
+	if (d._children) {
+		for (var i=0; i<d._children.length; i++) {
+			if (!d.replace_node) d._children[i].summarized = false;
+			mark_children_unsummarized(d._children[i]);
 		}
 	}
 }

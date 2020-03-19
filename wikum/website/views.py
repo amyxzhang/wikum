@@ -684,7 +684,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                     current_node = next((c for c in c1 if c.disqus_id == current_node.sibling_next), None)
                     if current_node:
                         sorted_posts.append(current_node)
-            sorted_posts = sorted_posts
             if len(sorted_posts) == 0:
                 vals = []
                 hid = []
