@@ -103,26 +103,26 @@ $.ajax({type: 'GET',
 		show_text(nodes_all[0]);
 		make_progress_bar();
 
-		// count = 0;
-		// if (nodes_all[0].children) {
-		// 	count += nodes_all[0].children.length;
-		// 	count += nodes_all[0].hid.length;
-		// }
+		count = 0;
+		if (nodes_all[0].children) {
+			count += nodes_all[0].children.length;
+			count += nodes_all[0].hid.length;
+		}
 		
-		// var text = '';
-		// if (next > 0) {
-		// 	var prev = next - 1;
-		//   var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter +  '&next=';
-		//    text += '<a id="prev_page" class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
+		var text = '';
+		if (next > 0) {
+			var prev = next - 1;
+		  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter +  '&next=';
+		   text += '<a id="prev_page" class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
 		
-		// }
-		// if (count == 15) {
-		// 	var next_sub = next + 1;
-		//   var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter + '&next=';
-		//   text += ' <a id="next_page" class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
+		}
+		if (count == 15) {
+			var next_sub = next + 1;
+		  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter + '&next=';
+		  text += ' <a id="next_page" class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
 		 
-		// }
-		//  $('#paginate').html(text);
+		}
+		 $('#paginate').html(text);
 
 		$('body').on('mouseenter', '.marker', function() {
 			// hover gray background text

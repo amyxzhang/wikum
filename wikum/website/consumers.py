@@ -60,6 +60,7 @@ class WikumConsumer(WebsocketConsumer):
         data = {'to_lock': False, 'ids': ids, 'type': 'update_locks'}
         message = {'user': username, 'type': 'update_locks', 'ids': message_ids, 'to_lock': False}
         self.handle_update_locks(data, username)
+        self.handle_update_drag({'enable_drag': 'enable', 'type': 'update_drag_locks'}, username)
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,
             {
@@ -105,6 +106,8 @@ class WikumConsumer(WebsocketConsumer):
                     message = self.handle_delete_tags(data, username)
                 elif data_type == 'update_locks':
                     message = self.handle_update_locks(data, username)
+                elif data_type == 'update_drag_locks':
+                    message = self.handle_update_drag(data, username)
                 elif data_type == 'summarize_comment':
                     message = self.handle_summarize_comment(data, username)
                 elif data_type == 'summarize_selected':
@@ -452,7 +455,7 @@ class WikumConsumer(WebsocketConsumer):
             for id in ids:
                 if username is not 'Anonymous':
                     c = Comment.objects.get(id=id)
-                    if data['to_lock'] :
+                    if data['to_lock']:
                         self.user_to_locked_nodes[username].append(id)
                         c.is_locked = True
                     else:
@@ -461,6 +464,22 @@ class WikumConsumer(WebsocketConsumer):
                     c.save()
                     recurse_up_post(c)
             res = {'user': username, 'type': data['type'], 'ids': data['ids'], 'to_lock': data['to_lock']}
+            return res
+        except Exception as e:
+            print(e)
+            return {'user': username}
+
+    def handle_update_drag(self, data, username):
+        try:
+            article_id = self.article_id
+            a = Article.objects.get(id=article_id)
+            unique_user_id = -1
+            if 'unique_user_id' in data:
+                unique_user_id = data['unique_user_id']
+            enable_or_disable = 'enable'
+            if data['to_lock']:
+                enable_or_disable = 'disable'
+            res = {'user': username, 'type': data['type'], 'unique_user_id': unique_user_id, 'enable': enable_or_disable}
             return res
         except Exception as e:
             print(e)
@@ -542,11 +561,8 @@ class WikumConsumer(WebsocketConsumer):
             ids = data['ids']
             # children are ids of top level selected
             children_ids = data['children']
-            unselected_children_ids = data['unselected_children']
             first_selected_id = data['first_selected']
             last_selected_id = data['last_selected']
-            last_shown_child_id = data['last_shown_child']
-            first_shown_child_id = data['first_shown_child']
             
             delete_nodes = data['delete_nodes']
             
@@ -559,31 +575,15 @@ class WikumConsumer(WebsocketConsumer):
             # comments in order
             comments = [Comment.objects.get(id=comment_id) for comment_id in ids]
             children = [c for c in comments if c.id in children_ids]
-            unselected_children = [Comment.objects.get(id=comment_id) for comment_id in unselected_children_ids]
             first_selected = Comment.objects.get(id=first_selected_id)
             last_selected = Comment.objects.get(id=last_selected_id)
-            last_shown_child = None
-            first_shown_child = None
-            last_shown_child_sibnext = None
-            first_shown_child_sibprev = None
-            # first_shown_child_id and last_shown_child_id are 'None' when there is no next page and the parent is article
-            if last_shown_child_id != 'None':
-                last_shown_child = Comment.objects.get(id=last_shown_child_id)
-                if last_shown_child.sibling_next != None:
-                    last_shown_child_sibnext = Comment.objects.get(disqus_id=last_shown_child.sibling_next)
-            if first_shown_child_id != 'None':
-                first_shown_child = Comment.objects.get(id=first_shown_child_id)
-                if first_shown_child.sibling_prev != None:
-                    first_shown_child_sibprev = Comment.objects.get(disqus_id=first_shown_child.sibling_prev)
             
             lowest_child = children[0]
             for c in children:
                 c.summarized = True
                 if c.import_order < lowest_child.import_order:
                     lowest_child = c
-
             new_id = random_with_N_digits(10)
-
             new_comment = Comment.objects.create(article=a,
                                                  is_replacement=True,
                                                  reply_to_disqus=first_selected.reply_to_disqus,
@@ -596,20 +596,26 @@ class WikumConsumer(WebsocketConsumer):
                                                  points=first_selected.points,
                                                  text_len=len(summary),
                                                  import_order=lowest_child.import_order)
-
             for node in delete_nodes:
                 self.delete_node(node, a)
-
             self.mark_children_summarized(new_comment, children)
-
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
-            
             if parent.count() > 0:
                 parent = parent[0]
             else:
                 parent = a
-            original_last_child = Comment.objects.get(disqus_id=parent.last_child, article=a)
+            all_children = Comment.objects.filter(reply_to_disqus=first_selected.reply_to_disqus, hidden=False, article=a)
+            unselected_children = []
+            current_node = next((c for c in all_children if c.disqus_id == parent.first_child), None)
+            if current_node:
+                if current_node not in children and current_node != new_comment:
+                    unselected_children.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in all_children if c.disqus_id == current_node.sibling_next), None)
+                    if current_node and current_node not in children and current_node != new_comment:
+                        unselected_children.append(current_node)
+            
             # Set the parent's last_child and first_child pointers
             parent.last_child = new_id
             if first_selected.disqus_id == parent.first_child:
@@ -618,7 +624,6 @@ class WikumConsumer(WebsocketConsumer):
                 else:
                     parent.first_child = new_id
             parent.save()
-
             if len(unselected_children) == 1:
                 comment = unselected_children[0]
                 comment.sibling_prev = None
@@ -626,35 +631,18 @@ class WikumConsumer(WebsocketConsumer):
                 comment.save()
             else:
                 for index, comment in enumerate(unselected_children):
+                    print(comment.summary if comment.is_replacement else comment.text)
                     if index == 0:
-                        if first_shown_child_id == 'None' and first_shown_child_sibprev != None:
-                            comment.sibling_prev = None
-                        else:
-                            comment.sibling_prev = first_shown_child_sibprev.disqus_id
-                            first_shown_child_sibprev.sibling_next = comment.disqus_id
-                            first_shown_child_sibprev.save()
-                            recurse_up_post(first_shown_child_sibprev)
+                        comment.sibling_prev = None
                         comment.sibling_next = unselected_children[index + 1].disqus_id
-                    elif index == len(unselected_children) - 1:
-                        if last_shown_child_id == 'None' and last_shown_child_sibnext != None:
-                            comment.sibling_next = new_id
-                            new_comment.sibling_prev = comment.disqus_id
-                        else:
-                            original_last_child.sibling_next = new_id
-                            new_comment.sibling_prev = original_last_child.disqus_id
-                            comment.sibling_next = last_shown_child_sibnext.disqus_id
-                            last_shown_child_sibnext.sibling_prev = comment.disqus_id
-                            original_last_child.save()
-                            last_shown_child_sibnext.save()
-                            recurse_up_post(original_last_child)
-                            recurse_up_post(last_shown_child_sibnext)
+                    if index == len(unselected_children) - 1:
+                        comment.sibling_next = new_id
+                        new_comment.sibling_prev = comment.disqus_id
                         comment.sibling_prev = unselected_children[index - 1].disqus_id
                     else:
                         comment.sibling_next = unselected_children[index + 1].disqus_id
                         comment.sibling_prev = unselected_children[index - 1].disqus_id
                     comment.save()
-                    recurse_up_post(comment)
-
             # Set the sibling pointers in the selected comments
             for index, comment in enumerate(children):
                 if index == 0:
@@ -676,7 +664,6 @@ class WikumConsumer(WebsocketConsumer):
                 comment.save()
 
             recurse_up_post(new_comment)
-
             recurse_down_num_subtree(new_comment)
 
             a.summary_num = a.summary_num + 1
@@ -884,11 +871,27 @@ class WikumConsumer(WebsocketConsumer):
             node_id = data['node']
             sibling_prev = data['sibling_before']
             sibling_next = data['sibling_after']
-            
             req_user = self.scope["user"] if self.scope["user"].is_authenticated else None
             
             comment = Comment.objects.get(id=node_id)
             article = Article.objects.get(id=self.article_id)
+            new_comment_prev = None
+            new_comment_next = None
+            if sibling_prev != 'None':
+                new_comment_prev = Comment.objects.get(id=sibling_prev, article=article)
+            else:
+                new_comment_prev = None
+            if sibling_next != 'None':
+                new_comment_next = Comment.objects.get(id=sibling_next, article=article)
+            else:
+                new_comment_next = None
+
+            if sibling_prev == 'None' and new_comment_next != None:
+                if new_comment_next.sibling_prev:
+                    new_comment_prev = Comment.objects.get(disqus_id=new_comment_next.sibling_prev, article=article)
+            if sibling_next == 'None' and new_comment_prev != None:
+                if new_comment_prev.sibling_next:
+                    new_comment_next = Comment.objects.get(disqus_id=new_comment_prev.sibling_next, article=article)
             
             # Set child and sibling pointers of surrounding nodes in original location
             old_parent = None
@@ -916,30 +919,29 @@ class WikumConsumer(WebsocketConsumer):
                 comment_prev = Comment.objects.filter(disqus_id=comment.sibling_prev, article=article)
                 if comment_prev.count() > 0:
                     comment_prev = comment_prev[0]
-                    comment_prev.sibling_next = comment.sibling_next
-                    comment_prev.save()
-                    recurse_up_post(comment_prev)
             if comment.sibling_next:
                 comment_next = Comment.objects.filter(disqus_id=comment.sibling_next, article=article)
                 if comment_next.count() > 0:
                     comment_next = comment_next[0]
-                    comment_next.sibling_prev = comment.sibling_prev
-                    comment_next.save()
-                    recurse_up_post(comment_next)
 
             # Set child and sibling pointers of surrounding nodes in new location
             if new_parent == old_parent:
-                self.set_sibling_pointers(old_parent, old_parent, comment, sibling_prev, sibling_next, article)
+                if new_comment_prev == comment_next:
+                    self.set_sibling_pointers(old_parent, old_parent, comment, comment_next, new_comment_next, comment_prev, comment_next, article)
+                elif new_comment_next == comment_prev:
+                    self.set_sibling_pointers(old_parent, old_parent, comment, new_comment_prev, comment_prev, comment_prev, comment_next, article)
+                else:
+                    self.set_sibling_pointers(old_parent, old_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article)
             elif comment_prev and comment_prev == new_parent:
-                self.set_sibling_pointers(old_parent, comment_prev, comment, sibling_prev, sibling_next, article)
+                self.set_sibling_pointers(old_parent, comment_prev, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article)
             elif comment_next and comment_next == new_parent:
-                self.set_sibling_pointers(old_parent, comment_next, comment, sibling_prev, sibling_next, article)
-            elif sibling_prev != 'None' and old_parent != article and int(sibling_prev) == int(old_parent.id):
-                self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, True, False)
-            elif sibling_next != 'None' and old_parent != article and int(sibling_next) == int(old_parent.id):
-                self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article, False, True)
+                self.set_sibling_pointers(old_parent, comment_next, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article)
+            elif new_comment_prev != None and old_parent != article and int(new_comment_prev.id) == int(old_parent.id):
+                self.set_sibling_pointers(old_parent, new_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article, True, False)
+            elif new_comment_next != None and old_parent != article and int(new_comment_next.id) == int(old_parent.id):
+                self.set_sibling_pointers(old_parent, new_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article, False, True) 
             else:
-                self.set_sibling_pointers(old_parent, new_parent, comment, sibling_prev, sibling_next, article)
+                self.set_sibling_pointers(old_parent, new_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article)
             
             article.last_updated = datetime.datetime.now()
             article.save()
@@ -960,6 +962,11 @@ class WikumConsumer(WebsocketConsumer):
             old_parent_id = 'article' if old_parent == article else old_parent.id
             prev_sib_id = sibling_prev if sibling_prev else 'None'
             res = {'position': data['position'], 'user': username, 'new_parent_id': new_parent_id, 'node_id': node_id, 'old_parent_id': old_parent_id, 'type': data['type']}
+            self.print_pointers(comment)
+            if new_comment_prev:
+                self.print_pointers(new_comment_prev)
+            if new_comment_next:
+                self.print_pointers(new_comment_next)
             return res
         
         except Exception as e:
@@ -968,8 +975,17 @@ class WikumConsumer(WebsocketConsumer):
             print(traceback.format_exc())
             return {'user': username}
 
-    def set_sibling_pointers(self, old_parent, new_parent, comment, sibling_prev, sibling_next, article, is_newsibprev_oldparent=False, is_newsibnext_oldparent=False):
-        if sibling_prev == 'None':
+    def set_sibling_pointers(self, old_parent, new_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article, is_newsibprev_oldparent=False, is_newsibnext_oldparent=False):
+        if comment_prev:
+            comment_prev.sibling_next = comment.sibling_next
+            comment_prev.save()
+            recurse_up_post(comment_prev)
+        if comment_next:
+            comment_next.sibling_prev = comment.sibling_prev
+            comment_next.save()
+            recurse_up_post(comment_next)
+
+        if new_comment_prev == None:
             comment.sibling_prev = None
             new_parent.first_child = comment.disqus_id
         else:
@@ -978,12 +994,11 @@ class WikumConsumer(WebsocketConsumer):
                 old_parent.sibling_next = comment.disqus_id
                 old_parent.save()
             else:
-                new_comment_prev = Comment.objects.get(id=sibling_prev, article=article)
-                if new_comment_prev:
-                    comment.sibling_prev = new_comment_prev.disqus_id
-                    new_comment_prev.sibling_next = comment.disqus_id
-                    new_comment_prev.save()
-        if sibling_next == 'None':
+                comment.sibling_prev = new_comment_prev.disqus_id
+                new_comment_prev.sibling_next = comment.disqus_id
+                new_comment_prev.save()
+                recurse_up_post(new_comment_prev)
+        if new_comment_next == None:
             comment.sibling_next = None
             new_parent.last_child = comment.disqus_id
         else:
@@ -992,11 +1007,10 @@ class WikumConsumer(WebsocketConsumer):
                 old_parent.sibling_prev = comment.disqus_id
                 old_parent.save()
             else:
-                new_comment_next = Comment.objects.get(id=sibling_next, article=article)
-                if new_comment_next:
-                    comment.sibling_next = new_comment_next.disqus_id
-                    new_comment_next.sibling_prev = comment.disqus_id
-                    new_comment_next.save()
+                comment.sibling_next = new_comment_next.disqus_id
+                new_comment_next.sibling_prev = comment.disqus_id
+                new_comment_next.save()
+                recurse_up_post(new_comment_next)
         if new_parent == article:
             comment.reply_to_disqus = None
         else:
@@ -1237,7 +1251,6 @@ class WikumConsumer(WebsocketConsumer):
             
             ids = data['ids']
             children_ids = data['children']
-            unselected_children_ids = data['unselected_children']
             explain = data['comment']
             first_selected_id = data['first_selected']
             last_selected_id = data['last_selected']
@@ -1259,7 +1272,16 @@ class WikumConsumer(WebsocketConsumer):
                 else:
                     parent = a
 
-                unselected_children = [Comment.objects.get(id=comment_id) for comment_id in unselected_children_ids]
+                unselected_children = []
+                current_node = next((c for c in all_children if c.disqus_id == parent.first_child), None)
+                if current_node:
+                    if current_node not in children and current_node != new_comment:
+                        unselected_children.append(current_node)
+                    while current_node and current_node.sibling_next:
+                        current_node = next((c for c in all_children if c.disqus_id == current_node.sibling_next), None)
+                        if current_node and current_node not in children and current_node != new_comment:
+                            unselected_children.append(current_node)
+
                 # Set the parent's last_child and first_child pointers
                 if first_selected.disqus_id == parent.first_child:
                     if len(unselected_children) > 0:

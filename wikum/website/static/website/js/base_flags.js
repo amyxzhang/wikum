@@ -7,6 +7,7 @@ current_summarize_d_id = [];
 
 var article_url = $('#article_url').text();
 var owner = getParameterByName('owner');
+var unique_user_id = Math.floor(Math.random() * 1000000000);
 var article_id = $('#article_id').text();
 var lastClicked = null;
 
@@ -1079,12 +1080,8 @@ $('#hide_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-			var parent_of_minlevel = lowest_d.parent;
-			var all_children_dids = parent_of_minlevel.children.map(c => c.d_id);
-			var unselected_children_dids = all_children_dids.filter((el) => !children.includes(el));
 
 			data.children = children;
-			data.unselected_children = unselected_children_dids;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
 			data.type = 'hide_comments';
@@ -1183,6 +1180,17 @@ function insert_quote(highlighted_text, did) {
     var textAfter  = v.substring( cursorPos, v.length );
     box.val( textBefore + '\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n' + textAfter );
     copy_to_tinyMCE('\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n');
+}
+
+function send_update_drag_locks(to_lock) {
+	var article_id = $('#article_id').text();
+	var csrf = $('#csrf').text();
+	var lock_data = {csrfmiddlewaretoken: csrf,
+		article: article_id,
+		to_lock: to_lock,
+		type: 'update_drag_locks',
+		unique_user_id: unique_user_id};
+	chatsock.send(JSON.stringify(lock_data));
 }
 
 function send_update_locks(dids, to_lock) {
@@ -1646,20 +1654,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					}
 				}
 			}
-			var parent_of_minlevel = lowest_d.parent;
-			var last_shown_child = 'None';
-			var first_shown_child = 'None';
-			if (parent_of_minlevel === nodes_all[0] && $('#next_page').length > 0) {
-				last_shown_child = parent_of_minlevel.children[parent_of_minlevel.children.length-1].d_id;
-				first_shown_child = parent_of_minlevel.children[0].d_id;
-			}
-
-			var all_children_dids = parent_of_minlevel.children.map(c => c.d_id);
-			var unselected_children_dids = all_children_dids.filter((el) => !children_dids.includes(el));
 			data.children = children_dids;
-			data.last_shown_child = last_shown_child;
-			data.first_shown_child = first_shown_child;
-			data.unselected_children = unselected_children_dids;
 			data.first_selected = lowest_d.d_id;
 			data.last_selected = highest_d.d_id;
 			data.size = size;
@@ -1775,6 +1770,9 @@ chatsock.onmessage = function(message) {
 	}
 	else if (res.type === 'update_locks') {
 		handle_channel_update_locks(res);
+	}
+	else if (res.type === 'update_drag_locks') {
+		handle_channel_update_drag_locks(res);
 	}
 	else if (res.type === 'summarize_comment') {
 		handle_channel_summarize_comment(res);
@@ -1967,6 +1965,18 @@ function handle_channel_update_locks(res) {
 	}
 }
 
+function handle_channel_update_drag_locks(res) {
+	if (res.enable == 'enable' || parseInt(res.unique_user_id) == -1) {
+		setSortables(false);
+		console.log("drag enabled");
+	} else {
+		if (parseInt(res.unique_user_id) != unique_user_id) {
+			setSortables(true);
+			console.log("drag disabled");
+		}
+	}
+}
+
 function handle_channel_summarize_comment(res) {
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
@@ -2107,6 +2117,8 @@ function handle_channel_summarize_selected(res) {
 			}
 		}
 	} else {
+		update(new_d.parent);
+		show_text(nodes_all[0]);
 		for (var i=0; i<children.length; i++) {
 			$('#comment_' + children[i].id).remove();
 		}
@@ -3568,8 +3580,8 @@ function expand_all(id) {
 	show_text(d);
 }
 
-function setSortables() {
-	if (sort == 'default') {
+function setSortables(disabled = false) {
+	if (sort == 'default' && disabled == false) {
 		var nestedSortables = document.getElementsByClassName("nested-sortable");
 		// Loop through each nested sortable element
 		for (var i = 0; i < nestedSortables.length; i++) {
@@ -3586,8 +3598,10 @@ function setSortables() {
 					animation: 150,
 					fallbackOnBody: true,
 					swapThreshold: 0.65,
+					draggable: ".list-countainer",
 					onStart: function (evt) {
 						$('#expand').hide();
+						send_update_drag_locks(true);
 					},
 					// onMove: function (evt) {
 					// 	$('.outline-item').hover(
@@ -3622,6 +3636,7 @@ function setSortables() {
 				        }
 				        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
 				        // update(draggingNode.parent);
+				        send_update_drag_locks(false);
 				    }
 				});
 			}
