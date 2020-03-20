@@ -83,6 +83,8 @@ urlpatterns = [
     url(r"^i18n/", include("django.conf.urls.i18n")),
     
     url(r'^tracking/', include('tracking.urls')),
+
+    url(r"^notifications/", include("pinax.notifications.urls", namespace="pinax_notifications")),
 ]
 
 

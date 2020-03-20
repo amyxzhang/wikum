@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     'website',
     'tracking',
     'account',
+    "pinax.notifications",
 ]
 
 SITE_ID = 1
@@ -131,6 +132,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+PINAX_NOTIFICATIONS_BACKENDS = [
+    ("email", "pinax.notifications.backends.email.EmailBackend"),
 ]
 
 WSGI_APPLICATION = 'wikum.wsgi.application'

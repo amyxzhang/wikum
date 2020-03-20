@@ -18,6 +18,7 @@ from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
 from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse
 from website.engine import count_words_shown, count_article
+from pinax.notifications.models import send_now
 
 log = logging.getLogger(__name__)
 
@@ -276,6 +277,7 @@ class WikumConsumer(WebsocketConsumer):
                     else:
                         # existing user who is not a comment author
                         author = CommentAuthor.objects.create(username=req_username, is_wikum=True, user=user)
+                    author.save()
                 new_id = random_with_N_digits(10)
                 new_comment = None
                 prior_last_child = None
@@ -307,6 +309,7 @@ class WikumConsumer(WebsocketConsumer):
                     id = data['id']
                     c = Comment.objects.get(id=id)
                     prior_last_child_id = None
+
                     if c.last_child:
                         prior_last_child = Comment.objects.get(disqus_id=c.last_child)
                         prior_last_child_id = prior_last_child.disqus_id
@@ -331,6 +334,28 @@ class WikumConsumer(WebsocketConsumer):
                         # first reply
                         c.first_child = new_id
                     c.save()
+
+                    notif_users = []
+                    current_parent = c
+                    if not current_parent.author.anonymous:
+                        if current_parent.author.user:
+                            notif_users.append(current_parent.author.user)
+                        else:
+                            user_with_username = User.objects.filter(username=current_parent.author.username)
+                            if user_with_username.count() > 0:
+                                notif_users.append(user_with_username[0])
+
+                    while current_parent.reply_to_disqus:
+                        current_parent = Comment.objects.get(disqus_id=current_parent.reply_to_disqus)
+                        if not current_parent.author.anonymous:
+                            if current_parent.author.user:
+                                notif_users.append(current_parent.author.user)
+                            else:
+                                user_with_username = User.objects.filter(username=current_parent.author.username)
+                                if user_with_username.count() > 0:
+                                    notif_users.append(user_with_username[0])
+                    print("NOTIF USERS", notif_users)
+                    send_now(notif_users, "reply_in_thread", {"from_user": user})
 
                 new_comment.save()
                 action = data['type']
