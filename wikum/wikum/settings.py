@@ -112,7 +112,19 @@ MIDDLEWARE = [
     
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+DEFAULT_FROM_EMAIL = 'wikum.notifications@gmail.com'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'wikum.notifications@gmail.com'
+EMAIL_HOST_PASSWORD = 'WikumHaystack'
+EMAIL_PORT = 587
+
+PINAX_NOTIFICATIONS_BACKENDS = [
+    ("email", "pinax.notifications.backends.email.EmailBackend"),
+]
 
 ROOT_URLCONF = 'wikum.urls'
 
@@ -132,10 +144,6 @@ TEMPLATES = [
             ],
         },
     },
-]
-
-PINAX_NOTIFICATIONS_BACKENDS = [
-    ("email", "pinax.notifications.backends.email.EmailBackend"),
 ]
 
 WSGI_APPLICATION = 'wikum.wsgi.application'

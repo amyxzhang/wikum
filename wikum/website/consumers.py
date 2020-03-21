@@ -100,7 +100,9 @@ class WikumConsumer(WebsocketConsumer):
             if 'type' in data:
                 data_type = data['type']
                 if data_type == 'new_node' or data_type == 'reply_comment':
-                    message = self.handle_message(data, username)
+                    message, notif_users = self.handle_message(data, username)
+                    print(list(dict.fromkeys(notif_users)))
+                    send_now(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": user})
                 elif data_type == 'tag_one' or data_type == 'tag_selected':
                     message = self.handle_tags(data, username)
                 elif data_type == 'delete_tags':
@@ -148,7 +150,10 @@ class WikumConsumer(WebsocketConsumer):
             self.mark_children_summarized(child)
 
     def mark_children_unsummarized(self, post, children=None):
-        post.summarized = False
+        if post.is_replacement:
+            return
+        else:
+            post.summarized = False
         if not children:
             children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=self.article_id)
         for child in children:
@@ -264,6 +269,7 @@ class WikumConsumer(WebsocketConsumer):
                 comment = data['comment']
                 req_user = user if user.is_authenticated else None
                 req_username = user.username if user.is_authenticated else None
+                notif_users = []
                 # if commentauthor for username use it; otherwise create it
                 author = CommentAuthor.objects.filter(username=req_username)
                 if user.is_anonymous:
@@ -335,7 +341,6 @@ class WikumConsumer(WebsocketConsumer):
                         c.first_child = new_id
                     c.save()
 
-                    notif_users = []
                     current_parent = c
                     if not current_parent.author.anonymous:
                         if current_parent.author.user:
@@ -348,13 +353,12 @@ class WikumConsumer(WebsocketConsumer):
                     while current_parent.reply_to_disqus:
                         current_parent = Comment.objects.get(disqus_id=current_parent.reply_to_disqus)
                         if not current_parent.author.anonymous:
-                            if current_parent.author.user:
+                            if current_parent.author.user and current_parent.author.user != user:
                                 notif_users.append(current_parent.author.user)
                             else:
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
-                                if user_with_username.count() > 0:
+                                if user_with_username.count() > 0 and user_with_username[0] != user:
                                     notif_users.append(user_with_username[0])
-                    send_now(notif_users, "reply_in_thread", {"from_user": user})
 
                 new_comment.save()
                 action = data['type']
@@ -381,7 +385,7 @@ class WikumConsumer(WebsocketConsumer):
                 response_dict = {'comment': comment, 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
                     response_dict['parent_did'] = data['id']
-                return response_dict
+                return response_dict, notif_users
             else:
                 return {'user': username}
         except Exception as e:
