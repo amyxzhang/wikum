@@ -354,7 +354,6 @@ class WikumConsumer(WebsocketConsumer):
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
                                 if user_with_username.count() > 0:
                                     notif_users.append(user_with_username[0])
-                    print("NOTIF USERS", notif_users)
                     send_now(notif_users, "reply_in_thread", {"from_user": user})
 
                 new_comment.save()
