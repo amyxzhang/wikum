@@ -92,6 +92,8 @@ INSTALLED_APPS = [
     'tracking',
     'account',
     "pinax.notifications",
+    "bootstrapform",
+    "pinax.templates",
 ]
 
 SITE_ID = 1

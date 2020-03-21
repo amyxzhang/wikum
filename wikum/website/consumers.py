@@ -102,7 +102,6 @@ class WikumConsumer(WebsocketConsumer):
                 data_type = data['type']
                 if data_type == 'new_node' or data_type == 'reply_comment':
                     message, notif_users = self.handle_message(data, username)
-                    print(list(dict.fromkeys(notif_users)))
                     send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": user})
                 elif data_type == 'tag_one' or data_type == 'tag_selected':
                     message = self.handle_tags(data, username)
