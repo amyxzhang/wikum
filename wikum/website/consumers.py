@@ -18,7 +18,7 @@ from django.utils.encoding import smart_text
 from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
 from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse
 from website.engine import count_words_shown, count_article
-from pinax.notifications.models import send_now
+from pinax.notifications.models import send
 
 log = logging.getLogger(__name__)
 
@@ -88,11 +88,12 @@ class WikumConsumer(WebsocketConsumer):
             return
 
         message = {}
+        user = self.scope["user"]
+        reply_parents_mail = []
         # Parse out a article message from the content text, bailing if it doesn't
         # conform to the expected message format.
         try:
             data = json.loads(text_data)
-            user = self.scope["user"]
             req_user = user if user.is_authenticated else None
             username = user.username if user.is_authenticated else None
             if user.is_anonymous:
@@ -102,7 +103,7 @@ class WikumConsumer(WebsocketConsumer):
                 if data_type == 'new_node' or data_type == 'reply_comment':
                     message, notif_users = self.handle_message(data, username)
                     print(list(dict.fromkeys(notif_users)))
-                    send_now(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": user})
+                    send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": user})
                 elif data_type == 'tag_one' or data_type == 'tag_selected':
                     message = self.handle_tags(data, username)
                 elif data_type == 'delete_tags':
@@ -342,7 +343,7 @@ class WikumConsumer(WebsocketConsumer):
                     c.save()
 
                     current_parent = c
-                    if not current_parent.author.anonymous:
+                    if current_parent.author and not current_parent.author.anonymous:
                         if current_parent.author.user:
                             notif_users.append(current_parent.author.user)
                         else:
@@ -352,7 +353,7 @@ class WikumConsumer(WebsocketConsumer):
 
                     while current_parent.reply_to_disqus:
                         current_parent = Comment.objects.get(disqus_id=current_parent.reply_to_disqus)
-                        if not current_parent.author.anonymous:
+                        if current_parent.author and not current_parent.author.anonymous:
                             if current_parent.author.user and current_parent.author.user != user:
                                 notif_users.append(current_parent.author.user)
                             else:

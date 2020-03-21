@@ -122,6 +122,8 @@ EMAIL_HOST_USER = 'wikum.notifications@gmail.com'
 EMAIL_HOST_PASSWORD = 'WikumHaystack'
 EMAIL_PORT = 587
 
+PINAX_NOTIFICATIONS_QUEUE_ALL=True
+
 PINAX_NOTIFICATIONS_BACKENDS = [
     ("email", "pinax.notifications.backends.email.EmailBackend"),
 ]
