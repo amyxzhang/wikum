@@ -1,6 +1,10 @@
 {% extends "pinax/notifications/base.html" %}
-
+{% load staticfiles %}
 {% load i18n %}
+
+{% block styles %}
+    <link rel="stylesheet" href={% static "website/css/notification-settings.css" %}>
+{% endblock %}
 
 {% block body_id %}notification-settings{% endblock %}
 

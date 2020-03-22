@@ -1,0 +1,14 @@
+.notification_settings {
+	
+}
+
+body {
+	height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+td {
+	padding: 0 30px 20px 0;
+}
