@@ -41,6 +41,7 @@ class WikumConsumer(WebsocketConsumer):
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
         self.user_to_locked_nodes = {}
+        self.drag_locked = False
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -517,9 +518,14 @@ class WikumConsumer(WebsocketConsumer):
             unique_user_id = -1
             if 'unique_user_id' in data:
                 unique_user_id = data['unique_user_id']
-            enable_or_disable = 'enable'
-            if data['to_lock']:
-                enable_or_disable = 'disable'
+            if data['to_lock'] == False:
+                enable_or_disable = 'enable'
+            else:
+                if self.drag_locked:
+                    return
+                else:
+                    enable_or_disable = 'disable'
+
             res = {'user': username, 'type': data['type'], 'unique_user_id': unique_user_id, 'enable': enable_or_disable}
             return res
         except Exception as e:
