@@ -1,3 +1,3 @@
 {% autoescape off %}{% load i18n %}{% blocktrans %}
-{{ sender }} Replied to Your Comment Thread
+{{ from_user }} Replied to Your Comment Thread
 {% endblocktrans %}{% endautoescape %}
