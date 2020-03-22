@@ -9,4 +9,4 @@ You can view the article here: {{ default_http_protocol }}://{{ current_site }}
 
 - the Haystack team
 
-% endblocktrans %}{% endautoescape %}
+{% endblocktrans %}{% endautoescape %}
