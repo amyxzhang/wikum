@@ -343,21 +343,25 @@ class WikumConsumer(WebsocketConsumer):
 
                     current_parent = c
                     if current_parent.author and not current_parent.author.anonymous:
-                        if current_parent.author.user:
+                        if current_parent.author.user and current_parent.author.user != user:
                             notif_users.append(current_parent.author.user)
                         else:
                             user_with_username = User.objects.filter(username=current_parent.author.username)
-                            if user_with_username.count() > 0:
+                            if user_with_username.count() > 0 and user_with_username[0] != user:
                                 notif_users.append(user_with_username[0])
 
                     while current_parent.reply_to_disqus:
                         current_parent = Comment.objects.get(disqus_id=current_parent.reply_to_disqus)
                         if current_parent.author and not current_parent.author.anonymous:
                             if current_parent.author.user and current_parent.author.user != user:
+                                print("reply to this user", current_parent.author.user)
+                                print("current user", user)
                                 notif_users.append(current_parent.author.user)
                             else:
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
                                 if user_with_username.count() > 0 and user_with_username[0] != user:
+                                    print("reply to this user", user_with_username[0])
+                                    print("current user", user)
                                     notif_users.append(user_with_username[0])
 
                 new_comment.save()
