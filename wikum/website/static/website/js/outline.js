@@ -92,6 +92,7 @@ $.ajax({type: 'GET',
 		setSortables();
 
 		redOutlineBorder(document.getElementById("viewAll"));
+		isSortable = !flare.drag_locked;
 
 		nodes_all = update_nodes_all(flare);
 		for (var i = 0; i < nodes_all[0].children.length; i++) {

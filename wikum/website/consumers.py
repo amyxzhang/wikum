@@ -41,7 +41,6 @@ class WikumConsumer(WebsocketConsumer):
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
         self.user_to_locked_nodes = {}
-        self.drag_locked = False
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -54,7 +53,6 @@ class WikumConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         # Release locks held by user
         username = self.scope["user"].username if self.scope["user"].is_authenticated else None
-        print(username)
         ids = []
         if username in self.user_to_locked_nodes:
             ids = self.user_to_locked_nodes[username]
@@ -62,7 +60,7 @@ class WikumConsumer(WebsocketConsumer):
         data = {'to_lock': False, 'ids': ids, 'type': 'update_locks'}
         message = {'user': username, 'type': 'update_locks', 'ids': message_ids, 'to_lock': False}
         self.handle_update_locks(data, username)
-        self.handle_update_drag({'enable_drag': 'enable', 'type': 'update_drag_locks'}, username)
+        self.handle_update_drag({'to_lock': False, 'type': 'update_drag_locks'}, username)
         async_to_sync(self.channel_layer.group_send)(
             self.group_name,
             {
@@ -520,11 +518,13 @@ class WikumConsumer(WebsocketConsumer):
                 unique_user_id = data['unique_user_id']
             if data['to_lock'] == False:
                 enable_or_disable = 'enable'
+                a.drag_locked = False
             else:
-                if self.drag_locked:
+                if a.drag_locked:
                     return
                 else:
                     enable_or_disable = 'disable'
+                    a.drag_locked = True
 
             res = {'user': username, 'type': data['type'], 'unique_user_id': unique_user_id, 'enable': enable_or_disable}
             return res

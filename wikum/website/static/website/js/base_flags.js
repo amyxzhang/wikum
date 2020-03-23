@@ -10,6 +10,7 @@ var owner = getParameterByName('owner');
 var unique_user_id = Math.floor(Math.random() * 1000000000);
 var article_id = $('#article_id').text();
 var lastClicked = null;
+var isSortable = true;
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
@@ -1972,18 +1973,6 @@ function handle_channel_update_locks(res) {
 	}
 }
 
-function handle_channel_update_drag_locks(res) {
-	if (res.enable == 'enable' || parseInt(res.unique_user_id) == -1) {
-		setSortables(false);
-		console.log("drag enabled");
-	} else {
-		if (parseInt(res.unique_user_id) != unique_user_id) {
-			setSortables(true);
-			console.log("drag disabled");
-		}
-	}
-}
-
 function handle_channel_summarize_comment(res) {
 	var currentHighlight = currentOutlineBorder();
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
@@ -2397,7 +2386,6 @@ function handle_channel_move_comments(res) {
 
     dragItem.x0 = 0;
 	dragItem.y0 = 0;
-	setSortables();
 	update(oldParent);
 	update(newParent);
 	
@@ -2406,6 +2394,23 @@ function handle_channel_move_comments(res) {
 		show_text(newParent);
 	} else {
 		outlineBorderHighlight_topCommentBox(currentHighlight);
+	}
+}
+
+function handle_channel_update_drag_locks(res) {
+	var currentHighlight = currentOutlineBorder();
+	if (res.enable == 'enable' || parseInt(res.unique_user_id) == -1) {
+		isSortable = true;
+		update(nodes_all[0]);
+		console.log("drag enabled");
+		outlineBorderHighlight_topCommentBox(currentHighlight);
+	} else {
+		if (parseInt(res.unique_user_id) != unique_user_id) {
+			isSortable = false;
+			update(nodes_all[0]);
+			console.log("drag disabled");
+			outlineBorderHighlight_topCommentBox(currentHighlight);
+		}
 	}
 }
 
@@ -3625,7 +3630,8 @@ function expand_all(id) {
 }
 
 function setSortables(disabled = false) {
-	if (sort == 'default' && disabled == false) {
+	if (sort == 'default') {
+		sortableList = [];
 		var nestedSortables = document.getElementsByClassName("nested-sortable");
 		// Loop through each nested sortable element
 		for (var i = 0; i < nestedSortables.length; i++) {
@@ -3636,13 +3642,13 @@ function setSortables(disabled = false) {
 			}
 			
 			if (nestedSortables[i].id !== 'nestedOutline' && is_hidden == false) {
-				new Sortable(nestedSortables[i], {
+				var sortableItem = new Sortable(nestedSortables[i], {
 					group: 'nested',
 					direction: 'vertical',
 					animation: 150,
+					disabled: disabled,
 					fallbackOnBody: true,
 					swapThreshold: 0.65,
-					draggable: ".list-countainer",
 					onStart: function (evt) {
 						$('#expand').hide();
 						send_update_drag_locks(true);
@@ -3678,11 +3684,13 @@ function setSortables(disabled = false) {
 				        		newParent = nodes_all.filter(o => o.d_id == outlineParent.id)[0];
 				        	}
 				        }
-				        if (dragItem && newParent) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
+				        var itemMoved = !(evt.to === evt.from && evt.oldIndex === evt.newIndex);
+				        if (dragItem && newParent && itemMoved) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
 				        // update(draggingNode.parent);
 				        send_update_drag_locks(false);
 				    }
 				});
+				sortableList.push(sortableItem);
 			}
 		}
 	}
@@ -3903,7 +3911,8 @@ function update(d) {
 	$('#marker-' + d.d_id).removeClass();
 	$('#marker-' + d.d_id).addClass('marker m-' + state);
 	nodes_all = update_nodes_all(nodes_all[0]);
-	setSortables();
+	if (typeof isSortable == 'undefined') isSortable = !nodes_all[0].drag_locked;
+	setSortables(!isSortable);
 }
 
 function is_click() {

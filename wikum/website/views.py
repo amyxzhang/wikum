@@ -1205,7 +1205,8 @@ def viz_data(request):
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
-           'article': True}
+           'article': True,
+           'drag_locked': a.drag_locked}
 
 
     if filter != '':

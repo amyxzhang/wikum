@@ -38,6 +38,7 @@ class Article(models.Model):
     url = models.URLField()
     source = models.ForeignKey('Source', on_delete=models.CASCADE)
     last_updated = models.DateTimeField(null=True)
+    drag_locked = models.BooleanField(default=False)
 
     num = models.IntegerField(default=0)
     highlight_authors = models.TextField()
