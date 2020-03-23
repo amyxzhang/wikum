@@ -1434,7 +1434,7 @@ def subtree_data(request):
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
 
-    least = 2
+    least = 1
     most = 6
     
     if not next_page:
@@ -1463,7 +1463,8 @@ def subtree_data(request):
         else:
             posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             count = posts_all.count()
-            next_page = random.randint(0,count-1)
+            if count > 1:
+                next_page = random.randint(0,count-1)
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)     
             
         if posts.count() > next_page:
