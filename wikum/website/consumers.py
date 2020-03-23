@@ -973,9 +973,11 @@ class WikumConsumer(WebsocketConsumer):
 
             # Set child and sibling pointers of surrounding nodes in new location
             if new_parent == old_parent:
-                if new_comment_prev == comment_next:
+                if new_comment_prev != None and new_comment_prev == comment_next:
+                    # Move above comment below
                     self.set_sibling_pointers(old_parent, old_parent, comment, comment_next, new_comment_next, comment_prev, comment_next, article)
-                elif new_comment_next == comment_prev:
+                elif new_comment_next != None and new_comment_next == comment_prev:
+                    # Move below comment above
                     self.set_sibling_pointers(old_parent, old_parent, comment, new_comment_prev, comment_prev, comment_prev, comment_next, article)
                 else:
                     self.set_sibling_pointers(old_parent, old_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article)
