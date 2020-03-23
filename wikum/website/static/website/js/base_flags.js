@@ -1750,6 +1750,19 @@ function downvote_summary(did, id) {
 		});
 }
 
+function outlineBorderHighlight_topCommentBox(d_id) {
+	if ($('.comment_box').first().length) {
+		redOutlineBorder($('.outline-item#' + d_id));
+	}
+}
+
+function currentOutlineBorder() {
+	if ($('.outline-selected.marker').length) {
+		return $('.outline-selected.marker')[0].id.substring(7);
+	}
+	return 'viewAll';
+}
+
 chatsock.onmessage = function(message) {
     var res = JSON.parse(message.data);
 	if (res.type === 'new_node' || res.type === 'reply_comment') {
@@ -1803,6 +1816,7 @@ chatsock.onerror = function(message) {
 
 
 function handle_channel_message(res) {
+	var currentHighlight = currentOutlineBorder();
 	if (res.type === 'new_node') {
 		if (res.comment === 'unauthorized') {
 			unauthorized_noty();
@@ -1851,23 +1865,26 @@ function handle_channel_message(res) {
 			insert_node_to_children(new_d, d);
 		}
 	}
-	if (res.type === 'reply_comment' ||$('#next_page').length === 0) {
+	if (res.type === 'reply_comment' || $('#next_page').length === 0) {
 		update(new_d.parent);
 
 		var text = construct_comment(new_d);
 		$('#comment_' + new_d.d_id).html(text);
 		$('#comment_' + new_d.id).attr('id', 'comment_' + new_d.id);
 		//author_hover();
-		show_text(nodes_all[0]);
 
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+			show_text(nodes_all[0]);
 			$("#box").scrollTo("#comment_" + new_d.id, 500);
+			$('#comment_' + new_d.id)
+			  .animate({borderColor:'red'}, 400)
+			  .delay(400)
+			  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
+			highlight_box(new_d.d_id);
+		} else {
+			outlineBorderHighlight_topCommentBox(currentHighlight);
 		}
-		$('#comment_' + new_d.id)
-		  .animate({borderColor:'red'}, 400)
-		  .delay(400)
-		  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
-		highlight_box(new_d.d_id);
+
 	}
 	make_progress_bar();
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
@@ -1968,6 +1985,7 @@ function handle_channel_update_drag_locks(res) {
 }
 
 function handle_channel_summarize_comment(res) {
+	var currentHighlight = currentOutlineBorder();
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	d = nodes_all.filter(o => o.d_id == res.d_id)[0];
@@ -1989,12 +2007,17 @@ function handle_channel_summarize_comment(res) {
 	d3.select("#node_" + d.id).style("fill",color);
 	$('#comment_' + node_id).addClass("summary");
 
-	highlight_box(node_id);
-	show_text(nodes_all[0]);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		show_text(nodes_all[0]);
+		highlight_box(node_id);
+	} else {
+		outlineBorderHighlight_topCommentBox(currentHighlight);
+	}
 	make_progress_bar();
 }
 
 function handle_channel_summarize_selected(res) {
+	var currentHighlight = currentOutlineBorder();
 	let children = [];
 	let children_dids = res.children;
 	for (var i = 0; i < children_dids.length; i++) {
@@ -2066,7 +2089,11 @@ function handle_channel_summarize_selected(res) {
 		insert_node_to_children(new_d, new_d.parent);
 		update(new_d.parent);
 
-		show_text(nodes_all[0]);
+		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+			show_text(nodes_all[0]);
+		} else {
+			outlineBorderHighlight_topCommentBox(currentHighlight);
+		}
 
 		var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 		
@@ -2107,7 +2134,11 @@ function handle_channel_summarize_selected(res) {
 		}
 	} else {
 		update(new_d.parent);
-		show_text(nodes_all[0]);
+		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+			show_text(nodes_all[0]);
+		} else {
+			outlineBorderHighlight_topCommentBox(currentHighlight);
+		}
 		for (var i=0; i<children.length; i++) {
 			$('#comment_' + children[i].id).remove();
 		}
@@ -2118,6 +2149,7 @@ function handle_channel_summarize_selected(res) {
 
 function handle_channel_summarize_comments(res) {
 	// need to make children 
+	var currentHighlight = currentOutlineBorder();
 	let d = nodes_all.filter(o => o.d_id == res.orig_did)[0];
 	let position = d.parent.children.indexOf(d);
 
@@ -2233,12 +2265,19 @@ function handle_channel_summarize_comments(res) {
 
 	$('#comment_' + d.id).html(text);
 
-	highlight_box(d.id);
-	show_text(nodes_all[0]);
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
-	make_progress_bar();
 	nodes_all = update_nodes_all(nodes_all[0]);
 	if (res.subtype == "edit_summarize") update(d.parent);
+
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		highlight_box(d.id);
+		show_text(nodes_all[0]);
+		success_noty();
+	} else {
+		outlineBorderHighlight_topCommentBox(currentHighlight);
+	}
+	
+	make_progress_bar();
+	
 }
 
 function handle_channel_delete_tags(res) {
@@ -2287,6 +2326,7 @@ function handle_channel_delete_tags(res) {
 }
 
 function handle_channel_move_comments(res) {
+	var currentHighlight = currentOutlineBorder();
 	var dragItem, oldParent, newParent, prevSib;
 	if (res.old_parent_id == 'article') {
 		oldParent = nodes_all[0];
@@ -2365,7 +2405,7 @@ function handle_channel_move_comments(res) {
 		success_noty();
 		show_text(newParent);
 	} else {
-		show_text(nodes_all[0]);
+		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 }
 
@@ -2377,6 +2417,7 @@ function handle_channel_delete_comment_summary(res) {
 }
 
 function handle_channel_hide_comment(res) {
+	var currentHighlight = currentOutlineBorder();
 	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
 	let id = d.id;
 	$('#comment_' + id).remove();
@@ -2384,11 +2425,16 @@ function handle_channel_hide_comment(res) {
 	if (!d.replace_node) hide_node(id);
 	make_progress_bar();
 	update(d.parent);
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
-	show_text(nodes_all[0]);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		success_noty();
+		show_text(nodes_all[0]);
+	} else {
+		outlineBorderHighlight_topCommentBox(currentHighlight);
+	}
 }
 
 function handle_channel_hide_comments(res) {
+	var currentHighlight = currentOutlineBorder();
 	let dids = res.dids;
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	for (var i = 0; i < dids.length; i++) {
@@ -2398,10 +2444,15 @@ function handle_channel_hide_comments(res) {
 	}
 	make_progress_bar();
 	update(nodes_all[0]);
-	show_text(nodes_all[0]);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		show_text(nodes_all[0]);
+	} else {
+		outlineBorderHighlight_topCommentBox(currentHighlight);
+	}
 }
 
 function handle_channel_hide_replies(res) {
+	var currentHighlight = currentOutlineBorder();
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
@@ -2427,7 +2478,11 @@ function handle_channel_hide_replies(res) {
 	}
 	make_progress_bar();
 	update(d);
-	show_text(nodes_all[0]);
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		show_text(nodes_all[0]);
+	} else {
+		outlineBorderHighlight_topCommentBox(currentHighlight);
+	}
 }
 
 function get_upvote_downvote(id) {
