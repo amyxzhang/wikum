@@ -484,11 +484,13 @@ textarea {
 }
 
 #outline .m-summary {
-	background-color: rgb(238, 118, 0); 
+	background-color: rgb(238, 118, 0);
+	border-radius: 0;
 }
 
 #outline .m-summary_partial {
 	background: linear-gradient(-45deg, rgb(161, 197, 209), rgb(161, 197, 209) 50%, white 50%, white 50%, rgb(238, 118, 0) 50%);
+	border-radius: 0;
 }
 
 #outline #viewAll {
@@ -1161,7 +1163,7 @@ form.modal-content {
 
 #controldiv {
 	position: fixed;
-    left: 15px;
+    left: 8px;
     top: 145px;
     z-index: 1000;
 }

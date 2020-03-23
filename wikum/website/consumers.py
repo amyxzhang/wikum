@@ -853,8 +853,6 @@ class WikumConsumer(WebsocketConsumer):
                 d_id = c.id
                 
                 new_comment = c
-                recurse_down_num_subtree(new_comment)
-                recurse_up_post(c)
                 words_shown = count_words_shown(a)
                 h = History.objects.create(user=req_user, 
                                article=a,
@@ -864,6 +862,8 @@ class WikumConsumer(WebsocketConsumer):
                                explanation='edit summary of subtree',
                                words_shown=words_shown,
                                current_percent_complete=a.percent_complete)
+                recurse_down_num_subtree(new_comment)
+                recurse_up_post(c)
 
             for node in delete_nodes:
                 new_h = History.objects.create(user=req_user, 
@@ -1013,6 +1013,8 @@ class WikumConsumer(WebsocketConsumer):
                                            action='move_comment',
                                            from_str=old_parent_text,
                                            to_str=new_parent_text,
+                                           words_shown=article.words_shown,
+                                           current_percent_complete=article.percent_complete,
                                            explanation='Move comment: ' + comment_text)
 
             h.comments.add(comment)

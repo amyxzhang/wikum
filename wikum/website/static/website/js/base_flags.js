@@ -4527,7 +4527,7 @@ function show_text(d) {
 		    var id = parseInt(this.id.substring(8));
 		    extra_highlight_node(did, id);
 		    setTimeoutConst = setTimeout(function() {
-				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y'});
+				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y', offset: {top: -100}});
 			}, delay);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);
