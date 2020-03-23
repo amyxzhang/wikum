@@ -997,10 +997,23 @@ class WikumConsumer(WebsocketConsumer):
             article.save()
             
             comment.save()
+            comment_text = comment.summary if comment.is_replacement else comment.text
+            old_parent_text = ''
+            if old_parent == article:
+                old_parent_text = article.title
+            else:
+                old_parent_text = old_parent.summary if old_parent.is_replacement else old_parent.text
+            new_parent_text = ''
+            if new_parent == article:
+                new_parent_text = article.title
+            else:
+                new_parent_text = new_parent.summary if new_parent.is_replacement else new_parent.text
             h = History.objects.create(user=req_user, 
                                            article=article,
                                            action='move_comment',
-                                           explanation='Move comment')
+                                           from_str=old_parent_text,
+                                           to_str=new_parent_text,
+                                           explanation='Move comment: ' + comment_text)
 
             h.comments.add(comment)
             

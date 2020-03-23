@@ -77,7 +77,7 @@
 	            	</td>
 	            	
 	            	<td>
-	            		{% if h.action == "edit_sum" or h.action == "edit_sum_nodes" %}
+	            		{% if h.action == "edit_sum" or h.action == "edit_sum_nodes" or h.action == "move_comment" %}
 	            			{{ h.from_str }}
 	            		{% else %}
 		            		<div class="comments">
@@ -98,8 +98,6 @@
 						    {% trans "All Comments Hidden" %}
 	            		{% elif h.action == "hide_comments" %}
 							{% trans "All Comments Hidden" %}
-	            		{% elif h.action == "move_comment" %}
-							{% trans "Move Comment" %}
 	            		{% else %}
 	            			{{ h.to_str }}
 						{% endif %} 
