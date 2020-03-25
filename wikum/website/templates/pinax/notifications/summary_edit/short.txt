@@ -1,0 +1,3 @@
+{% autoescape off %}{% load i18n %}{% blocktrans %}
+{{ from_user }} Edited a Summary You Contributed To
+{% endblocktrans %}{% endautoescape %}

@@ -353,14 +353,10 @@ class WikumConsumer(WebsocketConsumer):
                         current_parent = Comment.objects.get(disqus_id=current_parent.reply_to_disqus)
                         if current_parent.author and not current_parent.author.anonymous:
                             if current_parent.author.user and current_parent.author.user != user:
-                                print("reply to this user", current_parent.author.user)
-                                print("current user", user)
                                 notif_users.append(current_parent.author.user)
                             else:
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
                                 if user_with_username.count() > 0 and user_with_username[0] != user:
-                                    print("reply to this user", user_with_username[0])
-                                    print("current user", user)
                                     notif_users.append(user_with_username[0])
 
                 new_comment.save()
@@ -864,6 +860,12 @@ class WikumConsumer(WebsocketConsumer):
                                current_percent_complete=a.percent_complete)
                 recurse_down_num_subtree(new_comment)
                 recurse_up_post(c)
+                hist = c.history_set.filter(action__contains='sum')
+                editors = set()
+                for h in hist:
+                    if h.user and h.user != req_user:
+                        editors.add(h.user)
+                send(list(editors), "summary_edit", {"from_user": req_user, "id": article_id, "owner": a.owner.username})
 
             for node in delete_nodes:
                 new_h = History.objects.create(user=req_user, 
