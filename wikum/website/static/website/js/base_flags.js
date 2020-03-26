@@ -1862,7 +1862,7 @@ function handle_channel_message(res) {
 			          y: d.y,
 			          y0: d.y0,
 			         };
-			recurse_expand_all(d);
+			expand(d);
 			insert_node_to_children(new_d, d);
 		}
 	}
