@@ -100,8 +100,7 @@ class WikumConsumer(WebsocketConsumer):
             if 'type' in data:
                 data_type = data['type']
                 if data_type == 'new_node' or data_type == 'reply_comment':
-                    message, notif_users = self.handle_message(data, username)
-                    send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": user, "id": article_id, "owner": article.owner.username})
+                    message = self.handle_message(data, username)
                 elif data_type == 'tag_one' or data_type == 'tag_selected':
                     message = self.handle_tags(data, username)
                 elif data_type == 'delete_tags':
@@ -139,14 +138,17 @@ class WikumConsumer(WebsocketConsumer):
                 }
             )
 
-    def mark_children_summarized(self, post, children=None):
+    def mark_children_summarized(self, post, children=None, notif_users = []):
         post.summarized = True
         if not children:
             children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=self.article_id)
+        if post.author and post.author.user and not post.author.user.is_anonymous and post.author.user != self.scope['user']:
+            notif_users = [post.author.user]
         for child in children:
             child.summarized = True
             child.save()
-            self.mark_children_summarized(child)
+            notif_users.extend(self.mark_children_summarized(child, None))
+        return notif_users
 
     def mark_children_unsummarized(self, post, children=None):
         if post.is_replacement:
@@ -358,6 +360,7 @@ class WikumConsumer(WebsocketConsumer):
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
                                 if user_with_username.count() > 0 and user_with_username[0] != user:
                                     notif_users.append(user_with_username[0])
+                    send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": 'Anonymous' if user.is_anonymous else user.username, "id": article_id, "owner": article.owner.username})
 
                 new_comment.save()
                 action = data['type']
@@ -384,7 +387,7 @@ class WikumConsumer(WebsocketConsumer):
                 response_dict = {'comment': comment, 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
                     response_dict['parent_did'] = data['id']
-                return response_dict, notif_users
+                return response_dict
             else:
                 return {'user': username}
         except Exception as e:
@@ -674,7 +677,6 @@ class WikumConsumer(WebsocketConsumer):
                 comment.save()
             else:
                 for index, comment in enumerate(unselected_children):
-                    print(comment.summary if comment.is_replacement else comment.text)
                     if index == 0:
                         comment.sibling_prev = None
                         comment.sibling_next = unselected_children[index + 1].disqus_id
@@ -823,7 +825,8 @@ class WikumConsumer(WebsocketConsumer):
 
                 d_id = new_comment.id
 
-                self.mark_children_summarized(new_comment)
+                notif_users = self.mark_children_summarized(new_comment)
+                send(list(set(list(notif_users))), "summarize_your_comment", {"from_user": 'Anonymous' if req_user.is_anonymous else req_user.username, "id": article_id, "owner": a.owner.username})
 
                 recurse_up_post(new_comment)
 
@@ -865,10 +868,10 @@ class WikumConsumer(WebsocketConsumer):
                 for h in hist:
                     if h.user and h.user != req_user:
                         editors.add(h.user)
-                send(list(editors), "summary_edit", {"from_user": req_user, "id": article_id, "owner": a.owner.username})
+                send(list(editors), "summary_edit", {"from_user": 'Anonymous' if req_user.is_anonymous else req_user.username, "id": article_id, "owner": a.owner.username})
 
             for node in delete_nodes:
-                new_h = History.objects.create(user=req_user, 
+                new_h = History.objects.create(user=req_user,
                                article=a,
                                action='delete_node',
                                from_str=node,
@@ -1186,6 +1189,8 @@ class WikumConsumer(WebsocketConsumer):
                     last_child = last_child[0]
                 else:
                     last_child = None
+                if first_child == last_child:
+                    first_child = last_child
                 sibling_prev = Comment.objects.filter(disqus_id=c.sibling_prev, article=article)
                 if sibling_prev.count() > 0:
                     sibling_prev = sibling_prev[0]
@@ -1199,11 +1204,9 @@ class WikumConsumer(WebsocketConsumer):
                 if first_child:
                     first_child.sibling_prev = c.sibling_prev
                     first_child.save()
-                    recurse_up_post(first_child)
                 if last_child:
                     last_child.sibling_next = c.sibling_next
                     last_child.save()
-                    recurse_up_post(last_child)
                 if c.sibling_prev is not None:
                     sibling_prev.sibling_next = c.first_child
                     sibling_prev.save()
@@ -1338,7 +1341,6 @@ class WikumConsumer(WebsocketConsumer):
                     current_node = next((c for c in all_children if c.disqus_id == current_node.sibling_next), None)
                     if current_node and current_node not in children:
                         unselected_children.append(current_node)
-            print("unselected_children:", unselected_children)
 
             affected = Comment.objects.filter(id__in=ids, hidden=False).update(hidden=True)
             

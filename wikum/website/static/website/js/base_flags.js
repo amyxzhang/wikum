@@ -1883,6 +1883,7 @@ function handle_channel_message(res) {
 			  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
 			highlight_box(new_d.d_id);
 		} else {
+			show_text(nodes_all[0]);
 			outlineBorderHighlight_topCommentBox(currentHighlight);
 		}
 
@@ -2000,6 +2001,7 @@ function handle_channel_summarize_comment(res) {
 		show_text(nodes_all[0]);
 		highlight_box(node_id);
 	} else {
+		show_text(nodes_all[0]);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 	make_progress_bar();
@@ -2081,6 +2083,7 @@ function handle_channel_summarize_selected(res) {
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 			show_text(nodes_all[0]);
 		} else {
+			show_text(nodes_all[0]);
 			outlineBorderHighlight_topCommentBox(currentHighlight);
 		}
 
@@ -2126,6 +2129,7 @@ function handle_channel_summarize_selected(res) {
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 			show_text(nodes_all[0]);
 		} else {
+			show_text(nodes_all[0]);
 			outlineBorderHighlight_topCommentBox(currentHighlight);
 		}
 		for (var i=0; i<children.length; i++) {
@@ -2262,6 +2266,7 @@ function handle_channel_summarize_comments(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
+		show_text(nodes_all[0]);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 	
@@ -2393,6 +2398,7 @@ function handle_channel_move_comments(res) {
 		success_noty();
 		show_text(newParent);
 	} else {
+		show_text(newParent);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 }
@@ -2434,6 +2440,7 @@ function handle_channel_hide_comment(res) {
 		success_noty();
 		show_text(nodes_all[0]);
 	} else {
+		show_text(nodes_all[0]);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 }
@@ -2441,7 +2448,6 @@ function handle_channel_hide_comment(res) {
 function handle_channel_hide_comments(res) {
 	var currentHighlight = currentOutlineBorder();
 	let dids = res.dids;
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 	for (var i = 0; i < dids.length; i++) {
 		let id = nodes_all.filter(o => o.d_id == dids[i])[0].id;
 		$('#comment_' + id).remove();
@@ -2451,14 +2457,15 @@ function handle_channel_hide_comments(res) {
 	update(nodes_all[0]);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 		show_text(nodes_all[0]);
+		success_noty();
 	} else {
+		show_text(nodes_all[0]);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 }
 
 function handle_channel_hide_replies(res) {
 	var currentHighlight = currentOutlineBorder();
-	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) success_noty();
 
 	let d = nodes_all.filter(o => o.d_id == res.d_id)[0];
 
@@ -2485,7 +2492,9 @@ function handle_channel_hide_replies(res) {
 	update(d);
 	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 		show_text(nodes_all[0]);
+		success_noty();
 	} else {
+		show_text(nodes_all[0]);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 }
