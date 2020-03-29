@@ -2929,21 +2929,22 @@ function open_comment_hyperlink(id, d_id, para) {
 			$("#box").scrollTo("#comment_" + child.id, 500);
 		}
 
-		history.pushState(null, "", `#comment_${child.id}`)
+		history.pushState(null, "", `#comment_${child.d_id}`)
 	}
 }
 
 function load_permalink() {
-	var comment = $(location.hash);
+	var comment = location.hash;
+	var did = comment.substring(9);
 
 	if (comment.length) {
-		$("#box").scrollTo(comment, 500);
+		$("#box").scrollTo('.comment_box[data-did=' + did + ']', 500);
 	}
 	else if (location.hash) {
-		var id = (location.hash.match(/comment_(\d+)/) || [])[1];
+		var d_id = (location.hash.match(/comment_(\d+)/) || [])[1];
 
-		if (id) {
-			$(`#node_${id}`).d3Click();
+		if (d_id) {
+			$(`#node_${d_id}`).d3Click();
 		}
 
 	}
