@@ -4057,7 +4057,7 @@ function construct_comment(d) {
 	var summary = !!(d.summary != '' || d.extra_summary != '');
 
 	text += `<div id="comment_text_${d.id}">`;
-	text += `<span class="id_val">#${d.id}</span>`;
+	text += `<span class="id_val">#${d.d_id}</span>`;
 
 	if (summary) {
 		if (d.replace_node) {
