@@ -2935,7 +2935,6 @@ function open_comment_hyperlink(id, d_id, para) {
 
 function load_permalink() {
 	comment = location.hash;
-	console.log(comment);
 	if (comment.length) {
 		var did = comment.substring(9);
 		if ($('.comment_box[data-did=' + did + ']').length) {
