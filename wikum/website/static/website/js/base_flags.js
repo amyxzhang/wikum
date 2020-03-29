@@ -2934,11 +2934,20 @@ function open_comment_hyperlink(id, d_id, para) {
 }
 
 function load_permalink() {
-	var comment = location.hash;
-	var did = comment.substring(9);
-
+	comment = location.hash;
+	console.log(comment);
 	if (comment.length) {
-		$("#box").scrollTo('.comment_box[data-did=' + did + ']', 500);
+		var did = comment.substring(9);
+		if ($('.comment_box[data-did=' + did + ']').length) {
+			$("#box").scrollTo('.comment_box[data-did=' + did + ']', 500);
+		} else {
+			if (nodes_all) {
+				let d = nodes_all.filter(o => o.d_id == did)[0];
+				show_text(nodes_all[0]);
+				let parent = find_nearest_visible_parent(d);
+				open_comment_hyperlink(parent.id, did);
+			}
+		}
 	}
 	else if (location.hash) {
 		var d_id = (location.hash.match(/comment_(\d+)/) || [])[1];
@@ -2953,12 +2962,24 @@ function load_permalink() {
 	}
 }
 
+function find_nearest_visible_parent(d) {
+	if ($('.comment_box[data-did=' + d.d_id + ']').is( ":visible" )) {
+		return d;
+	} else {
+		if (d.parent !== undefined) {
+			return find_nearest_visible_parent(d.parent);
+		} else {
+			return null;
+		}
+	}
+}
+
 $(window).bind("hashchange popstate", load_permalink);
 
 // Make permalinks work when page is loaded
-if (location.hash) {
-	$(load_permalink);
-}
+// if (location.hash) {
+// 	$(load_permalink);
+// }
 
 // $(...).click() fails on d3 nodes
 jQuery.fn.d3Click = function () {

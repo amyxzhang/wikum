@@ -95,14 +95,15 @@ $.ajax({type: 'GET',
 		isSortable = !flare.drag_locked;
 
 		nodes_all = update_nodes_all(flare);
-		for (var i = 0; i < nodes_all[0].children.length; i++) {
-			let child = nodes_all[0].children[i];
+		for (var i = 0; i < nodes_all.length; i++) {
+			let child = nodes_all[i];
 			if ($('#marker-' + child.d_id).hasClass('m-summary_partial')) {
 				show_replace_nodes(child.id);
 			}
 		}
 		show_text(nodes_all[0]);
 		make_progress_bar();
+		load_permalink();
 
 		count = 0;
 		if (nodes_all[0].children) {
