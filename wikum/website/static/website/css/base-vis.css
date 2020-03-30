@@ -559,7 +559,7 @@ rect.selection {
 .id_val {
 	position: absolute;
 	top: 2px;
-	right: 8px;
+	right: 0.5em;
 	color: gray;
 }
 
