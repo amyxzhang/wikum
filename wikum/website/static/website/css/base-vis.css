@@ -601,7 +601,7 @@ rect.selection {
 
 .reply_comment_comment a {
 		mix-blend-mode: multiply;
-		font-weight: 500;
+		font-weight: 400;
 		/*color: var(--link-color);*/
 	}
 
@@ -624,7 +624,7 @@ rect.selection {
 	.comment_box a,
 	.summarize_comment_comment a {
 		mix-blend-mode: multiply;
-		font-weight: 500;
+		font-weight: 400;
 		/*color: var(--link-color);*/
 	}
 
@@ -643,9 +643,9 @@ rect.selection {
 		white-space: normal;
 	}
 		.comment_box footer a.disabled {
-			padding: .5em;
+			padding: .2em .5em;
 			color: hsl(207, 0%, 71%);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 			pointer-events: none;
@@ -653,9 +653,9 @@ rect.selection {
 		}
 
 		.comment_box footer a {
-			padding: .5em;
+			padding: .2em .5em;
 			color: var(--link-color);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 		}
@@ -721,9 +721,9 @@ rect.selection {
 	}
 
 		.unsummarized.collapsed.comment_box footer a {
-			padding: .5em;
+			padding: .2em .5em;
 			color: var(--link-color);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 		}
@@ -785,9 +785,9 @@ rect.selection {
 		.hiddennode footer a,
 		.hiddennode.collapsed footer a,
 		.hiddennode.unsummarized.collapsed footer a {
-			padding: .5em;
+			padding: .2em .5em;
 			color: var(--link-color);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 		}
@@ -1179,8 +1179,12 @@ form.modal-content {
     flex-direction: column;
 }
 
+.tags {
+	font-size: 12px;
+	padding-top: 10px;
+}
+
 .editors {
-	float: right; 
 	position:relative; 
 	top: -25px; 
 	font-size: 10px;

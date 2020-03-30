@@ -2090,7 +2090,7 @@ function handle_channel_summarize_selected(res) {
 		var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 		
 		if ($('#access_mode').attr('data-access') == "0") {
-			text += `<footer>
+			text += `<footer align="right">
 				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
 				<a`;
 			if (new_d.is_locked) text += `class="disabled" `;
@@ -2101,13 +2101,13 @@ function handle_channel_summarize_selected(res) {
 		}
 
 		else if ($('#access_mode').attr('data-access') == "1") {
-			text += `<footer>
+			text += `<footer align="right">
 				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
 			</footer>`;
 		}
 
 		else if ($('#access_mode').attr('data-access') == "2") {
-			text += `<footer><a`
+			text += `<footer align="right"><a`
 			if (new_d.is_locked) text += `class="disabled" `;
 			text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit Summary</a>
 				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete Summary</a>
@@ -2230,7 +2230,7 @@ function handle_channel_summarize_comments(res) {
 	var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
 	
 	if ($('#access_mode').attr('data-access') == "0") {
-		text += `<footer>
+		text += `<footer align="right">
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
@@ -2241,13 +2241,13 @@ function handle_channel_summarize_comments(res) {
 	}
 
 	else if ($('#access_mode').attr('data-access') == "1") {
-		text += `<footer>
+		text += `<footer align="right">
 			<a data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>
 		</footer>`;
 	}
 
 	else if ($('#access_mode').attr('data-access') == "2") {
-		text += `<footer>
+		text += `<footer align="right">
 			<a ` 
 		if (d.is_locked) text += `class="disabled" `;
 		text +=	`data-toggle="modal" data-backdrop="false" data-did="${d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${d.id}">Edit Summary Node</a>
@@ -4197,7 +4197,7 @@ function construct_comment(d) {
 	text += '</div>';
 
 	if (d.tags.length > 0) {
-		text += '<BR><div id="tags_' + d.id + '">Tags: ';
+		text += '<div class="tags" id="tags_' + d.id + '">Tags: ';
 		for (var i=0; i<d.tags.length; i++) {
 			if (is_dark(d.tags[i][1])) {
 				text += '<a href="/visualization_flags?id=' + article_id + '&owner=' + owner + '&filter=Tag: ' + d.tags[i][0] + '">';
@@ -4216,7 +4216,7 @@ function construct_comment(d) {
 
 	if (summary) {
 		if (d.editors && d.editors.length > 0) {
-			text +='<div class="editors">Summary edited by: ';
+			text +='<div class="editors" align="right">Summary edited by: ';
 			for (var i=0;i<d.editors.length; i++) {
 				text += d.editors[i] + ', '
 			}
@@ -4237,7 +4237,7 @@ function construct_comment(d) {
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 		} else {
 			var data_access = $('#access_mode').attr('data-access');
-			text += `<footer>`;
+			text += `<footer align="right">`;
 			if (data_access == "0" || data_access == "1") {
 				text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>`;
 			}
@@ -4255,7 +4255,7 @@ function construct_comment(d) {
 
 	if ($('#access_mode').attr('data-access') == "0") {
 		 if (!summary && d.name.length > 300) {
-			text += '<footer>';
+			text += '<footer align="right">';
 	
 			if (((!d.children || !d.children.length) && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
@@ -4285,7 +4285,7 @@ function construct_comment(d) {
 			}
 			text += '</footer>';
 		} else if (!d.replace_node) {
-			text += '<footer>';
+			text += '<footer align="right">';
 			if ((!d.children || !d.children.length) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
@@ -4308,14 +4308,14 @@ function construct_comment(d) {
 	}
 	else if ($('#access_mode').attr('data-access') == "1") {
 		if (!d.replace_node) {
-			text += '<footer>';
+			text += '<footer align="right">';
 			text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#reply_modal_box" data-type="" data-id="' + d.id + '">Reply</a>';
 			text += '</footer>';
 		}
 	}
 	else if ($('#access_mode').attr('data-access') == "2") {
 		if (!summary && d.name.length > 300) {
-			text += '<footer>';
+			text += '<footer align="right">';
 	
 			if (((!d.children || !d.children.length) && !d.replace_node) || (!d.replace_node && d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
@@ -4341,7 +4341,7 @@ function construct_comment(d) {
 			}
 			text += '</footer>';
 		} else if (!d.replace_node) {
-			text += '<footer>';
+			text += '<footer align="right">';
 			if ((!d.children || !d.children.length) || (d.hashidden && d.children.length == d.hidconstant)) {
 				if (!d.hiddennode) {
 					text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag Comment</a>';
