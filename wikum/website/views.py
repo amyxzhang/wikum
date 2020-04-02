@@ -1479,7 +1479,17 @@ def subtree_data(request):
     if comment_id and comment_id != 'null':
         posts = Comment.objects.filter(id=comment_id)
     else:
-        if sort == 'id':
+        if sort == 'default':
+            top_comments = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
+            posts = []
+            current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+            if current_node:
+                posts.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                    if current_node:
+                        posts.append(current_node)
+        elif sort == 'id':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('import_order')
         elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
