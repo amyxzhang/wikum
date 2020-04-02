@@ -153,6 +153,7 @@ def visualization_upvote(request):
 def visualization_flag(request):
     user = request.user
     owner = request.GET.get('owner', None)
+    print("VIS FLAG")
     if not owner or owner == "None":
         owner = None
     else:
@@ -1186,7 +1187,24 @@ def remove_self_loops(comments, article):
     for c in comments:
         parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
         if parent.count() > 0:
-            if parent[0] != c:
+            p = parent[0]
+            hasLoop = False
+            if p == c:
+                hasLoop = True
+            else:
+                # remove comments that are children of self loops
+                current = p
+                while current != None:
+                    parent = Comment.objects.filter(disqus_id=current.reply_to_disqus, article=article)
+                    if parent.count() > 0:
+                        if parent[0] == current:
+                            hasLoop = True
+                            break
+                        current = parent[0]
+                    else:
+                        current = None
+                        break
+            if hasLoop == False:
                 no_loops.append(c)
         else:
             no_loops.append(c)
