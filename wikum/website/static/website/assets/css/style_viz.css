@@ -52,7 +52,8 @@ h5{
     font-size: 18px;
 }
 h6{
-    font-size:16px;
+    font-size: 14px;
+    line-height: 12px;
 }
 a{
     transition: all 0.4s ease;

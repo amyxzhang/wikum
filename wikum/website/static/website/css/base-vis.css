@@ -390,6 +390,7 @@ textarea {
 	display: flex;
 	flex-direction: row;
 	position: relative;
+	max-width: max-content;
 }
 
 #outline .list-group-line {
@@ -415,7 +416,7 @@ textarea {
 #outline .list-group-item {
 	border: none;
 	/* border-left: 1px solid #BEBEBE; */
-	padding: 10px 0 10px 15px;
+	padding: 10px 10px 10px 15px;
 	background-color: transparent;
 }
 
@@ -483,11 +484,13 @@ textarea {
 }
 
 #outline .m-summary {
-	background-color: rgb(238, 118, 0); 
+	background-color: rgb(238, 118, 0);
+	border-radius: 0;
 }
 
 #outline .m-summary_partial {
 	background: linear-gradient(-45deg, rgb(161, 197, 209), rgb(161, 197, 209) 50%, white 50%, white 50%, rgb(238, 118, 0) 50%);
+	border-radius: 0;
 }
 
 #outline #viewAll {
@@ -534,7 +537,7 @@ text {
 	background: rgba(255,255,255,0.8);
 	border: 1px #cccccc solid;
 	text-align: right;
-	z-index: 100;
+	z-index: 1000;
 }
 
 a {
@@ -556,7 +559,7 @@ rect.selection {
 .id_val {
 	position: absolute;
 	top: 2px;
-	right: 8px;
+	right: 0.5em;
 	color: gray;
 }
 
@@ -598,7 +601,7 @@ rect.selection {
 
 .reply_comment_comment a {
 		mix-blend-mode: multiply;
-		font-weight: 500;
+		font-weight: 400;
 		/*color: var(--link-color);*/
 	}
 
@@ -621,7 +624,7 @@ rect.selection {
 	.comment_box a,
 	.summarize_comment_comment a {
 		mix-blend-mode: multiply;
-		font-weight: 500;
+		font-weight: 400;
 		/*color: var(--link-color);*/
 	}
 
@@ -632,7 +635,6 @@ rect.selection {
 	}
 
 	.comment_box footer {
-		display: none;
 		padding: 0;
 		margin: -.2em -1.2em;
 		transition-duration: 3s;
@@ -641,9 +643,9 @@ rect.selection {
 		white-space: normal;
 	}
 		.comment_box footer a.disabled {
-			padding: .5em;
+			padding: .2em .5em;
 			color: hsl(207, 0%, 71%);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 			pointer-events: none;
@@ -651,9 +653,9 @@ rect.selection {
 		}
 
 		.comment_box footer a {
-			padding: .5em;
+			padding: .2em .5em;
 			color: var(--link-color);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 		}
@@ -719,9 +721,9 @@ rect.selection {
 	}
 
 		.unsummarized.collapsed.comment_box footer a {
-			padding: .5em;
+			padding: .2em .5em;
 			color: var(--link-color);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 		}
@@ -783,9 +785,9 @@ rect.selection {
 		.hiddennode footer a,
 		.hiddennode.collapsed footer a,
 		.hiddennode.unsummarized.collapsed footer a {
-			padding: .5em;
+			padding: .2em .5em;
 			color: var(--link-color);
-			font-weight: 500;
+			font-weight: 400;
 			font-size: 13px;
 			display: inline-block;
 		}
@@ -887,8 +889,8 @@ textarea {
 .flags {
 	position: relative;
     display: block;
-    top: -50px;
-    left: -5px;
+    top: -35px;
+    left: -3px;
 }
 
 .green-flag {
@@ -1161,18 +1163,28 @@ form.modal-content {
 
 #controldiv {
 	position: fixed;
-	left: 15px;
-	top: 145px;
-	z-index: 1000;
+    left: 8px;
+    top: 145px;
+    z-index: 1000;
 }
 
 #controldiv .btn-xs {
 	font-size: 11px;
 	max-width: 85px;
+	margin: 3px;
+}
+
+#paginate {
+	display: flex;
+    flex-direction: column;
+}
+
+.tags {
+	font-size: 12px;
+	padding-top: 10px;
 }
 
 .editors {
-	float: right; 
 	position:relative; 
 	top: -25px; 
 	font-size: 10px;
@@ -1195,4 +1207,3 @@ form.modal-content {
 .ui-resizable {
 	background-color: #ffffff;
 }
-

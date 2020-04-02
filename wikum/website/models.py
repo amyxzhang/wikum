@@ -31,11 +31,14 @@ class Article(models.Model):
 
     id = models.AutoField(primary_key=True)
     disqus_id = models.CharField(max_length=64, null=True, blank=True)
+    first_child = models.CharField(max_length=70, null=True, blank=True)
+    last_child = models.CharField(max_length=70, null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     title = models.TextField()
     url = models.URLField()
     source = models.ForeignKey('Source', on_delete=models.CASCADE)
     last_updated = models.DateTimeField(null=True)
+    drag_locked = models.BooleanField(default=False)
 
     num = models.IntegerField(default=0)
     highlight_authors = models.TextField()
@@ -117,6 +120,10 @@ class Comment(models.Model):
     text = models.TextField()
     disqus_id = models.CharField(max_length=70)
     reply_to_disqus = models.CharField(max_length=70, null=True, blank=True)
+    sibling_prev = models.CharField(max_length=70, null=True, blank=True)
+    sibling_next = models.CharField(max_length=70, null=True, blank=True)
+    first_child = models.CharField(max_length=70, null=True, blank=True)
+    last_child = models.CharField(max_length=70, null=True, blank=True)
     num_replies = models.IntegerField(default=0)
     text_len = models.IntegerField(default=0)
     

@@ -185,6 +185,13 @@ h1 > a {
 	color: #e00;
 	font-weight: bold;
 }
+
+.empty_warning {
+	float: right;
+	color: #e00;
+	font-weight: bold;
+	font-size: 11px;
+}
 /*
 .original_comment p:not(.highlight) {
 	filter: blur(1em);

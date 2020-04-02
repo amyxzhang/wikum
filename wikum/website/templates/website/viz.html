@@ -112,7 +112,7 @@
 	  </div>
 	  <div class="modal-body">
 		<P>{% trans "Add a comment:" %}<BR>
-			<textarea id="new_node_textarea"></textarea>
+			<textarea required id="new_node_textarea"></textarea>
 		</P>
 	  </div>
 	  <div class="modal-footer">
@@ -140,6 +140,7 @@
 		<BR>
 		<P>{% trans "Summary:" %}
 			<span class="wordcount"></span>
+			<span id="empty_warning_single" class="empty_warning"></span>
 			<textarea class="summary-editor" id="summarize_comment_textarea" required placeholder="This commenter..."></textarea>
 		</P>
 	  </div>
@@ -188,6 +189,7 @@
 		   <td width="50%" height="100%">
 					{% trans "Summary:" %}
 				<span class="wordcount"></span>
+				<span id="empty_warning_multiple" class="empty_warning"></span>
 				<textarea class="summary-editor" id="summarize_multiple_comment_textarea" required placeholder="The commenters..."></textarea>
 			</td>
 			</tr>

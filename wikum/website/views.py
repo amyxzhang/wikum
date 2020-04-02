@@ -259,6 +259,69 @@ def poll_status(request):
     json_data = json.dumps(data)
     return HttpResponse(json_data, content_type='application/json')
 
+def print_pointers(c, article):
+    print("=========PRINT POINTERS=========")
+    if c.is_replacement:
+        print("This node's text:", c.summary)
+    else:
+        print("This node's text:", c.text)
+    first_child = Comment.objects.filter(disqus_id=c.first_child, article=article)
+    if first_child.count() > 0:
+        first_child = first_child[0]
+    else:
+        first_child = None
+    last_child = Comment.objects.filter(disqus_id=c.last_child, article=article)
+    if last_child.count() > 0:
+        last_child = last_child[0]
+    else:
+        last_child = None
+    sibling_prev = Comment.objects.filter(disqus_id=c.sibling_prev, article=article)
+    if sibling_prev.count() > 0:
+        sibling_prev = sibling_prev[0]
+    else:
+        sibling_prev = None
+    sibling_next = Comment.objects.filter(disqus_id=c.sibling_next, article=article)
+    if sibling_next.count() > 0:
+        sibling_next = sibling_next[0]
+    else:
+        sibling_next = None
+    if first_child:
+        text = first_child.summary if first_child.is_replacement else first_child.text
+        print("This node's first child:", text)
+    if last_child:
+        text = last_child.summary if last_child.is_replacement else last_child.text
+        print("This node's last child:", text)
+    if sibling_prev:
+        text = sibling_prev.summary if sibling_prev.is_replacement else sibling_prev.text
+        print("This node's previous sibling:", text)
+    if sibling_next:
+        text = sibling_next.summary if sibling_next.is_replacement else sibling_next.text
+        print("This node's next sibling:", text)
+
+    parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
+    if parent.count() > 0:
+        parent = parent[0]
+    else:
+        parent = article
+    print("Parent:", parent)
+    first_child = Comment.objects.filter(disqus_id=parent.first_child, article=article)
+    if first_child.count() > 0:
+        first_child = first_child[0]
+    else:
+        first_child = None
+    last_child = Comment.objects.filter(disqus_id=parent.last_child, article=article)
+    if last_child.count() > 0:
+        last_child = last_child[0]
+    else:
+        last_child = None
+    if first_child:
+        text = first_child.summary if first_child.is_replacement else first_child.text
+        print("This node's parent's first child:", text)
+    if last_child:
+        text = last_child.summary if last_child.is_replacement else last_child.text
+        print("This node's parent's last child:", text)
+
+    print("=========END PRINT POINTERS=========")
 
 def author_info(request):
     username = request.GET.get('username', None)
@@ -278,7 +341,6 @@ def author_info(request):
     author_info = {}
     if username and url:
         a = Article.objects.filter(url=url, owner=owner)[num]
-        print(a.url)
         if 'en.wikipedia' in a.url:
             author = CommentAuthor.objects.filter(username=username, is_wikipedia=True)
             if author.exists():
@@ -350,13 +412,13 @@ def summary_page(request):
         owner = User.objects.get(username=owner)
     article_id = int(request.GET['id'])
     article = Article.objects.get(id=article_id)
-    next = request.GET.get('next')
+    next_page = request.GET.get('next')
     num = int(request.GET.get('num', 0))
     
-    if not next:
-        next = 0
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
         
     source = article.source
     
@@ -394,24 +456,34 @@ def summary_data(request):
     else:
         owner = User.objects.get(username=owner)
 
-    sort = request.GET.get('sort', 'id')
+    sort = request.GET.get('sort', 'default')
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
-    next = request.GET.get('next')
-    if not next:
-        next = 0
+    next_page = request.GET.get('next')
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
         
-    start = 15 * next
-    end = (15 * next) + 15
-    
+    start = 15 * next_page
+    end = (15 * next_page) + 15
     
     if sort == 'id':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('import_order')[start:end]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by("import_order")[start:end]
+    elif sort == 'default':
+        top_comments = a.comment_set.filter(reply_to_disqus=None, hidden=False)
+        posts = []
+        current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+        if current_node:
+            posts.append(current_node)
+            while current_node and current_node.sibling_next:
+                current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                if current_node:
+                    posts.append(current_node)
+        posts = posts[start:end]
     else:
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by("-points")[start:end]
     
     
     val2 = {}
@@ -487,19 +559,10 @@ def mark_children_summarized(post):
         child.summarized = True
         child.save()
         mark_children_summarized(child)
-
-def remove_summarized(post):
-    post.summarized = False
-    children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
-    for child in children:
-        if not child.is_replacement:
-            child.summarized = False
-            child.save()
-            remove_summarized(child)
     
 def clean_parse(text):
     text = parser.parse(text).strip()
-    
+
     text = re.sub('<dl>', '', text)
     text = re.sub('</dl>', '', text)
     text = re.sub('<dd>', '', text)
@@ -508,15 +571,15 @@ def clean_parse(text):
     text = re.sub('</ul>', '', text)
     text = re.sub('<li>', '', text)
     text = re.sub('</li>', '', text)
-    
+
     sp = text.split('\n\n')
-    
+
     if len(sp) > 1:
         v = ''
         for i in sp:
             v += '<p>' + i + '</p>'
         text = v
-        
+
     text = text.strip()
     if text.startswith('<p>') and text.endswith('</p>'):
         return text
@@ -535,6 +598,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
     else:
         num_subtree_children = len(pids)
     
+    # Filters for comments in the article that are children of posts
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
         if post.json_flatten == '':
@@ -576,17 +640,13 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 
-                
                 v1['name'] = clean_parse(post.text)
                 v1['wikitext'] = post.text
-                
                 if post.summary.strip() == '':
                     v1['summary'] = ''
                 else:
                     v1['summary'] = clean_parse(post.summary)
-                
                 v1['sumwiki'] = post.summary
-                    
                 if post.extra_summary.strip() == '':
                     v1['extra_summary'] = ''
                 else:
@@ -598,7 +658,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 v1['name'] = post.text
                 v1['summary'] = post.summary
                 v1['extra_summary'] = post.extra_summary
-                
             if post.summary.strip() != '':
                 hist = post.history_set.filter(action__contains='sum')
                 editors = set()
@@ -609,15 +668,25 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                         editors.add('Anonymous')
                 v1['editors'] = list(editors)
             
-            c1 = reps.filter(reply_to_disqus=post.disqus_id).order_by('-points')
-            if c1.count() == 0:
+            # Filters for comments that are replies/children to post
+            c1 = reps.filter(reply_to_disqus=post.disqus_id)
+            sorted_posts = []
+            current_node = next((c for c in c1 if c.disqus_id == post.first_child), None)
+            if current_node:
+                sorted_posts.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in c1 if c.disqus_id == current_node.sibling_next), None)
+                    if current_node:
+                        sorted_posts.append(current_node)
+            if len(sorted_posts) == 0:
                 vals = []
                 hid = []
                 rep = []
                 num_subchildren = 0
             else:
+                # recurse_viz on the replies/children to the post
                 replace_future = replaced or post.is_replacement
-                vals, hid, rep, num_subchildren = recurse_viz(post, c1, replace_future, article, is_collapsed or post.is_replacement)
+                vals, hid, rep, num_subchildren = recurse_viz(post, sorted_posts, replace_future, article, is_collapsed or post.is_replacement)
             v1['children'] = vals
             v1['hid'] = hid
             v1['replace'] = rep
@@ -634,11 +703,11 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
         
         if post.hidden:
             hid_children.append(v1)
-        elif parent and parent.is_replacement and post.summarized:
+        elif parent and parent.is_replacement:
             replace_children.append(v1)
         else:
             children.append(v1)
-            
+    
     return children, hid_children, replace_children, num_subtree_children
 
         
@@ -655,37 +724,6 @@ def delete_comment_recurse(post, article):
     for child in children:
         delete_comment_recurse(child, article)
     post.delete()
-
-   
-def delete_node(did):
-    try:
-    
-        c = Comment.objects.get(id=did)
-        article = c.article
-        
-        if c.is_replacement:
-            remove_summarized(c)
-            parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
-            
-            if parent.count() > 0:
-                parent_id = parent[0].disqus_id
-            else:
-                parent_id = None
-            
-            children = Comment.objects.filter(reply_to_disqus=c.disqus_id, article=article)
-            
-            for child in children:
-                child.reply_to_disqus = parent_id
-                child.json_flatten = ''
-                child.save()
-            
-            c.delete()
-        
-            if parent.count() > 0:
-                recurse_up_post(parent[0])
-            article.summary_num = article.summary_num - 1
-    except Exception as e:
-        print(e)
 
 
 def get_summary(summary):
@@ -726,50 +764,8 @@ def suggested_tags(request):
     except Exception as e:
         print(e)
         return HttpResponseBadRequest()
-
-def move_comments(request):
-    try:
-        new_parent_id = request.POST['new_parent']
-        node_id = request.POST['node']
-        
-        req_user = request.user if request.user.is_authenticated else None
-        
-        comment = Comment.objects.get(id=node_id)
-        
-        old_parent = None
-        if comment.reply_to_disqus:
-            old_parent = Comment.objects.get(disqus_id=comment.reply_to_disqus)
-        
-        article = comment.article
-        article.last_updated = datetime.datetime.now()
-        article.save()
-        
-        new_parent_comment = Comment.objects.get(id=new_parent_id)
-        
-        comment.reply_to_disqus = new_parent_comment.disqus_id
-        comment.save()
-        
-        h = History.objects.create(user=req_user, 
-                                       article=article,
-                                       action='move_comment',
-                                       explanation='Move comment')
-
-        h.comments.add(comment)
-        if old_parent:
-            h.comments.add(old_parent)
-
-        recurse_up_post(new_parent_comment)
-        
-        if old_parent:
-            recurse_up_post(old_parent)
-        
-        return JsonResponse({})
-    
-    except Exception as e:
-        print(e)
-        return HttpResponseBadRequest()
            
-           
+
 def auto_summarize_comment(request):
     
     from sumy.nlp.stemmers import Stemmer
@@ -1006,7 +1002,6 @@ def tags(request):
     else:
         owner = User.objects.get(username=owner)
     
-    print(request.GET['id'])
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
@@ -1170,13 +1165,44 @@ def users(request):
     return HttpResponse(json_data, content_type='application/json')
 
 def determine_is_collapsed(post, article):
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
+    parent = Comment.objects.filter(hidden=False, disqus_id=post.reply_to_disqus, article=article)
     if parent.count() > 0:
+        if parent[0] == post:
+            return False
         if parent[0].is_replacement and post.summarized:
             return True
         else:
             return determine_is_collapsed(parent[0], article)
     return False
+
+def remove_self_loops(comments, article):
+    no_loops = []
+    for c in comments:
+        parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
+        if parent.count() > 0:
+            p = parent[0]
+            hasLoop = False
+            if p == c:
+                hasLoop = True
+            else:
+                # remove comments that are children of self loops
+                current = p
+                while current != None:
+                    parent = Comment.objects.filter(disqus_id=current.reply_to_disqus, article=article)
+                    if parent.count() > 0:
+                        if parent[0] == current:
+                            hasLoop = True
+                            break
+                        current = parent[0]
+                    else:
+                        current = None
+                        break
+            if hasLoop == False:
+                no_loops.append(c)
+        else:
+            no_loops.append(c)
+    return no_loops
+
 
 def viz_data(request):
     owner = request.GET.get('owner', None)
@@ -1185,78 +1211,86 @@ def viz_data(request):
     else:
         owner = User.objects.get(username=owner)
     sort = request.GET.get('sort')
-    next = request.GET.get('next')
+    next_page = request.GET.get('next')
     filter = request.GET.get('filter', '')
+
+    if not sort:
+        sort = 'default'
     
-    if not next:
-        next = 0
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
         
-    start = 15 * next
-    end = (15 * next) + 15
+    start = 15 * next_page
+    end = (15 * next_page) + 15
     
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
-           'article': True}
+           'article': True,
+           'drag_locked': a.drag_locked}
 
 
     if filter != '':
         if filter.startswith("Tag: "):
             filter = filter[5:]
-            if sort == 'id':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order')[start:end]
+            if sort == 'default' or sort == 'id':
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order')
             elif sort == 'likes':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')
             elif sort == "replies":
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')
             elif sort == "long":
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')
             elif sort == "short":
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')
             elif sort == 'newest':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')
             elif sort == 'oldest':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end] 
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at') 
         elif filter.startswith("User: "):
             filter = filter[6:]
-            if sort == 'id':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')[start:end]
+            if sort == 'default' or sort == 'id':
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')
             elif sort == 'likes':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')
             elif sort == "replies":
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-num_replies')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-num_replies')
             elif sort == "long":
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-text_len')
             elif sort == "short":
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('text_len')
             elif sort == 'newest':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-created_at')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-created_at')
             elif sort == 'oldest':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at') 
         else:
-            if sort == 'id':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')[start:end]
+            if sort == 'default' or sort == 'id':
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')
             elif sort == 'likes':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')
             elif sort == "replies":
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-num_replies')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-num_replies')
             elif sort == "long":
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-text_len')
             elif sort == "short":
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('text_len')
             elif sort == 'newest':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-created_at')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-created_at')
             elif sort == 'oldest':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('created_at')[start:end] 
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('created_at') 
 
             
         val['children'] = []
         val['hid'] = []
         val['replace'] = []
+
+        if posts != None and 'en.wikipedia' in a.url:
+            posts = remove_self_loops(posts, a)
+        posts = posts[start:end]
         for post in posts:
             val2 = {}
             
@@ -1268,24 +1302,52 @@ def viz_data(request):
             val['children'].append(val_child['children'][0])
         
     else:
-        if sort == 'id':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
+        if sort == 'default':
+            top_comments = a.comment_set.filter(reply_to_disqus=None)
+            posts = []
+            current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+            if current_node:
+                posts.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                    if current_node:
+                        posts.append(current_node)
+        elif sort == 'id':
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')
         elif sort == 'likes':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')
         elif sort == "replies":
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-num_replies')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-num_replies')
         elif sort == "long":
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-text_len')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-text_len')
         elif sort == "short":
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('text_len')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('text_len')
         elif sort == 'newest':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-created_at')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-created_at')
         elif sort == 'oldest':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')[start:end]
-        
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')
+
+        if posts != None and 'en.wikipedia' in a.url:
+            posts = remove_self_loops(posts, a)
+        posts = posts[start:end]
         val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
-        
     return JsonResponse(val)
+
+def sort_to_order_by(sort):
+    if sort == 'id':
+        return 'import_order'
+    elif sort == 'likes':
+        return '-points'
+    elif sort == "replies":
+        return '-num_replies'
+    elif sort == "long":
+        return '-text_len'
+    elif sort == "short":
+        return 'text_len'
+    elif sort == 'newest':
+        return '-created_at'
+    elif sort == 'oldest':
+        return 'created_at'
     
 def cluster_data(request):
     
@@ -1392,7 +1454,7 @@ def cluster_data(request):
     
 def subtree_data(request):
     sort = request.GET.get('sort', None)
-    next = request.GET.get('next', None)
+    next_page = request.GET.get('next', None)
     owner = request.GET.get('owner', None)
      
     if not owner or owner == "None":
@@ -1403,19 +1465,29 @@ def subtree_data(request):
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
 
-    least = 2
+    least = 1
     most = 6
     
-    if not next:
-        next = 0
+    if not next_page:
+        next_page = 0
     else:
-        next = int(next)
+        next_page = int(next_page)
     
     
     if comment_id and comment_id != 'null':
         posts = Comment.objects.filter(id=comment_id)
     else:
-        if sort == 'id':
+        if sort == 'default':
+            top_comments = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
+            posts = []
+            current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+            if current_node:
+                posts.append(current_node)
+                while current_node and current_node.sibling_next:
+                    current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                    if current_node:
+                        posts.append(current_node)
+        elif sort == 'id':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('import_order')
         elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
@@ -1432,15 +1504,17 @@ def subtree_data(request):
         else:
             posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             count = posts_all.count()
-            next = random.randint(0,count-1)
-            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)     
-            
-        if posts.count() > next:
-            posts = [posts[next]]
+            if count > 1:
+                next_page = random.randint(0,count-1)
+
+        if posts != None and 'en.wikipedia' in a.url:
+            posts = remove_self_loops(posts, a)
+        if len(posts) > next_page:
+            posts = [posts[next_page]]
         else:
             posts = None
 
-    if posts:
+    if posts != None and len(posts) > 0:
         val2 = {}
         
         is_collapsed = determine_is_collapsed(posts[0], a)

@@ -12,8 +12,3 @@ class Command(BaseCommand):
             if comment_num == 0:
                 print art.title
                 art.delete()
-            
-            
-            
-                    
-            
