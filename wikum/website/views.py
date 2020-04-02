@@ -1181,6 +1181,18 @@ def determine_is_collapsed(post, article):
             return determine_is_collapsed(parent[0], article)
     return False
 
+def remove_self_loops(comments, article):
+    no_loops = []
+    for c in comments:
+        parent = Comment.objects.filter(disqus_id=c.reply_to_disqus, article=article)
+        if parent.count() > 0:
+            if parent[0] != c:
+                no_loops.append(c)
+        else:
+            no_loops.append(c)
+    return no_loops
+
+
 def viz_data(request):
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
@@ -1264,6 +1276,7 @@ def viz_data(request):
         val['children'] = []
         val['hid'] = []
         val['replace'] = []
+        posts = remove_self_loops(posts, a)
         for post in posts:
             val2 = {}
             
