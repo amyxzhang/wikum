@@ -1212,7 +1212,18 @@ def viz_data(request):
     if filter != '':
         if filter.startswith("Tag: "):
             filter = filter[5:]
-            if sort == 'id':
+            if sort == 'default':
+                top_comments = a.comment_set.filter(hidden=False, tags__text=filter)
+                posts = []
+                current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+                if current_node:
+                    posts.append(current_node)
+                    while current_node and current_node.sibling_next:
+                        current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                        if current_node:
+                            posts.append(current_node)
+                posts = posts[start:end]
+            elif sort == 'id':
                 posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
@@ -1228,7 +1239,18 @@ def viz_data(request):
                 posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end] 
         elif filter.startswith("User: "):
             filter = filter[6:]
-            if sort == 'id':
+            if sort == 'default':
+                top_comments = a.comment_set.filter(hidden=False, author__username=filter)
+                posts = []
+                current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+                if current_node:
+                    posts.append(current_node)
+                    while current_node and current_node.sibling_next:
+                        current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                        if current_node:
+                            posts.append(current_node)
+                posts = posts[start:end]
+            elif sort == 'id':
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')[start:end]
@@ -1243,7 +1265,18 @@ def viz_data(request):
             elif sort == 'oldest':
                 posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
         else:
-            if sort == 'id':
+            if sort == 'default':
+                top_comments = a.comment_set.filter(hidden=False, author__username=filter)
+                posts = []
+                current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
+                if current_node:
+                    posts.append(current_node)
+                    while current_node and current_node.sibling_next:
+                        current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
+                        if current_node:
+                            posts.append(current_node)
+                posts = posts[start:end]
+            elif sort == 'id':
                 posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')[start:end]
             elif sort == 'likes':
                 posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')[start:end]

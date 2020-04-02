@@ -3805,7 +3805,11 @@ function stripHtml(text) {
 
 function shorten(text, max_length) {
   if (text.length <= max_length) return text;
-  return text.substr(0, text.lastIndexOf(' ', max_length));
+  if (text.lastIndexOf(' ', max_length) == -1) {
+  	return text.substr(max_length);
+  } else {
+  	return text.substr(0, text.lastIndexOf(' ', max_length));
+  }
 }
 
 function setMaxLength(depth) {
