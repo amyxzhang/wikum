@@ -470,7 +470,7 @@ def summary_data(request):
     end = (15 * next_page) + 15
     
     if sort == 'id':
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('import_order')[start:end]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by("import_order")[start:end]
     elif sort == 'default':
         top_comments = a.comment_set.filter(reply_to_disqus=None, hidden=False)
         posts = []
@@ -483,7 +483,7 @@ def summary_data(request):
                     posts.append(current_node)
         posts = posts[start:end]
     else:
-        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by('-points')[start:end]
+        posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by("-points")[start:end]
     
     
     val2 = {}
@@ -1238,50 +1238,50 @@ def viz_data(request):
         if filter.startswith("Tag: "):
             filter = filter[5:]
             if sort == 'default' or sort == 'id':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('import_order')
             elif sort == 'likes':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-points')
             elif sort == "replies":
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-num_replies')
             elif sort == "long":
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-text_len')
             elif sort == "short":
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('text_len')
             elif sort == 'newest':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')[start:end]
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('-created_at')
             elif sort == 'oldest':
-                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at')[start:end] 
+                posts = a.comment_set.filter(hidden=False, tags__text=filter).order_by('created_at') 
         elif filter.startswith("User: "):
             filter = filter[6:]
             if sort == 'default' or sort == 'id':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('import_order')
             elif sort == 'likes':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-points')
             elif sort == "replies":
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-num_replies')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-num_replies')
             elif sort == "long":
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-text_len')
             elif sort == "short":
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('text_len')
             elif sort == 'newest':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-created_at')[start:end]
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('-created_at')
             elif sort == 'oldest':
-                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at')[start:end] 
+                posts = a.comment_set.filter(hidden=False, author__username=filter).order_by('created_at') 
         else:
             if sort == 'default' or sort == 'id':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('import_order')
             elif sort == 'likes':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-points')
             elif sort == "replies":
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-num_replies')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-num_replies')
             elif sort == "long":
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-text_len')
             elif sort == "short":
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('text_len')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('text_len')
             elif sort == 'newest':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-created_at')[start:end]
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('-created_at')
             elif sort == 'oldest':
-                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('created_at')[start:end] 
+                posts = a.comment_set.filter(hidden=False, text__icontains=filter).order_by('created_at') 
 
             
         val['children'] = []
@@ -1290,6 +1290,7 @@ def viz_data(request):
 
         if posts != None and 'en.wikipedia' in a.url:
             posts = remove_self_loops(posts, a)
+        posts = posts[start:end]
         for post in posts:
             val2 = {}
             
@@ -1311,24 +1312,24 @@ def viz_data(request):
                     current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
                     if current_node:
                         posts.append(current_node)
-            posts = posts[start:end]
         elif sort == 'id':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('import_order')
         elif sort == 'likes':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-points')
         elif sort == "replies":
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-num_replies')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-num_replies')
         elif sort == "long":
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-text_len')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-text_len')
         elif sort == "short":
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('text_len')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('text_len')
         elif sort == 'newest':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-created_at')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('-created_at')
         elif sort == 'oldest':
-            posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')[start:end]
+            posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')
 
         if posts != None and 'en.wikipedia' in a.url:
             posts = remove_self_loops(posts, a)
+        posts = posts[start:end]
         val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     return JsonResponse(val)
 
@@ -1476,7 +1477,6 @@ def subtree_data(request):
     if comment_id and comment_id != 'null':
         posts = Comment.objects.filter(id=comment_id)
     else:
-        posts_count = 0
         if sort == 'default':
             top_comments = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             posts = []
@@ -1487,43 +1487,33 @@ def subtree_data(request):
                     current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
                     if current_node:
                         posts.append(current_node)
-            posts_count = len(posts)
         elif sort == 'id':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('import_order')
-            posts_count = posts.count()
         elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
-            posts_count = posts.count()
         elif sort == "replies":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')
-            posts_count = posts.count()
         elif sort == "long":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-text_len')
-            posts_count = posts.count()
         elif sort == "short":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('text_len')
-            posts_count = posts.count()
         elif sort == 'newest':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-created_at')
-            posts_count = posts.count()
         elif sort == 'oldest':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('created_at')
-            posts_count = posts.count()
         else:
             posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             count = posts_all.count()
             if count > 1:
                 next_page = random.randint(0,count-1)
-            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
-            posts_count = posts.count()
-            
-        if posts_count > next_page:
+
+        if posts != None and 'en.wikipedia' in a.url:
+            posts = remove_self_loops(posts, a)
+        if len(posts) > next_page:
             posts = [posts[next_page]]
         else:
             posts = None
 
-    if posts != None and 'en.wikipedia' in a.url:
-        posts = remove_self_loops(posts, a)
     if posts != None and len(posts) > 0:
         val2 = {}
         
