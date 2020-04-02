@@ -3545,16 +3545,10 @@ function shorten(text, max_length) {
 }
 
 function setMaxLength(depth) {
-	if (depth < 4) {
-		return 40;
-	} else if (4 <= depth && depth < 6) {
-		return 30;
-	} else {
-		return 20;
-	}
+	return Math.max(70 - depth * 5, 20);
 }
 
-function createOutlineInsideString(d, outline='', depth=1) {
+function createOutlineInsideString(d, outline='', depth=0) {
 	/** type (for coloring):
 	  *  comment = normal comment
 	  *  unsum = unsummarized comment under a summary node
@@ -3563,6 +3557,7 @@ function createOutlineInsideString(d, outline='', depth=1) {
 	  */
 	if (d.children && d.children.length) {
 		outline += `<div class="list-group nested-sortable">`;
+		depth += 1;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
 			var maxLength = setMaxLength(depth);
@@ -3587,7 +3582,7 @@ function createOutlineInsideString(d, outline='', depth=1) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i], '', depth=depth+1);
+				outline += createOutlineInsideString(d.children[i], '', depth);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
@@ -3615,7 +3610,7 @@ function createOutlineInsideString(d, outline='', depth=1) {
 function createOutlineString(d) {
 	var title = $('#wikum-title').clone().children().remove().end().text();
 	var outlineString = '<div id="nestedOutline" class="list-group col nested-sortable">';
-	outlineString += `<div id='viewAll'><div class='outline-title' id='outline-text-viewAll'>${title}`;
+	outlineString += `<div id='viewAll' class='outline-title outline-item'><div class='outline-title' id='outline-text-viewAll'>${title}`;
 	outlineString += `</div></div>`;
 	outlineString += createOutlineInsideString(d);
 	outlineString += '</div>';
@@ -3689,6 +3684,9 @@ function update(d) {
 			$($(outline_item).parent().get(0)).append(inside_string);
 		}
 	}
+	$('#marker-' + d.d_id).removeClass();
+	var state = getState(d);
+	$('#marker-' + d.d_id).addClass('marker m-' + state);
 	nodes_all = update_nodes_all(nodes_all[0]);
 	setSortables();
 }
@@ -4303,7 +4301,7 @@ function show_text(d) {
 		    var id = parseInt(this.id.substring(8));
 		    extra_highlight_node(did, id);
 		    setTimeoutConst = setTimeout(function() {
-				$('#viz').scrollTo('#outline-text-' + did, 500);
+				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y'});
 			}, delay);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);
@@ -4426,7 +4424,7 @@ function construct_box_top(objs) {
 
 	var text = '';
 	if (accepted && count > 1 && !parent_node.replace_node) {
-		text += '<BR> <a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize + Group Selected</a><BR>';
+		text += '<BR> <a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#summarize_multiple_modal_box" data-type="summarize_selected">Summarize</a><BR>';
 	}
 	if (accepted || accepted2) {
 		text += '<a class="btn btn-xs btn-info" data-toggle="modal" data-backdrop="false" data-target="#hide_modal_box" data-type="hide_all_selected">Hide selected</a><BR>';

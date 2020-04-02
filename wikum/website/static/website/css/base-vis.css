@@ -357,16 +357,16 @@ textarea {
 	float: left;
 	height: calc(100vh - 100px);
     margin: 100px 0px 0px 0px;
-    max-width: calc(100vw - 550px);
-    min-width: 45%;
+    width: 500px;
     overflow: auto;
     padding-top: 15px;
-    
+    overflow-x: hidden;
 }
 
 #outline {
+	margin-bottom: 20px;
 	margin-left: 100px;
-	width: 30vw;
+	max-width: 500px;
     overflow-x: hidden;
 }
 
@@ -496,6 +496,11 @@ textarea {
 
 #outline .outline-title:hover {
 	cursor: pointer;
+}
+
+#outline-text-viewAll {
+	width: 100%;
+	overflow-wrap: break-word;
 }
 
 #outline .outline-text:hover {
@@ -1156,9 +1161,14 @@ form.modal-content {
 
 #controldiv {
 	position: fixed;
-	left:330px;
-	top: 100px;
+	left: 15px;
+	top: 145px;
 	z-index: 1000;
+}
+
+#controldiv .btn-xs {
+	font-size: 11px;
+	max-width: 85px;
 }
 
 .editors {
