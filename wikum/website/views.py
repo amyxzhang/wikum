@@ -1479,6 +1479,7 @@ def subtree_data(request):
     if comment_id and comment_id != 'null':
         posts = Comment.objects.filter(id=comment_id)
     else:
+        posts_count = 0
         if sort == 'default':
             top_comments = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             posts = []
@@ -1489,28 +1490,37 @@ def subtree_data(request):
                     current_node = next((c for c in top_comments if c.disqus_id == current_node.sibling_next), None)
                     if current_node:
                         posts.append(current_node)
+            posts_count = len(posts)
         elif sort == 'id':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('import_order')
+            posts_count = posts.count()
         elif sort == 'likes':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-points')
+            posts_count = posts.count()
         elif sort == "replies":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-num_replies')
+            posts_count = posts.count()
         elif sort == "long":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-text_len')
+            posts_count = posts.count()
         elif sort == "short":
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('text_len')
+            posts_count = posts.count()
         elif sort == 'newest':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('-created_at')
+            posts_count = posts.count()
         elif sort == 'oldest':
             posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most).order_by('created_at')
+            posts_count = posts.count()
         else:
             posts_all = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
             count = posts_all.count()
             if count > 1:
                 next_page = random.randint(0,count-1)
-            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)     
+            posts = a.comment_set.filter(hidden=False, num_subchildren__gt=least, num_subchildren__lt=most)
+            posts_count = posts.count()
             
-        if posts.count() > next_page:
+        if posts_count > next_page:
             posts = [posts[next_page]]
         else:
             posts = None
