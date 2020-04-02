@@ -1526,7 +1526,7 @@ def subtree_data(request):
             posts = None
 
     posts = remove_self_loops(posts, a)
-    if posts != None:
+    if posts != None and len(posts) > 0:
         val2 = {}
         
         is_collapsed = determine_is_collapsed(posts[0], a)
