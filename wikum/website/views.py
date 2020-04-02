@@ -1171,8 +1171,10 @@ def users(request):
     return HttpResponse(json_data, content_type='application/json')
 
 def determine_is_collapsed(post, article):
-    parent = Comment.objects.filter(disqus_id=post.reply_to_disqus, article=article)
+    parent = Comment.objects.filter(hidden=False, disqus_id=post.reply_to_disqus, article=article)
     if parent.count() > 0:
+        if parent[0] == post:
+            return False
         if parent[0].is_replacement and post.summarized:
             return True
         else:
