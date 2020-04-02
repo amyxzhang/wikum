@@ -212,3 +212,18 @@ class WikimarkupTestCase(unittest.TestCase):
         assumed = '<div id="toc"><h2>TOC</h2><ul><li class="toclevel-1"><a href="#w_my-heading"><span class="tocnumber">1</span> <span class="toctext">My Heading</span></a><ul><li class="toclevel-2"><a href="#w_subheading"><span class="tocnumber">1.1</span> <span class="toctext">Subheading</span></a></li><li class="toclevel-2"><a href="#w_show-me-a-toc"><span class="tocnumber">1.2</span> <span class="toctext">show me a toc</span></a><ul><li class="toclevel-3"><a href="#w_pretty-please"><span class="tocnumber">1.2.1</span> <span class="toctext">pretty please</span></a></li></ul></li></ul></li></ul></div><h1 id="w_my-heading">My Heading</h1>\n<ul><li> here\n</li><li> is\n</li><li> a\n</li><li> <a href="http://mydomain.com">list</a>\n</li></ul>\n<h2 id="w_subheading">Subheading</h2>\n<h2 id="w_show-me-a-toc">show me a toc</h2>\n<h3 id="w_pretty-please">pretty please</h3>'
         self.assertEqual(parse(text, toc_string='TOC'), assumed)
 
+    def test_toc_placement(self):
+        """
+        TOC is placed where the <!--MWTOC--> comment is within the text.
+        """
+        text = """=First Heading=\n<!--MWTOC-->\nstuff"""
+        assumed = '<h1 id="w_first-heading">First Heading</h1>\n<div id="toc"><h2>Table of Contents</h2><ul><li class="toclevel-1"><a href="#w_first-heading"><span class="tocnumber">1</span> <span class="toctext">First Heading</span></a></li></ul></div>\n<p>stuff\n</p>'
+        self.assertEqual(parse(text), assumed)
+
+    def test_forced_toc(self):
+        """
+        Text containing __FORCETOC__ will have a toc regardless of length.
+        """
+        text = """=First Heading=\n__FORCETOC__\nstuff"""
+        assumed = '<div id="toc"><h2>Table of Contents</h2><ul><li class="toclevel-1"><a href="#w_first-heading"><span class="tocnumber">1</span> <span class="toctext">First Heading</span></a></li></ul></div><h1 id="w_first-heading">First Heading</h1>\n<p>stuff\n</p>'
+        self.assertEqual(parse(text), assumed)

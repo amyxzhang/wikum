@@ -328,7 +328,6 @@ _spacePat = re.compile(r' ', re.UNICODE)
 _linkPat = re.compile(r'^(?:([A-Za-z0-9]+):)?([^\|]+)(?:\|([^\n]+?))?\]\](.*)$', re.UNICODE | re.DOTALL)
 _bracketedLinkPat = re.compile(r'(?:\[((?:mailto:|git://|irc://|https?://|ftp://|/)[^<>\]\[' + "\x00-\x20\x7f" + r']*)\s*(.*?)\])', re.UNICODE)
 _internalLinkPat = re.compile(r'\[\[(?:(:?[^:\]]*?):\s*)?(.*?)\]\]')
-_internalTemplatePat = re.compile(r'\{\{(?:(:?[^:\]]*?)\|\s*)?(.*?)\}\}', re.UNICODE | re.DOTALL | re.MULTILINE)
 _protocolPat = re.compile(r'(\b(?:mailto:|irc://|https?://|ftp://))', re.UNICODE)
 _specialUrlPat = re.compile(r'^([^<>\]\[' + "\x00-\x20\x7f" + r']+)(.*)$', re.UNICODE)
 _protocolsPat = re.compile(r'^(mailto:|irc://|https?://|ftp://)$', re.UNICODE)
@@ -446,7 +445,7 @@ class BaseParser(object):
         self.tagHooks = {}
         # [[internal link]] hooks
         self.internalLinkHooks = {}
-        # [[internal temlate]] hooks
+        # [[internal template]] hooks
         self.internalTemplateHooks = {}
 
     def registerTagHook(self, tag, function):
@@ -466,7 +465,7 @@ class BaseParser(object):
         parser.registerInternalLinkHook('*', internalLinkHook)  # called for [[anything]] not hooked above
         """
         self.internalLinkHooks[tag] = function
-    
+
     def registerInternalTemplateHook(self, tag, function):
         self.internalTemplateHooks[tag] = function
 
@@ -1076,20 +1075,19 @@ class BaseParser(object):
                 i += 1
             else:
                 space, name = bits[i:i+2]
-                if not space is None:
-                    if space.strip().lower() in self.internalLinkHooks:
-                        sb.append(self.internalLinkHooks[space.strip().lower()](
-                            self, space, name))
-                    elif space and space.startswith(':') and \
-                         ':' in self.internalLinkHooks:
-                        sb.append(self.internalLinkHooks[':'](self, space, name))
-                    elif '*' in self.internalLinkHooks:
-                        sb.append(self.internalLinkHooks['*'](self, space, name))
-                    elif bits[i]:
-                        sb.append('[[%s:%s]]' % (bits[i], bits[i+1]))
-                    else:
-                        sb.append('[[%s]]' % bits[i+1])
-                    i += 2
+                if space in self.internalLinkHooks:
+                    sb.append(self.internalLinkHooks[space](
+                        self, space, name))
+                elif space and space.startswith(':') and \
+                     ':' in self.internalLinkHooks:
+                    sb.append(self.internalLinkHooks[':'](self, space, name))
+                elif '*' in self.internalLinkHooks:
+                    sb.append(self.internalLinkHooks['*'](self, space, name))
+                elif bits[i]:
+                    sb.append('[[%s:%s]]' % (bits[i], bits[i+1]))
+                else:
+                    sb.append('[[%s]]' % bits[i+1])
+                i += 2
         return ''.join(sb)
 
     def replaceInternalTemplates(self, text):
@@ -1334,7 +1332,7 @@ class BaseParser(object):
             i += 1
         return i
 
-    def openList(self, char, mLastSection, prev_char):
+    def openList(self, char, mLastSection):
         """
         These next three functions open, continue, and close the list
         element appropriate to the prefix character passed into them.
@@ -1342,7 +1340,7 @@ class BaseParser(object):
         result = self.closeParagraph(mLastSection)
 
         mDTopen = False
-        if char == '*' and prev_char != u'*':
+        if char == '*':
             result += '<ul><li>'
         elif char == '#':
             result += '<ol><li>'
@@ -1555,10 +1553,7 @@ class BaseParser(object):
 
                 while prefixLength > commonPrefixLength:
                     char = pref[commonPrefixLength:commonPrefixLength+1]
-                    prev_char = None
-                    if commonPrefixLength > 0:
-                        prev_char = pref[commonPrefixLength-1:commonPrefixLength]
-                    tmpOutput, tmpMDTOpen = self.openList(char, mLastSection, prev_char)
+                    tmpOutput, tmpMDTOpen = self.openList(char, mLastSection)
                     if tmpMDTOpen:
                         mDTopen = True
                     output.append(tmpOutput)
@@ -2263,7 +2258,7 @@ class Parser(BaseParser):
             i += 4
         full = ''.join(str(x) for x in full)
         if forceTocPosition != -1:
-            return full.replace("<!--MWTOC-->", ''.join(toc), 1)
+            return full.replace("<!--MWTOC-->", ''.join(str(x) for x in toc), 1)
         else:
             return full
 

@@ -153,7 +153,6 @@ def visualization_upvote(request):
 def visualization_flag(request):
     user = request.user
     owner = request.GET.get('owner', None)
-    print("VIS FLAG")
     if not owner or owner == "None":
         owner = None
     else:
@@ -563,7 +562,7 @@ def mark_children_summarized(post):
     
 def clean_parse(text):
     text = parser.parse(text).strip()
-    
+
     text = re.sub('<dl>', '', text)
     text = re.sub('</dl>', '', text)
     text = re.sub('<dd>', '', text)
@@ -572,15 +571,15 @@ def clean_parse(text):
     text = re.sub('</ul>', '', text)
     text = re.sub('<li>', '', text)
     text = re.sub('</li>', '', text)
-    
+
     sp = text.split('\n\n')
-    
+
     if len(sp) > 1:
         v = ''
         for i in sp:
             v += '<p>' + i + '</p>'
         text = v
-        
+
     text = text.strip()
     if text.startswith('<p>') and text.endswith('</p>'):
         return text
@@ -641,17 +640,13 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
 
             if 'https://en.wikipedia.org/wiki/' in article.url:
                 
-                
                 v1['name'] = clean_parse(post.text)
                 v1['wikitext'] = post.text
-                
                 if post.summary.strip() == '':
                     v1['summary'] = ''
                 else:
                     v1['summary'] = clean_parse(post.summary)
-                
                 v1['sumwiki'] = post.summary
-                    
                 if post.extra_summary.strip() == '':
                     v1['extra_summary'] = ''
                 else:
@@ -663,7 +658,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 v1['name'] = post.text
                 v1['summary'] = post.summary
                 v1['extra_summary'] = post.extra_summary
-                
             if post.summary.strip() != '':
                 hist = post.history_set.filter(action__contains='sum')
                 editors = set()
@@ -676,7 +670,6 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
             
             # Filters for comments that are replies/children to post
             c1 = reps.filter(reply_to_disqus=post.disqus_id)
-            sorted_posts = c1
             sorted_posts = []
             current_node = next((c for c in c1 if c.disqus_id == post.first_child), None)
             if current_node:
@@ -1333,7 +1326,9 @@ def viz_data(request):
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('-created_at')[start:end]
         elif sort == 'oldest':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')[start:end]
-        
+
+        if posts != None and 'en.wikipedia' in a.url:
+            posts = remove_self_loops(posts, a)
         val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
     return JsonResponse(val)
 
