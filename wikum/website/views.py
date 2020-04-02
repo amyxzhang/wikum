@@ -1294,7 +1294,9 @@ def viz_data(request):
         val['children'] = []
         val['hid'] = []
         val['replace'] = []
-        posts = remove_self_loops(posts, a)
+
+        if posts != None and 'en.wikipedia' in a.url:
+            posts = remove_self_loops(posts, a)
         for post in posts:
             val2 = {}
             
@@ -1525,7 +1527,8 @@ def subtree_data(request):
         else:
             posts = None
 
-    posts = remove_self_loops(posts, a)
+    if posts != None and 'en.wikipedia' in a.url:
+        posts = remove_self_loops(posts, a)
     if posts != None and len(posts) > 0:
         val2 = {}
         
