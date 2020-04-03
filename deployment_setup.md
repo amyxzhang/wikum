@@ -60,3 +60,14 @@ $ sudo supervisorctl update
 $ sudo supervisorctl start <your_process>
 ```
 
+### Setting up cron jobs
+We use [pinax-notifications](https://github.com/pinax/pinax-notifications) for our notification system. Set up a log file (we have ours in /var/log/cron_mail.log). Make sure that the notification scripts are executable:
+```sh
+$ sudo chmod +x /wikum/wikum/wikum/cron/emit_notices.sh
+$ sudo chmod +x /wikum/wikum/wikum/cron/retry_deferred.sh
+```
+To `emit_notices` every minute and `retry_deferred` every 20 minutes, set up a cron job using `crontab -e`:
+```sh
+$ * * * * * sudo /wikum/wikum/wikum/cron/emit_notices.sh
+$ 0,20,40 * * * * sudo /wikum/wikum/wikum/cron/retry_deferred.sh
+```
