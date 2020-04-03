@@ -1183,6 +1183,7 @@ def remove_self_loops(comments, article):
             p = parent[0]
             hasLoop = False
             if p == c:
+                print("Has self-loop at comment:", c)
                 hasLoop = True
             else:
                 # remove comments that are children of self loops
@@ -1191,6 +1192,7 @@ def remove_self_loops(comments, article):
                     parent = Comment.objects.filter(disqus_id=current.reply_to_disqus, article=article)
                     if parent.count() > 0:
                         if parent[0] == current:
+                            print("Has self-loop at comment:", c)
                             hasLoop = True
                             break
                         current = parent[0]
