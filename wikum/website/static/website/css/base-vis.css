@@ -603,7 +603,7 @@ rect.selection {
     --link-color: hsl(195, 59%, 60%);
 }
 
-.comment_box::before {
+/*.comment_box::before {
     content: '';
     position: absolute;
     top: 0;
@@ -613,7 +613,7 @@ rect.selection {
 
 .comment_box::before {
   right: 100%;
-}
+}*/
 
 .reply_comment_comment a {
         mix-blend-mode: multiply;

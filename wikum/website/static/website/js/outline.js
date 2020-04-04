@@ -87,7 +87,12 @@ make_username_typeahead();
 $.ajax({type: 'GET',	
 	url: `/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`,	
 	success: function(flare) {
-		read_list = flare['comments_read'];
+		// $('.comment-unread').map(function(){return this.id.substring(13);}).get();
+		if (flare['comments_read'] == 'all') {
+			read_list = [];
+		} else {
+			read_list = flare['comments_read'];
+		}
 		var outline = createOutlineString(flare);
 		document.getElementById("outline").innerHTML = outline;
 		setSortables();

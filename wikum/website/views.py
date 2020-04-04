@@ -1210,11 +1210,10 @@ def mark_comments_read(request):
         if request.user.is_anonymous:
             return JsonResponse({})
         else:
-            article_id = request.POST['article']
-            a = Article.objects.get(id=article_id)
             current_user = request.user.wikumuser
-            comments_read = ','.join(request.POST.getlist('ids[]'))
-            current_user.comments_read = comments_read
+            comments_read = request.POST.getlist('ids[]')
+            read_list = current_user.comments_read.split(',')
+            current_user.comments_read = ','.join(list(set(comments_read + read_list)))
             current_user.save()
             resp = {"comments_read": comments_read}
             return JsonResponse(resp)
@@ -1224,11 +1223,6 @@ def mark_comments_read(request):
 
 
 def viz_data(request):
-    if request.user.is_anonymous:
-        comments_read = 'all'
-    else:
-        current_user = request.user.wikumuser
-        comments_read = current_user.comments_read
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
@@ -1251,6 +1245,16 @@ def viz_data(request):
     
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
+
+    all_ids = a.comment_set.values_list('id', flat=True).all()
+    if request.user.is_anonymous:
+        comments_read = 'all'
+    else:
+        current_user = request.user.wikumuser
+        if current_user.comments_read == '':
+            comments_read = []
+        else:
+            comments_read = [c for c in current_user.comments_read.split(',') if c != '' and int(c) in all_ids]
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,

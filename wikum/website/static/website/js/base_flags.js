@@ -54,64 +54,52 @@ function isElementInViewport(el) {
 }
 
 function getCommentsInViewport() {
-	return $('.comment_box').filter(function() {
+	var comments = $('.comment_box').filter(function() {
 	    return isElementInViewport(this);
 	});
+	return comments.map(function() {
+		return $(this).data('did');
+	}).get();
 }
 
 var old_visible;
+var readDelay=5000, setReadConst;
 function onVisibilityChange() {
-    var visible = getCommentsInViewport();
-    if (visible != old_visible) {
-        old_visible = visible;
-        mark_comments_read(visible);
-    }
+	clearTimeout(setReadConst);
+	setReadConst = setTimeout(function() {
+		var visible = getCommentsInViewport();
+	    if (visible != old_visible) {
+	        old_visible = visible;
+	        mark_comments_read(visible);
+	    }
+	}, readDelay);
 }
 
-function mark_comments_read(visible) {
-
-	// $.ajax({
-	// 		type: 'POST',
-	// 		url: '/mark_comments_read',
-	// 		data: data,
-	// 		success: function(res) {
-	// 			success_noty();
-	// 			$('#evaluate_summary_modal_box').modal('toggle');
-				
-	// 			if (res.success) {
-	// 				if (!d.rating_flag) {
-	// 					d.rating_flag = {};
-	// 				}
-	// 				d.rating_flag.neutral = neu;
-	// 				d.rating_flag.coverage = cov;
-	// 				d.rating_flag.quality = qual;
-
-	// 				for (var i=0; i < to_summarize.length; i++) {
-	// 					to_summarize[i].summarized = true;
-	// 					$('#comment_' + to_summarize[i].id).removeClass('unsummarized');
-	// 					// d3.select('#node_' + to_summarize[i].id).style('fill', color);
-	// 				}
-
-	// 				for (var i=0; i < to_unsummarize.length; i++) {
-	// 					to_unsummarize[i].summarized = false;
-	// 					$('#comment_' + to_unsummarize[i].id).addClass('unsummarized');
-	// 					// d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
-	// 				}
-
-	// 				// d3.select('#node_' + d.id).style('fill', color);
-	// 				make_progress_bar();
-	// 				update(d);
-	// 				show_text(d);
-	// 			}
-	// 		},
-	// 		error: function() {
-	// 			error_noty();
-	// 		}
-	// 	});
+function mark_comments_read(dids) {
+	var csrf = $('#csrf').text();
+	var dids_send = [];
+	if (read_list.length == 0) {
+		dids_send = dids;
+	} else {
+		for (const did of dids) {
+			var unread = $('#outline-text-' + did).hasClass('comment-unread');
+			if (unread && read_list) dids_send.push(did);
+			$('#outline-text-' + did).removeClass('comment-unread');
+		}
+	}
+	read_list = read_list + dids_send;
+	var data = {csrfmiddlewaretoken: csrf,
+				ids: dids_send};
+	$.ajax({
+		type: 'POST',
+		url: '/mark_comments_read',
+		data: data,
+		success: function(res) {}
+	});
 }
 
-// $(window).on('DOMContentLoaded load resize scroll', onVisibilityChange);
-// $('#box').on('scroll', onVisibilityChange);
+$(window).on('DOMContentLoaded load resize scroll', onVisibilityChange);
+$('#box').on('scroll', onVisibilityChange);
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
@@ -3914,8 +3902,8 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 					outline += `style="background-color:${userColor};"`;
 				}
 				var not_read = '';
-				if ($("#owner").length > 0) {
-					not_read = read_list.indexOf(node.d_id) >= 0? '' : 'comment-unread';
+				if (read_list.length > 0 && $("#owner").length > 0) {
+					not_read = (read_list.indexOf(node.d_id.toString()) >= 0 || $("#owner")[0].innerHTML == node.author)? '' : 'comment-unread';
 				}
 				outline	+= `></span>`
 						+ `<span class="${not_read} outline-text t-${state}" id="outline-text-${node.d_id}">`
@@ -4626,6 +4614,7 @@ function show_text(d) {
 	}
 
 	var delay=500, setTimeoutConst;
+	var hoverDelay=1000, markReadHoverTimer;
 	$('.comment_box').hover(
 		  function() {
 		    var did = parseInt(this.dataset.did);
@@ -4634,11 +4623,15 @@ function show_text(d) {
 		    setTimeoutConst = setTimeout(function() {
 				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y', offset: {top: -100}});
 			}, delay);
+			markReadHoverTimer = setTimeout(function() {
+				mark_comments_read([did]);
+			}, hoverDelay);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);
 		    var id = parseInt(this.id.substring(8));
 		    unextra_highlight_node(did, id);
 		    clearTimeout(setTimeoutConst);
+		    clearTimeout(markReadHoverTimer);
 		  }
 	);
 
