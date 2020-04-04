@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from six import python_2_unicode_compatible
+from annoying.fields import AutoOneToOneField
 
 # Create your models here.
 
@@ -13,6 +14,10 @@ class Source(models.Model):
 
     def __unicode__(self):
         return self.source_name
+
+class WikumUser(models.Model):
+    user = AutoOneToOneField(User, primary_key=True, on_delete=models.CASCADE)
+    comments_read = models.TextField(blank=True, default="")
 
 @python_2_unicode_compatible
 class Article(models.Model):

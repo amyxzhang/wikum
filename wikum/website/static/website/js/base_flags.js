@@ -11,6 +11,7 @@ var unique_user_id = Math.floor(Math.random() * 1000000000);
 var article_id = $('#article_id').text();
 var lastClicked = null;
 var isSortable = true;
+var read_list = [];
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
@@ -37,6 +38,80 @@ function timerIncrement() {
     	send_update_locks(dids_in_use, false);
     }
 }
+
+function isElementInViewport(el) {
+    // Special bonus for those using jQuery
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        el = el[0];
+    }
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
+
+function getCommentsInViewport() {
+	return $('.comment_box').filter(function() {
+	    return isElementInViewport(this);
+	});
+}
+
+var old_visible;
+function onVisibilityChange() {
+    var visible = getCommentsInViewport();
+    if (visible != old_visible) {
+        old_visible = visible;
+        mark_comments_read(visible);
+    }
+}
+
+function mark_comments_read(visible) {
+
+	// $.ajax({
+	// 		type: 'POST',
+	// 		url: '/mark_comments_read',
+	// 		data: data,
+	// 		success: function(res) {
+	// 			success_noty();
+	// 			$('#evaluate_summary_modal_box').modal('toggle');
+				
+	// 			if (res.success) {
+	// 				if (!d.rating_flag) {
+	// 					d.rating_flag = {};
+	// 				}
+	// 				d.rating_flag.neutral = neu;
+	// 				d.rating_flag.coverage = cov;
+	// 				d.rating_flag.quality = qual;
+
+	// 				for (var i=0; i < to_summarize.length; i++) {
+	// 					to_summarize[i].summarized = true;
+	// 					$('#comment_' + to_summarize[i].id).removeClass('unsummarized');
+	// 					// d3.select('#node_' + to_summarize[i].id).style('fill', color);
+	// 				}
+
+	// 				for (var i=0; i < to_unsummarize.length; i++) {
+	// 					to_unsummarize[i].summarized = false;
+	// 					$('#comment_' + to_unsummarize[i].id).addClass('unsummarized');
+	// 					// d3.select('#node_' + to_unsummarize[i].id).style('fill', color);
+	// 				}
+
+	// 				// d3.select('#node_' + d.id).style('fill', color);
+	// 				make_progress_bar();
+	// 				update(d);
+	// 				show_text(d);
+	// 			}
+	// 		},
+	// 		error: function() {
+	// 			error_noty();
+	// 		}
+	// 	});
+}
+
+// $(window).on('DOMContentLoaded load resize scroll', onVisibilityChange);
+// $('#box').on('scroll', onVisibilityChange);
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
@@ -2950,14 +3025,6 @@ function load_permalink() {
 	}
 	else if (location.hash) {
 		var d_id = (location.hash.match(/comment_(\d+)/) || [])[1];
-
-		if (d_id) {
-			$(`#node_${d_id}`).d3Click();
-		}
-
-	}
-	else {
-		$("#node_2").d3Click();
 	}
 }
 
@@ -3845,9 +3912,13 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 						userColor = stringToColour(node.author);
 					}
 					outline += `style="background-color:${userColor};"`;
-				} 
+				}
+				var not_read = '';
+				if ($("#owner").length > 0) {
+					not_read = read_list.indexOf(node.d_id) >= 0? '' : 'comment-unread';
+				}
 				outline	+= `></span>`
-						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
+						+ `<span class="${not_read} outline-text t-${state}" id="outline-text-${node.d_id}">`
 						+ title + `</span>`;
 				var shouldExpand = ((state === 'summary' || state === 'summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length);
 				if (shouldExpand) {

@@ -87,6 +87,7 @@ make_username_typeahead();
 $.ajax({type: 'GET',	
 	url: `/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`,	
 	success: function(flare) {
+		read_list = flare['comments_read'];
 		var outline = createOutlineString(flare);
 		document.getElementById("outline").innerHTML = outline;
 		setSortables();

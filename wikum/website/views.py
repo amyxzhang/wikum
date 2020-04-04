@@ -31,7 +31,7 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
+from website.models import Article, Source, CommentRating, CommentAuthor, Permissions, WikumUser
 
 parser = Parser()
 
@@ -1205,8 +1205,30 @@ def remove_self_loops(comments, article):
             no_loops.append(c)
     return no_loops
 
+def mark_comments_read(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            article_id = request.POST['article']
+            a = Article.objects.get(id=article_id)
+            current_user = request.user.wikumuser
+            comments_read = ','.join(request.POST.getlist('ids[]'))
+            current_user.comments_read = comments_read
+            current_user.save()
+            resp = {"comments_read": comments_read}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
 
 def viz_data(request):
+    if request.user.is_anonymous:
+        comments_read = 'all'
+    else:
+        current_user = request.user.wikumuser
+        comments_read = current_user.comments_read
     owner = request.GET.get('owner', None)
     if not owner or owner == "None":
         owner = None
@@ -1233,7 +1255,8 @@ def viz_data(request):
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
            'article': True,
-           'drag_locked': a.drag_locked}
+           'drag_locked': a.drag_locked,
+           'comments_read': comments_read}
 
 
     if filter != '':
