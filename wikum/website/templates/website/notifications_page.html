@@ -1,0 +1,66 @@
+{% extends 'website/base.html' %}
+{% load i18n %}
+{% load static %}
+{% load websitefilters %}
+
+
+{% block styles %}
+    <link rel="stylesheet" href={% static "website/css/notifications.css" %}>
+{% endblock %}
+
+
+{% block content %}
+
+    <section class="container text-center" style="padding-top: 150px;">
+            <div class="row">
+                
+                <h1>{% trans "Notifications" %}</h1>
+                <BR>
+                    <BR>
+
+                <table>
+                    <tr>
+                        <td>{% trans "Notification Message" %}</td>
+                        <td>{% trans "Notification Type" %}</td>
+                        <td>{% trans "User" %}</td>
+                        <td>{% trans "Time" %}</td>
+                        <td>{% trans "URL" %}</td>
+                    </tr>
+                {% for notif in unseen_nots %}
+                    <tr class="unseen">
+                        <td>{{ notif.message }}</td>
+
+                        <td>{{ notif.notice_type.display }}</td>
+
+                        <td>{{ notif.sender.username }}</td>
+
+                        <td>{{ notif.date_created }}</td>
+
+                        <td><a href="{{ notif.url }}">{% trans "View" %}</a></td>
+                    </tr>
+                {% endfor %}
+                {% for notif in notifications %}
+                    {% if notif not in unseen_nots %}
+                        <tr class="seen">
+                            <td>{{ notif.message }}</td>
+
+                            <td>{{ notif.notice_type.display }}</td>
+
+                            <td>{{ notif.sender.username }}</td>
+
+                            <td>{{ notif.date_created }}</td>
+
+                            <td><a href="{{ notif.url }}">{% trans "View" %}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+               </table>
+            </div>
+    </section>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{% endblock %}

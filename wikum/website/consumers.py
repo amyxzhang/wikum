@@ -15,10 +15,10 @@ from .engine import *
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import smart_text
-from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
+from website.models import Article, Source, CommentRating, CommentAuthor, Permissions, Notification
 from website.views import recurse_up_post, recurse_down_num_subtree, make_vector, get_summary, clean_parse
 from website.engine import count_words_shown, count_article
-from pinax.notifications.models import send
+from pinax.notifications.models import send, NoticeType
 
 log = logging.getLogger(__name__)
 
@@ -249,6 +249,13 @@ class WikumConsumer(WebsocketConsumer):
         message = event['message']
         self.send(text_data=json.dumps(message))
 
+    def create_notifs(self, recipients, label_type, article_id, owner_name, comment_id, req_user, message):
+        notice = NoticeType.objects.get(label=label_type)
+        url = '/visualization_flags?id=' + str(article_id) + '&owner=' + owner_name + '#comment_' + str(comment_id)
+        from_user = 'Anonymous' if req_user == None else req_user.username
+        for u in recipients:
+            Notification.objects.create(recipient=u, notice_type=notice, sender=req_user, url=url, message=message)
+
 
     def handle_message(self, data, username):
         article_id = self.article_id
@@ -343,7 +350,12 @@ class WikumConsumer(WebsocketConsumer):
                     c.save()
                     search_id = ',' + str(c.id) + ','
                     subscribed_users = User.objects.filter(wikumuser__subscribe_replies__contains=search_id)
-                    send(subscribed_users, "subscribed_reply", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id})
+                    if req_user != None:
+                        subscribed_users = subscribed_users.exclude(id=req_user.id)
+                    notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id}
+                    message = notif_dict['from_user'] + ' Replied to Your Subscribed Comment'
+                    self.create_notifs(subscribed_users, 'subscribed_reply', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+                    send(subscribed_users, "subscribed_reply", notif_dict)
 
                     current_parent = c
                     if current_parent.author and not current_parent.author.anonymous:
@@ -363,7 +375,11 @@ class WikumConsumer(WebsocketConsumer):
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
                                 if user_with_username.count() > 0 and user_with_username[0] != user:
                                     notif_users.append(user_with_username[0])
-                    send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id})
+                    notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id}
+                    notif_users_list = list(dict.fromkeys(notif_users))
+                    message = notif_dict['from_user'] + ' Replied to Your Comment Thread'
+                    self.create_notifs(notif_users_list, 'reply_in_thread', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+                    send(notif_users_list, "reply_in_thread", notif_dict)
 
                 new_comment.save()
                 action = data['type']
@@ -648,7 +664,11 @@ class WikumConsumer(WebsocketConsumer):
             for node in delete_nodes:
                 self.delete_node(node, a)
             notif_users = self.mark_children_summarized(new_comment, children)
-            send(list(set(list(notif_users))), "summarize_your_comment", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id})
+            notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id}
+            notif_users_list = list(set(list(notif_users)))
+            message = notif_dict['from_user'] + ' Summarized Your Comment'
+            self.create_notifs(notif_users_list, 'summarize_your_comment', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+            send(notif_users_list, "summarize_your_comment", notif_dict)
 
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
@@ -831,7 +851,11 @@ class WikumConsumer(WebsocketConsumer):
                 d_id = new_comment.id
 
                 notif_users = self.mark_children_summarized(new_comment)
-                send(list(set(list(notif_users))), "summarize_your_comment", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id})
+                notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id}
+                notif_users_list = list(set(list(notif_users)))
+                message = notif_dict['from_user'] + ' Summarized Your Comment'
+                self.create_notifs(notif_users_list, 'summarize_your_comment', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+                send(notif_users_list, "summarize_your_comment", notif_dict)
 
                 recurse_up_post(new_comment)
 
@@ -873,11 +897,20 @@ class WikumConsumer(WebsocketConsumer):
                 for h in hist:
                     if h.user and h.user != req_user:
                         editors.add(h.user)
-                send(list(editors), "summary_edit", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": c.id})
+
+                notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": c.id}
+                notif_users_list = list(editors)
+                message = notif_dict['from_user'] + ' Edited a Summary You Contributed To'
+                self.create_notifs(notif_users_list, 'summary_edit', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+                send(notif_users_list, "summary_edit", notif_dict)
 
                 search_id = ',' + str(c.id) + ','
                 subscribed_users = User.objects.filter(wikumuser__subscribe_edit__contains=search_id)
-                send(subscribed_users, "subscribed_edit", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": c.id})
+                if req_user != None:
+                    subscribed_users = subscribed_users.exclude(id=req_user.id)
+                message = notif_dict['from_user'] + ' Edited a Summary You Are Subscribed To'
+                self.create_notifs(subscribed_users, 'subscribed_edit', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+                send(subscribed_users, "subscribed_edit", notif_dict)
 
             for node in delete_nodes:
                 new_h = History.objects.create(user=req_user,

@@ -31,7 +31,8 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from website.models import Article, Source, CommentRating, CommentAuthor, Permissions, WikumUser
+from django.contrib.auth.decorators import login_required
+from website.models import Article, Source, CommentRating, CommentAuthor, Permissions, Notification, WikumUser
 
 parser = Parser()
 
@@ -129,6 +130,19 @@ def explore_public(request):
 
     return resp
 
+@login_required
+@render_to('website/notifications_page.html')
+def notifications_page(request):
+    user = request.user
+    notifs = Notification.objects.filter(recipient=user).order_by('-date_created').select_related()
+    unseen_nots = notifs.filter(seen=False)
+    for n in unseen_nots:
+        n.seen = True
+        n.save()
+
+    return {'notifications': notifs,
+            'unseen_nots': unseen_nots,
+            'user': user}
 
 @render_to('website/unauthorized.html')
 def unauthorized(request):

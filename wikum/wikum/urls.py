@@ -66,6 +66,7 @@ urlpatterns = [
     url(r'^summary', website_views.summary),
     
     url(r'^history', website_views.history),
+    url(r'^notifications_page', website_views.notifications_page),
     
     url(r'^auto_summarize_comment', website_views.auto_summarize_comment),
     url(r'^mark_comments_read', website_views.mark_comments_read),

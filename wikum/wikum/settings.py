@@ -96,6 +96,9 @@ INSTALLED_APPS = [
     "pinax.templates",
 ]
 
+LOGIN_URL = '/account/login/'
+LOGOUT_REDIRECT_URL = '/account/login/'
+
 SITE_ID = 1
 
 MIDDLEWARE = [
