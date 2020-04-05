@@ -1234,10 +1234,31 @@ def subscribe_comment_replies(request):
             # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_replies__contains=',' + did + ',')
             subscribe_list.append(comment_id)
             list_string = ',' + ','.join(list(set(subscribe_list))) + ','
-            print("SUBSCRIBE COMMENT REPLIES:", list_string)
             current_user.subscribe_replies = list_string
             current_user.save()
             resp = {"comment_sub_replies": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def unsubscribe_comment_replies(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_replies != '':
+                subscribe_list = current_user.subscribe_replies.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_replies__contains=',' + did + ',')
+            if comment_id in subscribe_list:
+                subscribe_list.remove(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            current_user.subscribe_replies = list_string
+            current_user.save()
+            resp = {"comment_unsub_replies": comment_id}
             return JsonResponse(resp)
     except Exception as e:
         print(e)
@@ -1256,15 +1277,35 @@ def subscribe_comment_edit(request):
             # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_edit__contains=',' + did + ',')
             subscribe_list.append(comment_id)
             list_string = ',' + ','.join(list(set(subscribe_list))) + ','
-            print("SUBSCRIBE COMMENT EDIT:", list_string)
             current_user.subscribe_edit = list_string
             current_user.save()
-            resp = {"comment_sub_replies": comment_id}
+            resp = {"comment_sub_edit": comment_id}
             return JsonResponse(resp)
     except Exception as e:
         print(e)
         return HttpResponseBadRequest()
 
+def unsubscribe_comment_edit(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_edit != '':
+                subscribe_list = current_user.subscribe_edit.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_edit__contains=',' + did + ',')
+            if comment_id in subscribe_list:
+                subscribe_list.remove(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            current_user.subscribe_edit = list_string
+            current_user.save()
+            resp = {"comment_unsub_edit": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
 
 def viz_data(request):
     owner = request.GET.get('owner', None)
@@ -1293,18 +1334,31 @@ def viz_data(request):
     all_ids = a.comment_set.values_list('id', flat=True).all()
     if request.user.is_anonymous:
         comments_read = 'all'
+        sub_edits = []
+        sub_replies = []
     else:
         current_user = request.user.wikumuser
         if current_user.comments_read == '':
             comments_read = []
         else:
             comments_read = [c for c in current_user.comments_read.split(',') if c != '' and int(c) in all_ids]
+        if current_user.subscribe_replies == '':
+            sub_replies = []
+        else:
+            sub_replies = [c for c in current_user.subscribe_replies.split(',') if c != '' and int(c) in all_ids]
+        if current_user.subscribe_edit == '':
+            sub_edits = []
+        else:
+            sub_edits = [c for c in current_user.subscribe_edit.split(',') if c != '' and int(c) in all_ids]
+
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
            'article': True,
            'drag_locked': a.drag_locked,
-           'comments_read': comments_read}
+           'comments_read': comments_read,
+           'sub_edits': sub_edits,
+           'sub_replies': sub_replies}
 
 
     if filter != '':

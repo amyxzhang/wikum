@@ -12,6 +12,8 @@ var article_id = $('#article_id').text();
 var lastClicked = null;
 var isSortable = true;
 var read_list = [];
+var subscribe_edit_comments = [];
+var subscribe_replies_comments = [];
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
@@ -88,11 +90,11 @@ function mark_comments_read(dids) {
 			$('#outline-text-' + did).removeClass('comment-unread');
 		}
 	}
-	read_list = read_list + dids_send;
+	var dids_strings = dids_send.map(did => did.toString());
+	read_list = read_list.concat(dids_strings);
 	var data = {csrfmiddlewaretoken: csrf,
 				ids: dids_send};
 	if (logged_in && dids_send.length > 0) {
-		console.log(dids_send);
 		$.ajax({
 			type: 'POST',
 			url: '/mark_comments_read',
@@ -2154,7 +2156,7 @@ function handle_channel_summarize_selected(res) {
 			outlineBorderHighlight_topCommentBox(currentHighlight);
 		}
 
-		var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
+		var text = '<div class="comment_text" id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 		
 		if ($('#access_mode').attr('data-access') == "0") {
 			text += `<footer align="right">
@@ -2294,7 +2296,7 @@ function handle_channel_summarize_comments(res) {
 		 d.extrasumwiki = res.bottom_summary_wiki;
 	}
 
-	var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
+	var text = '<div class="comment_text" id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
 	
 	if ($('#access_mode').attr('data-access') == "0") {
 		text += `<footer align="right">
@@ -2465,7 +2467,7 @@ function handle_channel_move_comments(res) {
 		success_noty();
 		show_text(newParent);
 	} else {
-		show_text(newParent);
+		show_text(nodes_all[0]);
 		outlineBorderHighlight_topCommentBox(currentHighlight);
 	}
 }
@@ -4138,7 +4140,8 @@ function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
 
-function subscribe_edit(did) {
+function subscribe_edit(did, is_replace_node) {
+	subscribe_edit_comments.push(did.toString());
 	var csrf = $('#csrf').text();
 	var data = {csrfmiddlewaretoken: csrf,
 				id: did};
@@ -4146,11 +4149,14 @@ function subscribe_edit(did) {
 		type: 'POST',
 		url: '/subscribe_comment_edit',
 		data: data,
-		success: function(res) {}
+		success: function(res) {
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
 	});
 }
 
-function subscribe_replies(did) {
+function subscribe_replies(did, is_replace_node) {
+	subscribe_replies_comments.push(did.toString());
 	var csrf = $('#csrf').text();
 	var data = {csrfmiddlewaretoken: csrf,
 				id: did};
@@ -4158,16 +4164,80 @@ function subscribe_replies(did) {
 		type: 'POST',
 		url: '/subscribe_comment_replies',
 		data: data,
-		success: function(res) {}
+		success: function(res) {
+			console.log($('#subscribe-buttons-' + did));
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
 	});
+}
+
+function unsubscribe_edit(did, is_replace_node) {
+	const index = subscribe_edit_comments.indexOf(did.toString());
+	if (index > -1) {
+		subscribe_edit_comments.splice(index, 1);
+	}
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/unsubscribe_comment_edit',
+		data: data,
+		success: function(res) {
+			console.log($('#subscribe-buttons-' + did));
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
+	});
+}
+
+function unsubscribe_replies(did, is_replace_node) {
+	const index = subscribe_replies_comments.indexOf(did.toString());
+	if (index > -1) {
+		subscribe_replies_comments.splice(index, 1);
+	}
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/unsubscribe_comment_replies',
+		data: data,
+		success: function(res) {
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
+	});
+}
+
+function render_subscribe_buttons(did, is_replace_node) {
+	var logged_in = $("#owner").length > 0;
+	var text = '<span id="subscribe-buttons-' + did + '">';
+	var is_sub_replies = false;
+	var is_sub_edits = false;
+	if (subscribe_replies_comments.indexOf(did.toString()) > -1) is_sub_replies = true;
+	if (is_replace_node && subscribe_edit_comments.indexOf(did.toString()) > -1) is_sub_edits = true;
+	if (logged_in) {
+		if (is_replace_node) {
+			if (is_sub_edits) {
+				text += `<div class="btn btn-xs btn-sub-edit" onclick="unsubscribe_edit(${did}, ${is_replace_node});">Unsubscribe To Edits</div>`;
+			} else {
+				text += `<div class="btn btn-xs btn-sub-edit" onclick="subscribe_edit(${did}, ${is_replace_node});">Subscribe To Edits</div>`;
+			}
+		}
+		if (is_sub_replies) {
+			text += `<div class="btn btn-xs btn-sub-reply" onclick="unsubscribe_replies(${did}, ${is_replace_node});">Unubscribe To Replies</div>`;
+		} else {
+			text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${did}, ${is_replace_node});">Subscribe To Replies</div>`;
+		}
+	}
+	text += '</span>';
+	return text;
 }
 
 function construct_comment(d) {
 	var text = "";
 	var summary = !!(d.summary != '' || d.extra_summary != '');
-	var logged_in = $("#owner").length > 0;
 
-	text += `<div id="comment_text_${d.id}">`;
+	text += `<div class="comment_text" id="comment_text_${d.id}">`;
 	text += `<span class="id_val">`;
 
 	if (summary) {
@@ -4194,10 +4264,7 @@ function construct_comment(d) {
 			}
 		}
 		
-		if (logged_in) {
-			if (d.replace_node) text += `<div class="btn btn-xs btn-sub-edit" onclick="subscribe_edit(${d.d_id});">Subscribe To Edits</div>`;
-			text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
-		}
+		text += render_subscribe_buttons(d.d_id, d.replace_node);
 		text += ` #${d.d_id}</span><span id="flags-${d.id}" class="flags">`;
 		var found = false;
 		if (d.rating_flag) {
@@ -4259,15 +4326,15 @@ function construct_comment(d) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
 				text += `like)`;
-				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += render_subscribe_buttons(d.d_id, d.replace_node);
 				text += ` #${d.d_id}</span>`;
 			} else {
 				text += `likes)`;
-				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += render_subscribe_buttons(d.d_id, d.replace_node);
 				text += ` #${d.d_id}</span>`;
 			}
 		}
-		if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+		text += render_subscribe_buttons(d.d_id, d.replace_node);
 		text += ` #${d.d_id}</span>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
 	}
@@ -4286,15 +4353,15 @@ function construct_comment(d) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
 				text += `like)`;
-				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += render_subscribe_buttons(d.d_id, d.replace_node);
 				text += ` #${d.d_id}</span>`;
 			} else {
 				text += `likes)`;
-				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += render_subscribe_buttons(d.d_id, d.replace_node);
 				text += ` #${d.d_id}</span>`;
 			}
 		}
-		if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+		text += render_subscribe_buttons(d.d_id, d.replace_node);
 		text += ` #${d.d_id}</span>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
 	}

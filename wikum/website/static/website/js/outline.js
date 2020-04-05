@@ -93,6 +93,8 @@ $.ajax({type: 'GET',
 		} else {
 			read_list = flare['comments_read'];
 		}
+		subscribe_edit_comments = flare['sub_edits'];
+		subscribe_replies_comments = flare['sub_replies'];
 		var outline = createOutlineString(flare);
 		document.getElementById("outline").innerHTML = outline;
 		setSortables();

@@ -343,7 +343,6 @@ class WikumConsumer(WebsocketConsumer):
                     c.save()
                     search_id = ',' + str(c.id) + ','
                     subscribed_users = User.objects.filter(wikumuser__subscribe_replies__contains=search_id)
-                    print("SUBSCRIBED USERS REPLY:", subscribed_users)
                     send(subscribed_users, "subscribed_reply", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id})
 
                     current_parent = c
@@ -878,7 +877,6 @@ class WikumConsumer(WebsocketConsumer):
 
                 search_id = ',' + str(c.id) + ','
                 subscribed_users = User.objects.filter(wikumuser__subscribe_edit__contains=search_id)
-                print("SUBSCRIBED USERS EDIT:", subscribed_users)
                 send(subscribed_users, "subscribed_edit", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": c.id})
 
             for node in delete_nodes:

@@ -2,7 +2,7 @@ p {
     font-size: 14px;
     margin: 0px;
     padding: 0px;
-    
+
 }
 
 body {
@@ -575,6 +575,10 @@ rect.selection {
     max-height: 100px;
     overflow-y: scroll;
     border: 1px gray solid;
+}
+
+.comment_text {
+    margin-top: 10px;
 }
 
 #reply_comment_textarea {
