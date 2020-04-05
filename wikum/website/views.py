@@ -1213,9 +1213,53 @@ def mark_comments_read(request):
             current_user = request.user.wikumuser
             comments_read = request.POST.getlist('ids[]')
             read_list = current_user.comments_read.split(',')
-            current_user.comments_read = ','.join(list(set(comments_read + read_list)))
+            current_user.comments_read = ','.join(list(set(read_list + comments_read)))
             current_user.save()
             resp = {"comments_read": comments_read}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def subscribe_comment_replies(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_replies != '':
+                subscribe_list = current_user.subscribe_replies.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_replies__contains=',' + did + ',')
+            subscribe_list.append(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            print("SUBSCRIBE COMMENT REPLIES:", list_string)
+            current_user.subscribe_replies = list_string
+            current_user.save()
+            resp = {"comment_sub_replies": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def subscribe_comment_edit(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_edit != '':
+                subscribe_list = current_user.subscribe_edit.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_edit__contains=',' + did + ',')
+            subscribe_list.append(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            print("SUBSCRIBE COMMENT EDIT:", list_string)
+            current_user.subscribe_edit = list_string
+            current_user.save()
+            resp = {"comment_sub_replies": comment_id}
             return JsonResponse(resp)
     except Exception as e:
         print(e)

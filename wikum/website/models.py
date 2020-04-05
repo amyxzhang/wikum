@@ -18,6 +18,8 @@ class Source(models.Model):
 class WikumUser(models.Model):
     user = AutoOneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     comments_read = models.TextField(blank=True, default="")
+    subscribe_edit = models.TextField(blank=True, default="")
+    subscribe_replies = models.TextField(blank=True, default="")
 
 @python_2_unicode_compatible
 class Article(models.Model):

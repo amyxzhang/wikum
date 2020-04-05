@@ -341,6 +341,10 @@ class WikumConsumer(WebsocketConsumer):
                         # first reply
                         c.first_child = new_id
                     c.save()
+                    search_id = ',' + str(c.id) + ','
+                    subscribed_users = User.objects.filter(wikumuser__subscribe_replies__contains=search_id)
+                    print("SUBSCRIBED USERS REPLY:", subscribed_users)
+                    send(subscribed_users, "subscribed_reply", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id})
 
                     current_parent = c
                     if current_parent.author and not current_parent.author.anonymous:
@@ -360,7 +364,7 @@ class WikumConsumer(WebsocketConsumer):
                                 user_with_username = User.objects.filter(username=current_parent.author.username)
                                 if user_with_username.count() > 0 and user_with_username[0] != user:
                                     notif_users.append(user_with_username[0])
-                    send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username})
+                    send(list(dict.fromkeys(notif_users)), "reply_in_thread", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id})
 
                 new_comment.save()
                 action = data['type']
@@ -644,7 +648,9 @@ class WikumConsumer(WebsocketConsumer):
                                                  import_order=lowest_child.import_order)
             for node in delete_nodes:
                 self.delete_node(node, a)
-            self.mark_children_summarized(new_comment, children)
+            notif_users = self.mark_children_summarized(new_comment, children)
+            send(list(set(list(notif_users))), "summarize_your_comment", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id})
+
             # Get the parent
             parent = Comment.objects.filter(disqus_id=first_selected.reply_to_disqus, article=a)
             if parent.count() > 0:
@@ -826,7 +832,7 @@ class WikumConsumer(WebsocketConsumer):
                 d_id = new_comment.id
 
                 notif_users = self.mark_children_summarized(new_comment)
-                send(list(set(list(notif_users))), "summarize_your_comment", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username})
+                send(list(set(list(notif_users))), "summarize_your_comment", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id})
 
                 recurse_up_post(new_comment)
 
@@ -868,7 +874,12 @@ class WikumConsumer(WebsocketConsumer):
                 for h in hist:
                     if h.user and h.user != req_user:
                         editors.add(h.user)
-                send(list(editors), "summary_edit", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username})
+                send(list(editors), "summary_edit", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": c.id})
+
+                search_id = ',' + str(c.id) + ','
+                subscribed_users = User.objects.filter(wikumuser__subscribe_edit__contains=search_id)
+                print("SUBSCRIBED USERS EDIT:", subscribed_users)
+                send(subscribed_users, "subscribed_edit", {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": c.id})
 
             for node in delete_nodes:
                 new_h = History.objects.create(user=req_user,

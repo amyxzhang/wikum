@@ -2,7 +2,7 @@ p {
     font-size: 14px;
     margin: 0px;
     padding: 0px;
-    padding-bottom: 10px;
+    
 }
 
 body {
@@ -905,7 +905,6 @@ textarea {
 .flags {
     position: relative;
     display: block;
-    top: -35px;
     left: -3px;
 }
 
@@ -1001,6 +1000,20 @@ input[type=checkbox] {
 .highlight { 
     background-color: yellow;
     display: inline;
+}
+
+.btn-sub-reply {
+    color: hsl(195, 59%, 30%);
+    background-color: hsl(195, 59%, 80%);
+    border-color: hsl(195, 59%, 80%);
+    margin: 2px;
+}
+
+.btn-sub-edit {
+    color: hsl(30, 100%, 30%);;
+    background-color: hsl(30, 100%, 80%);
+    border-color: hsl(30, 100%, 80%);
+    margin: 2px;
 }
 
 

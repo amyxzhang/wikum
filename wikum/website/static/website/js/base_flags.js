@@ -77,6 +77,7 @@ function onVisibilityChange() {
 
 function mark_comments_read(dids) {
 	var csrf = $('#csrf').text();
+	var logged_in = $("#owner").length > 0;
 	var dids_send = [];
 	if (read_list.length == 0) {
 		dids_send = dids;
@@ -90,12 +91,15 @@ function mark_comments_read(dids) {
 	read_list = read_list + dids_send;
 	var data = {csrfmiddlewaretoken: csrf,
 				ids: dids_send};
-	$.ajax({
-		type: 'POST',
-		url: '/mark_comments_read',
-		data: data,
-		success: function(res) {}
-	});
+	if (logged_in && dids_send.length > 0) {
+		console.log(dids_send);
+		$.ajax({
+			type: 'POST',
+			url: '/mark_comments_read',
+			data: data,
+			success: function(res) {}
+		});
+	}
 }
 
 $(window).on('DOMContentLoaded load resize scroll', onVisibilityChange);
@@ -4134,19 +4138,43 @@ function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
 
+function subscribe_edit(did) {
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/subscribe_comment_edit',
+		data: data,
+		success: function(res) {}
+	});
+}
+
+function subscribe_replies(did) {
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/subscribe_comment_replies',
+		data: data,
+		success: function(res) {}
+	});
+}
 
 function construct_comment(d) {
 	var text = "";
 	var summary = !!(d.summary != '' || d.extra_summary != '');
+	var logged_in = $("#owner").length > 0;
 
 	text += `<div id="comment_text_${d.id}">`;
-	text += `<span class="id_val">#${d.d_id}</span>`;
+	text += `<span class="id_val">`;
 
 	if (summary) {
 		if (d.replace_node) {
-			text += `<h6 align="right">Summary`;
+			text += `Summary`;
 		} else {
-			text += `<h6 align="right">Summary`;
+			text += `Summary`;
 			text += ` of Comment by `;
 
 			highlight_authors = $('#highlight_authors').text().split(',');
@@ -4166,7 +4194,11 @@ function construct_comment(d) {
 			}
 		}
 		
-		text += `</h6><span id="flags-${d.id}" class="flags">`;
+		if (logged_in) {
+			if (d.replace_node) text += `<div class="btn btn-xs btn-sub-edit" onclick="subscribe_edit(${d.d_id});">Subscribe To Edits</div>`;
+			text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+		}
+		text += ` #${d.d_id}</span><span id="flags-${d.id}" class="flags">`;
 		var found = false;
 		if (d.rating_flag) {
 			if (d.rating_flag.neutral != 3) {
@@ -4218,44 +4250,54 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right">(Hidden) Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
+			text += `(Hidden) Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
 		} else {
-			text += `<h6 align="right">(Hidden) Comment by <span class="author">${d.author}</span>`;
+			text += `(Hidden) Comment by <span class="author">${d.author}</span>`;
 		}
 
 		if (d.size > 0) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
-				text += `like)</h6>`;
+				text += `like)`;
+				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += ` #${d.d_id}</span>`;
 			} else {
-				text += `likes)</h6>`;
+				text += `likes)`;
+				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += ` #${d.d_id}</span>`;
 			}
 		}
-		text += `</h6>`;
+		if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+		text += ` #${d.d_id}</span>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
 	}
 
-	  else {
+	else {
 
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right">Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
+			text += `Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
 		} else {
-			text += `<h6 align="right">Comment by <span class="author">${d.author}</span>`;
+			text += `Comment by <span class="author">${d.author}</span>`;
 		}
 
 		if (d.size > 0) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
-				text += `like)</h6>`;
+				text += `like)`;
+				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += ` #${d.d_id}</span>`;
 			} else {
-				text += `likes)</h6>`;
+				text += `likes)`;
+				if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+				text += ` #${d.d_id}</span>`;
 			}
 		}
-		text += `</h6>`;
+		if (logged_in) text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${d.d_id});">Subscribe To Replies</div>`;
+		text += ` #${d.d_id}</span>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
-			}
+	}
 
 	text += '</div>';
 
