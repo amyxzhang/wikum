@@ -16,32 +16,20 @@
                 
                 <h1>{% trans "Notifications" %}</h1>
                 <BR>
-                    <BR>
+                <BR>
 
-                <table>
-                    <tr>
-                        <td>{% trans "Notification Message" %}</td>
-                        <td>{% trans "Notification Type" %}</td>
-                        <td>{% trans "User" %}</td>
-                        <td>{% trans "Time" %}</td>
-                        <td>{% trans "URL" %}</td>
-                    </tr>
-                {% for notif in unseen_nots %}
-                    <tr class="unseen">
-                        <td>{{ notif.message }}</td>
+                {% if notifications %}
 
-                        <td>{{ notif.notice_type.display }}</td>
-
-                        <td>{{ notif.sender.username }}</td>
-
-                        <td>{{ notif.date_created }}</td>
-
-                        <td><a href="{{ notif.url }}">{% trans "View" %}</a></td>
-                    </tr>
-                {% endfor %}
-                {% for notif in notifications %}
-                    {% if notif not in unseen_nots %}
-                        <tr class="seen">
+                    <table>
+                        <tr>
+                            <td>{% trans "Notification Message" %}</td>
+                            <td>{% trans "Notification Type" %}</td>
+                            <td>{% trans "User" %}</td>
+                            <td>{% trans "Time" %}</td>
+                            <td>{% trans "URL" %}</td>
+                        </tr>
+                    {% for notif in unseen_nots %}
+                        <tr class="unseen">
                             <td>{{ notif.message }}</td>
 
                             <td>{{ notif.notice_type.display }}</td>
@@ -50,11 +38,28 @@
 
                             <td>{{ notif.date_created }}</td>
 
-                            <td><a href="{{ notif.url }}">{% trans "View" %}</td>
+                            <td><a href="{{ notif.url }}">{% trans "View" %}</a></td>
                         </tr>
-                    {% endif %}
-                {% endfor %}
-               </table>
+                    {% endfor %}
+                    {% for notif in notifications %}
+                        {% if notif not in unseen_nots %}
+                            <tr class="seen">
+                                <td>{{ notif.message }}</td>
+
+                                <td>{{ notif.notice_type.display }}</td>
+
+                                <td>{{ notif.sender.username }}</td>
+
+                                <td>{{ notif.date_created }}</td>
+
+                                <td><a href="{{ notif.url }}">{% trans "View" %}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </table>
+                {% else %}
+                    <div>You have no notifications!</div>
+                {% endif %}
             </div>
     </section>
 
