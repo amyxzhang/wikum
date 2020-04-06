@@ -3913,7 +3913,7 @@ function shorten(text, max_length) {
 }
 
 function setMaxLength(depth) {
-	return Math.max(70 - depth * 5, 20);
+	return Math.max(50 - depth * 5, 20);
 }
 
 function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
@@ -3928,10 +3928,10 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 		outline += `<div class="list-group nested-sortable">`;
 	}
 	if (d.children && d.children.length) {
-		depth += 1;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
 			var maxLength = setMaxLength(depth);
+			if (node.depth) maxLength = setMaxLength(node.depth - 1);
 			let title = node.summary? shorten(stripHtml(node.summary), maxLength) : shorten(stripHtml(node.name), maxLength);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
@@ -3958,7 +3958,7 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i], '', depth=depth+1, shouldExpand);
+				outline += createOutlineInsideString(d.children[i], '', depth+1, shouldExpand);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
