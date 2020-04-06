@@ -1847,6 +1847,10 @@ function currentOutlineBorder() {
 	var selected = {'normal': undefined, 'ctrl': undefined};
 	if ($('.outline-selected.list-group-line').length > 0) {
 		var list_group_item = $('.outline-selected.list-group-line').first().closest('.list-group-item');
+		if (list_group_item.length == 0) {
+			selected['normal'] = 'viewAll';
+			return selected;
+		}
 		var outline_item = $(list_group_item).find('.outline-item').first();
 		selected['normal'] = outline_item.attr('id');
 		return selected;
