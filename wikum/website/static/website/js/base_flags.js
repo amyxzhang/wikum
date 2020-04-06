@@ -1242,12 +1242,13 @@ function insert_quote(highlighted_text, did) {
     copy_to_tinyMCE('\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n');
 }
 
-function send_update_drag_locks(to_lock) {
+function send_update_drag_locks(to_lock, new_parent_did) {
 	var article_id = $('#article_id').text();
 	var csrf = $('#csrf').text();
 	var lock_data = {csrfmiddlewaretoken: csrf,
 		article: article_id,
 		to_lock: to_lock,
+		new_parent_did: new_parent_did,
 		type: 'update_drag_locks',
 		unique_user_id: unique_user_id};
 	chatsock.send(JSON.stringify(lock_data));
@@ -2504,10 +2505,15 @@ function handle_channel_update_drag_locks(res) {
 		isSortable = true;
 		update(nodes_all[0]);
 		console.log("drag enabled");
-		if (parseInt(res.unique_user_id) == unique_user_id) {
-			show_text(nodes_all[0]);
-		} else {
+		if (parseInt(res.unique_user_id) != unique_user_id) {
 			show_viz_box_original(currentHighlight);
+		} else {
+			var new_parent_did = res.new_parent_did;
+			var new_parent = nodes_all[0];
+			if (new_parent_did != -1) {
+				new_parent = nodes_all.filter(o => o.d_id == new_parent_did)[0];
+			}
+			show_text(new_parent);
 		}
 	} else {
 		if (parseInt(res.unique_user_id) != unique_user_id) {
@@ -3772,7 +3778,7 @@ function setSortables(disabled = false) {
 					swapThreshold: 0.65,
 					onStart: function (evt) {
 						$('#expand').hide();
-						send_update_drag_locks(true);
+						send_update_drag_locks(true, -1);
 					},
 					// onMove: function (evt) {
 					// 	$('.outline-item').hover(
@@ -3815,7 +3821,8 @@ function setSortables(disabled = false) {
 				        	lastClicked = $('#outline-text-viewAll');
 				        }
 				        // update(draggingNode.parent);
-				        send_update_drag_locks(false);
+				        let newParentId = newParent == nodes_all[0]? -1 : newParent.d_id;
+				        send_update_drag_locks(false, newParentId);
 				    }
 				});
 				sortableList.push(sortableItem);
