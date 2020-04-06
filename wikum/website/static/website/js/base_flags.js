@@ -1820,17 +1820,43 @@ function downvote_summary(did, id) {
 		});
 }
 
-function outlineBorderHighlight_topCommentBox(d_id) {
-	if ($('.comment_box').first().length) {
-		redOutlineBorder($('.outline-item#' + d_id));
+function show_viz_box_original(select_obj) {
+	if (select_obj['normal'] != undefined) {
+		var d_id = select_obj['normal'];
+		var d = d_id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == d_id)[0];
+		var outline_item = $('.outline-item#' + d_id);
+		redOutlineBorder(outline_item);
+		show_text(d);
+	} else if (select_obj['ctrl'] != undefined) {
+		// ctrl select
+		var selected_dids = select_obj['ctrl'];
+		// select outline view markers and text
+		for (const d_id of selected_dids) {
+    		$('.outline-item#' + d_id).addClass('rb-red');	
+			/* outline the circle */
+			$('#marker-' + d_id).addClass('outline-selected');
+	    }
+	    // show corresponding comment boxes
+		show_text('clicked');
 	}
 }
 
+// return either single d_id (normal select) or list of d_ids (ctrl select)
 function currentOutlineBorder() {
-	if ($('.outline-selected.marker').length) {
-		return $('.outline-selected.marker')[0].id.substring(7);
+	var selected = {'normal': undefined, 'ctrl': undefined};
+	if ($('.outline-selected.list-group-line').length > 0) {
+		var list_group_item = $('.outline-selected.list-group-line').first().closest('.list-group-item');
+		var outline_item = $(list_group_item).find('.outline-item').first();
+		selected['normal'] = outline_item.attr('id');
+		return selected;
+	} else {
+		var selected_dids = [];
+		$('.outline-selected.marker').each(function() {
+    		selected_dids.push(this.id.substring(7));
+		});
+		selected['ctrl'] = selected_dids;
+		return selected
 	}
-	return 'viewAll';
 }
 
 chatsock.onmessage = function(message) {
@@ -1952,8 +1978,8 @@ function handle_channel_message(res) {
 			  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
 			highlight_box(new_d.d_id);
 		} else {
-			show_text(nodes_all[0]);
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			// show_text(nodes_all[0]);
+			show_viz_box_original(currentHighlight);
 		}
 
 	}
@@ -2070,8 +2096,8 @@ function handle_channel_summarize_comment(res) {
 		show_text(nodes_all[0]);
 		highlight_box(node_id);
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 	make_progress_bar();
 }
@@ -2152,8 +2178,8 @@ function handle_channel_summarize_selected(res) {
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 			show_text(nodes_all[0]);
 		} else {
-			show_text(nodes_all[0]);
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			// show_text(nodes_all[0]);
+			show_viz_box_original(currentHighlight);
 		}
 
 		var text = '<div class="comment_text" id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
@@ -2198,8 +2224,8 @@ function handle_channel_summarize_selected(res) {
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 			show_text(nodes_all[0]);
 		} else {
-			show_text(nodes_all[0]);
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			// show_text(nodes_all[0]);
+			show_viz_box_original(currentHighlight);
 		}
 		for (var i=0; i<children.length; i++) {
 			$('#comment_' + children[i].id).remove();
@@ -2335,8 +2361,8 @@ function handle_channel_summarize_comments(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 	
 	make_progress_bar();
@@ -2467,8 +2493,8 @@ function handle_channel_move_comments(res) {
 		success_noty();
 		show_text(newParent);
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2477,14 +2503,14 @@ function handle_channel_update_drag_locks(res) {
 	if (res.enable == 'enable' || parseInt(res.unique_user_id) == -1) {
 		isSortable = true;
 		update(nodes_all[0]);
-		console.log("drag enabled");
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		//console.log("drag enabled");
+		show_viz_box_original(currentHighlight);
 	} else {
 		if (parseInt(res.unique_user_id) != unique_user_id) {
 			isSortable = false;
 			update(nodes_all[0]);
 			console.log("drag disabled");
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			show_viz_box_original(currentHighlight);
 		}
 	}
 }
@@ -2509,8 +2535,8 @@ function handle_channel_hide_comment(res) {
 		success_noty();
 		show_text(nodes_all[0]);
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		//show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2528,8 +2554,8 @@ function handle_channel_hide_comments(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2563,8 +2589,8 @@ function handle_channel_hide_replies(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
