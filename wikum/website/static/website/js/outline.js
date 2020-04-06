@@ -315,7 +315,7 @@ $.ajax({type: 'GET',
 		// viz functions
 		$('#viz').on('click', function(evt) {
 			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('list-group-item') || $(evt.target).hasClass('outline-item') || $(evt.target).hasClass('outline-text') || $(evt.target).hasClass('marker'))) {
-				redOutlineBorder($('#outline').children(":first").children('.list-group'));
+				redOutlineBorder($('.outline-item#viewAll'))
 				show_text(nodes_all[0]);
 				lastClicked = $('#outline-text-viewAll');
 			}

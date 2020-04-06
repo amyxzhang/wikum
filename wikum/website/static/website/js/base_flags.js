@@ -2503,8 +2503,12 @@ function handle_channel_update_drag_locks(res) {
 	if (res.enable == 'enable' || parseInt(res.unique_user_id) == -1) {
 		isSortable = true;
 		update(nodes_all[0]);
-		//console.log("drag enabled");
-		show_viz_box_original(currentHighlight);
+		console.log("drag enabled");
+		if (parseInt(res.unique_user_id) == unique_user_id) {
+			show_text(nodes_all[0]);
+		} else {
+			show_viz_box_original(currentHighlight);
+		}
 	} else {
 		if (parseInt(res.unique_user_id) != unique_user_id) {
 			isSortable = false;
@@ -3802,7 +3806,14 @@ function setSortables(disabled = false) {
 				        	}
 				        }
 				        var itemMoved = !(evt.to === evt.from && evt.oldIndex === evt.newIndex);
-				        if (dragItem && newParent && itemMoved) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
+				        if (dragItem && newParent && itemMoved) {
+				        	save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
+				        } else {
+				        	console.log("HELLO");
+				        	show_text(nodes_all[0]);
+				        	redOutlineBorder($('.outline-item#viewAll'));
+				        	lastClicked = $('#outline-text-viewAll');
+				        }
 				        // update(draggingNode.parent);
 				        send_update_drag_locks(false);
 				    }
