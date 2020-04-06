@@ -544,7 +544,7 @@ class WikumConsumer(WebsocketConsumer):
                     enable_or_disable = 'disable'
                     a.drag_locked = True
 
-            res = {'user': username, 'new_parent_did': data['new_parent_did'], 'type': data['type'], 'unique_user_id': unique_user_id, 'enable': enable_or_disable}
+            res = {'user': username, 'new_parent_did': data['new_parent_did'] if 'new_parent_did' in data else None, 'type': data['type'], 'unique_user_id': unique_user_id, 'enable': enable_or_disable}
             return res
         except Exception as e:
             print(e)
