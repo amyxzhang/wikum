@@ -4365,12 +4365,8 @@ function construct_comment(d) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
 				text += `like)`;
-				text += render_subscribe_buttons(d.d_id, d.replace_node);
-				text += ` #${d.d_id}</span>`;
 			} else {
 				text += `likes)`;
-				text += render_subscribe_buttons(d.d_id, d.replace_node);
-				text += ` #${d.d_id}</span>`;
 			}
 		}
 		text += render_subscribe_buttons(d.d_id, d.replace_node);
@@ -4392,12 +4388,8 @@ function construct_comment(d) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
 				text += `like)`;
-				text += render_subscribe_buttons(d.d_id, d.replace_node);
-				text += ` #${d.d_id}</span>`;
 			} else {
 				text += `likes)`;
-				text += render_subscribe_buttons(d.d_id, d.replace_node);
-				text += ` #${d.d_id}</span>`;
 			}
 		}
 		text += render_subscribe_buttons(d.d_id, d.replace_node);
