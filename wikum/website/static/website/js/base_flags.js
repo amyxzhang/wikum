@@ -3814,11 +3814,6 @@ function setSortables(disabled = false) {
 				        var itemMoved = !(evt.to === evt.from && evt.oldIndex === evt.newIndex);
 				        if (dragItem && newParent && itemMoved) {
 				        	save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
-				        } else {
-				        	console.log("HELLO");
-				        	show_text(nodes_all[0]);
-				        	redOutlineBorder($('.outline-item#viewAll'));
-				        	lastClicked = $('#outline-text-viewAll');
 				        }
 				        // update(draggingNode.parent);
 				        let newParentId = newParent == nodes_all[0]? -1 : newParent.d_id;
