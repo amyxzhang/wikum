@@ -14,8 +14,11 @@ var article_id = $('#article_id').text();
 
 $(document).keydown(function(evt) {
     if (evt.ctrlKey || evt.metaKey) {
-    	ctrlIsPressed = true;
-    	clicked_dids = {};
+    	if (ctrlIsPressed) ctrlIsPressed = false;
+    	else {
+	    	ctrlIsPressed = true;
+	    	clicked_dids = {};
+    	}
     } else {
     	ctrlIsPressed = false;
     }
