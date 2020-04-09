@@ -31,7 +31,8 @@ import math
 import json
 from django.db.models import Q, Avg
 from django.contrib.auth.models import User
-from website.models import Article, Source, CommentRating, CommentAuthor, Permissions
+from django.contrib.auth.decorators import login_required
+from website.models import Article, Source, CommentRating, CommentAuthor, Permissions, Notification, WikumUser
 
 parser = Parser()
 
@@ -129,6 +130,19 @@ def explore_public(request):
 
     return resp
 
+@login_required
+@render_to('website/notifications_page.html')
+def notifications_page(request):
+    user = request.user
+    notifs = Notification.objects.filter(recipient=user).order_by('-date_created').select_related()
+    unseen_nots = notifs.filter(seen=False)
+    for n in unseen_nots:
+        n.seen = True
+        n.save()
+
+    return {'notifications': notifs,
+            'unseen_nots': unseen_nots,
+            'user': user}
 
 @render_to('website/unauthorized.html')
 def unauthorized(request):
@@ -1183,6 +1197,7 @@ def remove_self_loops(comments, article):
             p = parent[0]
             hasLoop = False
             if p == c:
+                print("Has self-loop at comment:", c)
                 hasLoop = True
             else:
                 # remove comments that are children of self loops
@@ -1191,6 +1206,7 @@ def remove_self_loops(comments, article):
                     parent = Comment.objects.filter(disqus_id=current.reply_to_disqus, article=article)
                     if parent.count() > 0:
                         if parent[0] == current:
+                            print("Has self-loop at comment:", current)
                             hasLoop = True
                             break
                         current = parent[0]
@@ -1203,6 +1219,107 @@ def remove_self_loops(comments, article):
             no_loops.append(c)
     return no_loops
 
+def mark_comments_read(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comments_read = request.POST.getlist('ids[]')
+            read_list = current_user.comments_read.split(',')
+            current_user.comments_read = ','.join(list(set(read_list + comments_read)))
+            current_user.save()
+            resp = {"comments_read": comments_read}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def subscribe_comment_replies(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_replies != '':
+                subscribe_list = current_user.subscribe_replies.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_replies__contains=',' + did + ',')
+            subscribe_list.append(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            current_user.subscribe_replies = list_string
+            current_user.save()
+            resp = {"comment_sub_replies": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def unsubscribe_comment_replies(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_replies != '':
+                subscribe_list = current_user.subscribe_replies.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_replies__contains=',' + did + ',')
+            if comment_id in subscribe_list:
+                subscribe_list.remove(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            current_user.subscribe_replies = list_string
+            current_user.save()
+            resp = {"comment_unsub_replies": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def subscribe_comment_edit(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_edit != '':
+                subscribe_list = current_user.subscribe_edit.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_edit__contains=',' + did + ',')
+            subscribe_list.append(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            current_user.subscribe_edit = list_string
+            current_user.save()
+            resp = {"comment_sub_edit": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
+
+def unsubscribe_comment_edit(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({})
+        else:
+            current_user = request.user.wikumuser
+            comment_id = request.POST.get('id', None)
+            subscribe_list = []
+            if current_user.subscribe_edit != '':
+                subscribe_list = current_user.subscribe_edit.split(',')
+            # add separator at beginning and end to help search: User.objects.filter(wikumuser__subscribe_edit__contains=',' + did + ',')
+            if comment_id in subscribe_list:
+                subscribe_list.remove(comment_id)
+            list_string = ',' + ','.join(list(set(subscribe_list))) + ','
+            current_user.subscribe_edit = list_string
+            current_user.save()
+            resp = {"comment_unsub_edit": comment_id}
+            return JsonResponse(resp)
+    except Exception as e:
+        print(e)
+        return HttpResponseBadRequest()
 
 def viz_data(request):
     owner = request.GET.get('owner', None)
@@ -1227,11 +1344,35 @@ def viz_data(request):
     
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
+
+    all_ids = a.comment_set.values_list('id', flat=True).all()
+    if request.user.is_anonymous:
+        comments_read = 'all'
+        sub_edits = []
+        sub_replies = []
+    else:
+        current_user = request.user.wikumuser
+        if current_user.comments_read == '':
+            comments_read = []
+        else:
+            comments_read = [c for c in current_user.comments_read.split(',') if c != '' and int(c) in all_ids]
+        if current_user.subscribe_replies == '':
+            sub_replies = []
+        else:
+            sub_replies = [c for c in current_user.subscribe_replies.split(',') if c != '' and int(c) in all_ids]
+        if current_user.subscribe_edit == '':
+            sub_edits = []
+        else:
+            sub_edits = [c for c in current_user.subscribe_edit.split(',') if c != '' and int(c) in all_ids]
+
     
     val = {'name': '<P><a href="%s">Read the article in the %s</a></p>' % (a.url, a.source.source_name),
            'size': 400,
            'article': True,
-           'drag_locked': a.drag_locked}
+           'drag_locked': a.drag_locked,
+           'comments_read': comments_read,
+           'sub_edits': sub_edits,
+           'sub_replies': sub_replies}
 
 
     if filter != '':
@@ -1288,7 +1429,7 @@ def viz_data(request):
         val['hid'] = []
         val['replace'] = []
 
-        if posts != None and 'en.wikipedia' in a.url:
+        if posts != None:
             posts = remove_self_loops(posts, a)
         posts = posts[start:end]
         for post in posts:
@@ -1327,7 +1468,7 @@ def viz_data(request):
         elif sort == 'oldest':
             posts = a.comment_set.filter(reply_to_disqus=None).order_by('created_at')
 
-        if posts != None and 'en.wikipedia' in a.url:
+        if posts != None:
             posts = remove_self_loops(posts, a)
         posts = posts[start:end]
         val['children'], val['hid'], val['replace'], num_subchildren = recurse_viz(None, posts, False, a, False)
@@ -1507,7 +1648,7 @@ def subtree_data(request):
             if count > 1:
                 next_page = random.randint(0,count-1)
 
-        if posts != None and 'en.wikipedia' in a.url:
+        if posts != None:
             posts = remove_self_loops(posts, a)
         if len(posts) > next_page:
             posts = [posts[next_page]]

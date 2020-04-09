@@ -35,6 +35,7 @@ $ pip install git+https://github.com/alexz-enwp/wikitools.git@py3
 
 ```
 
+If you are using Django 3.0, you will need to install `six` and replace `django.utils.encoding` and `django.utils.six` with just `six` in the imports. Then, change all instances of `{% load staticfiles %}` to `{% load static %}`. If you are deploying, don't forget to run `collectstatic`.
 
 #### Setup the database
 

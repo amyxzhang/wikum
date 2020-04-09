@@ -1,5 +1,5 @@
 
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 <!DOCTYPE html>
 <html>
@@ -145,6 +145,7 @@
             </div>
 
             <!-- Links navigation menu -->
+            <!-- Notification Icon made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a> -->
 
             <div
                 class="navbar-collapse collapse"
@@ -200,6 +201,14 @@
                     		{% else %}
                         	<a class="section-scroll" href="{{ BASE_URL }}/#contact">{% trans "Contact" %}</a>
                         	{% endif %}
+                    </li>
+
+                    <li>
+                        {% if user.is_authenticated %}
+                            <a class="section-scroll" href="{{ BASE_URL }}/notifications_page">
+                                <i class="icon-bell"></i>
+                            </a>
+                        {% endif %}
                     </li>
                     
                     

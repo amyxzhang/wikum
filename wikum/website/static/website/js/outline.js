@@ -14,8 +14,11 @@ var article_id = $('#article_id').text();
 
 $(document).keydown(function(evt) {
     if (evt.ctrlKey || evt.metaKey) {
-    	ctrlIsPressed = true;
-    	clicked_dids = {};
+    	if (ctrlIsPressed) ctrlIsPressed = false;
+    	else {
+	    	ctrlIsPressed = true;
+	    	clicked_dids = {};
+    	}
     } else {
     	ctrlIsPressed = false;
     }
@@ -87,6 +90,14 @@ make_username_typeahead();
 $.ajax({type: 'GET',	
 	url: `/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`,	
 	success: function(flare) {
+		// $('.comment-unread').map(function(){return this.id.substring(13);}).get();
+		if (flare['comments_read'] == 'all') {
+			read_list = [];
+		} else {
+			read_list = flare['comments_read'];
+		}
+		subscribe_edit_comments = flare['sub_edits'];
+		subscribe_replies_comments = flare['sub_replies'];
 		var outline = createOutlineString(flare);
 		document.getElementById("outline").innerHTML = outline;
 		setSortables();
@@ -307,7 +318,7 @@ $.ajax({type: 'GET',
 		// viz functions
 		$('#viz').on('click', function(evt) {
 			if (!($(evt.target).hasClass('list-group-line') || $(evt.target).hasClass('list-group-item') || $(evt.target).hasClass('outline-item') || $(evt.target).hasClass('outline-text') || $(evt.target).hasClass('marker'))) {
-				redOutlineBorder($('#outline').children(":first").children('.list-group'));
+				redOutlineBorder($('.outline-item#viewAll'))
 				show_text(nodes_all[0]);
 				lastClicked = $('#outline-text-viewAll');
 			}

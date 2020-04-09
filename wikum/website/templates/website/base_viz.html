@@ -1,5 +1,5 @@
 
-{% load staticfiles %}
+{% load static %}
 {% load i18n %}
 {% load websitefilters %}
 <!DOCTYPE html>
@@ -283,7 +283,13 @@
 					{% endif %}
 					</li>
 	
-                   
+					{% if user.is_authenticated %}
+						<li>
+                            <a class="section-scroll" href="{{ BASE_URL }}/notifications_page">
+                                <i class="icon-bell"></i>
+                            </a>
+                        </li>
+                    {% endif %}
                     
                     
                     	{% if user.is_authenticated %}

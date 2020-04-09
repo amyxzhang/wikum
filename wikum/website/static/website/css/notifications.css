@@ -1,0 +1,21 @@
+
+.seen td {
+	padding: 5px;
+	border: #ffffff solid 10px;
+	background-color: #f0f0f0;
+}
+
+.unseen td {
+	padding: 5px;
+	border: #ffffff solid 10px;
+	background-color: #eef7fa;
+}
+
+table {
+	width: 100%;
+}
+
+p {
+	font-size: 10px;
+	margin-bottom: 10px;
+}

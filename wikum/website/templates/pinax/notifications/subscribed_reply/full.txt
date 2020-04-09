@@ -3,7 +3,7 @@
 Hi {{ recipient }},
 
 
-{{ from_user }} has summarized your comment along with other comments.
+{{ from_user }} has replied to a comment you are subscribed to.
 You can view the article here: {{ default_http_protocol }}://{{ current_site }}/visualization_flags?id={{ id }}&owner={{ owner }}#comment_{{ comment_id }}
 
 

@@ -11,6 +11,9 @@ var unique_user_id = Math.floor(Math.random() * 1000000000);
 var article_id = $('#article_id').text();
 var lastClicked = null;
 var isSortable = true;
+var read_list = [];
+var subscribe_edit_comments = [];
+var subscribe_replies_comments = [];
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
@@ -37,6 +40,72 @@ function timerIncrement() {
     	send_update_locks(dids_in_use, false);
     }
 }
+
+function isElementInViewport(el) {
+    // Special bonus for those using jQuery
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        el = el[0];
+    }
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
+
+function getCommentsInViewport() {
+	var comments = $('.comment_box').filter(function() {
+	    return isElementInViewport(this);
+	});
+	return comments.map(function() {
+		return $(this).data('did');
+	}).get();
+}
+
+var old_visible;
+var readDelay=5000, setReadConst;
+function onVisibilityChange() {
+	clearTimeout(setReadConst);
+	setReadConst = setTimeout(function() {
+		var visible = getCommentsInViewport();
+	    if (visible != old_visible) {
+	        old_visible = visible;
+	        mark_comments_read(visible);
+	    }
+	}, readDelay);
+}
+
+function mark_comments_read(dids) {
+	var csrf = $('#csrf').text();
+	var logged_in = $("#owner").length > 0;
+	var dids_send = [];
+	if (read_list.length == 0) {
+		dids_send = dids;
+	} else {
+		for (const did of dids) {
+			var unread = $('#outline-text-' + did).hasClass('comment-unread');
+			if (unread && read_list) dids_send.push(did);
+			$('#outline-text-' + did).removeClass('comment-unread');
+		}
+	}
+	var dids_strings = dids_send.map(did => did.toString());
+	read_list = read_list.concat(dids_strings);
+	var data = {csrfmiddlewaretoken: csrf,
+				ids: dids_send};
+	if (logged_in && dids_send.length > 0) {
+		$.ajax({
+			type: 'POST',
+			url: '/mark_comments_read',
+			data: data,
+			success: function(res) {}
+		});
+	}
+}
+
+$(window).on('DOMContentLoaded load resize scroll', onVisibilityChange);
+$('#box').on('scroll', onVisibilityChange);
 
 function highlight_sents() {
 	d_ids = current_summarize_d_id;
@@ -1173,12 +1242,13 @@ function insert_quote(highlighted_text, did) {
     copy_to_tinyMCE('\n[quote]"' + highlighted_text + '" [[comment_' + did +']] [endquote]\n');
 }
 
-function send_update_drag_locks(to_lock) {
+function send_update_drag_locks(to_lock, new_parent_did) {
 	var article_id = $('#article_id').text();
 	var csrf = $('#csrf').text();
 	var lock_data = {csrfmiddlewaretoken: csrf,
 		article: article_id,
 		to_lock: to_lock,
+		new_parent_did: new_parent_did,
 		type: 'update_drag_locks',
 		unique_user_id: unique_user_id};
 	chatsock.send(JSON.stringify(lock_data));
@@ -1751,17 +1821,57 @@ function downvote_summary(did, id) {
 		});
 }
 
-function outlineBorderHighlight_topCommentBox(d_id) {
-	if ($('.comment_box').first().length) {
-		redOutlineBorder($('.outline-item#' + d_id));
+function show_viz_box_original(select_obj) {
+	if (select_obj['normal'] != undefined) {
+		var d_id = select_obj['normal'];
+		var d = d_id === 'viewAll' ? nodes_all[0] : nodes_all.filter(o => o.d_id == d_id)[0];
+		var outline_item = $('.outline-item#' + d_id);
+		redOutlineBorder(outline_item);
+		show_text(d);
+	} else if (select_obj['ctrl'] != undefined) {
+		// ctrl select
+		var selected_dids = select_obj['ctrl'];
+		if (selected_dids.length == 0) {
+			var outline_item = $('.outline-item#viewAll');
+			//redOutlineBorder(outline_item);
+			show_text(nodes_all[0]);
+		} else {
+			// select outline view markers and text
+			for (const d_id of selected_dids) {
+	    		$('.outline-item#' + d_id).addClass('rb-red');	
+				/* outline the circle */
+				$('#marker-' + d_id).addClass('outline-selected');
+		    }
+		    // show corresponding comment boxes
+			show_text('clicked');
+		}
+	} else {
+		var outline_item = $('.outline-item#viewAll');
+		//redOutlineBorder(outline_item);
+		show_text(nodes_all[0]);
 	}
 }
 
+// return either single d_id (normal select) or list of d_ids (ctrl select)
 function currentOutlineBorder() {
-	if ($('.outline-selected.marker').length) {
-		return $('.outline-selected.marker')[0].id.substring(7);
+	var selected = {'normal': undefined, 'ctrl': undefined};
+	if ($('.outline-selected.list-group-line').length > 0) {
+		var list_group_item = $('.outline-selected.list-group-line').first().closest('.list-group-item');
+		if (list_group_item.length == 0) {
+			selected['normal'] = 'viewAll';
+			return selected;
+		}
+		var outline_item = $(list_group_item).find('.outline-item').first();
+		selected['normal'] = outline_item.attr('id');
+		return selected;
+	} else {
+		var selected_dids = [];
+		$('.outline-selected.marker').each(function() {
+    		selected_dids.push(this.id.substring(7));
+		});
+		selected['ctrl'] = selected_dids;
+		return selected
 	}
-	return 'viewAll';
 }
 
 chatsock.onmessage = function(message) {
@@ -1883,8 +1993,8 @@ function handle_channel_message(res) {
 			  .animate({borderColor:'hsl(195, 59%, 85%)'}, 1000);
 			highlight_box(new_d.d_id);
 		} else {
-			show_text(nodes_all[0]);
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			// show_text(nodes_all[0]);
+			show_viz_box_original(currentHighlight);
 		}
 
 	}
@@ -2001,8 +2111,8 @@ function handle_channel_summarize_comment(res) {
 		show_text(nodes_all[0]);
 		highlight_box(node_id);
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 	make_progress_bar();
 }
@@ -2083,11 +2193,11 @@ function handle_channel_summarize_selected(res) {
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 			show_text(nodes_all[0]);
 		} else {
-			show_text(nodes_all[0]);
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			// show_text(nodes_all[0]);
+			show_viz_box_original(currentHighlight);
 		}
 
-		var text = '<div id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
+		var text = '<div class="comment_text" id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
 		
 		if ($('#access_mode').attr('data-access') == "0") {
 			text += `<footer align="right">
@@ -2129,8 +2239,8 @@ function handle_channel_summarize_selected(res) {
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
 			show_text(nodes_all[0]);
 		} else {
-			show_text(nodes_all[0]);
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			// show_text(nodes_all[0]);
+			show_viz_box_original(currentHighlight);
 		}
 		for (var i=0; i<children.length; i++) {
 			$('#comment_' + children[i].id).remove();
@@ -2227,7 +2337,7 @@ function handle_channel_summarize_comments(res) {
 		 d.extrasumwiki = res.bottom_summary_wiki;
 	}
 
-	var text = '<div id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
+	var text = '<div class="comment_text" id="comment_text_' + d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(d, false) + '</div>';
 	
 	if ($('#access_mode').attr('data-access') == "0") {
 		text += `<footer align="right">
@@ -2266,8 +2376,8 @@ function handle_channel_summarize_comments(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 	
 	make_progress_bar();
@@ -2398,8 +2508,8 @@ function handle_channel_move_comments(res) {
 		success_noty();
 		show_text(newParent);
 	} else {
-		show_text(newParent);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2409,13 +2519,22 @@ function handle_channel_update_drag_locks(res) {
 		isSortable = true;
 		update(nodes_all[0]);
 		console.log("drag enabled");
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		if (parseInt(res.unique_user_id) != unique_user_id) {
+			show_viz_box_original(currentHighlight);
+		} else {
+			var new_parent_did = res.new_parent_did;
+			var new_parent = nodes_all[0];
+			if (new_parent_did != -1) {
+				new_parent = nodes_all.filter(o => o.d_id == new_parent_did)[0];
+			}
+			show_text(new_parent);
+		}
 	} else {
 		if (parseInt(res.unique_user_id) != unique_user_id) {
 			isSortable = false;
 			update(nodes_all[0]);
 			console.log("drag disabled");
-			outlineBorderHighlight_topCommentBox(currentHighlight);
+			show_viz_box_original(currentHighlight);
 		}
 	}
 }
@@ -2440,8 +2559,8 @@ function handle_channel_hide_comment(res) {
 		success_noty();
 		show_text(nodes_all[0]);
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		//show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2459,8 +2578,8 @@ function handle_channel_hide_comments(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2494,8 +2613,8 @@ function handle_channel_hide_replies(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		show_text(nodes_all[0]);
-		outlineBorderHighlight_topCommentBox(currentHighlight);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
 	}
 }
 
@@ -2950,14 +3069,6 @@ function load_permalink() {
 	}
 	else if (location.hash) {
 		var d_id = (location.hash.match(/comment_(\d+)/) || [])[1];
-
-		if (d_id) {
-			$(`#node_${d_id}`).d3Click();
-		}
-
-	}
-	else {
-		$("#node_2").d3Click();
 	}
 }
 
@@ -3660,7 +3771,8 @@ function expand_all(id) {
 }
 
 function setSortables(disabled = false) {
-	if (sort == 'default') {
+	var edit_mode = $('#access_mode').attr('data-access') == "0" || $('#access_mode').attr('data-access') == "2";
+	if (sort == 'default' && edit_mode) {
 		sortableList = [];
 		var nestedSortables = document.getElementsByClassName("nested-sortable");
 		// Loop through each nested sortable element
@@ -3681,7 +3793,7 @@ function setSortables(disabled = false) {
 					swapThreshold: 0.65,
 					onStart: function (evt) {
 						$('#expand').hide();
-						send_update_drag_locks(true);
+						send_update_drag_locks(true, -1);
 					},
 					// onMove: function (evt) {
 					// 	$('.outline-item').hover(
@@ -3715,9 +3827,12 @@ function setSortables(disabled = false) {
 				        	}
 				        }
 				        var itemMoved = !(evt.to === evt.from && evt.oldIndex === evt.newIndex);
-				        if (dragItem && newParent && itemMoved) save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
+				        if (dragItem && newParent && itemMoved) {
+				        	save_node_position(dragItem, newParent, siblingBefore, siblingAfter, evt.newIndex);
+				        }
 				        // update(draggingNode.parent);
-				        send_update_drag_locks(false);
+				        let newParentId = newParent == nodes_all[0]? -1 : newParent.d_id;
+				        send_update_drag_locks(false, newParentId);
 				    }
 				});
 				sortableList.push(sortableItem);
@@ -3813,7 +3928,7 @@ function shorten(text, max_length) {
 }
 
 function setMaxLength(depth) {
-	return Math.max(70 - depth * 5, 20);
+	return Math.max(50 - depth * 5, 20);
 }
 
 function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
@@ -3828,10 +3943,10 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 		outline += `<div class="list-group nested-sortable">`;
 	}
 	if (d.children && d.children.length) {
-		depth += 1;
 		for (var i=0; i<d.children.length; i++) {
 			var node = d.children[i];
 			var maxLength = setMaxLength(depth);
+			if (node.depth) maxLength = setMaxLength(node.depth - 1);
 			let title = node.summary? shorten(stripHtml(node.summary), maxLength) : shorten(stripHtml(node.name), maxLength);
 			let state = getState(node);
 			outline += `<div class="list-countainer">`;
@@ -3845,16 +3960,20 @@ function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
 						userColor = stringToColour(node.author);
 					}
 					outline += `style="background-color:${userColor};"`;
-				} 
+				}
+				var not_read = '';
+				if (read_list.length > 0 && $("#owner").length > 0) {
+					not_read = (read_list.indexOf(node.d_id.toString()) >= 0 || $("#owner")[0].innerHTML == node.author)? '' : 'comment-unread';
+				}
 				outline	+= `></span>`
-						+ `<span class="outline-text t-${state}" id="outline-text-${node.d_id}">`
+						+ `<span class="${not_read} outline-text t-${state}" id="outline-text-${node.d_id}">`
 						+ title + `</span>`;
 				var shouldExpand = ((state === 'summary' || state === 'summary_partial') && node.replace && node.replace.length) || (node._children && node._children.length);
 				if (shouldExpand) {
 					outline += '<span id="down-arrow">&#9660</span>';
 				}
 				outline += `</div>`;
-				outline += createOutlineInsideString(d.children[i], '', depth=depth+1, shouldExpand);
+				outline += createOutlineInsideString(d.children[i], '', depth+1, shouldExpand);
 				outline += `</div>`;
 			outline += `</div>`;
 		}
@@ -4075,19 +4194,111 @@ function toggle_original(id) {
 	$('#orig_' + id).toggle();
 }
 
+function subscribe_edit(did, is_replace_node) {
+	subscribe_edit_comments.push(did.toString());
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/subscribe_comment_edit',
+		data: data,
+		success: function(res) {
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
+	});
+}
+
+function subscribe_replies(did, is_replace_node) {
+	subscribe_replies_comments.push(did.toString());
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/subscribe_comment_replies',
+		data: data,
+		success: function(res) {
+			console.log($('#subscribe-buttons-' + did));
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
+	});
+}
+
+function unsubscribe_edit(did, is_replace_node) {
+	const index = subscribe_edit_comments.indexOf(did.toString());
+	if (index > -1) {
+		subscribe_edit_comments.splice(index, 1);
+	}
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/unsubscribe_comment_edit',
+		data: data,
+		success: function(res) {
+			console.log($('#subscribe-buttons-' + did));
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
+	});
+}
+
+function unsubscribe_replies(did, is_replace_node) {
+	const index = subscribe_replies_comments.indexOf(did.toString());
+	if (index > -1) {
+		subscribe_replies_comments.splice(index, 1);
+	}
+	var csrf = $('#csrf').text();
+	var data = {csrfmiddlewaretoken: csrf,
+				id: did};
+	$.ajax({
+		type: 'POST',
+		url: '/unsubscribe_comment_replies',
+		data: data,
+		success: function(res) {
+			$('#subscribe-buttons-' + did).html(render_subscribe_buttons(did, is_replace_node));
+		}
+	});
+}
+
+function render_subscribe_buttons(did, is_replace_node) {
+	var logged_in = $("#owner").length > 0;
+	var text = '<span id="subscribe-buttons-' + did + '">';
+	var is_sub_replies = false;
+	var is_sub_edits = false;
+	if (subscribe_replies_comments.indexOf(did.toString()) > -1) is_sub_replies = true;
+	if (is_replace_node && subscribe_edit_comments.indexOf(did.toString()) > -1) is_sub_edits = true;
+	if (logged_in) {
+		if (is_replace_node) {
+			if (is_sub_edits) {
+				text += `<div class="btn btn-xs btn-sub-edit" onclick="unsubscribe_edit(${did}, ${is_replace_node});">Unsubscribe To Edits</div>`;
+			} else {
+				text += `<div class="btn btn-xs btn-sub-edit" onclick="subscribe_edit(${did}, ${is_replace_node});">Subscribe To Edits</div>`;
+			}
+		}
+		if (is_sub_replies) {
+			text += `<div class="btn btn-xs btn-sub-reply" onclick="unsubscribe_replies(${did}, ${is_replace_node});">Unubscribe To Replies</div>`;
+		} else {
+			text += `<div class="btn btn-xs btn-sub-reply" onclick="subscribe_replies(${did}, ${is_replace_node});">Subscribe To Replies</div>`;
+		}
+	}
+	text += '</span>';
+	return text;
+}
 
 function construct_comment(d) {
 	var text = "";
 	var summary = !!(d.summary != '' || d.extra_summary != '');
 
-	text += `<div id="comment_text_${d.id}">`;
-	text += `<span class="id_val">#${d.d_id}</span>`;
+	text += `<div class="comment_text" id="comment_text_${d.id}">`;
+	text += `<span class="id_val">`;
 
 	if (summary) {
 		if (d.replace_node) {
-			text += `<h6 align="right">Summary`;
+			text += `Summary`;
 		} else {
-			text += `<h6 align="right">Summary`;
+			text += `Summary`;
 			text += ` of Comment by `;
 
 			highlight_authors = $('#highlight_authors').text().split(',');
@@ -4107,7 +4318,8 @@ function construct_comment(d) {
 			}
 		}
 		
-		text += `</h6><span id="flags-${d.id}" class="flags">`;
+		text += render_subscribe_buttons(d.d_id, d.replace_node);
+		text += ` #${d.d_id}</span><span id="flags-${d.id}" class="flags">`;
 		var found = false;
 		if (d.rating_flag) {
 			if (d.rating_flag.neutral != 3) {
@@ -4159,44 +4371,46 @@ function construct_comment(d) {
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right">(Hidden) Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
+			text += `(Hidden) Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
 		} else {
-			text += `<h6 align="right">(Hidden) Comment by <span class="author">${d.author}</span>`;
+			text += `(Hidden) Comment by <span class="author">${d.author}</span>`;
 		}
 
 		if (d.size > 0) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
-				text += `like)</h6>`;
+				text += `like)`;
 			} else {
-				text += `likes)</h6>`;
+				text += `likes)`;
 			}
 		}
-		text += `</h6>`;
+		text += render_subscribe_buttons(d.d_id, d.replace_node);
+		text += ` #${d.d_id}</span>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
 	}
 
-	  else {
+	else {
 
 		highlight_authors = $('#highlight_authors').text().split(',');
 
 		if (highlight_authors.indexOf(d.author) > -1) {
-			text += `<h6 align="right">Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
+			text += `Comment by <span class="author" style="background-color: pink;">${d.author}</span>`;
 		} else {
-			text += `<h6 align="right">Comment by <span class="author">${d.author}</span>`;
+			text += `Comment by <span class="author">${d.author}</span>`;
 		}
 
 		if (d.size > 0) {
 			text += ` (${d.size} `;
 			if (d.size == 1) {
-				text += `like)</h6>`;
+				text += `like)`;
 			} else {
-				text += `likes)</h6>`;
+				text += `likes)`;
 			}
 		}
-		text += `</h6>`;
+		text += render_subscribe_buttons(d.d_id, d.replace_node);
+		text += ` #${d.d_id}</span>`;
 		text += '<span class="original_comment">' + d.name + '</span>';
-			}
+	}
 
 	text += '</div>';
 
@@ -4555,6 +4769,7 @@ function show_text(d) {
 	}
 
 	var delay=500, setTimeoutConst;
+	var hoverDelay=1000, markReadHoverTimer;
 	$('.comment_box').hover(
 		  function() {
 		    var did = parseInt(this.dataset.did);
@@ -4563,11 +4778,15 @@ function show_text(d) {
 		    setTimeoutConst = setTimeout(function() {
 				$('#viz').scrollTo('#outline-text-' + did, 500, {axis: 'y', offset: {top: -100}});
 			}, delay);
+			markReadHoverTimer = setTimeout(function() {
+				mark_comments_read([did]);
+			}, hoverDelay);
 		  }, function() {
 		    var did = parseInt(this.dataset.did);
 		    var id = parseInt(this.id.substring(8));
 		    unextra_highlight_node(did, id);
 		    clearTimeout(setTimeoutConst);
+		    clearTimeout(markReadHoverTimer);
 		  }
 	);
 

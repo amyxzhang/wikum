@@ -66,8 +66,14 @@ urlpatterns = [
     url(r'^summary', website_views.summary),
     
     url(r'^history', website_views.history),
+    url(r'^notifications_page', website_views.notifications_page),
     
     url(r'^auto_summarize_comment', website_views.auto_summarize_comment),
+    url(r'^mark_comments_read', website_views.mark_comments_read),
+    url(r'^subscribe_comment_replies', website_views.subscribe_comment_replies),
+    url(r'^unsubscribe_comment_replies', website_views.unsubscribe_comment_replies),
+    url(r'^subscribe_comment_edit', website_views.subscribe_comment_edit),
+    url(r'^unsubscribe_comment_edit', website_views.unsubscribe_comment_edit),
     
     url(r'^rate_summary', website_views.rate_summary),
     url(r'^log_data', website_views.log_data),
