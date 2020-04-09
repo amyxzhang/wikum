@@ -3771,7 +3771,8 @@ function expand_all(id) {
 }
 
 function setSortables(disabled = false) {
-	if (sort == 'default') {
+	var edit_mode = $('#access_mode').attr('data-access') == "0" || $('#access_mode').attr('data-access') == "2";
+	if (sort == 'default' && edit_mode) {
 		sortableList = [];
 		var nestedSortables = document.getElementsByClassName("nested-sortable");
 		// Loop through each nested sortable element
