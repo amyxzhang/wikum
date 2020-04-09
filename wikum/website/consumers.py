@@ -705,7 +705,7 @@ class WikumConsumer(WebsocketConsumer):
                     if index == 0:
                         comment.sibling_prev = None
                         comment.sibling_next = unselected_children[index + 1].disqus_id
-                    if index == len(unselected_children) - 1:
+                    elif index == len(unselected_children) - 1:
                         comment.sibling_next = new_id
                         new_comment.sibling_prev = comment.disqus_id
                         comment.sibling_prev = unselected_children[index - 1].disqus_id
@@ -721,7 +721,7 @@ class WikumConsumer(WebsocketConsumer):
                         comment.sibling_next = children[index + 1].disqus_id
                     else:
                         comment.sibling_next = None
-                if index == len(children) - 1:
+                elif index == len(children) - 1:
                     comment.sibling_next = None
                     if len(children) > 1:
                         comment.sibling_prev = children[index - 1].disqus_id
