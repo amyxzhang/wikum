@@ -3856,6 +3856,11 @@ function save_node_position(dragItem, newParent, siblingBefore, siblingAfter, po
 		data.sibling_after = 'None';
 	}
 
+	if ([data.new_parent.toString(), data.sibling_before.toString(), data.sibling_after.toString()].includes(dragItem.d_id.toString())) {
+		console.log("problematic drag");
+		return;
+	}
+
 	chatsock.send(JSON.stringify(data));
 }
 
