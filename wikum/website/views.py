@@ -1105,11 +1105,11 @@ def add_global_perm(request):
 
         if user == owner:
             access = request.POST.get('access', None).strip()
-            if access == "Publicly Editable":
+            if access == "Publicly Editable and Commentable":
                 a.access_mode = 0
             elif access == "Publicly Commentable":
                 a.access_mode = 1
-            elif access == "Publicly Summarizable":
+            elif access == "Publicly Editable":
                 a.access_mode = 2
             elif access == "Publicly Viewable":
                 a.access_mode = 3
@@ -1146,7 +1146,7 @@ def add_user_perm(request):
             if delete_perm == 'true':
                 Permissions.objects.filter(article=a, user=a_user).delete()
             elif access:
-                if access == "Full Edit Access":
+                if access == "Full Edit and Comment Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 0
                     p.save()
@@ -1156,7 +1156,7 @@ def add_user_perm(request):
                     p.access_level = 1
                     p.save()
                     data['created'] = created
-                elif access == "Summarize Access":
+                elif access == "Edit Access":
                     p, created = Permissions.objects.get_or_create(article=a, user=a_user)
                     p.access_level = 2
                     p.save()

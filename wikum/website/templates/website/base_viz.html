@@ -230,11 +230,11 @@
                    
                    <div data-target="#permission_modal_box" data-toggle="modal" data-backdrop="false" class="btn btn-xs btn-primary" style="cursor: hand; position: relative; top: 8px;" id="access_mode" data-access=0>
 							{% if article.access_mode == 0 %}
-								Publicly Editable
+								Publicly Editable and Commentable
 							{% elif article.access_mode == 1 %}
 								Publicly Commentable
 							{% elif article.access_mode == 2 %}
-								Publicly Summarizable
+								Publicly Editable
 							{% elif article.access_mode == 3 %}
 								Publicly Viewable
 							{% elif article.access_mode == 4 %}
@@ -245,36 +245,36 @@
 					{% else %}
 						<div class="btn btn-xs" style="cursor: default;  position: relative; top: 8px; border: 1px solid #7d8a93; color: #7d8a93;" id="access_mode" data-access=
 							{% if article.access_mode == 0 %}
-								0>Public Edit Access
+								0>Public Edit and Comment Access
 							{% elif article.access_mode == 1 %}
 								{% if permission and permission.access_level == 2 or permission.access_level == 0 %}
-									0>Publicly Commentable | Private Edit Access
+									0>Publicly Commentable | Private Edit and Comment Access
 								{% else %}
 									1>Public Comment Access
 								{% endif %}
 							{% elif article.access_mode == 2 %}
 								{% if permission and permission.access_level == 1 or permission.access_level == 0 %}
-									0>Publicly Summarizable | Private Edit Access
+									0>Publicly Editable | Private Edit and Comment Access
 								{% else %}
-									2>Public Summarize Access
+									2>Public Edit Access
 								{% endif %}
 							{% elif article.access_mode == 3 %}
 								{% if permission and permission.access_level == 0 %}
-									0>Publicly Viewable | Private Edit Access
+									0>Publicly Viewable | Private Edit and Comment Access
 								{% elif permission and permission.access_level == 1 %}
 									1>Publicly Viewable | Private Comment Access
 								{% elif permission and permission.access_level == 2 %}
-									2>Publicly Viewable | Private Summarize Access
+									2>Publicly Viewable | Private Edit Access
 								{% else %}
 									3>Public View Access
 								{% endif %}
 							{% elif article.access_mode == 4 %}
 								{% if permission and permission.access_level == 0 %}
-									0>Private Edit Access
+									0>Private Edit and Comment Access
 								{% elif permission and permission.access_level == 1 %}
 									1>Private Comment Access
 								{% elif permission and permission.access_level == 2 %}
-									2>Private Summarize Access
+									2>Private Edit Access
 								{% elif permission and permission.access_level == 3 %}
 									3>Private View Access
 								{% endif %}

@@ -402,11 +402,11 @@ function is_dark(color) {
 	return luminance(color) < 50;
 }
 
-$('#permission_modal_box').on('show.bs.modal', function(e) {
-	if ($("#global-perm-dropdown").text().trim() != "Publicly Editable") {
-		$('.public-edit-perms').hide();
-	}
-});
+// $('#permission_modal_box').on('show.bs.modal', function(e) {
+// 	if ($("#global-perm-dropdown").text().trim() != "Publicly Editable or Commentable") {
+// 		$('.public-edit-perms').hide();
+// 	}
+// });
 
 var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
 // TODO: change WebSocket to ReconnectingWebSocket
@@ -3457,50 +3457,50 @@ function make_filter() {
 	});
 }
 
-function update_global_edit_perm() {
-	var csrf = $('#csrf').text();
-	var article_id = $('#article_id').text();
-	var perms = [];
-    $.each($("input[name='perms']:checked"), function(){            
-        perms.push($(this).val());
-    });
-    var edit_type = "";
-    if (perms.length == 2) {
-    	edit_type = "Publicly Editable";
-    } else if (perms.length == 1) {
-    	if (perms[0] == "comment") {
-    		edit_type = "Publicly Commentable";
-    	} else {
-    		edit_type = "Publicly Summarizable";
-    	}
-    } else {
-    	// unchecking both defaults to Publicly Viewable
-    	edit_type = "Publicly Viewable";
-    	$("#global-perm-dropdown").html(edit_type + ' <span class="caret"></span>');
-    	$('.public-edit-perms').hide();
-    }
+// function update_global_edit_perm() {
+// 	var csrf = $('#csrf').text();
+// 	var article_id = $('#article_id').text();
+// 	// var perms = [];
+//  //    $.each($("input[name='perms']:checked"), function(){            
+//  //        perms.push($(this).val());
+//  //    });
+//     var edit_type = "";
+//     if (perms.length == 2) {
+//     	edit_type = "Publicly Editable and Commentable";
+//     } else if (perms.length == 1) {
+//     	if (perms[0] == "comment") {
+//     		edit_type = "Publicly Commentable";
+//     	} else {
+//     		edit_type = "Publicly Editable";
+//     	}
+//     } else {
+//     	// unchecking both defaults to Publicly Viewable
+//     	edit_type = "Publicly Viewable";
+//     	$("#global-perm-dropdown").html(edit_type + ' <span class="caret"></span>');
+//     	// $('.public-edit-perms').hide();
+//     }
 
-	var data = {
-		csrfmiddlewaretoken: csrf,
-		access: edit_type,
-		article: article_id,
-		owner: owner,
-		};
-	$.ajax({
-			type: 'POST',
-			url: '/add_global_perm',
-			data: data,
-			success: function(res) {
-				success_noty();
-				$('#access_mode').text(edit_type + ' | Share');
-				// no need to update access_level for the owner
-				// only owner can change global perms
-			},
-			error: function() {
-				error_noty();
-			}
-	});
-}
+// 	var data = {
+// 		csrfmiddlewaretoken: csrf,
+// 		access: edit_type,
+// 		article: article_id,
+// 		owner: owner,
+// 		};
+// 	$.ajax({
+// 			type: 'POST',
+// 			url: '/add_global_perm',
+// 			data: data,
+// 			success: function(res) {
+// 				success_noty();
+// 				$('#access_mode').text(edit_type + ' | Share');
+// 				// no need to update access_level for the owner
+// 				// only owner can change global perms
+// 			},
+// 			error: function() {
+// 				error_noty();
+// 			}
+// 	});
+// }
 
 function add_global_perm(access) {
 	var csrf = $('#csrf').text();
@@ -3522,15 +3522,6 @@ function add_global_perm(access) {
 				// no need to update access_level for the owner
 				// only owner can change global perms
 				$('#access_mode').text(access + ' | Share');
-				if (access == "Publicly Editable") {
-					$('.public-edit-perms').show();
-					$('#global-perm-comment').prop('checked', true);
-					$('#global-perm-summarize').prop('checked', true);
-				} else if (access == "Publicly Viewable") {
-					$('.public-edit-perms').hide();
-				} else if (access == "Private Access") {
-					$('.public-edit-perms').hide();
-				}
 			},
 			error: function() {
 				error_noty();
@@ -3563,9 +3554,9 @@ function add_user_perm(username, access, delete_perm, delete_row) {
 					var text = '<tr><td>' + username + '</td><td>';
 					text += '<div class="btn-group"><button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
 					text += access + '<span class="caret"></span></button>';
-					text += '<ul class="dropdown-menu permission-menu"><li><a href="#">Full Edit Access</a></li>';
+					text += '<ul class="dropdown-menu permission-menu"><li><a href="#">Full Edit and Comment Access</a></li>';
 					text += '<li><a href="#">Comment Access</a></li>';
-					text += '<li><a href="#">Summarize Access</a></li>';
+					text += '<li><a href="#">Edit Access</a></li>';
 					text += '<li><a href="#">View Access</a></li></ul></div>';
 					text += '<td><button type="button" class="btn btn-default btn-xs btn-success update_user_perm">Update</button>';
 					text += '</td><td><button type="button" class="btn btn-default btn-xs btn-danger delete_user_perm">Delete</button></td></tr>';
@@ -3635,9 +3626,9 @@ function make_username_typeahead() {
 			$(this).parent().parent().prev().html($(this).text() + ' <span class="caret"></span>');
 	   });
 
-		$(".public-edit-perms input").click(function(){
-			update_global_edit_perm();
-		});
+		// $(".public-edit-perms input").click(function(){
+		// 	update_global_edit_perm();
+		// });
 	   
 	   $('.update_user_perm').click(function(){
 	   		var username = $(this).parent().prev().prev().first().html();
