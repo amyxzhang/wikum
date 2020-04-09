@@ -1831,14 +1831,24 @@ function show_viz_box_original(select_obj) {
 	} else if (select_obj['ctrl'] != undefined) {
 		// ctrl select
 		var selected_dids = select_obj['ctrl'];
-		// select outline view markers and text
-		for (const d_id of selected_dids) {
-    		$('.outline-item#' + d_id).addClass('rb-red');	
-			/* outline the circle */
-			$('#marker-' + d_id).addClass('outline-selected');
-	    }
-	    // show corresponding comment boxes
-		show_text('clicked');
+		if (selected_dids.length == 0) {
+			var outline_item = $('.outline-item#viewAll');
+			//redOutlineBorder(outline_item);
+			show_text(nodes_all[0]);
+		} else {
+			// select outline view markers and text
+			for (const d_id of selected_dids) {
+	    		$('.outline-item#' + d_id).addClass('rb-red');	
+				/* outline the circle */
+				$('#marker-' + d_id).addClass('outline-selected');
+		    }
+		    // show corresponding comment boxes
+			show_text('clicked');
+		}
+	} else {
+		var outline_item = $('.outline-item#viewAll');
+		//redOutlineBorder(outline_item);
+		show_text(nodes_all[0]);
 	}
 }
 
