@@ -416,7 +416,7 @@ textarea {
 #outline .list-group-item {
     border: none;
     /* border-left: 1px solid #BEBEBE; */
-    padding: 10px 10px 10px 15px;
+    padding: 10px 10px 0px 15px;
     background-color: transparent;
 }
 

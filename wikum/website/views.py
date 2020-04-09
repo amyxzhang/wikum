@@ -615,6 +615,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
     # Filters for comments in the article that are children of posts
     reps = Comment.objects.filter(reply_to_disqus__in=pids, article=article).select_related()
     for post in posts:
+        print("POST:", post)
         if post.json_flatten == '':
         #if True:
             if post.author:
@@ -1445,6 +1446,7 @@ def viz_data(request):
     else:
         if sort == 'default':
             top_comments = a.comment_set.filter(reply_to_disqus=None)
+            print("TOP COMMENTS:", top_comments)
             posts = []
             current_node = next((c for c in top_comments if c.disqus_id == a.first_child), None)
             if current_node:

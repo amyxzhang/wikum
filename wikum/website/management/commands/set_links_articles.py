@@ -9,14 +9,20 @@ from website.engine import count_article
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
+
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('article_ids', nargs='+', type=int)
     
     def handle(self, *args, **options):
-
-        
-
-        a = Article.objects.all()
+        if len(options['article_ids']) == 0:
+            a = Article.objects.all()
+        else:
+            article_ids = options['article_ids']
+            a = Article.objects.filter(id__in=article_ids)
         
         for art in a:
+            print(art)
             self.set_link_article(art, art)
 
     def set_link_article(self, node, article):
