@@ -137,6 +137,10 @@ a:hover {
     overflow-y: scroll;
 }
 
+.freeze {
+    pointer-events: none;
+}
+
 path.link {
     fill: none;
     stroke: #ccc;
