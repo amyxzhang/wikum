@@ -870,10 +870,15 @@ def rate_summary(request):
             r.coverage_rating = coverage_rating
             r.quality_rating = quality_rating
             r.save()
-            
+
+            article = comment.article
+            words_shown = count_words_shown(article)
+            percent_complete = count_article(article)
             h = History.objects.create(user=req_user, 
-                                       article=comment.article,
+                                       article=article,
                                        action='rate_comment',
+                                       words_shown=words_shown,
+                                       current_percent_complete=percent_complete,
                                        explanation="Add Rating %s (neutral), %s (coverage), %s (quality) to a comment" % (neutral_rating,
                                                                                                                           coverage_rating,
                                                                                                                           quality_rating)
@@ -881,10 +886,11 @@ def rate_summary(request):
             
             h.comments.add(comment)
             
-            art = comment.article
-            art.percent_complete = count_article(art)
-            art.last_updated = datetime.datetime.now()
-            art.save()
+            
+            article.percent_complete = percent_complete
+            article.words_shown = words_shown
+            article.last_updated = datetime.datetime.now()
+            article.save()
             
             recurse_up_post(comment)
        

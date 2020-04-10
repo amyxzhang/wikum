@@ -959,6 +959,22 @@ class WikumConsumer(WebsocketConsumer):
             print(traceback.format_exc())
             return {'user': username}
 
+    def find_nearest_summary(self, comment, article):
+        if comment == article:
+            return None
+        if comment.is_replacement:
+            return comment
+        current = comment
+        nearest_sum = None
+        while current.reply_to_disqus:
+            c = Comment.objects.get(disqus_id=current.reply_to_disqus)
+            if c.is_replacement:
+                nearest_sum = c
+                break
+            current = c
+        return nearest_sum
+
+
     def handle_move_comments(self, data, username):
         try:
             new_parent_id = data['new_parent']
@@ -1039,7 +1055,9 @@ class WikumConsumer(WebsocketConsumer):
             else:
                 self.set_sibling_pointers(old_parent, new_parent, comment, new_comment_prev, new_comment_next, comment_prev, comment_next, article)
             
-            if new_parent != old_parent:
+            old_nearest_sum = self.find_nearest_summary(old_parent, article)
+            new_nearest_sum = self.find_nearest_summary(new_parent, article)
+            if not comment.is_replacement and old_nearest_sum != new_nearest_sum:
                 self.mark_children_unsummarized(comment)
             recurse_down_num_subtree(comment)
             article.last_updated = datetime.datetime.now()
@@ -1057,16 +1075,25 @@ class WikumConsumer(WebsocketConsumer):
                 new_parent_text = article.title
             else:
                 new_parent_text = new_parent.summary if new_parent.is_replacement else new_parent.text
+            
+
+            words_shown = count_words_shown(article)
+            percent_complete = count_article(article)
+
             h = History.objects.create(user=req_user, 
                                            article=article,
                                            action='move_comment',
                                            from_str=old_parent_text,
                                            to_str=new_parent_text,
-                                           words_shown=article.words_shown,
-                                           current_percent_complete=article.percent_complete,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete,
                                            explanation='Move comment: ' + comment_text)
 
             h.comments.add(comment)
+            article.percent_complete = percent_complete
+            article.words_shown = words_shown
+            article.last_updated = datetime.datetime.now()
+            article.save()
             
             if old_parent and old_parent != article:
                 recurse_up_post(old_parent)
@@ -1294,11 +1321,21 @@ class WikumConsumer(WebsocketConsumer):
             
             if comment.is_replacement:
                 action = 'delete_sum'
+                content = comment.summary
                 first = Comment.objects.get(disqus_id=parent_node.first_child)
                 self.recurse_down_post(comment)
                 self.delete_node(comment.id, a)
-                a.percent_complete = count_article(a)
-                a.words_shown = count_words_shown(a)
+                words_shown = count_words_shown(a)
+                percent_complete = count_article(a)
+                h = History.objects.create(user=req_user,
+                                           article=a,
+                                           action=action,
+                                           explanation=explain,
+                                           from_str=content,
+                                           words_shown=words_shown,
+                                           current_percent_complete=percent_complete)
+                a.percent_complete = percent_complete
+                a.words_shown = words_shown
                 a.last_updated = datetime.datetime.now()
                 a.save()
                 affected = False

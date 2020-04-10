@@ -2445,6 +2445,25 @@ function handle_channel_delete_tags(res) {
 	}
 }
 
+function find_nearest_summary(d) {
+	if (d.article) {
+		return null;
+	}
+	if (d.replace_node) {
+		return d;
+	}
+	var current = d;
+	var nearest_sum = null;
+	while (current.parent && current.parent !== nodes_all[0]) {
+		if (current.parent.replace_node) {
+			nearest_sum = current.parent;
+			break;
+		}
+		current = current.parent;
+	}
+	return nearest_sum;
+}
+
 function handle_channel_move_comments(res) {
 	var currentHighlight = currentOutlineBorder();
 	var dragItem, oldParent, newParent, prevSib;
@@ -2489,7 +2508,13 @@ function handle_channel_move_comments(res) {
 	}
 
     dragItem.parent = newParent;
-    if (!dragItem.replace_node && newParent != oldParent) {
+	old_nearest_sum = find_nearest_summary(oldParent)
+	new_nearest_sum = find_nearest_summary(newParent)
+	console.log(oldParent);
+	console.log(old_nearest_sum);
+	console.log(newParent);
+	console.log(new_nearest_sum);
+    if (!dragItem.replace_node && old_nearest_sum !== new_nearest_sum) {
     	mark_children_unsummarized(dragItem);
     }
 
