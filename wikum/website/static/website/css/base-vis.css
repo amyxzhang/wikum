@@ -662,15 +662,15 @@ rect.selection {
         padding: 0;
         margin: -.2em -1.2em;
         transition-duration: 3s;
-        background: var(--background);
-        --background: hsl(195, 59%, 90%);
+        /*background: var(--background);
+        --background: hsl(195, 59%, 90%);*/
         white-space: normal;
     }
         .comment_box footer a.disabled {
             padding: .2em .5em;
             color: hsl(207, 0%, 71%);
             font-weight: 400;
-            font-size: 13px;
+            font-size: 12px;
             display: inline-block;
             pointer-events: none;
             cursor: default;
@@ -680,7 +680,7 @@ rect.selection {
             padding: .2em .5em;
             color: var(--link-color);
             font-weight: 400;
-            font-size: 13px;
+            font-size: 12px;
             display: inline-block;
         }
 
@@ -704,7 +704,7 @@ rect.selection {
     --link-color: hsl(45, 100%, 46%);
 }
     .summarized.summarize_comment_comment footer{
-        --background: hsl(45, 100%, 83%);
+        /*--background: hsl(45, 100%, 83%);*/
     }
 
 .reply_comment_comment {
@@ -724,7 +724,7 @@ rect.selection {
 }
 
     .summary_box footer {
-        --background: hsl(30, 100%, 86%);
+        /*--background: hsl(30, 100%, 86%);*/
     }
 
 .unsummarized.collapsed {
@@ -739,8 +739,8 @@ rect.selection {
     .unsummarized.collapsed.comment_box footer {
         padding: 0;
         margin: -.2em -1.2em;
-        background: var(--background);
-        --background: hsl(195, 59%, 90%);
+        /*background: var(--background);
+        --background: hsl(195, 59%, 90%);*/
         white-space: normal;
     }
 
@@ -748,7 +748,7 @@ rect.selection {
             padding: .2em .5em;
             color: var(--link-color);
             font-weight: 400;
-            font-size: 13px;
+            font-size: 12px;
             display: inline-block;
         }
 
@@ -764,7 +764,7 @@ rect.selection {
 }
 
     .collapsed footer {
-        --background: hsl(45, 100%, 83%);
+       /* --background: hsl(45, 100%, 83%);*/
     }
 
 .collapsed.summary{
@@ -801,8 +801,8 @@ rect.selection {
         .hiddennode.unsummarized.collapsed footer{
             padding: 0;
             margin: -.2em -1.2em;
-            background: var(--background);
-            --background: hsl(0, 59%, 90%);
+            /*background: var(--background);
+            --background: hsl(0, 59%, 90%);*/
             white-space: normal;
         }
 
@@ -812,7 +812,7 @@ rect.selection {
             padding: .2em .5em;
             color: var(--link-color);
             font-weight: 400;
-            font-size: 13px;
+            font-size: 12px;
             display: inline-block;
         }
 
