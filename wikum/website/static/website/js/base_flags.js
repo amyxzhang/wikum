@@ -1465,9 +1465,10 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 			var depth = Math.min(objs[i].depth - min_level, 3);
 			var summaryClass = objs[i].replace_node? "summary_box" : "";
+			var summarized = objs[i].summarized? "summarized" : "";
 
 
-			text += `<div id="sum_box_${objs[i].id}" class="summarize_comment_comment ${summaryClass} level${depth}">
+			text += `<div id="sum_box_${objs[i].id}" class="summarize_comment_comment ${summaryClass} ${summarized} level${depth}">
 			<p>ID: ${objs[i].d_id} |`;
 
 			if (objs[i].replace_node) {
@@ -1524,7 +1525,8 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 
 		if (type == "summarize") {
 			var summaryClass = d.replace_node? "summary_box" : "";
-			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment ' + summaryClass + '">';
+			var summarized = d.summarized? "summarized" : "";
+			var text = '<div id="sum_box_' + d.id + '" class="summarize_comment_comment ' + summaryClass + ' ' + summarized + '">';
 
 			if (d.summary != '') {
 				text += ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d) + '</div>';
@@ -1546,13 +1548,14 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					var text = '';
 					for (var i=0; i<d.replace.length; i++) {
 						var summaryClass = d.replace[i].replace_node? "summary_box" : "";
+						var summarized = d.replace[i].summarized? "summarized" : "";
 						if (d.replace[i].summary != '') {
-							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment ' + summaryClass + '"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.replace[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.replace[i]) + '</div>';
+							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment ' + summaryClass + ' ' + summarized + '"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.replace[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.replace[i]) + '</div>';
 						} else {
 
 							current_summarize_d_id.push(d.replace[i].d_id);
 
-							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment ' + summaryClass + '"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.replace[i].name, d.replace[i].d_id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
+							text += '<div id="sum_box_' + d.replace[i].id + '" class="summarize_comment_comment ' + summaryClass + ' ' + summarized + '"><P>ID: ' + d.replace[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.replace[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.replace[i].name, d.replace[i].d_id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
 						}
 						text = get_subtree_summarize(text, d.replace[i], 1);
 					}
@@ -1561,20 +1564,22 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 					var text = '';
 					for (var i=0; i<d.children.length; i++) {
 						var summaryClass = d.children[i].replace_node? "summary_box" : "";
+						var summarized = d.children[i].summarized? "summarized" : "";
 						if (d.children[i].summary != '') {
-							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment ' + summaryClass + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
+							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment ' + summaryClass + ' ' + summarized + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="copy_summary(' + d.children[i].id + ');">Copy Entire Summary</a> | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
 						} else {
 
 							current_summarize_d_id.push(d.children[i].d_id);
 
-							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment ' + summaryClass + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
+							text += '<div id="sum_box_' + d.children[i].id + '" class="summarize_comment_comment ' + summaryClass + ' ' + summarized + '"><P>ID: ' + d.children[i].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[i].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[i].name, d.children[i].d_id) + '<P>-- ' + d.children[i].author + '</P></div>';
 						}
 						text = get_subtree_summarize(text, d.children[i], 1);
 					}
 				}
 			} else {
 				var summaryClass = d.children[0].replace_node? "summary_box" : "";
-				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment ' + summaryClass + '"><P>ID: ' + d.children[0].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[0].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[0].name, d.children[0].d_id) + '<P>-- ' + d.children[0].author + '</P></div>';
+				var summarized = d.children[0].summarized? "summarized" : "";
+				var text = '<div id="sum_box_' + d.children[0].id + '" class="summarize_comment_comment ' + summaryClass + ' ' + summarized + '"><P>ID: ' + d.children[0].d_id + ' | <a class="btn-xs btn-edit" onclick="cite_comment(' + d.children[0].d_id +');">Cite Comment</a></P>' + show_comment_text(d.children[0].name, d.children[0].d_id) + '<P>-- ' + d.children[0].author + '</P></div>';
 
 				current_summarize_d_id.push(d.children[0].d_id);
 
