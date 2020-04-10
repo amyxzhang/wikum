@@ -1924,6 +1924,8 @@ chatsock.onmessage = function(message) {
 
 chatsock.onerror = function(message) {
 	console.log("Socket error");
+	$('#viz').addClass('freeze');
+	$('#box').addClass('freeze');
 	if (message.data) {
 		var res = JSON.parse(message.data);
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) error_noty();
