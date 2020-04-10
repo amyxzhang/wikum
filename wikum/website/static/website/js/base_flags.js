@@ -414,6 +414,24 @@ var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.hos
 
 $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	$("#new_node_textarea").val("");
+	$.ajax({
+        url: "/users",
+        type: 'GET',
+        dataType: 'json',
+        success: function(res) {
+            $('#new_node_textarea').textcomplete([{
+			    match: /(^|\s)@([a-z0-9+\-\_]*)$/,
+			    search: function (term, callback) {
+			        callback($.map(res, function (name) {
+			            return name.indexOf(term) === 0 ? name : null;
+			        }));
+			    },
+			    replace: function (name) {
+			        return ' @' + name + ' ';
+			    }
+			}]);
+        }
+    });
 	$.ajax({type: 'GET',
 			url: '/log_data?data=open_new_node_modal',
 			success: function(res) {
@@ -446,9 +464,29 @@ $('#new_node_modal_box').on('show.bs.modal', function(e) {
 	});
 });
 
+
 $('#reply_modal_box').on('show.bs.modal', function(e) {
 	var id = $(e.relatedTarget).data('id');
 	$("#reply_comment_textarea").val('');
+
+	$.ajax({
+        url: "/users",
+        type: 'GET',
+        dataType: 'json',
+        success: function(res) {
+            $('#reply_comment_textarea').textcomplete([{
+			    match: /(^|\s)@([a-z0-9+\-\_]*)$/,
+			    search: function (term, callback) {
+			        callback($.map(res, function (name) {
+			            return name.indexOf(term) === 0 ? name : null;
+			        }));
+			    },
+			    replace: function (name) {
+			        return ' @' + name + ' ';
+			    }
+			}]);
+        }
+    });
 
 	d = nodes_all[id-1];
 	var ids = [];
