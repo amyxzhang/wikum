@@ -1874,6 +1874,11 @@ function currentOutlineBorder() {
 	}
 }
 
+chatsock.onopen = function(message) {
+	console.log("socket open");
+	$('.freeze').removeClass('freeze');
+};
+
 chatsock.onmessage = function(message) {
     var res = JSON.parse(message.data);
 	if (res.type === 'new_node' || res.type === 'reply_comment') {

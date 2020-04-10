@@ -87,7 +87,7 @@ $('#menu-view').children().eq(4).children().first().attr('href', article_id);
 
 make_username_typeahead();
 
-$.ajax({type: 'GET',	
+$.ajax({type: 'GET',
 	url: `/viz_data?id=${article_id}&sort=${sort}&next=${next}&filter=${filter}&owner=${owner}`,	
 	success: function(flare) {
 		// $('.comment-unread').map(function(){return this.id.substring(13);}).get();
