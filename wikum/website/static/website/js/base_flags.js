@@ -4345,7 +4345,7 @@ function render_subscribe_buttons(did, is_replace_node) {
 			}
 		}
 		if (is_sub_replies) {
-			text += `<a onclick="unsubscribe_replies(${did}, ${is_replace_node});">Unubscribe To Replies</a>`;
+			text += `<a onclick="unsubscribe_replies(${did}, ${is_replace_node});">Unsubscribe To Replies</a>`;
 		} else {
 			text += `<a onclick="subscribe_replies(${did}, ${is_replace_node});">Subscribe To Replies</a>`;
 		}
