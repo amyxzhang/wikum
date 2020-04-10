@@ -1,0 +1,12 @@
+{% autoescape off %}{% load i18n %}{% blocktrans %}
+
+Hi {{ recipient }},
+
+
+{{ from_user }} mentioned you in a comment.
+You can view the article here: {{ default_http_protocol }}://{{ current_site }}/visualization_flags?id={{ id }}&owner={{ owner }}#comment_{{ comment_id }}
+
+
+- the Haystack team
+
+{% endblocktrans %}{% endautoescape %}

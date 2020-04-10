@@ -381,6 +381,15 @@ class WikumConsumer(WebsocketConsumer):
                     self.create_notifs(notif_users_list, 'reply_in_thread', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
                     send(notif_users_list, "reply_in_thread", notif_dict)
 
+                at_indices = [m.start() for m in re.finditer('@', comment)]
+                parts = [comment[i:j] for i,j in zip(at_indices, at_indices[1:]+[None])]
+                at_names = [part.split(' ')[0][1:] for part in parts if len(part.split(' ')) > 0]
+                at_users = User.objects.filter(username__in=at_names)
+                notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": article.owner.username, "comment_id": new_comment.id}
+                message = notif_dict['from_user'] + ' Mentioned You In A Comment'
+                self.create_notifs(at_users, 'at_user', notif_dict['id'], notif_dict['owner'], notif_dict['comment_id'], req_user, message)
+                send(at_users, "at_user", notif_dict)
+
                 new_comment.save()
                 action = data['type']
                 

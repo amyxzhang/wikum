@@ -1,0 +1,3 @@
+{% autoescape off %}{% load i18n %}{% blocktrans %}
+{{ from_user }} Mentioned You In A Comment
+{% endblocktrans %}{% endautoescape %}
