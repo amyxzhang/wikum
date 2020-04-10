@@ -587,9 +587,7 @@ class WikumConsumer(WebsocketConsumer):
                                        current_percent_complete=percent_complete)
             
             h.comments.add(c)
-            if from_summary == '':
-                a.summary_num = a.summary_num + 1
-                a.percent_complete = percent_complete
+            a.percent_complete = percent_complete
             a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
