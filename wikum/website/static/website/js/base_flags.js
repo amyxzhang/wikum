@@ -2548,10 +2548,6 @@ function handle_channel_move_comments(res) {
     dragItem.parent = newParent;
 	old_nearest_sum = find_nearest_summary(oldParent)
 	new_nearest_sum = find_nearest_summary(newParent)
-	console.log(oldParent);
-	console.log(old_nearest_sum);
-	console.log(newParent);
-	console.log(new_nearest_sum);
     if (!dragItem.replace_node && old_nearest_sum !== new_nearest_sum) {
     	mark_children_unsummarized(dragItem);
     }
@@ -3980,7 +3976,7 @@ function getState(d) {
 		}
 	} else if (d.hiddennode) {
 		state = 'hidden';
-	} else if (d.collapsed && !(d.summarized == false)) {
+	} else if (!(d.summarized == false)) {
 		state = 'sum_comment';
 	}
 	// todo: improve speed of summary_partial
@@ -5237,7 +5233,10 @@ function mark_children_summarized(d) {
 }
 
 function mark_children_unsummarized(d) {
-	if (!d.replace_node) d.summarized = false;
+	if (!d.replace_node) {
+		d.summarized = false;
+		d.collapsed = false;
+	}
 	if (d.children) {
 		for (var i=0; i<d.children.length; i++) {
 			if (!d.replace_node) d.children[i].summarized = false;
