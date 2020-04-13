@@ -1711,6 +1711,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 	$('#summarize_multiple_modal_box form').submit({data_id: did, id: id, type: type, ids: ids, dids: dids}, function(evt) {
 		evt.preventDefault();
 		tinymce.triggerSave();
+
 		var comment = tinyMCE.get('summarize_multiple_comment_textarea').getContent().trim();
 		if (comment === '') {
 			$('#empty_warning_multiple').text('Summary cannot be empty');
@@ -1728,6 +1729,7 @@ $('#summarize_multiple_modal_box').on('show.bs.modal', function(e) {
 		};
 
 		if (evt.data.type == "summarize_selected") {
+			document.body.style.cursor='wait';
 			data.ids = evt.data.dids;
 			var objs = [];
 			$('.marker.outline-selected').each(function() {
@@ -2172,6 +2174,7 @@ function handle_channel_summarize_comment(res) {
 }
 
 function handle_channel_summarize_selected(res) {
+	document.body.style.cursor='default';
 	var currentHighlight = currentOutlineBorder();
 	let children = [];
 	let children_dids = res.children;
@@ -2499,6 +2502,7 @@ function find_nearest_summary(d) {
 }
 
 function handle_channel_move_comments(res) {
+	document.body.style.cursor='default';
 	var currentHighlight = currentOutlineBorder();
 	var dragItem, oldParent, newParent, prevSib;
 	if (res.old_parent_id == 'article') {
@@ -3931,6 +3935,8 @@ function save_node_position(dragItem, newParent, siblingBefore, siblingAfter, po
 		console.log("problematic drag");
 		return;
 	}
+
+	document.body.style.cursor='wait';
 
 	chatsock.send(JSON.stringify(data));
 }
