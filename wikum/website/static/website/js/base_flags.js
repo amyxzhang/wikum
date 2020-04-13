@@ -2429,7 +2429,7 @@ function handle_channel_summarize_comments(res) {
 		show_text(nodes_all[0]);
 		success_noty();
 	} else {
-		// show_text(nodes_all[0]);
+		show_text(nodes_all[0]);
 		show_viz_box_original(currentHighlight);
 	}
 	

@@ -254,7 +254,7 @@ class WikumConsumer(WebsocketConsumer):
         url = '/visualization_flags?id=' + str(article_id) + '&owner=' + owner_name + '#comment_' + str(comment_id)
         from_user = 'Anonymous' if req_user == None else req_user.username
         for u in recipients:
-            Notification.objects.create(recipient=u, notice_type=notice, sender=req_user, url=url, message=message)
+            Notification.objects.create(recipient=u, notice_type=notice, sender=from_user, url=url, message=message)
 
 
     def handle_message(self, data, username):

@@ -222,7 +222,7 @@ class CommentRating(models.Model):
 
 class Notification(models.Model):
     recipient = models.ForeignKey(User, related_name="notification_recipient", on_delete=models.CASCADE)
-    sender = models.ForeignKey(User, related_name="notification_sender", on_delete=models.CASCADE)
+    sender = models.CharField(max_length=2000, blank=False)
     date_created = models.DateTimeField(auto_now_add=True, blank=True)
     notice_type = models.ForeignKey(NoticeType, on_delete=models.CASCADE)
     seen = models.BooleanField(default=False)
