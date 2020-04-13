@@ -13,7 +13,7 @@ var article_id = $('#article_id').text();
 /* Outline View Visualization */
 
 $(document).keydown(function(evt) {
-    if (event.which == "17" || evt.metaKey) {
+    if (evt.which == "17" || evt.metaKey) {
     	if (ctrlIsPressed) ctrlIsPressed = false;
     	else {
 	    	ctrlIsPressed = true;
