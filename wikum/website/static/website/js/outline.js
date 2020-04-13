@@ -13,7 +13,7 @@ var article_id = $('#article_id').text();
 /* Outline View Visualization */
 
 $(document).keydown(function(evt) {
-    if (evt.ctrlKey || evt.metaKey) {
+    if (event.which == "17" || evt.metaKey) {
     	if (ctrlIsPressed) ctrlIsPressed = false;
     	else {
 	    	ctrlIsPressed = true;
@@ -23,7 +23,6 @@ $(document).keydown(function(evt) {
     	ctrlIsPressed = false;
     }
 });
-
 $(document).keyup(function(evt){
 	if (evt.originalEvent.key === 'Meta' || evt.originalEvent.key === 'Control') {
     	ctrlIsPressed = false;
