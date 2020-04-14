@@ -303,6 +303,7 @@ class WikumConsumer(WebsocketConsumer):
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
+                                                         created_at=datetime.datetime.now(),
                                                          disqus_id=new_id,
                                                          text=comment,
                                                          sibling_prev=prior_last_child_id,
@@ -329,6 +330,7 @@ class WikumConsumer(WebsocketConsumer):
                     new_comment = Comment.objects.create(article=article,
                                                          author=author,
                                                          is_replacement=False,
+                                                         created_at=datetime.datetime.now(),
                                                          reply_to_disqus=c.disqus_id,
                                                          disqus_id=new_id,
                                                          text=comment,
@@ -411,7 +413,7 @@ class WikumConsumer(WebsocketConsumer):
                 article.words_shown = words_shown
                 article.last_updated = datetime.datetime.now()
                 article.save()
-                response_dict = {'comment': comment, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
+                response_dict = {'comment': comment, 'last_updated': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
                     response_dict['parent_did'] = data['id']
                 return response_dict
@@ -599,7 +601,7 @@ class WikumConsumer(WebsocketConsumer):
             a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': data['id']}
+            res = {'user': username, 'type': data['type'], 'd_id': data['id']}
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
@@ -661,6 +663,7 @@ class WikumConsumer(WebsocketConsumer):
             new_id = random_with_N_digits(10)
             new_comment = Comment.objects.create(article=a,
                                                  is_replacement=True,
+                                                 created_at=datetime.datetime.now(),
                                                  reply_to_disqus=first_selected.reply_to_disqus,
                                                  first_child = first_selected.disqus_id,
                                                  last_child = last_selected.disqus_id,
@@ -783,7 +786,7 @@ class WikumConsumer(WebsocketConsumer):
             a.last_updated = datetime.datetime.now()
             
             a.save()
-            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
+            res = {'user': username, 'type': data['type'], 'last_updated': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
             res['size'] = data['size']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -833,7 +836,8 @@ class WikumConsumer(WebsocketConsumer):
                 sibling_prev = c.sibling_prev if c.sibling_prev else None
                 sibling_next = c.sibling_next if c.sibling_next else None
                 new_comment = Comment.objects.create(article=a,
-                                                     is_replacement=True, 
+                                                     is_replacement=True,
+                                                     created_at=datetime.datetime.now(),
                                                      reply_to_disqus=c.reply_to_disqus,
                                                      sibling_prev=sibling_prev,
                                                      sibling_next=sibling_next,
@@ -911,6 +915,7 @@ class WikumConsumer(WebsocketConsumer):
                 d_id = c.id
                 
                 new_comment = c
+                new_comment.created_at = datetime.datetime.now()
                 words_shown = count_words_shown(a)
                 h = History.objects.create(user=req_user, 
                                article=a,
@@ -960,7 +965,7 @@ class WikumConsumer(WebsocketConsumer):
                 a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
+            res = {'user': username, 'type': data['type'], 'last_updated': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
             res['subtype'] = data['subtype']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -1032,7 +1037,7 @@ class WikumConsumer(WebsocketConsumer):
             if sibling_next == 'None' and new_comment_prev != None:
                 if new_comment_prev.sibling_next:
                     new_comment_next = Comment.objects.get(disqus_id=new_comment_prev.sibling_next, article=article)
-                    
+
             # Set child and sibling pointers of surrounding nodes in original location
             old_parent = None
             if comment.reply_to_disqus:

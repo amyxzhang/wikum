@@ -128,7 +128,7 @@ $.ajax({type: 'GET',
 		   text += '<a id="prev_page" class="btn btn-xs btn-primary" href="' +url + prev + '">&lt;&lt; Prev Page</a> ';
 		
 		}
-		if (count == 15) {
+		if (count == 30) {
 			var next_sub = next + 1;
 		  var url = "/visualization_flags?id=" + article_id + '&owner=' + owner + '&sort=' + sort + '&colorby=' + colorby  +'&filter=' + filter + '&next=';
 		  text += ' <a id="next_page" class="btn btn-xs btn-primary" href="' +url + next_sub + '">Next Page &gt;&gt;</a>';
