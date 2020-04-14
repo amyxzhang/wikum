@@ -2185,7 +2185,7 @@ function handle_channel_summarize_selected(res) {
 		}
 	}
 	let highest_d = nodes_all.filter(o => o.d_id == res.highest_d)[0];
-	let position = highest_d.parent.children.indexOf(highest_d) - 1;
+	let position = highest_d.parent.children.indexOf(highest_d) - (children.length - 1);
 	new_d = {d_id: res.d_id,
 			 name: "",
 			 summary: res.top_summary,
@@ -2244,7 +2244,7 @@ function handle_channel_summarize_selected(res) {
 		}
 	}
 	if ($('#next_page').length === 0) {
-		insert_node_to_children(new_d, new_d.parent);
+		insert_node_to_children(new_d, new_d.parent, position);
 		update(new_d.parent);
 
 		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {

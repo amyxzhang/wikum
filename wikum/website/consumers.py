@@ -653,6 +653,7 @@ class WikumConsumer(WebsocketConsumer):
             self.subtree_users = []
             for c in comments:
                 c.summarized = True
+                c.save()
                 if c.import_order < lowest_child.import_order:
                     lowest_child = c
                 if c.author and c.author.user and not c.author.user.is_anonymous and c.author.user != self.scope['user']:
@@ -694,18 +695,36 @@ class WikumConsumer(WebsocketConsumer):
                     unselected_children.append(current_node)
                 while current_node and current_node.sibling_next:
                     current_node = next((c for c in all_children if c.disqus_id == current_node.sibling_next), None)
-                    if current_node and current_node not in children and current_node != new_comment:
-                        unselected_children.append(current_node)
+                    if current_node == last_selected:
+                        break
+                    else:
+                        if current_node and current_node not in children and current_node != new_comment:
+                            unselected_children.append(current_node)
             
             # Set the parent's last_child and first_child pointers
-            parent.last_child = new_id
+            if last_selected.disqus_id == parent.last_child:
+                parent.last_child = new_id
             if first_selected.disqus_id == parent.first_child:
                 if len(unselected_children) > 0:
                     parent.first_child = unselected_children[0].disqus_id
                 else:
                     parent.first_child = new_id
             parent.save()
-            if len(unselected_children) == 1:
+            last_selected_sib_next_list = Comment.objects.filter(disqus_id=last_selected.sibling_next)
+            if last_selected_sib_next_list.count() > 0:
+                last_selected_sib_next = last_selected_sib_next_list[0]
+            else:
+                last_selected_sib_next = None
+
+            new_comment.sibling_next = last_selected.sibling_next
+            if last_selected_sib_next:
+                last_selected_sib_next.sibling_prev = new_id
+                last_selected_sib_next.save()
+                recurse_up_post(last_selected_sib_next)
+
+            if len(unselected_children) == 0:
+                new_comment.sibling_prev = None
+            elif len(unselected_children) == 1:
                 comment = unselected_children[0]
                 comment.sibling_prev = None
                 comment.sibling_next = new_id
