@@ -1358,10 +1358,16 @@ def viz_data(request):
         sub_replies = []
     else:
         current_user = request.user.wikumuser
-        if current_user.comments_read == '':
+        read_list_string = current_user.comments_read
+        if read_list_string == '':
             comments_read = []
         else:
-            comments_read = [c for c in current_user.comments_read.split(',') if c != '' and int(c) in all_ids]
+            comments_read = [c for c in read_list_string.split(',') if c != '' and int(c) in all_ids]
+            if len(comments_read) == 0:
+                # first time coming to the page, mark everything as read
+                comments_read = [str(c) for c in all_ids]
+                current_user.comments_read = read_list_string + ',' + ','.join(comments_read)
+                current_user.save()
         if current_user.subscribe_replies == '':
             sub_replies = []
         else:

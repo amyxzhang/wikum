@@ -13,14 +13,9 @@ var article_id = $('#article_id').text();
 /* Outline View Visualization */
 
 $(document).keydown(function(evt) {
-    if (evt.ctrlKey || evt.metaKey) {
-    	if (ctrlIsPressed) ctrlIsPressed = false;
-    	else {
-	    	ctrlIsPressed = true;
-	    	clicked_dids = {};
-    	}
-    } else {
-    	ctrlIsPressed = false;
+    if (evt.which == "17" || evt.metaKey) {
+    	ctrlIsPressed = true;
+    	clicked_dids = {};
     }
 });
 
@@ -29,6 +24,10 @@ $(document).keyup(function(evt){
     	ctrlIsPressed = false;
     }
 });
+
+window.onblur = function() {
+	ctrlIsPressed = false;
+}
 
 document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
@@ -149,11 +148,12 @@ $.ajax({type: 'GET',
 
 		// .outline-text functions
 		var delay=500, setTimeoutConst;
+		var hoverOutlineDelay=1500, markReadHoverOutlineTimer;
 		$('body').on('mouseenter', '.outline-text, #outline-text-viewAll', function() {
 			// circle marker in red
 			$(this).prev().addClass('outline-hover');
-			// highlight associated comment box
 			let did = this.id.substring(13);
+			// highlight associated comment box
 			if (did === 'viewAll') {
 				setTimeoutConst = setTimeout(function() {
 					$('#box').animate({scrollTop: 0}, 500);
@@ -165,7 +165,9 @@ $.ajax({type: 'GET',
 					setTimeoutConst = setTimeout(function() {
 						$("#box").scrollTo("#" + comment_box[0].id, 500);
 					}, delay);
-					
+					markReadHoverOutlineTimer = setTimeout(function() {
+						mark_comments_read([did]);
+					}, hoverOutlineDelay);
 				}
 			}
 		});
@@ -175,6 +177,7 @@ $.ajax({type: 'GET',
 			$(this).prev().removeClass('outline-hover');
 			// highlight associated comment box
 			let did = this.id.substring(13);
+			clearTimeout(markReadHoverOutlineTimer);
 			if (did === 'viewAll') {
 				clearTimeout(setTimeoutConst);
 			} else {
@@ -240,10 +243,11 @@ $.ajax({type: 'GET',
 		$('body').on('click', '.outline-text, .marker', function(evt) {
 			var parent = $(this).parent();
 			var outlineText = $(this).parent().children('.outline-text')[0];
+			var did = outlineText.id.substring(13);
+			mark_comments_read([did]);
 		    if (ctrlIsPressed) {
 		    	$('.rb-red').removeClass('rb-red');
 		    	$('.outline-selected').removeClass('outline-selected');
-		    	let did = outlineText.id.substring(13);
 		    	if (did !== 'viewAll') {
 		    		let outlineItem = $(outlineText).parent()[0];
 			    	if (!(did in clicked_dids)) {

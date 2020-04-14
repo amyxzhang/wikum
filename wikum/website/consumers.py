@@ -41,6 +41,7 @@ class WikumConsumer(WebsocketConsumer):
         self.article_id = self.scope['url_route']['kwargs']['article_id']
         self.group_name = 'article_%s' % self.article_id
         self.user_to_locked_nodes = {}
+        self.subtree_users = []
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -138,17 +139,15 @@ class WikumConsumer(WebsocketConsumer):
                 }
             )
 
-    def mark_children_summarized(self, post, children=None, notif_users = []):
+    def mark_children_summarized(self, post):
         post.summarized = True
-        if not children:
-            children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=self.article_id)
         if post.author and post.author.user and not post.author.user.is_anonymous and post.author.user != self.scope['user']:
-            notif_users = [post.author.user]
+            self.subtree_users.append(post.author.user)
+        children = Comment.objects.filter(reply_to_disqus=post.disqus_id, article=post.article)
         for child in children:
             child.summarized = True
             child.save()
-            notif_users.extend(self.mark_children_summarized(child, None))
-        return notif_users
+            self.mark_children_summarized(child)
 
     def mark_children_unsummarized(self, post, children=None):
         if post.is_replacement:
@@ -254,7 +253,7 @@ class WikumConsumer(WebsocketConsumer):
         url = '/visualization_flags?id=' + str(article_id) + '&owner=' + owner_name + '#comment_' + str(comment_id)
         from_user = 'Anonymous' if req_user == None else req_user.username
         for u in recipients:
-            Notification.objects.create(recipient=u, notice_type=notice, sender=req_user, url=url, message=message)
+            Notification.objects.create(recipient=u, notice_type=notice, sender=from_user, url=url, message=message)
 
 
     def handle_message(self, data, username):
@@ -410,9 +409,9 @@ class WikumConsumer(WebsocketConsumer):
                 h.comments.add(new_comment)
                 article.percent_complete = percent_complete
                 article.words_shown = words_shown
-                article.last_updated = datetime.datetime.now(tz=timezone.utc)
+                article.last_updated = datetime.datetime.now()
                 article.save()
-                response_dict = {'comment': comment, 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
+                response_dict = {'comment': comment, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
                     response_dict['parent_did'] = data['id']
                 return response_dict
@@ -457,7 +456,7 @@ class WikumConsumer(WebsocketConsumer):
                                                current_percent_complete=article.percent_complete)
                     h.comments.add(comment)
                     
-                    article.last_updated = datetime.datetime.now(tz=timezone.utc)
+                    article.last_updated = datetime.datetime.now()
                     article.save()
                     
                     recurse_up_post(comment)
@@ -491,7 +490,7 @@ class WikumConsumer(WebsocketConsumer):
                                                explanation='Add tag %s to comments' % t.text,
                                                words_shown=article.words_shown,
                                                current_percent_complete=article.percent_complete)
-                    article.last_updated = datetime.datetime.now(tz=timezone.utc)
+                    article.last_updated = datetime.datetime.now()
                     article.save()
                 
                     for com in affected_comms:
@@ -600,7 +599,7 @@ class WikumConsumer(WebsocketConsumer):
             a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'type': data['type'], 'd_id': data['id']}
+            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': data['id']}
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
@@ -651,10 +650,14 @@ class WikumConsumer(WebsocketConsumer):
             last_selected = Comment.objects.get(id=last_selected_id)
             
             lowest_child = children[0]
-            for c in children:
+            self.subtree_users = []
+            for c in comments:
                 c.summarized = True
+                c.save()
                 if c.import_order < lowest_child.import_order:
                     lowest_child = c
+                if c.author and c.author.user and not c.author.user.is_anonymous and c.author.user != self.scope['user']:
+                    self.subtree_users.append(c.author.user)
             new_id = random_with_N_digits(10)
             new_comment = Comment.objects.create(article=a,
                                                  is_replacement=True,
@@ -670,7 +673,8 @@ class WikumConsumer(WebsocketConsumer):
                                                  import_order=lowest_child.import_order)
             for node in delete_nodes:
                 self.delete_node(node, a)
-            notif_users = self.mark_children_summarized(new_comment, children)
+            
+            notif_users = self.subtree_users
             notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id}
             notif_users_list = list(set(list(notif_users)))
             message = notif_dict['from_user'] + ' Summarized Your Comment'
@@ -691,21 +695,40 @@ class WikumConsumer(WebsocketConsumer):
                     unselected_children.append(current_node)
                 while current_node and current_node.sibling_next:
                     current_node = next((c for c in all_children if c.disqus_id == current_node.sibling_next), None)
-                    if current_node and current_node not in children and current_node != new_comment:
-                        unselected_children.append(current_node)
+                    if current_node == last_selected:
+                        break
+                    else:
+                        if current_node and current_node not in children and current_node != new_comment:
+                            unselected_children.append(current_node)
             
             # Set the parent's last_child and first_child pointers
-            parent.last_child = new_id
+            if last_selected.disqus_id == parent.last_child:
+                parent.last_child = new_id
             if first_selected.disqus_id == parent.first_child:
                 if len(unselected_children) > 0:
                     parent.first_child = unselected_children[0].disqus_id
                 else:
                     parent.first_child = new_id
             parent.save()
-            if len(unselected_children) == 1:
+            last_selected_sib_next_list = Comment.objects.filter(disqus_id=last_selected.sibling_next)
+            if last_selected_sib_next_list.count() > 0:
+                last_selected_sib_next = last_selected_sib_next_list[0]
+            else:
+                last_selected_sib_next = None
+
+            new_comment.sibling_next = last_selected.sibling_next
+            if last_selected_sib_next:
+                last_selected_sib_next.sibling_prev = new_id
+                last_selected_sib_next.save()
+                recurse_up_post(last_selected_sib_next)
+
+            if len(unselected_children) == 0:
+                new_comment.sibling_prev = None
+            elif len(unselected_children) == 1:
                 comment = unselected_children[0]
                 comment.sibling_prev = None
                 comment.sibling_next = new_id
+                new_comment.sibling_prev = comment.disqus_id
                 comment.save()
             else:
                 for index, comment in enumerate(unselected_children):
@@ -739,10 +762,8 @@ class WikumConsumer(WebsocketConsumer):
                     comment.sibling_next = children[index + 1].disqus_id
                 comment.reply_to_disqus = new_id
                 comment.save()
-
             recurse_up_post(new_comment)
             recurse_down_num_subtree(new_comment)
-
             a.summary_num = a.summary_num + 1
             words_shown = count_words_shown(a)
             percent_complete = count_article(a)
@@ -762,7 +783,7 @@ class WikumConsumer(WebsocketConsumer):
             a.last_updated = datetime.datetime.now()
             
             a.save()
-            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
+            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
             res['size'] = data['size']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -857,7 +878,9 @@ class WikumConsumer(WebsocketConsumer):
 
                 d_id = new_comment.id
 
-                notif_users = self.mark_children_summarized(new_comment)
+                self.subtree_users = []
+                self.mark_children_summarized(new_comment)
+                notif_users = self.subtree_users
                 notif_dict = {"from_user": 'Anonymous' if req_user == None else req_user.username, "id": article_id, "owner": a.owner.username, "comment_id": new_comment.id}
                 notif_users_list = list(set(list(notif_users)))
                 message = notif_dict['from_user'] + ' Summarized Your Comment'
@@ -937,7 +960,7 @@ class WikumConsumer(WebsocketConsumer):
                 a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
+            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
             res['subtype'] = data['subtype']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -1009,7 +1032,7 @@ class WikumConsumer(WebsocketConsumer):
             if sibling_next == 'None' and new_comment_prev != None:
                 if new_comment_prev.sibling_next:
                     new_comment_next = Comment.objects.get(disqus_id=new_comment_prev.sibling_next, article=article)
-            
+                    
             # Set child and sibling pointers of surrounding nodes in original location
             old_parent = None
             if comment.reply_to_disqus:
@@ -1202,7 +1225,7 @@ class WikumConsumer(WebsocketConsumer):
                 for comment in affected_comments:
                     h.comments.add(comment)
                 
-                a.last_updated = datetime.datetime.now(tz=timezone.utc)
+                a.last_updated = datetime.datetime.now()
                 a.save()
                 
                 recurse_up_post(comment)
