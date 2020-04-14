@@ -17,6 +17,11 @@ body {
     height: 100%;
 }
 
+.time {
+    padding-right: 5px;
+    font-size: 11px;
+}
+
 #chart, #header, #footer {
     position: absolute;
     top: 0;

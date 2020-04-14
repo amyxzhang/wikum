@@ -409,9 +409,9 @@ class WikumConsumer(WebsocketConsumer):
                 h.comments.add(new_comment)
                 article.percent_complete = percent_complete
                 article.words_shown = words_shown
-                article.last_updated = datetime.datetime.now(tz=timezone.utc)
+                article.last_updated = datetime.datetime.now()
                 article.save()
-                response_dict = {'comment': comment, 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
+                response_dict = {'comment': comment, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'd_id': new_comment.id, 'author': req_username, 'type': data['type'], 'user': req_username}
                 if data['type'] == 'reply_comment':
                     response_dict['parent_did'] = data['id']
                 return response_dict
@@ -456,7 +456,7 @@ class WikumConsumer(WebsocketConsumer):
                                                current_percent_complete=article.percent_complete)
                     h.comments.add(comment)
                     
-                    article.last_updated = datetime.datetime.now(tz=timezone.utc)
+                    article.last_updated = datetime.datetime.now()
                     article.save()
                     
                     recurse_up_post(comment)
@@ -490,7 +490,7 @@ class WikumConsumer(WebsocketConsumer):
                                                explanation='Add tag %s to comments' % t.text,
                                                words_shown=article.words_shown,
                                                current_percent_complete=article.percent_complete)
-                    article.last_updated = datetime.datetime.now(tz=timezone.utc)
+                    article.last_updated = datetime.datetime.now()
                     article.save()
                 
                     for com in affected_comms:
@@ -599,7 +599,7 @@ class WikumConsumer(WebsocketConsumer):
             a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'type': data['type'], 'd_id': data['id']}
+            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': data['id']}
             if 'wikipedia.org' in a.url:
                 if top_summary.strip() != '':
                     res['top_summary'] = clean_parse(top_summary)
@@ -783,7 +783,7 @@ class WikumConsumer(WebsocketConsumer):
             a.last_updated = datetime.datetime.now()
             
             a.save()
-            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
+            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': new_comment.id, 'lowest_d': first_selected_id, 'highest_d': last_selected_id, 'children': children_ids}
             res['size'] = data['size']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -960,7 +960,7 @@ class WikumConsumer(WebsocketConsumer):
                 a.words_shown = words_shown
             a.last_updated = datetime.datetime.now()
             a.save()
-            res = {'user': username, 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
+            res = {'user': username, 'created': json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str), 'type': data['type'], 'd_id': new_comment.id, 'node_id': data['node_id'], 'orig_did': data['id']}
             res['subtype'] = data['subtype']
             res['delete_summary_node_dids'] = data['delete_summary_node_dids']
             if 'wikipedia.org' in a.url:
@@ -1032,7 +1032,7 @@ class WikumConsumer(WebsocketConsumer):
             if sibling_next == 'None' and new_comment_prev != None:
                 if new_comment_prev.sibling_next:
                     new_comment_next = Comment.objects.get(disqus_id=new_comment_prev.sibling_next, article=article)
-            
+                    
             # Set child and sibling pointers of surrounding nodes in original location
             old_parent = None
             if comment.reply_to_disqus:
@@ -1225,7 +1225,7 @@ class WikumConsumer(WebsocketConsumer):
                 for comment in affected_comments:
                     h.comments.add(comment)
                 
-                a.last_updated = datetime.datetime.now(tz=timezone.utc)
+                a.last_updated = datetime.datetime.now()
                 a.save()
                 
                 recurse_up_post(comment)

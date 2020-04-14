@@ -17,7 +17,7 @@ var subscribe_replies_comments = [];
 
 $(function () {
 	$('[data-toggle="tooltip"]').tooltip()
-})
+});
 
 var idleTime = 0;
 var dids_in_use = [];
@@ -2243,60 +2243,47 @@ function handle_channel_summarize_selected(res) {
 			}
 		}
 	}
-	if ($('#next_page').length === 0) {
-		insert_node_to_children(new_d, new_d.parent, position);
-		update(new_d.parent);
+	insert_node_to_children(new_d, new_d.parent, position);
+	update(new_d.parent);
 
-		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
-			show_text(nodes_all[0]);
-		} else {
-			// show_text(nodes_all[0]);
-			show_viz_box_original(currentHighlight);
-		}
-
-		var text = '<div class="comment_text" id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
-		if ($('#access_mode').attr('data-access') == "0") {
-			text += `<footer align="right">
-				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
-				<a`;
-			if (new_d.is_locked) text += `class="disabled" `;
-			text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit</a>
-				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}" data-did="${new_d.d_id}">Delete</a>
-				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate</a>`;
-		}
-
-		else if ($('#access_mode').attr('data-access') == "1") {
-			text += `<footer align="right">
-				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>`;
-		}
-
-		else if ($('#access_mode').attr('data-access') == "2") {
-			text += `<footer align="right"><a`
-			if (new_d.is_locked) text += `class="disabled" `;
-			text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit</a>
-				<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete</a>
-				<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate</a>`;
-		}
-		text += render_subscribe_buttons(new_d.d_id, new_d.replace_node, !new_d.hiddennode);
-		text += '</footer>';
-		for (var i=0; i<children.length; i++) {
-			if (children[i] == highest_d) {
-				$('#comment_' + children[i].id).html(text);
-				$('#comment_' + children[i].id).addClass('summary_box');
-				$('#comment_' + children[i].id).attr('id', 'comment_' + new_d.id);
-			} else {
-				$('#comment_' + children[i].id).remove();
-			}
-		}
+	if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
+		show_text(nodes_all[0]);
 	} else {
-		update(new_d.parent);
-		if ($("#owner").length && res.user === $("#owner")[0].innerHTML) {
-			show_text(nodes_all[0]);
+		// show_text(nodes_all[0]);
+		show_viz_box_original(currentHighlight);
+	}
+
+	var text = '<div class="comment_text" id="comment_text_' + new_d.id + '"><strong>Summary Node:</strong><BR>' + render_summary_node(new_d, false) + '</div>';
+	if ($('#access_mode').attr('data-access') == "0") {
+		text += `<footer align="right">
+			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>
+			<a`;
+		if (new_d.is_locked) text += `class="disabled" `;
+		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}" data-did="${new_d.d_id}">Delete</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate</a>`;
+	}
+
+	else if ($('#access_mode').attr('data-access') == "1") {
+		text += `<footer align="right">
+			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#reply_modal_box" data-id="${new_d.id}">Reply</a>`;
+	}
+
+	else if ($('#access_mode').attr('data-access') == "2") {
+		text += `<footer align="right"><a`
+		if (new_d.is_locked) text += `class="disabled" `;
+		text +=	`data-toggle="modal" data-backdrop="false" data-did="${new_d.id}" data-target="#summarize_multiple_modal_box" data-type="edit_summarize" data-id="${new_d.id}">Edit</a>
+			<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="${new_d.id}"  data-did="${new_d.d_id}">Delete</a>
+			<a data-toggle="modal" data-backdrop="false" data-did="${new_d.d_id}" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="${new_d.id}">Evaluate</a>`;
+	}
+	text += render_subscribe_buttons(new_d.d_id, new_d.replace_node, !new_d.hiddennode);
+	text += '</footer>';
+	for (var i=0; i<children.length; i++) {
+		if (children[i] == highest_d) {
+			$('#comment_' + children[i].id).html(text);
+			$('#comment_' + children[i].id).addClass('summary_box');
+			$('#comment_' + children[i].id).attr('id', 'comment_' + new_d.id);
 		} else {
-			// show_text(nodes_all[0]);
-			show_viz_box_original(currentHighlight);
-		}
-		for (var i=0; i<children.length; i++) {
 			$('#comment_' + children[i].id).remove();
 		}
 	}

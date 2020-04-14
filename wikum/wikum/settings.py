@@ -215,7 +215,7 @@ LANGUAGE_CODE = 'es'
 
 from django.utils.translation import ugettext_lazy as _
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
