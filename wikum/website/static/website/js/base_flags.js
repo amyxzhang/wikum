@@ -3835,7 +3835,7 @@ function expand_all(id) {
 
 function setSortables(disabled = false) {
 	var edit_mode = $('#access_mode').attr('data-access') == "0" || $('#access_mode').attr('data-access') == "2";
-	if (sort == 'default' && edit_mode) {
+	if (sort == 'default' && edit_mode && filter == '') {
 		sortableList = [];
 		var nestedSortables = document.getElementsByClassName("nested-sortable");
 		// Loop through each nested sortable element
@@ -3966,22 +3966,28 @@ function check_clicked_node(d, clicked_ids) {
 }
 
 function getState(d) {
-	let state = 'unsum_comment';
-	if (d.replace_node) {
-		if (has_unsummarized_children(d)) {
-			state = 'summary_partial';
-		} else {
-			state = 'summary';
+	if (filter == '') {
+		var state = 'unsum_comment';
+		if (d.replace_node) {
+			if (has_unsummarized_children(d)) {
+				state = 'summary_partial';
+			} else {
+				state = 'summary';
+			}
+		} else if (d.hiddennode) {
+			state = 'hidden';
+		} else if (d.collapsed) {
+			state = 'sum_comment';
+			if (d.summarized!=null && !d.summarized) {
+				state = 'unsum_comment';
+			}
 		}
-	} else if (d.hiddennode) {
-		state = 'hidden';
-	} else if (d.collapsed) {
-		state = 'sum_comment';
-		if (d.summarized!=null && !d.summarized) {
-			state = 'unsum_comment';
+	} else {
+		var state = 'gray';
+		if (filterMatch(d)) {
+			state = 'highlighted';
 		}
 	}
-	// todo: improve speed of summary_partial
 	return state;
 }
 
@@ -4002,6 +4008,24 @@ function shorten(text, max_length) {
 
 function setMaxLength(depth) {
 	return Math.max(50 - depth * 5, 20);
+}
+
+function filterMatch(d) {
+	if (filter.substring(0, 4) == 'Tag:') {
+		var d_tags = d.tags.map(tag => tag[0]);
+		if (d_tags.includes(filter.substring(5))) {
+			return true;
+		}
+	} else if (filter.substring(0, 5) == 'User:') {
+		if (d.author == filter.substring(6)) {
+			return true
+		}
+	} else {
+		if (d.name.includes(filter)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function createOutlineInsideString(d, outline='', depth=0, shouldExpand=false) {
@@ -4360,8 +4384,15 @@ function render_subscribe_buttons(did, is_replace_node, not_hidden) {
 }
 
 function format_time(time_string) {
-	var position_second_colon = time_string.split(':', 2).join(':').length;
-	return time_string.replace(/['"]+/g, '').substring(0, position_second_colon - 1);
+	var date = new Date(time_string.replace(/['"]+/g, ''));
+	var hours = date.getHours();
+	var minutes = date.getMinutes();
+	var ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12;
+	hours = hours ? hours : 12; // the hour '0' should be '12'
+	minutes = minutes < 10 ? '0'+minutes : minutes;
+	var strTime = hours + ':' + minutes + ' ' + ampm;
+	return (date.getMonth()+1) + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
 }
 
 function construct_comment(d) {

@@ -488,6 +488,14 @@ textarea {
     background-color: rgb(248, 200, 153);
 }
 
+#outline .m-highlighted {
+    background-color: #FFCC11;
+}
+
+#outline .m-gray {
+    background-color: #D3D3D3;
+}
+
 #outline .m-hidden {
     background-color: #990000;
 }
@@ -722,10 +730,10 @@ rect.selection {
     }
 
 .summary_box {
-    background-color: hsl(30, 100%, 95%) !important;
+    background-color: hsl(30, 100%, 97%) !important;
     border: 1px solid hsla(30, 100%, 50%, .7);
     white-space: pre-wrap;
-    --link-color: hsl(30, 100%, 60%);
+    --link-color: hsl(30, 100%, 55%);
 }
 
     .summary_box footer {
