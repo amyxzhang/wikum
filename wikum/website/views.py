@@ -480,8 +480,8 @@ def summary_data(request):
     else:
         next_page = int(next_page)
         
-    start = 15 * next_page
-    end = (15 * next_page) + 15
+    start = 30 * next_page
+    end = (30 * next_page) + 30
     
     if sort == 'id':
         posts = a.comment_set.filter(reply_to_disqus=None, hidden=False).order_by("import_order")[start:end]
@@ -626,6 +626,7 @@ def recurse_viz(parent, posts, replaced, article, is_collapsed):
                 author = ""
             v1 = {'size': post.points,
                   'd_id': post.id,
+                  'last_updated': json.dumps(post.created_at, indent=4, sort_keys=True, default=str) if post.created_at else '',
                   'parent': parent.id if parent else None,
                   'author': author,
                   'replace_node': post.is_replacement,
@@ -1345,8 +1346,8 @@ def viz_data(request):
     else:
         next_page = int(next_page)
         
-    start = 15 * next_page
-    end = (15 * next_page) + 15
+    start = 30 * next_page
+    end = (30 * next_page) + 30
     
     article_id = int(request.GET['id'])
     a = Article.objects.get(id=article_id)
@@ -1359,15 +1360,12 @@ def viz_data(request):
     else:
         current_user = request.user.wikumuser
         read_list_string = current_user.comments_read
-        if read_list_string == '':
-            comments_read = []
-        else:
-            comments_read = [c for c in read_list_string.split(',') if c != '' and int(c) in all_ids]
-            if len(comments_read) == 0:
-                # first time coming to the page, mark everything as read
-                comments_read = [str(c) for c in all_ids]
-                current_user.comments_read = read_list_string + ',' + ','.join(comments_read)
-                current_user.save()
+        comments_read = [c for c in read_list_string.split(',') if c != '' and int(c) in all_ids]
+        if len(comments_read) == 0:
+            # first time coming to the page, mark everything as read
+            comments_read = [str(c) for c in all_ids]
+            current_user.comments_read = read_list_string + ',' + ','.join(comments_read)
+            current_user.save()
         if current_user.subscribe_replies == '':
             sub_replies = []
         else:
@@ -1698,6 +1696,7 @@ def recurse_get_parents(parent_dict, post, article):
                     
         parent_dict['size'] = parent.points
         parent_dict['d_id'] = parent.id
+        parent_dict['last_updated'] = json.dumps(parent.created_at, indent=4, sort_keys=True, default=str) if parent.created_at else ''
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['summarized'] = parent.summarized
@@ -1742,6 +1741,7 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
                     
         parent_dict['size'] = parent.points
         parent_dict['d_id'] = parent.id
+        parent_dict['last_updated'] = json.dumps(parent.created_at, indent=4, sort_keys=True, default=str) if parent.created_at else ''
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['summarized'] = parent.summarized

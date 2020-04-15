@@ -228,3 +228,4 @@ class Notification(models.Model):
     seen = models.BooleanField(default=False)
     url = models.URLField(max_length=300, blank=False, null=True)
     message = models.CharField(max_length=2000, blank=False, null=True)
+    content = models.CharField(max_length=2000, blank=False, null=True)
