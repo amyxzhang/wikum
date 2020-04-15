@@ -569,43 +569,48 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 	var text = 'Flag this summary as being problematic or exemplary in the below characteristics:';
 	$('#evaluate_text').html(text);
 	
+	var is_summary_box = '';
 	if (d.replace_node) {
 		var node_text = '<strong>Summary Node:</strong><BR>' + render_summary_node(d, false);
+		is_summary_box = 'summary_box';
 	} else if (d.summary != '') {
 		var node_text = '<strong>Summary:</strong> ' + render_summary_node(d, false);
+		node_text += '<P>---</P>';
+		node_text += d.name;
 	} else {
 		var node_text = d.name;
 	}
-			
-	var text = '<div class="summary_box tag_comment_comment" style="border-width:2px;">' + node_text+ '</div>';
 
-	if (d.replace.length > 0) {
-		var children_text = '';
-		for (var i=0; i<d.replace.length; i++) {
-			var summarized = d.replace[i].summarized || d.replace[i].summarized==undefined? "summarized" : "";
-			if (d.replace[i].summary != '') {
-				children_text += `<div id="sum_box_` + d.replace[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.replace[i].d_id + `</P><strong>Summary: </strong> ` + render_summary_node_edit(d.replace[i]) + `</div>`;
-			} else {
-				current_summarize_d_id.push(d.replace[i].d_id);
+	var text = '<div class="' + is_summary_box + ' tag_comment_comment" style="border-width:2px;">' + node_text+ '</div>';
+	var children_text = '';
+	if (d.replace_node) {
+		if (d.replace.length > 0) {
+			for (var i=0; i<d.replace.length; i++) {
+				var summarized = d.replace[i].summarized || d.replace[i].summarized==undefined? "summarized" : "";
+				if (d.replace[i].summary != '') {
+					children_text += `<div id="sum_box_` + d.replace[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.replace[i].d_id + `</P><strong>Summary: </strong> ` + render_summary_node_edit(d.replace[i]) + `</div>`;
+				} else {
+					current_summarize_d_id.push(d.replace[i].d_id);
 
-				children_text += `<div id="sum_box_` + d.replace[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.replace[i].d_id + '</P>' + show_comment_text(d.replace[i].name, d.replace[i].id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
+					children_text += `<div id="sum_box_` + d.replace[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.replace[i].d_id + '</P>' + show_comment_text(d.replace[i].name, d.replace[i].id)  + '<P>-- ' + d.replace[i].author + '</P></div>';
+				}
+				children_text = get_subtree_summarize(children_text, d.replace[i], 1, true);
 			}
-			children_text = get_subtree_summarize(children_text, d.replace[i], 1, true);
-		}
 
-	} else if (d.children.length > 0) {
-		var children_text = '';
-		for (var i=0; i<d.children.length; i++) {
-			var summarized = d.children[i].summarized || d.children[i].summarized==undefined? "summarized" : "";
-			if (d.children[i].summary != '') {
-				children_text += '<div id="sum_box_' + d.children[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.children[i].d_id + '</P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
-			} else {
+		} else if (d.children.length > 0) {
+			var children_text = '';
+			for (var i=0; i<d.children.length; i++) {
+				var summarized = d.children[i].summarized || d.children[i].summarized==undefined? "summarized" : "";
+				if (d.children[i].summary != '') {
+					children_text += '<div id="sum_box_' + d.children[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.children[i].d_id + '</P><strong>Summary: </strong> ' + render_summary_node_edit(d.children[i]) + '</div>';
+				} else {
 
-				current_summarize_d_id.push(d.children[i].d_id);
+					current_summarize_d_id.push(d.children[i].d_id);
 
-				children_text += '<div id="sum_box_' + d.children[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.children[i].d_id + '</P>' + show_comment_text(d.children[i].name, d.children[i].id) + '<P>-- ' + d.children[i].author + '</P></div>';
+					children_text += '<div id="sum_box_' + d.children[i].id + `" class="summarize_comment_comment ${summarized} "><P>ID: ` + d.children[i].d_id + '</P>' + show_comment_text(d.children[i].name, d.children[i].id) + '<P>-- ' + d.children[i].author + '</P></div>';
+				}
+				children_text = get_subtree_summarize(children_text, d.children[i], 1, true);
 			}
-			children_text = get_subtree_summarize(children_text, d.children[i], 1, true);
 		}
 	}
 
@@ -735,23 +740,24 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
     
     $('#quality_rating').css('background','linear-gradient(to right, red 25%, white 50%, green 100%)');
 
-    var summarized_list_text = 'Summarized list (check to mark as summarized):';
-    summarized_list_text += '<div id="summarized_id_list">';
-    var d_all_children = recurse_get_children(d);
-    for (var i = 0; i < d_all_children.length; i++) {
-		var child = d_all_children[i];
-		if (!child.replace_node) {
-			if (child.summarized == false) {
-				summarized_list_text +='<input type="checkbox" id="check_'+child.d_id+'" name="'+child.d_id+'">';
-			} else {
-				summarized_list_text +='<input type="checkbox" id="check_'+child.d_id+'" name="'+child.d_id+'" checked>';
+    if (d.replace_node) {
+	    var summarized_list_text = 'Summarized list (check to mark as summarized):';
+	    summarized_list_text += '<div id="summarized_id_list">';
+	    var d_all_children = recurse_get_children(d);
+	    for (var i = 0; i < d_all_children.length; i++) {
+			var child = d_all_children[i];
+			if (!child.replace_node) {
+				if (child.summarized == false) {
+					summarized_list_text +='<input type="checkbox" id="check_'+child.d_id+'" name="'+child.d_id+'">';
+				} else {
+					summarized_list_text +='<input type="checkbox" id="check_'+child.d_id+'" name="'+child.d_id+'" checked>';
+				}
+				summarized_list_text += '<label for="'+child.d_id+'">'+child.d_id+'</label><br>';
 			}
-			summarized_list_text += '<label for="'+child.d_id+'">'+child.d_id+'</label><br>';
 		}
+	    summarized_list_text += '</div>';
+	    $('#summarized_children').html(summarized_list_text);
 	}
-    summarized_list_text += '</div>';
-    $('#summarized_children').html(summarized_list_text);
-
 	var did = $(e.relatedTarget).data('did');
 
 	$('#evaluate_summary_modal_box form').off("submit");
@@ -1257,7 +1263,6 @@ $('#confirm_delete_modal_box').on('click', '.btn-ok', function(e) {
 				comment: '',
 				article: article_id,
 				id: d.d_id};
-			data.node_id = id;
 			data.type = 'delete_comment_summary';
 			chatsock.send(JSON.stringify(data));
 		}
@@ -4511,17 +4516,24 @@ function construct_comment(d) {
 			text += '</div>';
 		}
 		if (!d.replace_node) {
-			text += '<P>';
-			text += ' | <a onclick="toggle_original(' + d.id + ');">View Original Comment</a> | ';
+			text += `<footer align="right">`;
+			text += '<a onclick="toggle_original(' + d.id + ');">View Original Comment</a>';
 			// comment summary
-			if ($('#access_mode').attr('data-access') == "0" || $('#access_mode').attr('data-access') == "2") {
+			var data_access = $('#access_mode').attr('data-access');
+			if (data_access == "0" || data_access == "1") {
+				text += `<a data-toggle="modal" data-backdrop="false" data-did="${d.d_id}" data-target="#reply_modal_box" data-id="${d.id}">Reply</a>`;
+			}
+			if (data_access == "0" || data_access == "2") {
 				text += '<a ';
 				if (d.is_locked) text += 'class="disabled" ';
-				text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit Comment Summary</a> | ';
-				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '" data-did="' + d.d_id +'">Delete Comment Summary</a> | ';
-				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate</a></P>';
+				text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '" data-did="' + d.d_id +'">Delete</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate</a>';
+				text += render_subscribe_buttons(d.d_id, d.replace_node, !d.hiddennode);
+				text += `</footer>`;
 			}
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
+
 		} else {
 			var data_access = $('#access_mode').attr('data-access');
 			text += `<footer align="right">`;
