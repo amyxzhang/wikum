@@ -4533,8 +4533,8 @@ function construct_comment(d) {
 				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '" data-did="' + d.d_id +'">Delete</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate</a>';
 				text += render_subscribe_buttons(d.d_id, d.replace_node, !d.hiddennode);
-				text += `</footer>`;
 			}
+			text += `</footer>`;
 			text += '<div id="orig_' + d.id + '" style="display: none;" class="original_comment">' + d.name + '</div>';
 
 		} else {
