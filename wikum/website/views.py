@@ -1696,7 +1696,7 @@ def recurse_get_parents(parent_dict, post, article):
                     
         parent_dict['size'] = parent.points
         parent_dict['d_id'] = parent.id
-        parent_dict['last_updated'] = json.dumps(post.created_at, indent=4, sort_keys=True, default=str) if post.created_at else ''
+        parent_dict['last_updated'] = json.dumps(parent.created_at, indent=4, sort_keys=True, default=str) if parent.created_at else ''
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['summarized'] = parent.summarized
@@ -1741,7 +1741,7 @@ def recurse_get_parents_stop(parent_dict, post, article, stop_id):
                     
         parent_dict['size'] = parent.points
         parent_dict['d_id'] = parent.id
-        parent_dict['last_updated'] = json.dumps(post.created_at, indent=4, sort_keys=True, default=str) if post.created_at else ''
+        parent_dict['last_updated'] = json.dumps(parent.created_at, indent=4, sort_keys=True, default=str) if parent.created_at else ''
         parent_dict['author'] = author
         parent_dict['replace_node'] = parent.is_replacement
         parent_dict['summarized'] = parent.summarized

@@ -3975,7 +3975,7 @@ function getState(d) {
 		}
 	} else if (d.hiddennode) {
 		state = 'hidden';
-	} else if (!(d.summarized == false)) {
+	} else if (d.summarized == null || d.summarized) {
 		state = 'sum_comment';
 	}
 	// todo: improve speed of summary_partial
