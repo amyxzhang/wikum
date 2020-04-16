@@ -2119,7 +2119,6 @@ function handle_channel_tags(res) {
 			for (var i=0; i<list_dids.length; i++) {
 				var tags2 = '' + d_text2;
 				c = nodes_all.filter(o => o.d_id == list_dids[i])[0];
-				console.log(tags);
 				c.tags.push([tag, res.color]);
 				if ($('#tags_' + c.id).html() == "") {
 					$('#tags_' + c.id).html('Tags: ' + tags2);
@@ -4535,9 +4534,9 @@ function construct_comment(d) {
 				text += '</a>';
 			}
 		}
-		text += '</div><BR>';
+		text += '</div>';
 	} else {
-		text += '<div id="tags_' + d.id + '"></div><BR>';
+		text += '<div id="tags_' + d.id + '"></div>';
 	}
 
 	if (summary) {
@@ -4562,6 +4561,7 @@ function construct_comment(d) {
 				if (d.is_locked) text += 'class="disabled" ';
 				text += 'data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#summarize_modal_box" data-type="edit_summarize_one" data-id="' + d.id + '">Edit</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-target="#confirm_delete_modal_box" data-id="' + d.id + '" data-did="' + d.d_id +'">Delete</a>';
+				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#tag_modal_box" data-type="tag_one" data-id="' + d.id + '">Tag</a>';
 				text += '<a data-toggle="modal" data-backdrop="false" data-did="' + d.d_id + '" data-target="#evaluate_summary_modal_box" data-type="evaluate_summary" data-id="' + d.id + '">Evaluate</a>';
 				text += render_subscribe_buttons(d.d_id, d.replace_node, !d.hiddennode);
 			}

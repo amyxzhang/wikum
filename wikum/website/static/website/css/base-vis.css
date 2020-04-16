@@ -1235,8 +1235,7 @@ form.modal-content {
 }
 
 .editors {
-    position:relative; 
-    top: -25px; 
+    position:relative;
     font-size: 10px;
 }
 
