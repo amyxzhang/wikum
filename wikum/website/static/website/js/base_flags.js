@@ -815,6 +815,7 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 
 					for (var i=0; i < to_summarize.length; i++) {
 						to_summarize[i].summarized = true;
+						to_summarize[i].collapsed = true;
 						$('#comment_' + to_summarize[i].id).removeClass('unsummarized');
 						// d3.select('#node_' + to_summarize[i].id).style('fill', color);
 					}
