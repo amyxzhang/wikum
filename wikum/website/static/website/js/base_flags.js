@@ -773,17 +773,19 @@ $('#evaluate_summary_modal_box').on('show.bs.modal', function(e) {
 		var to_summarize_dids = [];
 		var to_unsummarize = [];
 		var to_unsummarize_dids = [];
-		for (var i=0; i < d_all_children.length; i++) {
-			if (!d_all_children[i].replace_node) {
-				// checked as summarized and currently unsummarized
-				if ($('#check_' + d_all_children[i].d_id).is(":checked") && d_all_children[i].summarized==false) {
-					to_summarize.push(d_all_children[i]);
-					to_summarize_dids.push(d_all_children[i].d_id);
-				}
-				// unchecked and currently summarized
-				if (!$('#check_' + d_all_children[i].d_id).is(":checked") && !d_all_children[i].summarized==false) {
-					to_unsummarize.push(d_all_children[i]);
-					to_unsummarize_dids.push(d_all_children[i].d_id);
+		if (d_all_children) {
+			for (var i=0; i < d_all_children.length; i++) {
+				if (!d_all_children[i].replace_node) {
+					// checked as summarized and currently unsummarized
+					if ($('#check_' + d_all_children[i].d_id).is(":checked") && d_all_children[i].summarized==false) {
+						to_summarize.push(d_all_children[i]);
+						to_summarize_dids.push(d_all_children[i].d_id);
+					}
+					// unchecked and currently summarized
+					if (!$('#check_' + d_all_children[i].d_id).is(":checked") && !d_all_children[i].summarized==false) {
+						to_unsummarize.push(d_all_children[i]);
+						to_unsummarize_dids.push(d_all_children[i].d_id);
+					}
 				}
 			}
 		}
