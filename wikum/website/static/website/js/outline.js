@@ -8,12 +8,14 @@ var highlighted_comm = null;
 var highlight_text = null;
 var ctrlIsPressed = false;
 var clicked_dids = {};
+var firstCtrlClick = true;
 var article_id = $('#article_id').text();
 
 /* Outline View Visualization */
 
 $(document).keydown(function(evt) {
-    if (evt.which == "17" || evt.metaKey) {
+    if (firstCtrlClick && (evt.which == "17" || evt.metaKey)) {
+    	firstCtrlClick = false;
     	ctrlIsPressed = true;
     	clicked_dids = {};
     }
@@ -22,16 +24,19 @@ $(document).keydown(function(evt) {
 $(document).keyup(function(evt){
 	if (evt.originalEvent.key === 'Meta' || evt.originalEvent.key === 'Control') {
     	ctrlIsPressed = false;
+    	firstCtrlClick = true;
     }
 });
 
 window.onblur = function() {
 	ctrlIsPressed = false;
+	firstCtrlClick = true;
 }
 
 document.addEventListener('visibilitychange', function () {
     if (document.hidden) {
         ctrlIsPressed = false;
+        firstCtrlClick = true;
     }
 });
 
