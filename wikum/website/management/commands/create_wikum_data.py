@@ -1,8 +1,5 @@
 from website.models import Article, Comment, CommentAuthor, History
 import csv
-import seaborn as sns
-import pandas as pd
-import re
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
