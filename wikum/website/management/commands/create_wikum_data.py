@@ -47,5 +47,3 @@ class Command(BaseCommand):
                 data_writer.writerow([hist.datetime, 'Anonymous' if hist.user == None else hist.user.username, word_count, hist.words_shown, action_to_type[action]])
         comment_data.close()
 
-
-
