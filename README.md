@@ -22,13 +22,11 @@ This repository contains:
 
 ## Table of Contents
 
-- [Background](#background)
 - [Usage](#usage)
+- [Maintainers](#maintainers)
 - [Contribute](#contribute)
+- [Coding Setup](#codingsetup)
 - [License](#license)
-
-## Background
-
 
 ## Usage
 
@@ -43,8 +41,11 @@ Once you have Wikum locally installed you can start developing.
 
 Before you get started, please review our [contributor guidelines](/CONTRIBUTING.md), if you agree with all of the terms and conditions then feel free to dive in! [Open an issue](https://github.com/amyxzhang/wikum/issues/new) or submit PRs.
 
+## Coding Setup
 
 If you'll be working on a coding issue, follow the [coding setup](/coding_setup.md) instructions to get a local version of the project up and running.
+
+If you want to deploy Wikum to a server, follow the [deployment setup](/deployment_setup.md) instructions.
 
 ## License
 
