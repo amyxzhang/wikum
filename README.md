@@ -25,7 +25,7 @@ This repository contains:
 - [Usage](#usage)
 - [Maintainers](#maintainers)
 - [Contribute](#contribute)
-- [Coding Setup](#codingsetup)
+- [Coding Setup](#coding-setup)
 - [License](#license)
 
 ## Usage
