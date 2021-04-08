@@ -31,7 +31,7 @@ cycler==0.10.0
 daphne==2.4.1
 decorator==4.4.0
 distlib==0.2.9.post0
-Django==3.0.4
+Django==3.0.14
 django-annoying==0.10.6
 django-appconf==1.0.3
 django-bootstrap-form==3.4
