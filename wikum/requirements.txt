@@ -18,7 +18,7 @@ botocore==1.12.246
 breadability==0.1.20
 bz2file==0.98
 caniusepython3==7.1.0
-celery==4.3.0
+celery==5.2.2
 certifi==2019.9.11
 cffi==1.12.3
 channels==2.4.0
