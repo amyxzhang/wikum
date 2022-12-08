@@ -19,7 +19,7 @@ breadability==0.1.20
 bz2file==0.98
 caniusepython3==7.1.0
 celery==4.3.0
-certifi==2019.9.11
+certifi==2022.12.7
 cffi==1.12.3
 channels==2.4.0
 channels-redis==2.4.2
